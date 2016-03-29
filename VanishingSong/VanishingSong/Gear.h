@@ -17,7 +17,7 @@ public:
 	struct{
 		std::shared_ptr<Gear> _pParent;
 		std::vector<std::shared_ptr<Gear>> _pChild;
-		aetherClass::FbxModel _pGear;
+		std::unique_ptr<aetherClass::FbxModel> _pGear;
 		std::string _name;
 
 	};
