@@ -13,7 +13,7 @@ static void ReleaseVector(std::vector<Type>& vector)
 		{
 			if (object)
 			{
-				object.reset();
+				delete object;
 				object = nullptr;
 			}
 		}
