@@ -1,6 +1,7 @@
 #ifndef _AETHER_H
 #define _AETHER_H
 #pragma comment (lib,"Aether.lib")
+#endif
 #include <memory>
 #include <GameFrame.h>
 #include <AetherWindow.h>
@@ -67,4 +68,3 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	ConsoleWindow::Close();
 	return kEnd;
 }
-#endif
