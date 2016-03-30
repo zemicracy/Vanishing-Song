@@ -28,6 +28,12 @@ void Gear::Release(){
 		_pGear->Finalize();
 		_pGear.release();
 	}
+
+	if (_pColider)
+	{
+		_pColider->Finalize();
+		_pColider.release();
+	}
 	
 	_name.clear();
 
