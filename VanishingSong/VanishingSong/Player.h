@@ -40,11 +40,15 @@ private:
 	*/
 	void mGearRender(std::shared_ptr<Gear> gear,aetherClass::ShaderBase*);
 
-	
+	/*
+		プレイヤーに対するキー入力処理
+		現状移動処理のみ
+	*/
+	void mReadKey(const float timeScale);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::unordered_map<eActionType, int> m_actionHash;
-	std::shared_ptr<ActionCommand> m_pAction;
+	std::shared_ptr<ActionCommand> m_pActionCommand;
 	CharaStatus m_status;
 };
 
