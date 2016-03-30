@@ -16,7 +16,7 @@ void Gear::Release(){
 	_pParent.reset();
 	
 	// Žq‹Ÿ”z—ñ‚Ì—v‘fíœ
-	for (auto index : _pChild)
+	for (auto index : _pChildren)
 	{
 		if (!index)continue;
 		index.reset();
@@ -26,15 +26,15 @@ void Gear::Release(){
 	if (_pGear)
 	{
 		_pGear->Finalize();
-		_pGear.release();
+		_pGear.reset();
 	}
 
 	if (_pColider)
 	{
 		_pColider->Finalize();
-		_pColider.release();
+		_pColider.reset();
 	}
 	
-	_name.clear();
+	_type = eType::eNull;
 
 }

@@ -9,6 +9,35 @@
 class Gear
 {
 public:
+
+	enum  class eType
+	{
+		// 体のパーツ
+		eBody,
+		
+		// 腕パーツ
+		eRightShourlder,
+		eLeftShourlder,
+		eRightUpperArm,
+		eLeftUpperArm,
+		eRightLowerArm,
+		eLeftLowerArm,
+
+		// 腰パーツ
+		eWaist,
+
+		// 足パーツ
+		eRightUpperLeg,
+		eLeftUpperLeg,
+		eRightLowerLeg,
+		eLeftLowerLeg,
+
+		// 手のパーツ
+		eRightHand,
+		eLeftHand,
+		eNull,
+	};
+
 	Gear();
 	~Gear();
 	void Release();
@@ -18,10 +47,10 @@ public:
 
 	struct{
 		std::shared_ptr<Gear> _pParent;
-		std::vector<std::shared_ptr<Gear>> _pChild;
-		std::unique_ptr<aetherClass::FbxModel> _pGear;
-		std::string _name;
-		std::unique_ptr<aetherClass::Cube> _pColider;
+		std::vector<std::shared_ptr<Gear>> _pChildren;
+		std::shared_ptr<aetherClass::FbxModel> _pGear;
+		eType _type;
+		std::shared_ptr<aetherClass::Cube> _pColider;
 
 	};
 };
