@@ -1,5 +1,7 @@
 #include "Player.h"
 #include "Debug.h"
+#include <GameController.h>
+#include <GameClock.h>
 using namespace aetherClass;
 namespace{
 	const bool kPlayerDebug = true;
@@ -8,7 +10,8 @@ Player::Player()
 {
 	m_pGearFrame = nullptr;
 	m_actionHash.clear();
-	m_pAction = nullptr;
+	m_pActionCommand = nullptr;
+	
 }
 
 
@@ -79,8 +82,39 @@ bool Player::mInitialize(ViewCamera* camera){
 //
 void Player::mUpdate(const float timeScale){
 	
+	// à⁄ìÆèàóù
+	mReadKey(timeScale);
+
 	return;
 }
+
+//
+void Player::mReadKey(const float timeScale){
+	Vector3 move;
+	if (GameController::GetKey().IsKeyDown(DIK_W)){
+		move._z = GameClock::GetDeltaTime()*timeScale;
+	}
+	else if (GameController::GetKey().IsKeyDown(DIK_S)){
+		move._z = -(GameClock::GetDeltaTime()*timeScale);
+	}
+
+	if (GameController::GetKey().IsKeyDown(DIK_D)){
+		move._x = GameClock::GetDeltaTime()*timeScale;
+	}
+	else if (GameController::GetKey().IsKeyDown(DIK_A)){
+		move._x = -(GameClock::GetDeltaTime()*timeScale);
+	}
+
+	m_pGearFrame->m_pBody->_pColider->property._transform._translation += move;
+	Vector3 hoge = m_pGearFrame->m_pBody->_pColider->property._transform._translation;
+
+	Debug::mPrint("PlayerÇÃåªç›ÇÃç¿ïW");
+	Debug::mPrint("X :" + std::to_string(hoge._x));
+	Debug::mPrint("Y :" + std::to_string(hoge._y));
+	Debug::mPrint("Z :" + std::to_string(hoge._z));
+
+}
+
 
 //
 void Player::mRender(aetherClass::ShaderBase* shader){
