@@ -91,17 +91,17 @@ void Player::mUpdate(const float timeScale){
 //
 void Player::mReadKey(const float timeScale){
 	Vector3 move;
-	if (GameController::GetKey().IsKeyDown(DIK_W)){
+	if (GameController::GetKey().IsKeyDown('W')){
 		move._z = GameClock::GetDeltaTime()*timeScale;
 	}
-	else if (GameController::GetKey().IsKeyDown(DIK_S)){
+	else if (GameController::GetKey().IsKeyDown('S')){
 		move._z = -(GameClock::GetDeltaTime()*timeScale);
 	}
 
-	if (GameController::GetKey().IsKeyDown(DIK_D)){
+	if (GameController::GetKey().IsKeyDown('D')){
 		move._x = GameClock::GetDeltaTime()*timeScale;
 	}
-	else if (GameController::GetKey().IsKeyDown(DIK_A)){
+	else if (GameController::GetKey().IsKeyDown('A')){
 		move._x = -(GameClock::GetDeltaTime()*timeScale);
 	}
 
@@ -174,7 +174,7 @@ std::shared_ptr<Gear> Player::mSetUpGear(std::string path, Gear::eType gearType,
 	success = pGear->_pGear->LoadFBX(path, eAxisSystem::eAxisOpenGL);
 	if (!success)
 	{
-		Debug::mErrorPrint("FBXの初期化が正常に行われませんでした。", __FILE__, __LINE__,Debug::eState::eWindow);
+		Debug::mErrorPrint("FBXの初期化が正常に行われませんでした。", __FILE__, __FUNCTION__, __LINE__);
 
 		if (kPlayerDebug)
 		{

@@ -19,8 +19,9 @@ public:
 		eWindow,
 		eNull
 	};
-
+	static void mErrorPrint(std::string errorMessgae, std::string FaileName, const eState state = eState::eConsole);
 	static void mErrorPrint(std::string errorMessgae, std::string FaileName, const int line, const eState state = eState::eConsole);
+	static void mErrorPrint(std::string errorMessgae, std::string FaileName, std::string FunctionName ,const int line, const eState state = eState::eConsole);
 	static void mPrint(std::string messgae, const eState state = eState::eConsole);
 
 private:
