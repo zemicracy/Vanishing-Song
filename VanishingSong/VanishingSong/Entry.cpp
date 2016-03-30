@@ -22,6 +22,9 @@ namespace{
 
 // エントリーポイントを作成
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
+	
+	//コンソールウィンドウの作成
+	ConsoleWindow::Create();
 
 	//スマートポインタ宣言
 	std::unique_ptr<GameFrame>frame;
@@ -48,8 +51,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	if (!result){
 		return kError;
 	}
-	//コンソールウィンドウの作成
-	ConsoleWindow::Create();
 
 	//一番最初のシーンの設定
 	GameScene* scene = new SceneSurvival;
