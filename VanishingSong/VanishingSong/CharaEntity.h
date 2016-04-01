@@ -3,6 +3,9 @@
 
 #include <memory>
 #include "GearFrame.h"
+namespace{
+	const bool kCharaDebug = true;
+}
 
 class CharaEntity
 {
@@ -11,7 +14,7 @@ public:
 	~CharaEntity();
 	 std::shared_ptr<Gear> mSetUpGear(std::string path, Gear::eType, aetherClass::ViewCamera*);
 	void mCreateRelationship(std::shared_ptr<Gear> parentGear, std::shared_ptr<Gear> child);
-	void mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase*);
+	void mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 
 };
 

@@ -9,7 +9,7 @@ public:
 
 	bool mInitialize(aetherClass::ViewCamera*);
 	void mUpdate();
-	void mRender(aetherClass::ShaderBase*);
+	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	bool mSetUp() override;
 
 private:
