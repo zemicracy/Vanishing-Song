@@ -60,7 +60,7 @@ void CharaEntity::mCreateRelationship(std::shared_ptr<Gear> parentGear, std::sha
 	child->_pParent = parentGear;
 }
 
-void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase* colider_shader, aetherClass::ShaderBase* model_shader){
+void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 
 	// デバッグモードの時はコライダーの表示
 	if (kCharaDebug)
@@ -75,7 +75,7 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
-		mGearRender(child, colider_shader, model_shader);
+		mGearRender(child, model_shader, colider_shader);
 	}
 
 	return;
