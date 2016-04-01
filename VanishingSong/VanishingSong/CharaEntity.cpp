@@ -2,9 +2,7 @@
 #include "Debug.h"
 
 using namespace aetherClass;
-namespace{
-	const bool kCharaDebug = true;
-}
+
 CharaEntity::CharaEntity()
 {
 }
@@ -62,7 +60,7 @@ void CharaEntity::mCreateRelationship(std::shared_ptr<Gear> parentGear, std::sha
 	child->_pParent = parentGear;
 }
 
-void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase* shader){
+void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase* shader, aetherClass::ShaderBase* shader2){
 
 	// デバッグモードの時はコライダーの表示
 	if (kCharaDebug)
@@ -77,7 +75,7 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
-		mGearRender(child, shader);
+		mGearRender(child, shader,shader2);
 	}
 
 	return;
