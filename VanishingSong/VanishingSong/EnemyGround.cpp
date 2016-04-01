@@ -38,10 +38,10 @@ void EnemyGround::mUpdate(){
 
 }
 
-void EnemyGround::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* shader2){
+void EnemyGround::mRender(aetherClass::ShaderBase* colider_shader, aetherClass::ShaderBase* model_shader){
 	if (!m_pGearFrame->m_pBody)return;
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
-	GetCharaEntity().mGearRender(m_pGearFrame->m_pBody, shader,shader2);
+	GetCharaEntity().mGearRender(m_pGearFrame->m_pBody, colider_shader, model_shader);
 
 }
