@@ -12,9 +12,29 @@ Gear::~Gear()
 }
 
 void Gear::Release(){
+
 	_pParent.reset();
-	ReleaseVector<std::shared_ptr<Gear>>;
-	_pGear.Finalize();
-	_name.clear();
+	
+	// Žq‹Ÿ”z—ñ‚Ì—v‘fíœ
+	for (auto index : _pChildren)
+	{
+		if (!index)continue;
+		index.reset();
+		index = nullptr;
+	}
+
+	if (_pGear)
+	{
+		_pGear->Finalize();
+		_pGear.reset();
+	}
+
+	if (_pColider)
+	{
+		_pColider->Finalize();
+		_pColider.reset();
+	}
+	
+	_type = eType::eNull;
 
 }

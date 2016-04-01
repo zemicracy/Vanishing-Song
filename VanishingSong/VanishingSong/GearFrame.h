@@ -1,27 +1,40 @@
 #pragma once
 #include "Gear.h"
 #include<memory>
-class GearFrame
+struct GearFrame
 {
 public:
 	GearFrame();
 	~GearFrame();
 
-	void Release();
+	// 体のパーツ
+	std::shared_ptr<Gear> m_pBody;
 
-
-private:
+	// 腰のパーツ
 	std::shared_ptr<Gear> m_pWaist;
+
+	// 肩のパーツ
 	std::shared_ptr<Gear> m_pRightShoulder;
 	std::shared_ptr<Gear> m_pLeftShoulder;
+	
+	// 腕のパーツ
 	std::shared_ptr<Gear> m_pRightUpperArm;
 	std::shared_ptr<Gear> m_pLeftUpperArm;
 	std::shared_ptr<Gear> m_pRightLowerArm;
 	std::shared_ptr<Gear> m_pLeftLowerArm;
+
+	// 足のパーツ
 	std::shared_ptr<Gear> m_pRightUpperLeg;
 	std::shared_ptr<Gear> m_pLeftUpperLeg;
 	std::shared_ptr<Gear> m_pRightLowerLeg;
 	std::shared_ptr<Gear> m_pLeftLowerLeg;
-	
+
+	// 手のパーツ
+	std::shared_ptr<Gear> m_pRightHand;
+	std::shared_ptr<Gear> m_pLeftHand;
+
+private:
+	void Release();
+
 };
 
