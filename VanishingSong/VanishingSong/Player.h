@@ -14,7 +14,7 @@ public:
 	~Player();
 	bool mInitialize(aetherClass::ViewCamera*);
 	void mUpdate(const float timeScale);
-	void mRender(aetherClass::ShaderBase*);
+	void mRender(aetherClass::ShaderBase* modelShader,aetherClass::ShaderBase* colliderShader);
 	void mAction(std::shared_ptr<ActionCommand>);
 
 private:

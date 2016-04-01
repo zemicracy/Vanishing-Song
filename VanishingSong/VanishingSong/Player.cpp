@@ -120,12 +120,12 @@ void Player::mReadKey(const float timeScale){
 
 
 //
-void Player::mRender(aetherClass::ShaderBase* shader){
+void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
 	
 	if (!m_pGearFrame->m_pBody)return;
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
-	m_charaEntity.mGearRender(m_pGearFrame->m_pBody, shader);
+	m_charaEntity.mGearRender(m_pGearFrame->m_pBody, modelShader,colliderShader);
 }
 
 //
