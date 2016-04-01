@@ -4,6 +4,7 @@
 #include "GearFrame.h"
 #include "CharaStatus.h"
 #include "CharaEntity.h"
+#include "Const.h"
 #include <ShaderBase.h>
 #include <unordered_map>
 class ActionCommand;

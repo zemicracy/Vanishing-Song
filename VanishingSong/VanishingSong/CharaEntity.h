@@ -3,10 +3,7 @@
 
 #include <memory>
 #include "GearFrame.h"
-namespace{
-	const bool kCharaDebug = true;
-}
-
+#include "Const.h"
 class CharaEntity
 {
 public:
