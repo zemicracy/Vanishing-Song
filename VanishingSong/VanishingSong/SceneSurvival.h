@@ -1,5 +1,8 @@
 #pragma once
 #include<GameScene.h>
+#include "ShaderBase.h"
+#include "EnemyGround.h"
+
 class SceneSurvival :
 	public aetherClass::GameScene
 {
@@ -25,5 +28,10 @@ public:
 	//ƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“Œø‰Ê
 	bool TransitionIn()override;
 	bool TransitionOut()override;
+
+private:
+	std::shared_ptr<EnemyGround> m_penemyGround;
+	std::shared_ptr<aetherClass::ViewCamera> m_camera;
+	std::shared_ptr<aetherClass::ShaderBase> m_pixelShader;
 };
 

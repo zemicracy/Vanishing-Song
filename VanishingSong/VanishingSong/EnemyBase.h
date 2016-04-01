@@ -20,7 +20,7 @@ public:
 
 	virtual bool mInitialize(aetherClass::ViewCamera*) = 0;
 	virtual void mUpdate() = 0;
-	virtual void mRender(aetherClass::ShaderBase*) = 0;
+	virtual void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*) = 0;
 	virtual bool mSetUp() = 0;
 
 private:
