@@ -15,13 +15,15 @@ private:
 
 public:
 	EnemyBase();
-	CharaEntity GetCharaEntity();
 	virtual ~EnemyBase()=default;
+	CharaEntity GetCharaEntity();
 
-private:
+	virtual bool mInitialize(aetherClass::ViewCamera*) = 0;
+	virtual void mUpdate() = 0;
+	virtual void mRender(aetherClass::ShaderBase*) = 0;
 	virtual bool mSetUp() = 0;
 
-public:
+private:
 	CharaStatus m_status;
 	EnemyAI m_pAI;
 	eEnemyType m_type;

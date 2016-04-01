@@ -45,13 +45,12 @@ public:
 
 public:
 
-	struct{
+
 		std::shared_ptr<Gear> _pParent;
 		std::vector<std::shared_ptr<Gear>> _pChildren;
 		std::shared_ptr<aetherClass::FbxModel> _pGear;
 		eType _type;
 		std::shared_ptr<aetherClass::Cube> _pColider;
 
-	};
 };
 

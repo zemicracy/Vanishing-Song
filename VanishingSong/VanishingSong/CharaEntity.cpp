@@ -3,7 +3,7 @@
 
 using namespace aetherClass;
 namespace{
-	const bool kPlayerDebug = true;
+	const bool kCharaDebug = true;
 }
 CharaEntity::CharaEntity()
 {
@@ -30,7 +30,7 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 	{
 		Debug::mErrorPrint("FBXの初期化が正常に行われませんでした。", __FILE__, __FUNCTION__, __LINE__);
 
-		if (kPlayerDebug)
+		if (kCharaDebug)
 		{
 			// コライダーの初期化
 			pGear->_pColider = std::make_shared<Cube>();
@@ -65,7 +65,7 @@ void CharaEntity::mCreateRelationship(std::shared_ptr<Gear> parentGear, std::sha
 void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase* shader){
 
 	// デバッグモードの時はコライダーの表示
-	if (kPlayerDebug)
+	if (kCharaDebug)
 	{
 		gear->_pColider->Render(shader);
 	}
