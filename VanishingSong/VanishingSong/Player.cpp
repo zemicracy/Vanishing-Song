@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Debug.h"
 #include <GameController.h>
+#include <WorldReader.h>
 #include <GameClock.h>
 using namespace aetherClass;
 
@@ -70,6 +71,27 @@ bool Player::mInitialize(ViewCamera* camera){
 	m_charaEntity.mCreateRelationship(m_pGearFrame->m_pWaist, m_pGearFrame->m_pLeftUpperLeg);
 	m_charaEntity.mCreateRelationship(m_pGearFrame->m_pLeftUpperLeg, m_pGearFrame->m_pLeftLowerLeg);
 
+	WorldReader read;
+	read.Load("data\\Player.aether");
+	for (auto index : read.GetInputWorldInfo()._object)
+	{
+		if (index->_name == "Body")
+		{
+			m_pGearFrame->m_pBody->_pColider->property._transform = index->_transform;
+		}
+
+		if (index->_name == "LeftArm")
+		{
+			m_pGearFrame->m_pLeftUpperArm->_pColider->property._transform = index->_transform;
+		}
+
+		if (index->_name == "LeftLowerArm")
+		{
+			m_pGearFrame->m_pLeftLowerArm->_pColider->property._transform = index->_transform;
+		}
+	}
+	
+	read.UnLoad();
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤーがデバッグモードです");
@@ -114,6 +136,7 @@ void Player::mReadKey(const float timeScale){
 	Debug::mPrint("Y :" + std::to_string(hoge._y));
 	Debug::mPrint("Z :" + std::to_string(hoge._z));
 
+	m_pGearFrame->m_pBody->_pColider->property._transform._translation += move;
 }
 
 
