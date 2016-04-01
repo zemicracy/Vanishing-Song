@@ -3,9 +3,7 @@
 #include <GameController.h>
 #include <GameClock.h>
 using namespace aetherClass;
-namespace{
-	const Vector3 kVector3Zero = Vector3(NULL, NULL, NULL);
-}
+
 Player::Player()
 {
 	m_pGearFrame = nullptr;
