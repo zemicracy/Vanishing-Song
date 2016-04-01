@@ -3,13 +3,13 @@
 #pragma comment (lib,"Aether.lib")
 #endif
 #include <memory>
-#include <GameFrame.h>
+
 #include <AetherWindow.h>
 #include <GameController.h>
 #include <ConsoleWindow.h>
 #include <GameSceneManager.h>
 #include "SceneSurvival.h"
-
+#include "VanishingSongFrame.h"
 using namespace aetherClass;
 
 namespace{
@@ -30,7 +30,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	std::unique_ptr<GameFrame>frame;
 
 	//スマートポインタ
-	frame = std::make_unique<GameFrame>();
+	frame = std::make_unique<VanishingSongFrame>();
 	
 	//ウィンドウクラスのオブジェクト作成
 	WindowBase* window = new AetherWindow();
