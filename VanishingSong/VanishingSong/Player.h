@@ -31,6 +31,7 @@ private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::unordered_map<eActionType, int> m_actionHash;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
+
 	CharaStatus m_status;
 	CharaEntity m_charaEntity;
 };

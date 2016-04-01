@@ -16,7 +16,7 @@ SceneSurvival::~SceneSurvival()
 bool SceneSurvival::Initialize(){
 
 	m_camera = std::make_shared<ViewCamera>();
-	m_camera->property._translation = Vector3(0, -0, 0);
+	m_camera->property._translation = Vector3(0, 0, -20);
 	m_camera->property._rotation = Vector3(0.0f, 0.0f, 0.0f);
 
 
@@ -36,6 +36,8 @@ bool SceneSurvival::Initialize(){
 	m_penemyGround = std::make_shared<EnemyGround>();
 	m_penemyGround->mInitialize(m_camera.get());
 
+	m_pPlayer = std::make_unique<Player>();
+	m_pPlayer->mInitialize(m_camera.get());
 
 	return true;
 }
@@ -46,13 +48,14 @@ void SceneSurvival::Finalize(){
 }
 
 bool SceneSurvival::Updater(){
-
+	m_pPlayer->mUpdate(1);
 	return true;
 }
 
 void SceneSurvival::Render(){
 	m_camera->Render();
 	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
+	m_pPlayer->mRender(m_pixelShader.get(), m_pixelShader.get());
 
 
 	return;
