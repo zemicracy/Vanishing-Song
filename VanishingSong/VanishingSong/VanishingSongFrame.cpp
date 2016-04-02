@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include <Singleton.h>
 #include "ResourceManager.h"
+#include "GameManager.h"
 VanishingSongFrame::VanishingSongFrame()
 {
 }
@@ -23,6 +24,9 @@ bool VanishingSongFrame::InitializeBuffer(){
 
 //　１フレームごとに実行される
 bool VanishingSongFrame::FrameRunningBuffer(){
+
+	// ポーズボタンが押されたかチェックする
+	Singleton<GameManager>::GetInstance().CheckPauseKey();
 
 	return true;
 }
