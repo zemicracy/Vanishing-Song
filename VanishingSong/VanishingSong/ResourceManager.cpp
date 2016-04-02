@@ -118,7 +118,6 @@ void ResourceManager::FinalizeBGM(){
 	for (auto index : m_pBaseBgmArray)
 	{
 		if (!index)continue;
-		index->Stop();
 		index.reset();
 		index = nullptr;
 	}
