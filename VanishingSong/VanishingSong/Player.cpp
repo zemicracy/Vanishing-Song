@@ -131,7 +131,7 @@ void Player::mReadKey(const float timeScale){
 	m_pGearFrame->m_pBody->_pColider->property._transform._translation += move;
 	Vector3 hoge = m_pGearFrame->m_pBody->_pColider->property._transform._translation;
 	
-	if (GameController::GetKey().KeyDownTrigger('P')){
+	if (kCharaDebug&&GameController::GetKey().KeyDownTrigger('P')){
 		Debug::mPrint("---PlayerÇÃåªç›ÇÃç¿ïW---");
 		Debug::mPrint("X :" + std::to_string(hoge._x));
 		Debug::mPrint("Y :" + std::to_string(hoge._y));
