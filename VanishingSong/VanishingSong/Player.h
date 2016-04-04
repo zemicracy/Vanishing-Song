@@ -3,6 +3,8 @@
 
 #include "GearFrame.h"
 #include "CharaStatus.h"
+#include "CharaEntity.h"
+#include "Const.h"
 #include <ShaderBase.h>
 #include <unordered_map>
 class ActionCommand;
@@ -13,43 +15,26 @@ public:
 	~Player();
 	bool mInitialize(aetherClass::ViewCamera*);
 	void mUpdate(const float timeScale);
-	void mRender(aetherClass::ShaderBase*);
+	//void mUpdate(const float timeScale,std::shared_ptr<ActionCommand>);
+	void mRender(aetherClass::ShaderBase* modelShader,aetherClass::ShaderBase* colliderShader);
 	void mAction(std::shared_ptr<ActionCommand>);
 
 private:
 
-	/*
-		パーツ作成用関数
-		第一引数：FBXモデルのパス
-		第二引数：パーツの種類
-		第三引数：投影するカメラのポインタ
-	*/
-	std::shared_ptr<Gear> mSetUpGear(std::string path, Gear::eType,aetherClass::ViewCamera*);
-
-	/*
-	親子関係を作成するための関数
-	第一引数：親のポインタ
-	第二引数：子供にするポインタ
-	*/
-	void mCreateRelationship(std::shared_ptr<Gear> parentGear, std::shared_ptr<Gear> child);
-
-	/*
-		効率的に描画するためのもの
-		第一引数：描画するパーツ
-		第二引数：シェーダーのポインタ
-	*/
-	void mGearRender(std::shared_ptr<Gear> gear,aetherClass::ShaderBase*);
+	
 
 	/*
 		プレイヤーに対するキー入力処理
 		現状移動処理のみ
 	*/
-	void mReadKey(const float timeScale);
+	aetherClass::Vector3 mReadKey(const float timeScale);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::unordered_map<eActionType, int> m_actionHash;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
+	std::shared_ptr<Gear> m_pTopGear;
 	CharaStatus m_status;
+	CharaEntity m_charaEntity;
 };
 
 #endif

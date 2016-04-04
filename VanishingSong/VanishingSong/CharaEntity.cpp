@@ -2,9 +2,7 @@
 #include "Debug.h"
 
 using namespace aetherClass;
-namespace{
-	const bool kCharaDebug = true;
-}
+
 CharaEntity::CharaEntity()
 {
 }
@@ -62,22 +60,46 @@ void CharaEntity::mCreateRelationship(std::shared_ptr<Gear> parentGear, std::sha
 	child->_pParent = parentGear;
 }
 
-void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase* shader){
+/*
+	ギアの描画用
+	引数できたgearを描画し、そのあとそのgearに子供がいればその描画をする
+*/
+void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 
 	// デバッグモードの時はコライダーの表示
 	if (kCharaDebug)
 	{
-		gear->_pColider->Render(shader);
+		gear->_pColider->Render(colider_shader);
 	}
 
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
 
-	gear->_pGear->Render(shader);
+	gear->_pGear->Render(colider_shader);
 
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
-		mGearRender(child, shader);
+		mGearRender(child, model_shader, colider_shader);
+	}
+
+	return;
+}
+
+/*
+	ギアの移動用関数
+	仕組みはmGearRenderと一緒
+*/
+void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, Vector3 move){
+	// 初期化が正常に終わっていないのなら何もしない
+	if (!gear || !gear->_pGear)return;
+
+	// ギアとそのコライダーを動かす
+	gear->_pGear->property._transform._translation += move;
+	gear->_pColider->property._transform._translation += move;
+
+	// 子供がいればその分だけ再帰
+	for (auto child : gear->_pChildren){
+		mGearMove(child, move);
 	}
 
 	return;
