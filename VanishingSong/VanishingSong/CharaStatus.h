@@ -43,8 +43,6 @@ struct CharaStatus
 	eActionType _nowAction;
 	std::array<eActionType, kMaxOrderList> _prevActionList;
 
-private:
-
 	// ‰Šú‰»—p
 	void Reset(){
 		_hp = kZeroPoint;

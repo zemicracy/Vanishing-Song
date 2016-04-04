@@ -1,6 +1,6 @@
 #include "CharaEntity.h"
 #include "Debug.h"
-
+#include "Const.h"
 using namespace aetherClass;
 
 CharaEntity::CharaEntity()
@@ -54,10 +54,29 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 	return pGear;
 }
 
+/*
+	親子関係構築用
+*/
 void CharaEntity::mCreateRelationship(std::shared_ptr<Gear> parentGear, std::shared_ptr<Gear> child){
+	// 初期化が正常に終わっていないのなら何もしない
+	if (!parentGear || !child||
+		!parentGear->_pGear,!child->_pGear)return;
+
+
 	parentGear->_pChildren.push_back(child);
 	/*	パーツを連結する処理	*/
 	child->_pParent = parentGear;
+
+
+	// 改善するべき箇所
+	// どうするべきか
+	/*Vector3 gearPosition = parentGear->_pGear->property._transform._translation;
+	Vector3 coliderPosition = parentGear->_pColider->property._transform._translation;
+
+	child->_pGear->property._transform._position = gearPosition;
+	child->_pColider->property._transform._position = coliderPosition;*/
+
+	return;
 }
 
 /*
@@ -89,7 +108,7 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 	ギアの移動用関数
 	仕組みはmGearRenderと一緒
 */
-void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, Vector3 move){
+void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move){
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
 
@@ -100,6 +119,32 @@ void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, Vector3 move){
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
 		mGearMove(child, move);
+	}
+
+	return;
+}
+
+/*
+	ギアを持つオブジェクトの回転用	
+	仕組みはmGearRenderと一緒
+*/
+void CharaEntity::mGearRotation(std::shared_ptr<Gear> gear, const Vector3 rotation){
+	// 初期化が正常に終わっていないのなら何もしない
+	if (!gear || !gear->_pGear)return;
+
+	/*if (gear->_pParent)
+	{
+		gear->_pGear->property._transform._position = gear->_pParent->_pGear->property._transform._translation;
+		gear->_pColider->property._transform._position = gear->_pParent->_pColider->property._transform._translation;
+	}*/
+
+	// ギアとそのコライダーを動かす
+	gear->_pGear->property._transform._rotation += rotation;
+	gear->_pColider->property._transform._rotation += rotation;
+
+	// 子供がいればその分だけ再帰
+	for (auto child : gear->_pChildren){
+		mGearRotation(child, rotation);
 	}
 
 	return;
