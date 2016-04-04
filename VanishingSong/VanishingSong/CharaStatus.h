@@ -6,6 +6,13 @@ namespace{
 }
 enum class eActionType
 {
+	eShortDistanceAttack,
+	eLongDistanceAttack,
+	eRightStep,
+	eLeftStep,
+	eShield,
+	eStrongShield,
+	eSkill,
 	eMove,
 	eWait,
 	eNull
