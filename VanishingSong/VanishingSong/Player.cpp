@@ -92,6 +92,9 @@ bool Player::mInitialize(ViewCamera* camera){
 	}
 	
 	read.UnLoad();
+
+	// 最上位に当たるパーツの設定
+	m_pTopGear = m_pGearFrame->m_pBody;
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤーがデバッグモードです");
@@ -99,17 +102,26 @@ bool Player::mInitialize(ViewCamera* camera){
 	return true;
 }
 
-//
+
+/*
+	プレイヤーの更新処理
+*/
 void Player::mUpdate(const float timeScale){
 	
-	// 移動処理
-	mReadKey(timeScale);
+	// 移動に使う値のを取得
+	Vector3 hoge = mReadKey(timeScale);
 
+	// 実際の移動処理
+	m_charaEntity.mGearMove(m_pTopGear, hoge);
 	return;
 }
 
-//
-void Player::mReadKey(const float timeScale){
+/*
+	キーを読み込む
+	返りは今のところVector3
+*/
+Vector3 Player::mReadKey(const float timeScale){
+	
 	Vector3 move = kVector3Zero;
 
 	// 奥行の移動(Z軸)
@@ -128,27 +140,32 @@ void Player::mReadKey(const float timeScale){
 		move._x = -(GameClock::GetDeltaTime()*timeScale);
 	}
 
-	m_pGearFrame->m_pBody->_pColider->property._transform._translation += move;
-	Vector3 hoge = m_pGearFrame->m_pBody->_pColider->property._transform._translation;
-	
-	if (kCharaDebug&&GameController::GetKey().KeyDownTrigger('P')){
+	// キャラがデバッグモードじゃないならここで終了
+	if (!kCharaDebug) return move;
+
+	// デバッグ用
+	Vector3 debug = m_pTopGear->_pGear->property._transform._translation;
+	if (GameController::GetKey().KeyDownTrigger('P')){
 		Debug::mPrint("---Playerの現在の座標---");
-		Debug::mPrint("X :" + std::to_string(hoge._x));
-		Debug::mPrint("Y :" + std::to_string(hoge._y));
-		Debug::mPrint("Z :" + std::to_string(hoge._z));
+		Debug::mPrint("X :" + std::to_string(debug._x));
+		Debug::mPrint("Y :" + std::to_string(debug._y));
+		Debug::mPrint("Z :" + std::to_string(debug._z));
 		Debug::mPrint("------------------------");
 	}
-	m_pGearFrame->m_pBody->_pColider->property._transform._translation += move;
+	
+	return move;
 }
 
 
 //
 void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
 	
-	if (!m_pGearFrame->m_pBody)return;
+	if (!m_pTopGear)return;
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
-	m_charaEntity.mGearRender(m_pGearFrame->m_pBody, modelShader,colliderShader);
+	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
+
+	return;
 }
 
 //
