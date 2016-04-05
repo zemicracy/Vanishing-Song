@@ -44,7 +44,7 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 
 	pGear->_pGear->SetCamera(view);
 	// テクスチャの読み込み
-	pGear->_pGear->SetTextureDirectoryName("texture");
+	//pGear->_pGear->SetTextureDirectoryName("texture");
 	
 	return pGear;
 }
@@ -60,14 +60,6 @@ void CharaEntity::mCreateRelationship(std::shared_ptr<Gear> parentGear, std::sha
 	parentGear->_pChildren.push_back(child);
 	
 	child->_pParent = parentGear;
-
-	// 改善するべき箇所
-	// どうするべきか
-	/*Vector3 gearPosition = child->_pParent->_pGear->property._transform._translation;
-	Vector3 coliderPosition = child->_pParent->_pColider->property._transform._translation;
-
-	child->_pGear->property._transform._position = gearPosition;
-	child->_pColider->property._transform._position = coliderPosition;*/
 
 	return;
 }
@@ -172,7 +164,7 @@ void CharaEntity::mPartsGearRotation(std::shared_ptr<Gear> gear, const aetherCla
 
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
-		mBodyGearRotation(child, rotation);
+		mPartsGearRotation(child, rotation);
 	}
 
 	return;

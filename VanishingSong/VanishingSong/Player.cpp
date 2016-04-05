@@ -20,6 +20,10 @@ Player::~Player()
 
 
 bool Player::mInitialize(){
+	if (kCharaDebug)
+	{
+		Debug::mPrint("プレイヤー デバッグモードです");
+	}
 
 	mFinalize();
 
@@ -27,10 +31,7 @@ bool Player::mInitialize(){
 	// ギア系の初期化用
 	mInitializeGear(m_pGearFrame, &m_playerView);
 
-	if (kCharaDebug)
-	{
-		Debug::mPrint("プレイヤーがデバッグモードです");
-	}
+	
 	return true;
 }
 
@@ -83,10 +84,11 @@ void Player::mUpdate(const float timeScale){
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
 
 	// 回転処理
-	// まだ正常な回転処理になっていない
+	// 体を含めたすべての回転
 	//m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
 
-	m_charaEntity.mPartsGearRotation(m_pGearFrame->m_pLeftUpperArm, transform._rotation);
+	// パーツだけの回転
+	m_charaEntity.mPartsGearRotation(m_pTopGear, transform._rotation);
 	return;
 }
 
@@ -112,11 +114,14 @@ eActionType Player::mAction(std::shared_ptr<ActionCommand> command,const float t
 	if (m_status._nowAction != m_prevAction){
 		// 前回と違えば実行数を0にする
 		m_actionCount = kZeroPoint;
+		Debug::mPrint("Change Action");
 	}
 
 	// アクションの実行
 	command->mAction(m_pGearFrame, timeScale, m_actionCount);
+
 	
+	Debug::mPrint("Run Action :" + std::to_string(m_actionCount) + "回目");
 	m_actionCount += 1;
 
 	// 状態を上書き
@@ -145,9 +150,18 @@ void Player::mResetPrevActionList(){
 	return;
 }
 
-
+//
 aetherClass::ViewCamera Player::mGetView(){
 	return m_playerView;
+}
+
+//
+std::shared_ptr<aetherClass::ModelBase> Player::GetCollider(const int id){
+	return m_playerCollideList[id];
+}
+
+int Player::GetColliderListSize()const{
+	return m_playerCollideList.size();
 }
 
 /*
@@ -249,6 +263,8 @@ void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear,ObjectInfo* info){
 		gear->_initialPosture._rotation = gear->_pColider->property._transform._rotation - pParent->_pColider->property._transform._rotation;
 	}
 
+	// コライダーの登録
+	m_playerCollideList.push_back(gear->_pColider);
 	return;
 }
 
