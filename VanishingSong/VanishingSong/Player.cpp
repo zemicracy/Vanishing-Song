@@ -10,7 +10,6 @@ Player::Player()
 	m_pGearFrame = nullptr;
 	m_pTopGear = nullptr;
 	m_pActionCommand = nullptr;
-	
 }
 
 
@@ -20,12 +19,13 @@ Player::~Player()
 }
 
 
-bool Player::mInitialize(ViewCamera* camera){
+bool Player::mInitialize(){
 
 	mFinalize();
 
+	m_playerView.property._translation = Vector3(0, 0, -20);
 	// ギア系の初期化用
-	mInitializeGear(m_pGearFrame, camera);
+	mInitializeGear(m_pGearFrame, &m_playerView);
 
 	if (kCharaDebug)
 	{
@@ -84,8 +84,9 @@ void Player::mUpdate(const float timeScale){
 
 	// 回転処理
 	// まだ正常な回転処理になっていない
-	m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
+	//m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
 
+	m_charaEntity.mPartsGearRotation(m_pGearFrame->m_pLeftUpperArm, transform._rotation);
 	return;
 }
 
@@ -93,6 +94,8 @@ void Player::mUpdate(const float timeScale){
 void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
 	
 	if (!m_pTopGear)return;
+
+	m_playerView.Render();
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
@@ -140,6 +143,11 @@ void Player::mResetPrevActionList(){
 	m_status._prevActionList.fill(eActionType::eNull);
 
 	return;
+}
+
+
+aetherClass::ViewCamera Player::mGetView(){
+	return m_playerView;
 }
 
 /*

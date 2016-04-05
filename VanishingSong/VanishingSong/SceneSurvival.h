@@ -31,7 +31,6 @@ public:
 
 private:
 	std::shared_ptr<EnemyGround> m_penemyGround;
-	std::shared_ptr<aetherClass::ViewCamera> m_camera;
 	std::shared_ptr<aetherClass::ShaderBase> m_pixelShader;
 	std::unique_ptr<Player> m_pPlayer;
 };

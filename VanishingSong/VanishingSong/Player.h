@@ -5,11 +5,13 @@
 #include "CharaStatus.h"
 #include "CharaEntity.h"
 #include "Const.h"
+#include "ActionCommand.h"
 #include <ShaderBase.h>
 #include <Transform.h>
 #include <WorldReader.h>
+#include <ViewCamera.h>
 #include <unordered_map>
-#include "ActionCommand.h"
+
 class Player
 {
 private:
@@ -24,7 +26,7 @@ public:
 	/*
 		初期化
 	*/
-	bool mInitialize(aetherClass::ViewCamera*);
+	bool mInitialize();
 
 	/*
 		更新処理
@@ -57,6 +59,8 @@ public:
 		解放処理
 	*/
 	void mFinalize();
+
+	aetherClass::ViewCamera mGetView();
 private:
 	/*
 		プレイヤーに対するキー入力処理
@@ -75,6 +79,7 @@ private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
 	std::shared_ptr<Gear> m_pTopGear;
+	aetherClass::ViewCamera m_playerView;
 
 	CharaStatus m_status;
 	eActionType m_prevAction;

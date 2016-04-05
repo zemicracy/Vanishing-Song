@@ -15,11 +15,6 @@ SceneSurvival::~SceneSurvival()
 
 bool SceneSurvival::Initialize(){
 
-	m_camera = std::make_shared<ViewCamera>();
-	m_camera->property._translation = Vector3(0, 0, -20);
-	m_camera->property._rotation = Vector3(0.0f, 0.0f, 0.0f);
-
-
 	// シェーダーの詳細情報の設定
 	ShaderDesc textureDesc;
 
@@ -33,11 +28,13 @@ bool SceneSurvival::Initialize(){
 	m_pixelShader = std::make_shared<PixelShader>();
 	m_pixelShader->Initialize(textureDesc, ShaderType::eVertex | ShaderType::ePixel);
 
-	m_penemyGround = std::make_shared<EnemyGround>();
-	m_penemyGround->mInitialize(m_camera.get());
-
 	m_pPlayer = std::make_unique<Player>();
-	m_pPlayer->mInitialize(m_camera.get());
+	m_pPlayer->mInitialize();
+
+	m_penemyGround = std::make_shared<EnemyGround>();
+	m_penemyGround->mInitialize(&m_pPlayer->mGetView());
+
+	
 
 	return true;
 }
@@ -53,7 +50,7 @@ bool SceneSurvival::Updater(){
 }
 
 void SceneSurvival::Render(){
-	m_camera->Render();
+
 	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
 	m_pPlayer->mRender(m_pixelShader.get(), m_pixelShader.get());
 
