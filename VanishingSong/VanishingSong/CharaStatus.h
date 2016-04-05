@@ -15,6 +15,8 @@ enum class eActionType
 	eSkill,
 	eMove,
 	eWait,
+	eAttack,
+	eDie,
 	eNull
 };
 
