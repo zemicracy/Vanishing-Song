@@ -7,6 +7,7 @@
 #include "Const.h"
 #include <ShaderBase.h>
 #include <Transform.h>
+#include <WorldReader.h>
 #include <unordered_map>
 #include "ActionCommand.h"
 class Player
@@ -14,7 +15,8 @@ class Player
 private:
 	enum class eState{
 		eMove,
-		eWait
+		eWait,
+		eNull
 	};
 public:
 	Player();
@@ -63,6 +65,12 @@ private:
 	aetherClass::Transform mReadKey(const float timeScale);
 
 	bool mInitializeGear(std::shared_ptr<GearFrame>&,aetherClass::ViewCamera*);
+
+	bool mLoadModelProperty(std::shared_ptr<GearFrame>&,std::string modelDataFile);
+
+	void mRotationAdjustment(std::shared_ptr<Gear>&);
+
+	void SetLoadModelValue(std::shared_ptr<Gear>&,ObjectInfo*);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
@@ -71,6 +79,7 @@ private:
 	CharaStatus m_status;
 	eActionType m_prevAction;
 	CharaEntity m_charaEntity;
+	eState m_state;
 
 	int m_actionCount;// アクションを行った数を保存しとく用
 };

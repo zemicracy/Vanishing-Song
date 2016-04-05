@@ -34,6 +34,42 @@ bool Player::mInitialize(ViewCamera* camera){
 	return true;
 }
 
+/*
+	解放処理
+*/
+void Player::mFinalize(){
+	if (m_pGearFrame)
+	{
+		m_pGearFrame->Release();
+		m_pGearFrame.reset();
+		m_pGearFrame = nullptr;
+	}
+
+	// 
+	if (m_pTopGear)
+	{
+		m_pTopGear->Release();
+		m_pTopGear.reset();
+		m_pTopGear = nullptr;
+	}
+
+	// アクションコマンド
+	if (m_pActionCommand)
+	{
+		m_pActionCommand.reset();
+		m_pActionCommand = nullptr;
+	}
+
+	// ステータスのリセット
+	m_status.Reset();
+
+	m_prevAction = eActionType::eNull;
+	m_state = Player::eState::eNull;
+	m_actionCount = NULL;
+	return;
+}
+
+
 
 /*
 	プレイヤーの更新処理
@@ -48,7 +84,8 @@ void Player::mUpdate(const float timeScale){
 
 	// 回転処理
 	// まだ正常な回転処理になっていない
-	m_charaEntity.mGearRotation(m_pTopGear, transform._rotation);
+	m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
+
 	return;
 }
 
@@ -106,38 +143,6 @@ void Player::mResetPrevActionList(){
 }
 
 /*
-	解放処理
-*/
-void Player::mFinalize(){
-	if (m_pGearFrame)
-	{
-		m_pGearFrame->Release();
-		m_pGearFrame.reset();
-		m_pGearFrame = nullptr;
-	}
-
-	if (m_pTopGear)
-	{
-		m_pTopGear->Release();
-		m_pTopGear.reset();
-		m_pTopGear = nullptr;
-	}
-
-	if (m_pActionCommand)
-	{
-		m_pActionCommand.reset();
-		m_pActionCommand = nullptr;
-	}
-	
-	m_status.Reset();
-
-	m_prevAction = eActionType::eNull;
-	
-	m_actionCount = NULL;
-	return;
-}
-
-/*
 	ギア系の初期化をまとめたもの
 
 */
@@ -166,24 +171,8 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	gearFrame->m_pLeftLowerLeg = m_charaEntity.mSetUpGear("null", Gear::eType::eLeftLowerLeg, camera);
 	gearFrame->m_pRightLowerLeg = m_charaEntity.mSetUpGear("null", Gear::eType::eRightLowerLeg, camera);
 
-	// パーツの初期位置
-	WorldReader read;
-	read.Load("data\\Player.aether");
-	for (auto index : read.GetInputWorldInfo()._object){
-
-		if (index->_name == "Body"){
-			gearFrame->m_pBody->_pColider->property._transform = index->_transform;
-		}
-
-		if (index->_name == "LeftArm"){
-			gearFrame->m_pLeftUpperArm->_pColider->property._transform = index->_transform;
-		}
-
-		if (index->_name == "LeftLowerArm"){
-			gearFrame->m_pLeftLowerArm->_pColider->property._transform = index->_transform;
-		}
-	}
-	read.UnLoad();
+	// 最上位に当たるパーツの設定
+	m_pTopGear = gearFrame->m_pBody;
 
 	// 体にパーツとの親子関係
 	m_charaEntity.mCreateRelationship(gearFrame->m_pBody, gearFrame->m_pWaist);
@@ -206,10 +195,53 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	m_charaEntity.mCreateRelationship(gearFrame->m_pWaist, gearFrame->m_pLeftUpperLeg);
 	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftUpperLeg, gearFrame->m_pLeftLowerLeg);
 
-	// 最上位に当たるパーツの設定
-	m_pTopGear = gearFrame->m_pBody;
+	// パーツの初期位置
+	mLoadModelProperty(gearFrame, "Data\\Player.aether");
+	return true;
+}
+
+/*
+
+*/
+bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::string modelDataFile){
+	WorldReader read;
+	bool result = read.Load(modelDataFile.c_str());
+	if (!result)
+	{
+		return false;
+	}
+
+	for (auto index : read.GetInputWorldInfo()._object){
+
+		if (index->_name == "Body"){
+			
+			SetLoadModelValue(gearFrame->m_pBody, index);
+		}
+
+		if (index->_name == "LeftUpperArm"){
+			SetLoadModelValue(gearFrame->m_pLeftUpperArm, index);
+		}
+
+		if (index->_name == "LeftLowerArm"){
+			SetLoadModelValue(gearFrame->m_pLeftLowerArm, index);
+		}
+	}
+	read.UnLoad();
 
 	return true;
+}
+
+void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear,ObjectInfo* info){
+	gear->_pColider->property._transform = info->_transform;
+
+	if (gear->_pParent)
+	{
+		std::shared_ptr<Gear> pParent = gear->_pParent;
+		gear->_initialPosture._translation = gear->_pColider->property._transform._translation - pParent->_pColider->property._transform._translation;
+		gear->_initialPosture._rotation = gear->_pColider->property._transform._rotation - pParent->_pColider->property._transform._rotation;
+	}
+
+	return;
 }
 
 /*
@@ -241,7 +273,7 @@ Transform Player::mReadKey(const float timeScale){
 
 	// 回転用(Y軸)
 	if (GameController::GetKey().IsKeyDown('Q')){
-		transform._rotation._y = GameClock::GetDeltaTime()*timeScale * 100;
+		transform._rotation._y= GameClock::GetDeltaTime()*timeScale * 100;
 	}
 	else if (GameController::GetKey().IsKeyDown('E')){
 		transform._rotation._y = -(GameClock::GetDeltaTime()*timeScale * 100);
@@ -259,3 +291,6 @@ Transform Player::mReadKey(const float timeScale){
 
 	return transform;
 }
+
+
+
