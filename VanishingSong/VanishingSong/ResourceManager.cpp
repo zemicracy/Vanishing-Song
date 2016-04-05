@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 #include "Debug.h"
+#include"ActionSound.h"
 using namespace aetherClass;
 ResourceManager::ResourceManager()
 {
@@ -50,11 +51,11 @@ void ResourceManager::Finalize(){
 	return;
 }
 
-/*
-ActionSound ResourceManager::GetActionSound(eActionType){
 
+std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eActionType type){
+	return m_pActionSoundHash[type];
 }
-*/
+
 
 /*
 	基本BGMを流す奴
@@ -99,7 +100,7 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-
+	RegisterActionSound(eActionType::eShortDistanceAttack, "Sound/damage03.wav");
 	return true;
 }
 
@@ -169,10 +170,10 @@ bool ResourceManager::RegisterActionSound(eActionType type, std::string path){
 		return false;
 	}
 
-	/*std::shared_ptr<ActionSound> action;
+	std::shared_ptr<ActionSound> action;
 	action = std::make_shared<ActionSound>();
-	action->Load(path);
-	m_pActionSoundHash.insert(type,action)*/
+	action->mLoad(path);
+	m_pActionSoundHash.insert(std::make_pair(type, action));
 	return true;
 }
 

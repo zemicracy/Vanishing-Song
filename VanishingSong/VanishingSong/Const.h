@@ -14,5 +14,9 @@ namespace{
 
 	const signed char kFirstDay = 1;
 	const signed char kLastDay = 1;
+
+	const float kResolutionFromEditor_x = 1.6;
+	const float kResolutionFromEditor_y = 1.2;
+
 }
 #endif

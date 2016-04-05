@@ -10,6 +10,7 @@
 #include <GameSceneManager.h>
 #include "SceneSurvival.h"
 #include "VanishingSongFrame.h"
+
 using namespace aetherClass;
 
 namespace{
