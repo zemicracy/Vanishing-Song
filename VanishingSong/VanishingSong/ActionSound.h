@@ -10,7 +10,9 @@ public:
 	ActionSound();
 	~ActionSound();
 
-	void PlaySoundAction(eActionType,float);
+	void mLoad(std::string path);
+	bool mIsPlayEnd();
+	void mPlaySoundAction(float);
 	private:
 		aetherClass::GameSound m_sound;
 };

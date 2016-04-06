@@ -28,7 +28,7 @@ public:
 	// テクスチャ取得用
 	std::shared_ptr<aetherClass::Texture> GetTexture(std::string);
 
-	//ActionSound GetActionSound(eActionType);
+	std::shared_ptr<ActionSound> GetActionSound(eActionType);
 
 private:
 
