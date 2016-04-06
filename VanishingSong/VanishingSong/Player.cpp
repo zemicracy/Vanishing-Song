@@ -10,7 +10,6 @@ Player::Player()
 	m_pGearFrame = nullptr;
 	m_pTopGear = nullptr;
 	m_pActionCommand = nullptr;
-	
 }
 
 
@@ -20,19 +19,57 @@ Player::~Player()
 }
 
 
-bool Player::mInitialize(ViewCamera* camera){
+bool Player::mInitialize(){
+	if (kCharaDebug)
+	{
+		Debug::mPrint("プレイヤー デバッグモードです");
+	}
 
 	mFinalize();
 
+	m_playerView.property._translation = Vector3(0, 0, -20);
 	// ギア系の初期化用
-	mInitializeGear(m_pGearFrame, camera);
+	mInitializeGear(m_pGearFrame, &m_playerView);
 
-	if (kCharaDebug)
-	{
-		Debug::mPrint("プレイヤーがデバッグモードです");
-	}
+	
 	return true;
 }
+
+/*
+	解放処理
+*/
+void Player::mFinalize(){
+	if (m_pGearFrame)
+	{
+		m_pGearFrame->Release();
+		m_pGearFrame.reset();
+		m_pGearFrame = nullptr;
+	}
+
+	// 
+	if (m_pTopGear)
+	{
+		m_pTopGear->Release();
+		m_pTopGear.reset();
+		m_pTopGear = nullptr;
+	}
+
+	// アクションコマンド
+	if (m_pActionCommand)
+	{
+		m_pActionCommand.reset();
+		m_pActionCommand = nullptr;
+	}
+
+	// ステータスのリセット
+	m_status.Reset();
+
+	m_prevAction = eActionType::eNull;
+	m_state = Player::eState::eNull;
+	m_actionCount = NULL;
+	return;
+}
+
 
 
 /*
@@ -47,8 +84,11 @@ void Player::mUpdate(const float timeScale){
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
 
 	// 回転処理
-	// まだ正常な回転処理になっていない
-	m_charaEntity.mGearRotation(m_pTopGear, transform._rotation);
+	// 体を含めたすべての回転
+	//m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
+
+	// パーツだけの回転
+	m_charaEntity.mPartsGearRotation(m_pTopGear, transform._rotation);
 	return;
 }
 
@@ -56,6 +96,8 @@ void Player::mUpdate(const float timeScale){
 void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
 	
 	if (!m_pTopGear)return;
+
+	m_playerView.Render();
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
@@ -72,11 +114,14 @@ eActionType Player::mAction(std::shared_ptr<ActionCommand> command,const float t
 	if (m_status._nowAction != m_prevAction){
 		// 前回と違えば実行数を0にする
 		m_actionCount = kZeroPoint;
+		Debug::mPrint("Change Action");
 	}
 
 	// アクションの実行
 	command->mAction(m_pGearFrame, timeScale, m_actionCount);
+
 	
+	Debug::mPrint("Run Action :" + std::to_string(m_actionCount) + "回目");
 	m_actionCount += 1;
 
 	// 状態を上書き
@@ -105,36 +150,18 @@ void Player::mResetPrevActionList(){
 	return;
 }
 
-/*
-	解放処理
-*/
-void Player::mFinalize(){
-	if (m_pGearFrame)
-	{
-		m_pGearFrame->Release();
-		m_pGearFrame.reset();
-		m_pGearFrame = nullptr;
-	}
+//
+aetherClass::ViewCamera Player::mGetView(){
+	return m_playerView;
+}
 
-	if (m_pTopGear)
-	{
-		m_pTopGear->Release();
-		m_pTopGear.reset();
-		m_pTopGear = nullptr;
-	}
+//
+std::shared_ptr<aetherClass::ModelBase> Player::GetCollider(const int id){
+	return m_playerCollideList[id];
+}
 
-	if (m_pActionCommand)
-	{
-		m_pActionCommand.reset();
-		m_pActionCommand = nullptr;
-	}
-	
-	m_status.Reset();
-
-	m_prevAction = eActionType::eNull;
-	
-	m_actionCount = NULL;
-	return;
+int Player::GetColliderListSize()const{
+	return m_playerCollideList.size();
 }
 
 /*
@@ -166,24 +193,8 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	gearFrame->m_pLeftLowerLeg = m_charaEntity.mSetUpGear("null", Gear::eType::eLeftLowerLeg, camera);
 	gearFrame->m_pRightLowerLeg = m_charaEntity.mSetUpGear("null", Gear::eType::eRightLowerLeg, camera);
 
-	// パーツの初期位置
-	WorldReader read;
-	read.Load("data\\Player.aether");
-	for (auto index : read.GetInputWorldInfo()._object){
-
-		if (index->_name == "Body"){
-			gearFrame->m_pBody->_pColider->property._transform = index->_transform;
-		}
-
-		if (index->_name == "LeftArm"){
-			gearFrame->m_pLeftUpperArm->_pColider->property._transform = index->_transform;
-		}
-
-		if (index->_name == "LeftLowerArm"){
-			gearFrame->m_pLeftLowerArm->_pColider->property._transform = index->_transform;
-		}
-	}
-	read.UnLoad();
+	// 最上位に当たるパーツの設定
+	m_pTopGear = gearFrame->m_pBody;
 
 	// 体にパーツとの親子関係
 	m_charaEntity.mCreateRelationship(gearFrame->m_pBody, gearFrame->m_pWaist);
@@ -206,10 +217,55 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	m_charaEntity.mCreateRelationship(gearFrame->m_pWaist, gearFrame->m_pLeftUpperLeg);
 	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftUpperLeg, gearFrame->m_pLeftLowerLeg);
 
-	// 最上位に当たるパーツの設定
-	m_pTopGear = gearFrame->m_pBody;
+	// パーツの初期位置
+	mLoadModelProperty(gearFrame, "Data\\Player.aether");
+	return true;
+}
+
+/*
+
+*/
+bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::string modelDataFile){
+	WorldReader read;
+	bool result = read.Load(modelDataFile.c_str());
+	if (!result)
+	{
+		return false;
+	}
+
+	for (auto index : read.GetInputWorldInfo()._object){
+
+		if (index->_name == "Body"){
+			
+			SetLoadModelValue(gearFrame->m_pBody, index);
+		}
+
+		if (index->_name == "LeftUpperArm"){
+			SetLoadModelValue(gearFrame->m_pLeftUpperArm, index);
+		}
+
+		if (index->_name == "LeftLowerArm"){
+			SetLoadModelValue(gearFrame->m_pLeftLowerArm, index);
+		}
+	}
+	read.UnLoad();
 
 	return true;
+}
+
+void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear,ObjectInfo* info){
+	gear->_pColider->property._transform = info->_transform;
+
+	if (gear->_pParent)
+	{
+		std::shared_ptr<Gear> pParent = gear->_pParent;
+		gear->_initialPosture._translation = gear->_pColider->property._transform._translation - pParent->_pColider->property._transform._translation;
+		gear->_initialPosture._rotation = gear->_pColider->property._transform._rotation - pParent->_pColider->property._transform._rotation;
+	}
+
+	// コライダーの登録
+	m_playerCollideList.push_back(gear->_pColider);
+	return;
 }
 
 /*
@@ -241,7 +297,7 @@ Transform Player::mReadKey(const float timeScale){
 
 	// 回転用(Y軸)
 	if (GameController::GetKey().IsKeyDown('Q')){
-		transform._rotation._y = GameClock::GetDeltaTime()*timeScale * 100;
+		transform._rotation._y= GameClock::GetDeltaTime()*timeScale * 100;
 	}
 	else if (GameController::GetKey().IsKeyDown('E')){
 		transform._rotation._y = -(GameClock::GetDeltaTime()*timeScale * 100);
@@ -259,3 +315,6 @@ Transform Player::mReadKey(const float timeScale){
 
 	return transform;
 }
+
+
+

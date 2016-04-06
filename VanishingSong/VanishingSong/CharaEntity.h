@@ -36,10 +36,18 @@ public:
 	void mGearMove(std::shared_ptr<Gear> gear, const aetherClass::Vector3 move);
 
 	/*
-	ギアを持つオブジェクトの回転用
-	仕組みはmGearRenderと一緒
+		ギアを持つオブジェクトの回転用
+		体全体を均一に回転する
+		仕組みはmGearRenderと一緒
 	*/
-	void mGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
+	void mBodyGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
+
+	/*
+		ギアを持つオブジェクトの回転用
+		部分部分を回転できる
+		仕組みはmGearRenderと一緒
+	*/
+	void mPartsGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
 
 };
 

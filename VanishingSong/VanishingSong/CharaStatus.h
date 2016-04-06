@@ -13,8 +13,6 @@ enum class eActionType
 	eShield,
 	eStrongShield,
 	eSkill,
-	eMove,
-	eWait,
 	eNull
 };
 

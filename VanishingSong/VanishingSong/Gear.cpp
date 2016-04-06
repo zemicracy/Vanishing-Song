@@ -48,4 +48,5 @@ void Gear::Release(){
 	
 	_type = eType::eNull;
 
+	_initialPosture;
 }

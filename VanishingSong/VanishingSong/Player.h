@@ -5,16 +5,21 @@
 #include "CharaStatus.h"
 #include "CharaEntity.h"
 #include "Const.h"
+#include "ActionCommand.h"
+#include <Cube.h>
 #include <ShaderBase.h>
 #include <Transform.h>
+#include <WorldReader.h>
+#include <ViewCamera.h>
 #include <unordered_map>
-#include "ActionCommand.h"
+#include <vector>
 class Player
 {
 private:
 	enum class eState{
 		eMove,
-		eWait
+		eWait,
+		eNull
 	};
 public:
 	Player();
@@ -22,7 +27,7 @@ public:
 	/*
 		初期化
 	*/
-	bool mInitialize(aetherClass::ViewCamera*);
+	bool mInitialize();
 
 	/*
 		更新処理
@@ -55,6 +60,12 @@ public:
 		解放処理
 	*/
 	void mFinalize();
+
+	aetherClass::ViewCamera mGetView();
+
+	std::shared_ptr<aetherClass::ModelBase> GetCollider(const int);
+
+	int GetColliderListSize()const;
 private:
 	/*
 		プレイヤーに対するキー入力処理
@@ -63,14 +74,23 @@ private:
 	aetherClass::Transform mReadKey(const float timeScale);
 
 	bool mInitializeGear(std::shared_ptr<GearFrame>&,aetherClass::ViewCamera*);
+
+	bool mLoadModelProperty(std::shared_ptr<GearFrame>&,std::string modelDataFile);
+
+	void mRotationAdjustment(std::shared_ptr<Gear>&);
+
+	void SetLoadModelValue(std::shared_ptr<Gear>&,ObjectInfo*);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
 	std::shared_ptr<Gear> m_pTopGear;
-
+	std::vector<std::shared_ptr<aetherClass::ModelBase>> m_playerCollideList;
+	aetherClass::ViewCamera m_playerView;
+	
 	CharaStatus m_status;
 	eActionType m_prevAction;
 	CharaEntity m_charaEntity;
+	eState m_state;
 
 	int m_actionCount;// アクションを行った数を保存しとく用
 };

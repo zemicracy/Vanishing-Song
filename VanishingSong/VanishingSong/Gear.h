@@ -4,7 +4,7 @@
 #include "FbxModel.h"
 #include "ModelBase.h"
 #include "Cube.h"
-
+#include <Matrix4x4.h>
 
 class Gear
 {
@@ -51,6 +51,6 @@ public:
 		std::shared_ptr<aetherClass::FbxModel> _pGear;
 		eType _type;
 		std::shared_ptr<aetherClass::Cube> _pColider;
-
+		aetherClass::Transform _initialPosture;
 };
 
