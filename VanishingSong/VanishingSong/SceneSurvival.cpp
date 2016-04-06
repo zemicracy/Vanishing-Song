@@ -1,8 +1,12 @@
 #include "SceneSurvival.h"
 #include <iostream>
 #include"PixelShader.h"
+#include <GameController.h>
 
 using namespace aetherClass;
+namespace{
+	const float kScaleTime = 1.0f;
+}
 SceneSurvival::SceneSurvival():
 GameScene("Survival", GetManager()) //Sceneごとの名前を設定
 {
@@ -28,38 +32,80 @@ bool SceneSurvival::Initialize(){
 	m_pixelShader = std::make_shared<PixelShader>();
 	m_pixelShader->Initialize(textureDesc, ShaderType::eVertex | ShaderType::ePixel);
 
+	// プレイヤーの初期化
 	m_pPlayer = std::make_unique<Player>();
 	m_pPlayer->mInitialize();
 
 	m_penemyGround = std::make_shared<EnemyGround>();
 	m_penemyGround->mInitialize(&m_pPlayer->mGetView());
 
-	
+	// アクションコマンドの初期化
+	m_pActionBoard = std::make_unique<ActionBoard>();
+	m_pActionBoard->mInitialize();
 
+	// オーダーリストの初期化
+	m_pOrderList = std::make_unique<OrderList>();
+	m_pOrderList->mInitialize();
+
+	m_pFieldArea = std::make_unique<FieldArea>();
+	m_pFieldArea->mInitialize();
+	m_pFieldArea->mSetCamera(&m_pPlayer->mGetView());
 	return true;
 }
 
+// 解放処理
 void SceneSurvival::Finalize(){
+
+	if (m_pActionBoard){
+		m_pActionBoard.release();
+		m_pActionBoard = nullptr;
+	}
+
+	if (m_pOrderList){
+		m_pOrderList.release();
+		m_pOrderList = nullptr;
+	}
+
+	if (m_pFieldArea){
+		m_pFieldArea.release();
+		m_pFieldArea = nullptr;
+	}
+
+	if (m_pPlayer){
+		m_pPlayer.release();
+		m_pPlayer = nullptr;
+	}
 
 	return;
 }
 
+// 更新処理
 bool SceneSurvival::Updater(){
-	m_pPlayer->mUpdate(1);
+	m_pPlayer->mUpdate(kScaleTime);
+
+	auto actionCommand = m_pActionBoard->mSelectType();
+	if (actionCommand){
+		m_pOrderList->mAddOrder(actionCommand);
+	}
+
+	m_pOrderList->mUpdate(kScaleTime);
 	return true;
 }
 
 void SceneSurvival::Render(){
 
-	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
 	m_pPlayer->mRender(m_pixelShader.get(), m_pixelShader.get());
-
+	
+	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
+	m_pFieldArea->mRender(m_pixelShader.get());
 
 	return;
 }
 
 void SceneSurvival::UIRender(){
 
+	m_pActionBoard->mRender(m_pixelShader.get());
+	m_pOrderList->mRender(m_pixelShader.get());
 	return;
 }
 
