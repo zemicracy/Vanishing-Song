@@ -4,7 +4,7 @@ namespace{
 	const int kMaxOrderList = 5;
 	const int kZeroPoint = 0;
 }
-enum class eActionType
+enum class eCommandType
 {
 	eShortDistanceAttack,
 	eLongDistanceAttack,
@@ -16,10 +16,21 @@ enum class eActionType
 	eNull
 };
 
+enum class eActionType
+{
+	eMove,
+	eWait,
+	eAttack,
+	eDie,
+	eNull
+};
+
 enum class eBuffType{
 	eAttackUp,
 	eNull,
 };
+
+
 
 struct CharaStatus
 {
@@ -38,8 +49,9 @@ struct CharaStatus
 	int _attackPoint;
 	int _shieldPoint;
 	eBuffType _buff;
+	eCommandType _nowCommand;
 	eActionType _nowAction;
-	std::array<eActionType, kMaxOrderList> _prevActionList;
+	std::array<eCommandType, kMaxOrderList> _prevActionList;
 
 	// èâä˙âªóp
 	void Reset(){
@@ -50,8 +62,8 @@ struct CharaStatus
 		_experiencePoint = kZeroPoint;
 		_attackPoint = kZeroPoint;
 		_shieldPoint = kZeroPoint;
-		_nowAction = eActionType::eNull;
-		_prevActionList.fill(eActionType::eNull);
+		_nowCommand = eCommandType::eNull;
+		_prevActionList.fill(eCommandType::eNull);
 	}
 };
 
