@@ -26,11 +26,14 @@ bool Player::mInitialize(){
 	}
 
 	mFinalize();
-	m_playerView.property._translation = Vector3(0, 0, -20);
+	m_playerView.property._translation = Vector3(0, 20, -20);
+	m_playerView.property._rotation = Vector3(0, 0, -20);
 
 	// ギア系の初期化用
 	mInitializeGear(m_pGearFrame, &m_playerView);
 
+	// パーツの初期位置
+	mLoadModelProperty(m_pGearFrame, "data\\Player2.aether");
 	
 	return true;
 }
@@ -220,9 +223,6 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	// 左足の親子関係
 	m_charaEntity.mCreateRelationship(gearFrame->m_pWaist, gearFrame->m_pLeftUpperLeg);
 	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftUpperLeg, gearFrame->m_pLeftLowerLeg);
-
-	// パーツの初期位置
-	mLoadModelProperty(gearFrame, "Data\\Player.aether");
 	return true;
 }
 
@@ -251,7 +251,12 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 		if (index->_name == "LeftLowerArm"){
 			SetLoadModelValue(gearFrame->m_pLeftLowerArm, index);
 		}
+
 	}
+
+	// カメラの初期位置の設定
+	m_playerView.property._translation = read.GetInputWorldInfo()._camera._position;
+	m_playerView.property._rotation = read.GetInputWorldInfo()._camera._rotation;
 	read.UnLoad();
 
 	return true;
