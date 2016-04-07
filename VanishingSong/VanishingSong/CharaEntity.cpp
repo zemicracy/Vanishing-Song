@@ -70,15 +70,14 @@ void CharaEntity::mCreateRelationship(std::shared_ptr<Gear> parentGear, std::sha
 */
 void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 
+	// 初期化が正常に終わっていないのなら何もしない
+	if (!gear || !gear->_pGear)return;
+
 	// デバッグモードの時はコライダーの表示
 	if (kCharaDebug&&gear->_pColider)
 	{
 		gear->_pColider->Render(colider_shader);
 	}
-
-	// 初期化が正常に終わっていないのなら何もしない
-	if (!gear || !gear->_pGear)return;
-
 	gear->_pGear->Render(colider_shader);
 
 	// 子供がいればその分だけ再帰
