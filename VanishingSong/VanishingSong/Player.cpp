@@ -26,8 +26,8 @@ bool Player::mInitialize(){
 	}
 
 	mFinalize();
-
 	m_playerView.property._translation = Vector3(0, 0, -20);
+
 	// ギア系の初期化用
 	mInitializeGear(m_pGearFrame, &m_playerView);
 
@@ -77,27 +77,31 @@ void Player::mFinalize(){
 */
 void Player::mUpdate(const float timeScale){
 	
+	
 	// 移動に使う値のを取得
 	Transform transform = mReadKey(timeScale);
 
 	// 実際の移動処理
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
 
+	// カメラの移動
+	m_playerView.property._translation += transform._translation;
+
+
 	// 回転処理
 	// 体を含めたすべての回転
 	//m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
 
 	// パーツだけの回転
-	m_charaEntity.mPartsGearRotation(m_pTopGear, transform._rotation);
+	//m_charaEntity.mPartsGearRotation(m_pGearFrame->m_pLeftUpperArm, transform._rotation);
 	return;
 }
 
 //
 void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
-	
-	if (!m_pTopGear)return;
+	//m_playerView.Render();
 
-	m_playerView.Render();
+	if (!m_pTopGear)return;
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
@@ -151,16 +155,16 @@ void Player::mResetPrevActionList(){
 }
 
 //
-aetherClass::ViewCamera Player::mGetView(){
-	return m_playerView;
+aetherClass::ViewCamera* Player::mGetView(){
+	return &m_playerView;
 }
 
 //
-std::shared_ptr<aetherClass::ModelBase> Player::GetCollider(const int id){
+std::shared_ptr<aetherClass::ModelBase> Player::mGetCollider(const int id){
 	return m_playerCollideList[id];
 }
 
-int Player::GetColliderListSize()const{
+int Player::mGetColliderListSize()const{
 	return m_playerCollideList.size();
 }
 

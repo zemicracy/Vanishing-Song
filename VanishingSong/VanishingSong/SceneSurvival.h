@@ -39,5 +39,6 @@ private:
 	std::unique_ptr<FieldArea> m_pFieldArea;
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<ActionBoard> m_pActionBoard;
+
 };
 
