@@ -5,7 +5,7 @@
 
 using namespace aetherClass;
 namespace{
-	const float kScaleTime = 1.0f;
+	const float kDefaultScaleTime = 1.0f;
 }
 SceneSurvival::SceneSurvival():
 GameScene("Survival", GetManager()) //Sceneごとの名前を設定
@@ -36,8 +36,10 @@ bool SceneSurvival::Initialize(){
 	m_pPlayer = std::make_unique<Player>();
 	m_pPlayer->mInitialize();
 
+	auto view = m_pPlayer->mGetView();
+
 	m_penemyGround = std::make_shared<EnemyGround>();
-	m_penemyGround->mInitialize(&m_pPlayer->mGetView());
+	m_penemyGround->mInitialize(view);
 
 	// アクションコマンドの初期化
 	m_pActionBoard = std::make_unique<ActionBoard>();
@@ -49,7 +51,7 @@ bool SceneSurvival::Initialize(){
 
 	m_pFieldArea = std::make_unique<FieldArea>();
 	m_pFieldArea->mInitialize();
-	m_pFieldArea->mSetCamera(&m_pPlayer->mGetView());
+	m_pFieldArea->mSetCamera(view);
 	return true;
 }
 
@@ -81,19 +83,21 @@ void SceneSurvival::Finalize(){
 
 // 更新処理
 bool SceneSurvival::Updater(){
-	m_pPlayer->mUpdate(kScaleTime);
+	m_pPlayer->mUpdate(kDefaultScaleTime);
 
 	auto actionCommand = m_pActionBoard->mSelectType();
 	if (actionCommand){
 		m_pOrderList->mAddOrder(actionCommand);
 	}
 
-	m_pOrderList->mUpdate(kScaleTime);
+	m_pOrderList->mUpdate(kDefaultScaleTime);
 	return true;
 }
 
 void SceneSurvival::Render(){
 
+	auto view = m_pPlayer->mGetView();
+	view->Render();
 	m_pPlayer->mRender(m_pixelShader.get(), m_pixelShader.get());
 	
 	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
