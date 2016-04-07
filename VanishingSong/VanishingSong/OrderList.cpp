@@ -83,9 +83,10 @@ void OrderList::mUpdate(float){
 	}
 	if (m_isStart){
 		if (sound->mIsPlayEnd() && m_orderList.size() != 0){
-			m_listFirst = m_orderList[0];
+ 			m_listFirst = m_orderList[0];
 			m_orderList.erase(m_orderList.begin());
 			if (m_orderList.size() == 0){
+				m_backImage->property._color._red = 1 - m_backImage->property._color._red;
 				m_isStart = false;
 				m_listFirst = nullptr;
 				return;
@@ -99,7 +100,7 @@ void OrderList::mUpdate(float){
 void OrderList::mRender(aetherClass::ShaderBase* shader){
 	m_backImage->Render(shader);
 	for (int i = 0; i < m_orderList.size(); ++i){
-	//m_spriteList[i]->SetTexture()
+		m_spriteList[i]->property._color = m_orderList[i]->mGetProperty()._color;
 		m_spriteList[i]->Render(shader);
 	}
 }
