@@ -49,6 +49,7 @@ public:
 	*/
 	void mPartsGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
 
+	aetherClass::Transform mGetTransformInterpolation(aetherClass::Transform, aetherClass::Transform, const int allFrame, const int nowFrame);
 };
 
 

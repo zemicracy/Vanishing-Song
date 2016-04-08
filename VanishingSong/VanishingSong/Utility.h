@@ -29,7 +29,7 @@ static void ReleaseVector(std::vector<Type>& vector)
 	第四引数：今のフレーム数
 */
 template<class type>
-type Split(type first, type last, const int allFrameCount, const int nowCount){
+static type Interpolation(type first, type last, const int allFrameCount, const int nowCount){
 	type output;
 	float allFrame = static_cast<float>(allFrameCount);
 	float nowFrame = static_cast<float>(nowCount);

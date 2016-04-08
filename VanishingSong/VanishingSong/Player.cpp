@@ -3,6 +3,7 @@
 #include <GameController.h>
 #include <WorldReader.h>
 #include <GameClock.h>
+#include "Utility.h"
 using namespace aetherClass;
 
 Player::Player()
@@ -78,9 +79,13 @@ void Player::mFinalize(){
 /*
 	プレイヤーの更新処理
 */
+int frame;
 void Player::mUpdate(const float timeScale){
 	
-	
+	if (frame > 60)
+	{
+		frame = 0;
+	}
 	// 移動に使う値のを取得
 	Transform transform = mReadKey(timeScale);
 
@@ -97,6 +102,8 @@ void Player::mUpdate(const float timeScale){
 
 	// パーツだけの回転
 	//m_charaEntity.mPartsGearRotation(m_pGearFrame->m_pLeftUpperArm, transform._rotation);
+
+	frame += 1;
 	return;
 }
 

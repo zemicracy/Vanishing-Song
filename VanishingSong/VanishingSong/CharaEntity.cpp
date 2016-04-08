@@ -1,6 +1,7 @@
 #include "CharaEntity.h"
 #include "Debug.h"
 #include "Const.h"
+#include "Utility.h"
 using namespace aetherClass;
 
 CharaEntity::CharaEntity()
@@ -167,4 +168,20 @@ void CharaEntity::mPartsGearRotation(std::shared_ptr<Gear> gear, const aetherCla
 	}
 
 	return;
+}
+
+
+Transform CharaEntity::mGetTransformInterpolation(Transform first, Transform last, const int allFrame, const int nowFrame){
+	Transform output;
+
+	// à⁄ìÆ
+	output._translation = Interpolation<Vector3>(first._translation, last._translation, allFrame, nowFrame);
+
+	// âÒì]
+	output._rotation = Interpolation<Vector3>(first._rotation, last._rotation, allFrame, nowFrame);
+
+	// ägëÂèkè¨
+	output._scale = Interpolation<Vector3>(first._scale, last._scale, allFrame, nowFrame);
+
+	return output;
 }
