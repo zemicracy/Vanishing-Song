@@ -25,39 +25,39 @@ public:
 	Player();
 	~Player();
 	/*
-		初期化
+	初期化
 	*/
 	bool mInitialize();
 
 	/*
-		更新処理
+	更新処理
 	*/
 	void mUpdate(const float timeScale);
 
 	/*
-		描画処理
+	描画処理
 	*/
-	void mRender(aetherClass::ShaderBase* modelShader,aetherClass::ShaderBase* colliderShader);
+	void mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader);
 
 	/*
-		アクション実行用
+	アクション実行用
 	*/
-	eActionType mAction(std::shared_ptr<ActionCommand>,const float timeScale);
+	eCommandType m_Command(std::shared_ptr<ActionCommand>, const float timeScale);
 
 	/*
-		実行したものの登録
-		第一引数：アクションの種類
-		第二引数：何番目のものかの数字
+	実行したものの登録
+	第一引数：アクションの種類
+	第二引数：何番目のものかの数字
 	*/
-	void mAddPrevActionCmmand(eActionType,const int id);
+	void mAddPrevActionCmmand(eCommandType, const int id);
 
 	/*
-		アクションリストの上書き
+	アクションリストの上書き
 	*/
 	void mResetPrevActionList();
 
 	/*
-		解放処理
+	解放処理
 	*/
 	void mFinalize();
 
@@ -68,18 +68,18 @@ public:
 	int mGetColliderListSize()const;
 private:
 	/*
-		プレイヤーに対するキー入力処理
-		現状移動処理と回転処理
+	プレイヤーに対するキー入力処理
+	現状移動処理と回転処理
 	*/
 	aetherClass::Transform mReadKey(const float timeScale);
 
-	bool mInitializeGear(std::shared_ptr<GearFrame>&,aetherClass::ViewCamera*);
+	bool mInitializeGear(std::shared_ptr<GearFrame>&, aetherClass::ViewCamera*);
 
-	bool mLoadModelProperty(std::shared_ptr<GearFrame>&,std::string modelDataFile);
+	bool mLoadModelProperty(std::shared_ptr<GearFrame>&, std::string modelDataFile);
 
 	void mRotationAdjustment(std::shared_ptr<Gear>&);
 
-	void SetLoadModelValue(std::shared_ptr<Gear>&,ObjectInfo*);
+	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
@@ -88,7 +88,7 @@ private:
 	aetherClass::ViewCamera m_playerView;
 
 	CharaStatus m_status;
-	eActionType m_prevAction;
+	eCommandType m_prevCommand;
 	CharaEntity m_charaEntity;
 	eState m_state;
 

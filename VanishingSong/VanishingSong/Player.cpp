@@ -3,7 +3,6 @@
 #include <GameController.h>
 #include <WorldReader.h>
 #include <GameClock.h>
-#include "Utility.h"
 using namespace aetherClass;
 
 Player::Player()
@@ -27,20 +26,17 @@ bool Player::mInitialize(){
 	}
 
 	mFinalize();
-	m_playerView.property._translation = Vector3(0, 20, -20);
-	m_playerView.property._rotation = Vector3(0, 0, -20);
 
+	m_playerView.property._translation = Vector3(0, 0, -20);
 	// ギア系の初期化用
 	mInitializeGear(m_pGearFrame, &m_playerView);
 
-	// パーツの初期位置
-	mLoadModelProperty(m_pGearFrame, "data\\Player2.aether");
-	
+
 	return true;
 }
 
 /*
-	解放処理
+解放処理
 */
 void Player::mFinalize(){
 	if (m_pGearFrame)
@@ -68,7 +64,7 @@ void Player::mFinalize(){
 	// ステータスのリセット
 	m_status.Reset();
 
-	m_prevAction = eActionType::eNull;
+	m_prevCommand = eCommandType::eNull;
 	m_state = Player::eState::eNull;
 	m_actionCount = NULL;
 	return;
@@ -77,41 +73,31 @@ void Player::mFinalize(){
 
 
 /*
-	プレイヤーの更新処理
+プレイヤーの更新処理
 */
-int frame;
 void Player::mUpdate(const float timeScale){
-	
-	if (frame > 60)
-	{
-		frame = 0;
-	}
+
 	// 移動に使う値のを取得
 	Transform transform = mReadKey(timeScale);
 
 	// 実際の移動処理
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
 
-	// カメラの移動
-	m_playerView.property._translation += transform._translation;
-
-
 	// 回転処理
 	// 体を含めたすべての回転
 	//m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
 
 	// パーツだけの回転
-	//m_charaEntity.mPartsGearRotation(m_pGearFrame->m_pLeftUpperArm, transform._rotation);
-
-	frame += 1;
+	m_charaEntity.mPartsGearRotation(m_pTopGear, transform._rotation);
 	return;
 }
 
 //
 void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
-	//m_playerView.Render();
 
 	if (!m_pTopGear)return;
+
+	m_playerView.Render();
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
@@ -120,12 +106,12 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 }
 
 //
-eActionType Player::mAction(std::shared_ptr<ActionCommand> command,const float timeScale){
+eCommandType Player::m_Command(std::shared_ptr<ActionCommand> command, const float timeScale){
 
 	// 今から行うアクションを取得
-	m_status._nowAction = command->mGetType();
+	m_status._nowCommand = command->mGetType();
 
-	if (m_status._nowAction != m_prevAction){
+	if (m_status._nowCommand != m_prevCommand){
 		// 前回と違えば実行数を0にする
 		m_actionCount = kZeroPoint;
 		Debug::mPrint("Change Action");
@@ -134,38 +120,38 @@ eActionType Player::mAction(std::shared_ptr<ActionCommand> command,const float t
 	// アクションの実行
 	command->mAction(m_pGearFrame, timeScale, m_actionCount);
 
-	
+
 	Debug::mPrint("Run Action :" + std::to_string(m_actionCount) + "回目");
 	m_actionCount += 1;
 
 	// 状態を上書き
-	m_prevAction = m_status._nowAction;
-	
-	return m_prevAction;
+	m_prevCommand = m_status._nowCommand;
+
+	return m_prevCommand;
 }
 
 /*
-	行動したアクションを登録
-	第一引数：アクションのタイプ
-	第二引数：何番目のアクションか
+行動したアクションを登録
+第一引数：アクションのタイプ
+第二引数：何番目のアクションか
 */
-void Player::mAddPrevActionCmmand(eActionType action,const int id){
+void Player::mAddPrevActionCmmand(eCommandType action, const int id){
 	m_status._prevActionList[id] = action;
 
 	return;
 }
 
 /*
-	NULLで埋め尽くす
+NULLで埋め尽くす
 */
 void Player::mResetPrevActionList(){
-	m_status._prevActionList.fill(eActionType::eNull);
+	m_status._prevActionList.fill(eCommandType::eNull);
 
 	return;
 }
 
 //
-aetherClass::ViewCamera* Player::mGetView(){
+aetherClass::ViewCamera *Player::mGetView(){
 	return &m_playerView;
 }
 
@@ -179,7 +165,7 @@ int Player::mGetColliderListSize()const{
 }
 
 /*
-	ギア系の初期化をまとめたもの
+ギア系の初期化をまとめたもの
 
 */
 bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass::ViewCamera* camera){
@@ -230,6 +216,9 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	// 左足の親子関係
 	m_charaEntity.mCreateRelationship(gearFrame->m_pWaist, gearFrame->m_pLeftUpperLeg);
 	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftUpperLeg, gearFrame->m_pLeftLowerLeg);
+
+	// パーツの初期位置
+	mLoadModelProperty(gearFrame, "data\\Player.aether");
 	return true;
 }
 
@@ -247,7 +236,7 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 	for (auto index : read.GetInputWorldInfo()._object){
 
 		if (index->_name == "Body"){
-			
+
 			SetLoadModelValue(gearFrame->m_pBody, index);
 		}
 
@@ -258,25 +247,20 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 		if (index->_name == "LeftLowerArm"){
 			SetLoadModelValue(gearFrame->m_pLeftLowerArm, index);
 		}
-
 	}
-
-	// カメラの初期位置の設定
-	m_playerView.property._translation = read.GetInputWorldInfo()._camera._position;
-	m_playerView.property._rotation = read.GetInputWorldInfo()._camera._rotation;
 	read.UnLoad();
 
 	return true;
 }
 
-void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear,ObjectInfo* info){
+void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
 	gear->_pColider->property._transform = info->_transform;
 
 	if (gear->_pParent)
 	{
 		std::shared_ptr<Gear> pParent = gear->_pParent;
-		gear->_initialPosture._translation = gear->_pColider->property._transform._translation - pParent->_pColider->property._transform._translation;
-		gear->_initialPosture._rotation = gear->_pColider->property._transform._rotation - pParent->_pColider->property._transform._rotation;
+		gear->_difference._translation = gear->_pColider->property._transform._translation - pParent->_pColider->property._transform._translation;
+		gear->_difference._rotation = gear->_pColider->property._transform._rotation - pParent->_pColider->property._transform._rotation;
 	}
 
 	// コライダーの登録
@@ -313,7 +297,7 @@ Transform Player::mReadKey(const float timeScale){
 
 	// 回転用(Y軸)
 	if (GameController::GetKey().IsKeyDown('Q')){
-		transform._rotation._y= GameClock::GetDeltaTime()*timeScale * 100;
+		transform._rotation._y = GameClock::GetDeltaTime()*timeScale * 100;
 	}
 	else if (GameController::GetKey().IsKeyDown('E')){
 		transform._rotation._y = -(GameClock::GetDeltaTime()*timeScale * 100);

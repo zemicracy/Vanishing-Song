@@ -19,7 +19,7 @@ bool EnemyGround::mSetUp(){
 
 
 bool EnemyGround::mInitialize(ViewCamera* camera){
-	
+
 	m_render = false;
 
 	m_pGearFrame = std::make_shared<GearFrame>();
@@ -32,7 +32,7 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 	// 腰のパーツ
 	m_pGearFrame->m_pWaist = GetCharaEntity().mSetUpGear("null", Gear::eType::eWaist, camera);
 
-	
+
 
 	WorldReader read;
 	read.Load("data\\Enemy.aether");
@@ -40,7 +40,7 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 
 		if (index->_name == "body"){
 			m_pGearFrame->m_pBody->_pColider->property._transform = index->_transform;
-			
+
 		}
 
 		if (index->_name == "West"){
@@ -53,8 +53,8 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 
 	// 体にパーツとの親子関係
 	GetCharaEntity().mCreateRelationship(m_pGearFrame->m_pBody, m_pGearFrame->m_pWaist);
-	
-	m_pGearFrame->m_pBody->_pColider->property._transform._translation._x  += 0.01f;
+
+	m_pGearFrame->m_pBody->_pColider->property._transform._translation._x += 0.01f;
 	m_pGearFrame->m_pWaist->_pColider->property._transform._translation._y -= 2.0f;
 
 	return true;
@@ -120,6 +120,6 @@ void EnemyGround::mChangeAction(){
 }
 
 void EnemyGround::mEnemyMove(){
-	
+
 	m_pGearFrame->m_pBody->_pColider->property._transform._translation._x += 0.01f;
 }
