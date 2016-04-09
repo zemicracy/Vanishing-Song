@@ -7,10 +7,10 @@
 class ActionCommand
 {
 public:
-	ActionCommand(eActionType);
+	ActionCommand(eCommandType);
 	virtual ~ActionCommand();
 
-	eActionType mGetType();
+	eCommandType mGetType();
 	aetherClass::SpriteBase::Property& mGetProperty();
 	void mCreate();
 
@@ -19,7 +19,7 @@ public:
 
 	virtual void mAction(std::shared_ptr<GearFrame>, float timeScale, int count) = 0;
 private:
-	eActionType m_type;
+	eCommandType m_type;
 	std::shared_ptr<aetherClass::Rectangle2D>m_pSprite;
 
 };

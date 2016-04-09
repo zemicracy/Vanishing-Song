@@ -51,6 +51,6 @@ public:
 		std::shared_ptr<aetherClass::FbxModel> _pGear;
 		eType _type;
 		std::shared_ptr<aetherClass::Cube> _pColider;
-		aetherClass::Transform _initialPosture;
+		aetherClass::Transform _difference;
 };
 

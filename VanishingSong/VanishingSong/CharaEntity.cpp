@@ -123,11 +123,11 @@ void CharaEntity::mBodyGearRotation(std::shared_ptr<Gear> gear, const Vector3 ro
 		auto coliderRotation = gear->_pParent->_pColider->property._transform._rotation;
 		auto coliderTranslation = gear->_pParent->_pColider->property._transform._translation;
 
-		gear->_pColider->property._transform._rotation = coliderRotation + gear->_initialPosture._rotation;
+		gear->_pColider->property._transform._rotation = coliderRotation + gear->_difference._rotation;
 
 		Matrix4x4 rotationMatrix;
 		rotationMatrix.PitchYawRoll(coliderRotation*kAetherRadian);
-		Vector3 position = gear->_initialPosture._translation;
+		Vector3 position = gear->_difference._translation;
 		position = position.TransformCoordNormal(rotationMatrix);
 
 		gear->_pColider->property._transform._translation = coliderTranslation + position;
@@ -151,16 +151,16 @@ void CharaEntity::mPartsGearRotation(std::shared_ptr<Gear> gear, const aetherCla
 	auto coliderRotation = gear->_pParent->_pColider->property._transform._rotation;
 	auto coliderTranslation = gear->_pParent->_pColider->property._transform._translation;
 
-	gear->_pColider->property._transform._rotation = coliderRotation + gear->_initialPosture._rotation;
+	gear->_pColider->property._transform._rotation = coliderRotation + gear->_difference._rotation;
 
 	Matrix4x4 rotationMatrix;
 	rotationMatrix.PitchYawRoll(coliderRotation*kAetherRadian);
-	Vector3 position = gear->_initialPosture._translation;
+	Vector3 position = gear->_difference._translation;
 	position = position.TransformCoordNormal(rotationMatrix);
 
 	gear->_pColider->property._transform._translation = coliderTranslation + position;
 
-	gear->_initialPosture._rotation += rotation;
+	gear->_difference._rotation += rotation;
 
 	// Žq‹Ÿ‚ª‚¢‚ê‚Î‚»‚Ì•ª‚¾‚¯Ä‹A
 	for (auto child : gear->_pChildren){

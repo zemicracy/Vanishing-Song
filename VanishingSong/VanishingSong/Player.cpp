@@ -23,6 +23,8 @@ bool Player::mInitialize(){
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤー デバッグモードです");
+		Debug::mPrint("プレイヤー 初期化を開始します");
+		Debug::mPrint("");
 	}
 
 	mFinalize();
@@ -31,7 +33,14 @@ bool Player::mInitialize(){
 	// ギア系の初期化用
 	mInitializeGear(m_pGearFrame, &m_playerView);
 
+	// パーツの初期位置
+	mLoadModelProperty(m_pGearFrame, "data\\Player2.aether");
 
+	if (kCharaDebug)
+	{
+		Debug::mPrint("プレイヤー 初期化終了しました");
+		Debug::mPrint("");
+	}
 	return true;
 }
 
@@ -217,8 +226,6 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	m_charaEntity.mCreateRelationship(gearFrame->m_pWaist, gearFrame->m_pLeftUpperLeg);
 	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftUpperLeg, gearFrame->m_pLeftLowerLeg);
 
-	// パーツの初期位置
-	mLoadModelProperty(gearFrame, "data\\Player.aether");
 	return true;
 }
 
@@ -230,6 +237,7 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 	bool result = read.Load(modelDataFile.c_str());
 	if (!result)
 	{
+		Debug::mErrorPrint("ファイルの読み込みに失敗しました", __FILE__, __LINE__);
 		return false;
 	}
 
@@ -248,6 +256,11 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 			SetLoadModelValue(gearFrame->m_pLeftLowerArm, index);
 		}
 	}
+
+	// カメラの初期化
+	m_playerView.property._translation = read.GetInputWorldInfo()._camera._position;
+	m_playerView.property._rotation = read.GetInputWorldInfo()._camera._rotation;
+	
 	read.UnLoad();
 
 	return true;

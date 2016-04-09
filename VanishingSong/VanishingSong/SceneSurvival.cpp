@@ -52,6 +52,7 @@ bool SceneSurvival::Initialize(){
 	m_pFieldArea = std::make_unique<FieldArea>();
 	m_pFieldArea->mInitialize();
 	m_pFieldArea->mSetCamera(view);
+
 	return true;
 }
 
@@ -102,7 +103,6 @@ void SceneSurvival::Render(){
 	
 	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
 	m_pFieldArea->mRender(m_pixelShader.get());
-
 	return;
 }
 
