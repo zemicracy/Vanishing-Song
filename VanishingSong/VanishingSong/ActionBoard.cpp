@@ -1,6 +1,13 @@
 #include "ActionBoard.h"
 
 #include"ActionShortAttack.h"
+#include "ActionLongAttack.h"
+#include "ActionRightStep.h"
+#include "ActionLeftStep.h"
+#include "ActionShield.h"
+#include "ActionStrongShield.h"
+#include "ActionSkill.h"
+
 #include"Debug.h"
 #include"Const.h"
 
@@ -45,7 +52,7 @@ void ActionBoard::mInitialize(){
 	reader.Load("data/actionBoard.aether");
 	for ( auto itr : reader.GetInputWorldInfo()._object ){
 		if (itr->_name == "fore1"){
-			gInitalizer<ActionShortAttack>(m_actionCommand[0], itr->_transform, itr->_color,m_kForeground);
+			gInitalizer<ActionLeftStep>(m_actionCommand[0], itr->_transform, itr->_color,m_kForeground);
 			continue;
 		}
 		if (itr->_name == "fore2"){
@@ -53,24 +60,24 @@ void ActionBoard::mInitialize(){
 			continue;
 		}
 		if (itr->_name == "fore3"){
-			gInitalizer<ActionShortAttack>(m_actionCommand[4], itr->_transform, itr->_color, m_kForeground);
+			gInitalizer<ActionShield>(m_actionCommand[4], itr->_transform, itr->_color, m_kForeground);
 			continue;
 		}
 		if (itr->_name == "fore4"){
-			gInitalizer<ActionShortAttack>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
+			gInitalizer<ActionSkill>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
 			continue;
 		}
 
 		if (itr->_name == "back1"){
-			gInitalizer<ActionShortAttack>(m_actionCommand[1], itr->_transform, itr->_color, m_kBackground);
+			gInitalizer<ActionLeftStep>(m_actionCommand[1], itr->_transform, itr->_color, m_kBackground);
 			continue;
 		}
 		if (itr->_name == "back2"){
-			gInitalizer<ActionShortAttack>(m_actionCommand[3], itr->_transform, itr->_color, m_kBackground);
+			gInitalizer<ActionLongAttack>(m_actionCommand[3], itr->_transform, itr->_color, m_kBackground);
 			continue;
 		}
 		if (itr->_name == "back3"){
-			gInitalizer<ActionShortAttack>(m_actionCommand[5], itr->_transform, itr->_color, m_kBackground);
+			gInitalizer<ActionStrongShield>(m_actionCommand[5], itr->_transform, itr->_color, m_kBackground);
 			continue;
 		}
 	}

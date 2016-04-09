@@ -5,8 +5,11 @@ ActionCommand::ActionCommand(eCommandType type){
 	m_type = type;
 }
 ActionCommand::~ActionCommand(){
-	m_pSprite->Finalize();
-	m_pSprite.reset();
+	if (m_pSprite)
+	{
+		m_pSprite->Finalize();
+		m_pSprite.reset();
+	}
 	m_type = eCommandType::eNull;
 }
 

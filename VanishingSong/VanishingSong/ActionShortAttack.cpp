@@ -1,7 +1,7 @@
 #include "ActionShortAttack.h"
 
 
-ActionShortAttack::ActionShortAttack() : ActionCommand(eActionType::eShortDistanceAttack)
+ActionShortAttack::ActionShortAttack() : ActionCommand(eCommandType::eShortDistanceAttack)
 {
 }
 

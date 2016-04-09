@@ -101,6 +101,12 @@ bool ResourceManager::InitializeBGM(){
 */
 bool ResourceManager::InitializeActionSound(){
 	RegisterActionSound(eCommandType::eShortDistanceAttack, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eLongDistanceAttack, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eLeftStep, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eRightStep, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eShield, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eStrongShield, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eSkill, "Sound/damage03.wav");
 	return true;
 }
 
