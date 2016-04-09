@@ -1,13 +1,15 @@
 #ifndef _AETHER_H
 #define _AETHER_H
 #pragma comment (lib,"Aether.lib")
+#endif
 #include <memory>
-#include <GameFrame.h>
+
 #include <AetherWindow.h>
 #include <GameController.h>
 #include <ConsoleWindow.h>
 #include <GameSceneManager.h>
 #include "SceneSurvival.h"
+#include "VanishingSongFrame.h"
 
 using namespace aetherClass;
 
@@ -21,12 +23,15 @@ namespace{
 
 // エントリーポイントを作成
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
+	
+	//コンソールウィンドウの作成
+	ConsoleWindow::Create();
 
 	//スマートポインタ宣言
 	std::unique_ptr<GameFrame>frame;
 
 	//スマートポインタ
-	frame = std::make_unique<GameFrame>();
+	frame = std::make_unique<VanishingSongFrame>();
 	
 	//ウィンドウクラスのオブジェクト作成
 	WindowBase* window = new AetherWindow();
@@ -47,8 +52,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	if (!result){
 		return kError;
 	}
-	//コンソールウィンドウの作成
-	ConsoleWindow::Create();
 
 	//一番最初のシーンの設定
 	GameScene* scene = new SceneSurvival;
@@ -67,4 +70,3 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	ConsoleWindow::Close();
 	return kEnd;
 }
-#endif

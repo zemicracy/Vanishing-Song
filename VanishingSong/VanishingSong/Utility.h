@@ -21,5 +21,23 @@ static void ReleaseVector(std::vector<Type>& vector)
 	vector.clear();
 }
 
+/*
+	補間用関数
+	第一引数：初期状態
+	第二引数：最大の状態
+	第三引数：全フレーム数
+	第四引数：今のフレーム数
+*/
+template<class type>
+static type Interpolation(type first, type last, const int allFrameCount, const int nowCount){
+	type output;
+	float allFrame = static_cast<float>(allFrameCount);
+	float nowFrame = static_cast<float>(nowCount);
+	float coefficient = (float)(nowFrame / allFrame);
+	output = (type)(first + (last - first)*coefficient);
+	return output;
+}
+
+
 
 #endif

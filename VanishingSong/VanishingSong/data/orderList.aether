@@ -1,0 +1,14 @@
+[Object]
+695,65,1,0,0,0,90,460,0,0,Rectangle2D,0.3,0.5,0,1,0,base,null_path
+710,80,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list1,null_path
+710,170,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list2,null_path
+710,250,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list3,null_path
+710,330,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list4,null_path
+710,410,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list5,null_path
+[Material]
+[Texture]
+none
+[Camera]
+0,0,-10,0,0,0
+[Light]
+0,10,0
