@@ -34,8 +34,13 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 
 
 
-	WorldReader read;
-	read.Load("data\\Enemy.aether");
+	// TODO: 沼倉君ここバグ起きてる。おそらくテキストファイルがないだけだから追加しといて
+	/*WorldReader read;
+	bool result = read.Load("data\\Enemy.aether");
+	if (!result)
+	{
+		return false;
+	}
 	for (auto index : read.GetInputWorldInfo()._object){
 
 		if (index->_name == "body"){
@@ -48,7 +53,7 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 		}
 
 	}
-	read.UnLoad();
+	read.UnLoad();*/
 
 
 	// 体にパーツとの親子関係

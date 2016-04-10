@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Debug.h"
+#include "Utility.h"
 #include <GameController.h>
 #include <WorldReader.h>
 #include <GameClock.h>
@@ -23,6 +24,8 @@ bool Player::mInitialize(){
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤー デバッグモードです");
+		Debug::mPrint("プレイヤー 初期化を開始します");
+		Debug::mPrint("");
 	}
 
 	mFinalize();
@@ -31,7 +34,14 @@ bool Player::mInitialize(){
 	// ギア系の初期化用
 	mInitializeGear(m_pGearFrame, &m_playerView);
 
+	// パーツの初期位置
+	mLoadModelProperty(m_pGearFrame, "data\\Player2.aether");
 
+	if (kCharaDebug)
+	{
+		Debug::mPrint("プレイヤー 初期化終了しました");
+		Debug::mPrint("");
+	}
 	return true;
 }
 
@@ -71,7 +81,7 @@ void Player::mFinalize(){
 }
 
 
-
+int frame = 0;
 /*
 プレイヤーの更新処理
 */
@@ -83,12 +93,9 @@ void Player::mUpdate(const float timeScale){
 	// 実際の移動処理
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
 
-	// 回転処理
-	// 体を含めたすべての回転
-	//m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
-
-	// パーツだけの回転
-	m_charaEntity.mPartsGearRotation(m_pTopGear, transform._rotation);
+	// カメラの移動処理
+	m_playerView.property._translation += transform._translation;
+	
 	return;
 }
 
@@ -106,13 +113,13 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 }
 
 //
-eCommandType Player::m_Command(std::shared_ptr<ActionCommand> command, const float timeScale){
+eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeScale){
 
 	// 今から行うアクションを取得
 	m_status._nowCommand = command->mGetType();
 
+	// 前回と違えば実行数を0にする
 	if (m_status._nowCommand != m_prevCommand){
-		// 前回と違えば実行数を0にする
 		m_actionCount = kZeroPoint;
 		Debug::mPrint("Change Action");
 	}
@@ -120,8 +127,11 @@ eCommandType Player::m_Command(std::shared_ptr<ActionCommand> command, const flo
 	// アクションの実行
 	command->mAction(m_pGearFrame, timeScale, m_actionCount);
 
-
-	Debug::mPrint("Run Action :" + std::to_string(m_actionCount) + "回目");
+	if (GameController::GetKey().KeyDownTrigger('F'))
+	{
+		Debug::mPrint("Run Action :" + std::to_string(m_actionCount) + "回目");
+	}
+	
 	m_actionCount += 1;
 
 	// 状態を上書き
@@ -217,8 +227,6 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	m_charaEntity.mCreateRelationship(gearFrame->m_pWaist, gearFrame->m_pLeftUpperLeg);
 	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftUpperLeg, gearFrame->m_pLeftLowerLeg);
 
-	// パーツの初期位置
-	mLoadModelProperty(gearFrame, "data\\Player.aether");
 	return true;
 }
 
@@ -230,6 +238,7 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 	bool result = read.Load(modelDataFile.c_str());
 	if (!result)
 	{
+		Debug::mErrorPrint("ファイルの読み込みに失敗しました", __FILE__, __LINE__);
 		return false;
 	}
 
@@ -248,6 +257,11 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 			SetLoadModelValue(gearFrame->m_pLeftLowerArm, index);
 		}
 	}
+
+	// カメラの初期化
+	m_playerView.property._translation = read.GetInputWorldInfo()._camera._position;
+	m_playerView.property._rotation = read.GetInputWorldInfo()._camera._rotation;
+	
 	read.UnLoad();
 
 	return true;

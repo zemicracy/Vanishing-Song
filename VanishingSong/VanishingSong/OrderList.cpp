@@ -5,6 +5,9 @@
 #include<Singleton.h>
 #include"ActionSound.h"
 #include"Const.h"
+
+#include "ActionNull.h"
+#include "ActionShortAttack.h"
 using namespace aetherClass;
 OrderList::OrderList()
 {
@@ -26,6 +29,8 @@ void OrderList::mFinalize(){
 		itr.reset();
 	}
 	m_orderList.clear();
+
+	m_listFirst = std::make_shared<ActionNull>();
 }
 
 void Initializer(std::shared_ptr<SpriteBase> &sprite,Transform transform, Color color){
@@ -37,6 +42,8 @@ void Initializer(std::shared_ptr<SpriteBase> &sprite,Transform transform, Color 
 	sprite->property._transform._translation._x -= 10;
 
 	sprite->property._color = color;
+
+
 }
 
 void OrderList::mInitialize(){
@@ -68,13 +75,15 @@ void OrderList::mInitialize(){
 		}
 	}
 	reader.UnLoad();
+
+	m_listFirst = std::make_shared<ActionNull>();
 }
 
 void OrderList::mUpdate(float){
 	if (m_orderList.size() == 0){
-		m_listFirst = nullptr;
 		return;
 	}
+
 	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
 	if(GameController::GetKey().KeyDownTrigger(VK_SPACE)){
 		m_isStart = !m_isStart;
@@ -82,13 +91,15 @@ void OrderList::mUpdate(float){
 		sound->mPlaySoundAction(m_volume);
 	}
 	if (m_isStart){
+
+		m_listFirst = m_orderList[0];
+
 		if (sound->mIsPlayEnd() && m_orderList.size() != 0){
- 			m_listFirst = m_orderList[0];
 			m_orderList.erase(m_orderList.begin());
 			if (m_orderList.size() == 0){
 				m_backImage->property._color._red = 1 - m_backImage->property._color._red;
 				m_isStart = false;
-				m_listFirst = nullptr;
+				m_listFirst = std::make_shared<ActionNull>();
 				return;
 			}
 			auto nextSound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());

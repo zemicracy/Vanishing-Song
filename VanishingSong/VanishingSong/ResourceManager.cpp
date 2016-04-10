@@ -52,7 +52,7 @@ void ResourceManager::Finalize(){
 }
 
 
-std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eActionType type){
+std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eCommandType type){
 	return m_pActionSoundHash[type];
 }
 
@@ -100,7 +100,13 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-	RegisterActionSound(eActionType::eShortDistanceAttack, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eShortDistanceAttack, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eLongDistanceAttack, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eLeftStep, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eRightStep, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eShield, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eStrongShield, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eSkill, "Sound/damage03.wav");
 	return true;
 }
 
@@ -160,7 +166,7 @@ void ResourceManager::FinalizeTexture(){
 /*
 	アクションコマンドに対応したサウンドの登録	
 */
-bool ResourceManager::RegisterActionSound(eActionType type, std::string path){
+bool ResourceManager::RegisterActionSound(eCommandType type, std::string path){
 	auto findMap = m_pActionSoundHash.find(type);
 
 	// すでにその名前で登録しているのであれば何もしない

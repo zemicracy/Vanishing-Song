@@ -1,16 +1,19 @@
 #include "ActionCommand.h"
 
 
-ActionCommand::ActionCommand(eActionType type){
+ActionCommand::ActionCommand(eCommandType type){
 	m_type = type;
 }
 ActionCommand::~ActionCommand(){
-	m_pSprite->Finalize();
-	m_pSprite.reset();
-	m_type = eActionType::eNull;
+	if (m_pSprite)
+	{
+		m_pSprite->Finalize();
+		m_pSprite.reset();
+	}
+	m_type = eCommandType::eNull;
 }
 
-eActionType ActionCommand::mGetType(){
+eCommandType ActionCommand::mGetType(){
 	return m_type;
 }
 

@@ -6,6 +6,7 @@
 #include <array>
 #include <GameSound.h>
 #include <Texture.h>
+
 namespace{
 	const int kMaxBGM = 8;
 }
@@ -28,7 +29,7 @@ public:
 	// テクスチャ取得用
 	std::shared_ptr<aetherClass::Texture> GetTexture(std::string);
 
-	std::shared_ptr<ActionSound> GetActionSound(eActionType);
+	std::shared_ptr<ActionSound> GetActionSound(eCommandType);
 
 private:
 
@@ -65,7 +66,7 @@ private:
 	/*
 		アクションコマンドに対応した音の登録用
 	*/
-	bool RegisterActionSound(eActionType,std::string path);
+	bool RegisterActionSound(eCommandType, std::string path);
 
 	/*
 		テクスチャの登録用
@@ -73,7 +74,7 @@ private:
 	bool RegisterTexture(std::string registerName,std::string path);
 private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>> m_pTextureHash;
-	std::unordered_map<eActionType, std::shared_ptr<ActionSound>> m_pActionSoundHash;
+	std::unordered_map<eCommandType, std::shared_ptr<ActionSound>> m_pActionSoundHash;
 	std::array<std::shared_ptr<aetherClass::GameSound>,kMaxBGM> m_pBaseBgmArray;
 	static std::string m_BgmPath[kMaxBGM];
 };
