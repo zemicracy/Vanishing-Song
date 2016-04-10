@@ -273,8 +273,13 @@ void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
 	if (gear->_pParent)
 	{
 		std::shared_ptr<Gear> pParent = gear->_pParent;
-		gear->_difference._translation = gear->_pColider->property._transform._translation - pParent->_pColider->property._transform._translation;
-		gear->_difference._rotation = gear->_pColider->property._transform._rotation - pParent->_pColider->property._transform._rotation;
+		// 最上位との差
+		gear->_topDifference._translation = gear->_pColider->property._transform._translation - m_pTopGear->_pColider->property._transform._translation;
+		gear->_topDifference._rotation = gear->_pColider->property._transform._rotation - m_pTopGear->_pColider->property._transform._rotation;
+
+		// 親との差
+		gear->_parentDifference._translation = gear->_pColider->property._transform._translation - m_pTopGear->_pColider->property._transform._translation;
+		gear->_parentDifference._rotation = gear->_pColider->property._transform._rotation - m_pTopGear->_pColider->property._transform._rotation;
 	}
 
 	// コライダーの登録

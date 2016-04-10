@@ -33,3 +33,8 @@ void ActionCommand::mRender(aetherClass::ShaderBase *shader){
 void ActionCommand::mSetTexture(aetherClass::Texture *texture){
 	m_pSprite->SetTexture(texture);
 }
+
+
+CharaEntity ActionCommand::mGetCharaEntity(){
+	return m_entity;
+}
