@@ -14,3 +14,6 @@ CharaStatus& EnemyBase::GetCharaStatus(){
 	return m_status;
 }
 
+EnemyBase::Property& EnemyBase::GetProperty(){
+	return m_property;
+}
