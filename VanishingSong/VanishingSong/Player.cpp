@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Debug.h"
+#include "Utility.h"
 #include <GameController.h>
 #include <WorldReader.h>
 #include <GameClock.h>
@@ -80,7 +81,7 @@ void Player::mFinalize(){
 }
 
 
-
+int frame = 0;
 /*
 プレイヤーの更新処理
 */
@@ -92,12 +93,9 @@ void Player::mUpdate(const float timeScale){
 	// 実際の移動処理
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
 
-	// 回転処理
-	// 体を含めたすべての回転
-	//m_charaEntity.mBodyGearRotation(m_pTopGear, transform._rotation);
-
-	// パーツだけの回転
-	m_charaEntity.mPartsGearRotation(m_pTopGear, transform._rotation);
+	// カメラの移動処理
+	m_playerView.property._translation += transform._translation;
+	
 	return;
 }
 
@@ -115,13 +113,13 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 }
 
 //
-eCommandType Player::m_Command(std::shared_ptr<ActionCommand> command, const float timeScale){
+eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeScale){
 
 	// 今から行うアクションを取得
 	m_status._nowCommand = command->mGetType();
 
+	// 前回と違えば実行数を0にする
 	if (m_status._nowCommand != m_prevCommand){
-		// 前回と違えば実行数を0にする
 		m_actionCount = kZeroPoint;
 		Debug::mPrint("Change Action");
 	}
@@ -129,8 +127,11 @@ eCommandType Player::m_Command(std::shared_ptr<ActionCommand> command, const flo
 	// アクションの実行
 	command->mAction(m_pGearFrame, timeScale, m_actionCount);
 
-
-	Debug::mPrint("Run Action :" + std::to_string(m_actionCount) + "回目");
+	if (GameController::GetKey().KeyDownTrigger('F'))
+	{
+		Debug::mPrint("Run Action :" + std::to_string(m_actionCount) + "回目");
+	}
+	
 	m_actionCount += 1;
 
 	// 状態を上書き
@@ -272,8 +273,13 @@ void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
 	if (gear->_pParent)
 	{
 		std::shared_ptr<Gear> pParent = gear->_pParent;
-		gear->_difference._translation = gear->_pColider->property._transform._translation - pParent->_pColider->property._transform._translation;
-		gear->_difference._rotation = gear->_pColider->property._transform._rotation - pParent->_pColider->property._transform._rotation;
+		// 最上位との差
+		gear->_topDifference._translation = gear->_pColider->property._transform._translation - m_pTopGear->_pColider->property._transform._translation;
+		gear->_topDifference._rotation = gear->_pColider->property._transform._rotation - m_pTopGear->_pColider->property._transform._rotation;
+
+		// 親との差
+		gear->_parentDifference._translation = gear->_pColider->property._transform._translation - m_pTopGear->_pColider->property._transform._translation;
+		gear->_parentDifference._rotation = gear->_pColider->property._transform._rotation - m_pTopGear->_pColider->property._transform._rotation;
 	}
 
 	// コライダーの登録

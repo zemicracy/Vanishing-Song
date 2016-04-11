@@ -42,7 +42,7 @@ public:
 	/*
 	アクション実行用
 	*/
-	eCommandType m_Command(std::shared_ptr<ActionCommand>, const float timeScale);
+	eCommandType mCommand(std::shared_ptr<ActionCommand>, const float timeScale);
 
 	/*
 	実行したものの登録

@@ -5,8 +5,11 @@ ActionCommand::ActionCommand(eCommandType type){
 	m_type = type;
 }
 ActionCommand::~ActionCommand(){
-	m_pSprite->Finalize();
-	m_pSprite.reset();
+	if (m_pSprite)
+	{
+		m_pSprite->Finalize();
+		m_pSprite.reset();
+	}
 	m_type = eCommandType::eNull;
 }
 
@@ -29,4 +32,9 @@ void ActionCommand::mRender(aetherClass::ShaderBase *shader){
 }
 void ActionCommand::mSetTexture(aetherClass::Texture *texture){
 	m_pSprite->SetTexture(texture);
+}
+
+
+CharaEntity ActionCommand::mGetCharaEntity(){
+	return m_entity;
 }

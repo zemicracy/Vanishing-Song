@@ -6,6 +6,7 @@
 #include <array>
 #include <GameSound.h>
 #include <Texture.h>
+
 namespace{
 	const int kMaxBGM = 8;
 }

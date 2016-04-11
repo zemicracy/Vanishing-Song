@@ -2,7 +2,8 @@
 
 #include"CharaStatus.h"
 #include"GearFrame.h"
-
+#include "Utility.h"
+#include "CharaEntity.h"
 #include<Rectangle2D.h>
 class ActionCommand
 {
@@ -18,9 +19,11 @@ public:
 	void mSetTexture(aetherClass::Texture*);
 
 	virtual void mAction(std::shared_ptr<GearFrame>, float timeScale, int count) = 0;
+
+	CharaEntity mGetCharaEntity();
 private:
 	eCommandType m_type;
 	std::shared_ptr<aetherClass::Rectangle2D>m_pSprite;
-
+	CharaEntity m_entity;
 };
 

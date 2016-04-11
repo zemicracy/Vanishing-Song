@@ -91,6 +91,8 @@ bool SceneSurvival::Updater(){
 		m_pOrderList->mAddOrder(actionCommand);
 	}
 
+	m_pPlayer->mCommand(m_pOrderList->mGetActionCommand(), kDefaultScaleTime);
+
 	m_pOrderList->mUpdate(kDefaultScaleTime);
 	return true;
 }
