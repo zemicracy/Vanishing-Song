@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Debug.h"
 #include "Utility.h"
+#include <MathUtility.h>
 #include <GameController.h>
 #include <WorldReader.h>
 #include <GameClock.h>
@@ -19,7 +20,8 @@ Player::~Player()
 	mFinalize();
 }
 
-
+Vector3 offset;
+Vector3 rotOffset;
 bool Player::mInitialize(){
 	if (kCharaDebug)
 	{
@@ -42,6 +44,10 @@ bool Player::mInitialize(){
 		Debug::mPrint("プレイヤー 初期化終了しました");
 		Debug::mPrint("");
 	}
+
+	offset = m_playerView.property._translation;
+	rotOffset = m_playerView.property._rotation;
+	m_playerView.property._lookAt = m_pTopGear->_pColider->property._transform._translation - offset;
 	return true;
 }
 
@@ -82,6 +88,7 @@ void Player::mFinalize(){
 
 
 int frame = 0;
+Vector3 hoge;
 /*
 プレイヤーの更新処理
 */
@@ -92,10 +99,30 @@ void Player::mUpdate(const float timeScale){
 
 	// 実際の移動処理
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
-
-	// カメラの移動処理
-	m_playerView.property._translation += transform._translation;
 	
+	
+	if (GameController::GetKey().IsKeyDown('Q'))
+	{
+		hoge._y += 1.03f;
+		
+	}
+	else if (GameController::GetKey().IsKeyDown('E')){
+		hoge._y -= 1.03f;
+		
+	}
+	
+	auto coliderRotation = m_pTopGear->_pColider->property._transform._rotation;
+	auto coliderTranslation = m_pTopGear->_pColider->property._transform._translation;
+
+	Matrix4x4 rotationMatrix;
+	rotationMatrix.PitchYawRoll(hoge*kAetherRadian);
+	Vector3 position = transform._translation+offset;
+	position = position.TransformCoordNormal(rotationMatrix);
+
+	m_playerView.property._translation = m_pTopGear->_pColider->property._transform._translation+position;
+
+	m_playerView.property._rotation = hoge+rotOffset;
+
 	return;
 }
 
@@ -315,12 +342,12 @@ Transform Player::mReadKey(const float timeScale){
 	if (!kCharaDebug) return transform;
 
 	// 回転用(Y軸)
-	if (GameController::GetKey().IsKeyDown('Q')){
+	/*if (GameController::GetKey().IsKeyDown('Q')){
 		transform._rotation._y = GameClock::GetDeltaTime()*timeScale * 100;
 	}
 	else if (GameController::GetKey().IsKeyDown('E')){
 		transform._rotation._y = -(GameClock::GetDeltaTime()*timeScale * 100);
-	}
+	}*/
 
 	// デバッグ用
 	Vector3 debug = m_pTopGear->_pGear->property._transform._translation;
