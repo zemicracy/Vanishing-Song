@@ -69,7 +69,7 @@ void ActionBoard::mInitialize(){
 		}
 
 		if (itr->_name == "back1"){
-			gInitalizer<ActionLeftStep>(m_actionCommand[1], itr->_transform, itr->_color, m_kBackground);
+			gInitalizer<ActionRightStep>(m_actionCommand[1], itr->_transform, itr->_color, m_kBackground);
 			continue;
 		}
 		if (itr->_name == "back2"){
