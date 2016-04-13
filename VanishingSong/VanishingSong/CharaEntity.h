@@ -4,6 +4,7 @@
 #include <memory>
 #include "GearFrame.h"
 #include "Const.h"
+#include "Animation.h"
 class CharaEntity
 {
 public:
@@ -72,6 +73,12 @@ public:
 	*/
 	void mPartsGearKeyframeRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
 
+	/*
+	アニメーションの値セット用
+	*/
+	bool LoadAnimation(std::vector<Animation>&animationVector,std::string startState, std::string endState);
+
+	Gear::eType SetPartsValue(std::string, aetherClass::Transform* input, aetherClass::Transform value);
 
 	aetherClass::Transform mGetTransformInterpolation(aetherClass::Transform, aetherClass::Transform, const int allFrame, const int nowFrame);
 };

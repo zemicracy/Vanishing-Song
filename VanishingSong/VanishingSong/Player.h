@@ -16,10 +16,18 @@
 class Player
 {
 private:
+	/*	Playerの状態		*/
 	enum class eState{
 		eMove,
 		eWait,
 		eNull
+	};
+
+	/*	とりあえずカメラ用	*/
+	struct Offset
+	{
+		aetherClass::Vector3 _translation;
+		aetherClass::Vector3 _rotation;
 	};
 public:
 	Player();
@@ -87,7 +95,8 @@ private:
 	eCommandType m_prevCommand;
 	CharaEntity m_charaEntity;
 	eState m_state;
-
+	Offset m_cameraOffset;
+	aetherClass::Vector3 m_cameraRotation;
 	int m_actionCount;// アクションを行った数を保存しとく用
 };
 

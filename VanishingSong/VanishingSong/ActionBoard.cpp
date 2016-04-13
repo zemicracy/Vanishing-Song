@@ -58,11 +58,8 @@ void ActionBoard::mInitialize(){
 		}
 		if (itr->_name == "fore2"){
 			gInitalizer<ActionShortAttack>(m_actionCommand[2], itr->_transform, itr->_color, m_kForeground);
-			result = m_actionCommand[2]->LoadAnimation("data\\PlayerModel2.aether", "data\\PlayerWait.aether");
-			if (!result)
-			{
-				Debug::mErrorPrint("“Ç‚Ýž‚ÝŽ¸”s", __FILE__, Debug::eState::eWindow);
-			}
+			//result = m_actionCommand[2]->LoadAnimation(m_actionCommand[2]->GetAnimationValue(),"data\\PlayerModel2.aether", "data\\PlayerWait.aether");
+			
 			continue;
 		}
 		if (itr->_name == "fore3"){
