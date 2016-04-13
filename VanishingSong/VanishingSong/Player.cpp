@@ -20,8 +20,7 @@ Player::~Player()
 	mFinalize();
 }
 
-Vector3 offset;
-Vector3 rotOffset;
+//
 bool Player::mInitialize(){
 	if (kCharaDebug)
 	{
@@ -45,8 +44,10 @@ bool Player::mInitialize(){
 		Debug::mPrint("");
 	}
 
-	offset = m_playerView.property._translation;
-	rotOffset = m_playerView.property._rotation;
+	m_cameraOffset._translation = m_playerView.property._translation;
+	m_cameraOffset._rotation = m_playerView.property._rotation;
+
+	m_cameraRotation = kVector3Zero;
 
 	m_charaEntity.mGearMove(m_pTopGear, Vector3(0, 20, 0));
 	return true;
@@ -88,8 +89,6 @@ void Player::mFinalize(){
 }
 
 
-int frame = 0;
-Vector3 hoge;
 /*
 プレイヤーの更新処理
 */
@@ -98,29 +97,40 @@ void Player::mUpdate(const float timeScale){
 	// 移動に使う値のを取得
 	Transform transform = mReadKey(timeScale);
 
+	// 移動に変化量があれば
+	if (transform._translation == kVector3Zero){
+		Debug::mPrint("WAIT");
+		
+		m_state = eState::eWait;
+	}
+	else{
+		Debug::mPrint("MOVE");
+		m_state = eState::eMove;
+	}
+
 	// 実際の移動処理
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
 	
 	
 	if (GameController::GetKey().IsKeyDown('Q'))
 	{
-		hoge._y += 1.03f;
+		m_cameraRotation._y += 1.03f;
 		
 	}
 	else if (GameController::GetKey().IsKeyDown('E')){
-		hoge._y -= 1.03f;
+		m_cameraRotation._y -= 1.03f;
 		
 	}
 	
 	auto gearTranslation = m_pTopGear->_pGear->property._transform._translation;
 
 	Matrix4x4 rotationMatrix;
-	rotationMatrix.PitchYawRoll(hoge*kAetherRadian);
-	Vector3 position = transform._translation+offset;
+	rotationMatrix.PitchYawRoll(m_cameraRotation*kAetherRadian);
+	Vector3 position = transform._translation + m_cameraOffset._translation;
 	position = position.TransformCoordNormal(rotationMatrix);
 
 	m_playerView.property._translation = gearTranslation+position;
-	m_playerView.property._rotation = hoge+rotOffset;
+	m_playerView.property._rotation = m_cameraRotation + m_cameraOffset._rotation;
 
 	return;
 }

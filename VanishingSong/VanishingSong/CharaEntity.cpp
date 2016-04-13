@@ -2,6 +2,8 @@
 #include "Debug.h"
 #include "Const.h"
 #include "Utility.h"
+#include <WorldReader.h>
+
 using namespace aetherClass;
 
 CharaEntity::CharaEntity()
@@ -256,4 +258,116 @@ void CharaEntity::mGearKeyframeTranslation(std::shared_ptr<Gear> gear, aetherCla
 		mGearKeyframeTranslation(child, move);
 	}
 
+}
+
+Gear::eType CharaEntity::SetPartsValue(std::string partsName, Transform* input, Transform value){
+	/*	体	*/
+	if (partsName == "Body"){
+
+		*input = value;
+		return Gear::eType::eBody;
+	}
+
+	if (partsName == "Waist"){
+		*input = value;
+		return Gear::eType::eWaist;
+	}
+
+	/*	左上半身*/
+	if (partsName == "LeftUpperArm"){
+		*input = value;
+		return Gear::eType::eLeftUpperArm;
+	}
+
+	if (partsName == "LeftLowerArm"){
+		*input = value;
+		return Gear::eType::eLeftLowerArm;
+	}
+
+	if (partsName == "LeftHand"){
+		*input = value;
+
+		return Gear::eType::eLeftHand;
+	}
+
+	/*	右上半身	*/
+	if (partsName == "RightUpperArm"){
+		*input = value;
+		return Gear::eType::eRightUpperArm;
+	}
+
+	if (partsName == "RightLowerArm"){
+		*input = value;
+		return Gear::eType::eRightLowerArm;
+	}
+
+	if (partsName == "RightHand"){
+		*input = value;
+		return Gear::eType::eRightHand;
+	}
+
+	/*	右足	*/
+	if (partsName == "RightUpperLeg"){
+		*input = value;
+		return Gear::eType::eRightUpperLeg;
+	}
+
+	if (partsName == "RightLowerLeg"){
+		*input = value;
+		return Gear::eType::eRightLowerLeg;
+	}
+
+	/*	左足	*/
+	if (partsName == "LeftUpperLeg"){
+		*input = value;
+		return Gear::eType::eLeftUpperLeg;
+	}
+
+	if (partsName == "LeftLowerLeg"){
+		*input = value;
+		return Gear::eType::eLeftLowerLeg;
+	}
+
+	return Gear::eType::eNull;
+}
+
+bool CharaEntity::LoadAnimation(std::vector<Animation>&animationVector,std::string startState, std::string endState){
+	WorldReader read;
+	bool result;
+	result = read.Load(startState);
+	if (!result)
+	{
+		return false;
+	}
+	Animation animation;
+	for (auto index : read.GetInputWorldInfo()._object)
+	{
+		animation._name = SetPartsValue(index->_name, &animation._start, index->_transform);
+		animationVector.push_back(animation);
+	}
+	read.UnLoad();
+
+	result = read.Load(endState);
+	if (!result)
+	{
+		return false;
+	}
+
+	for (auto index : read.GetInputWorldInfo()._object)
+	{
+		for (auto& endIndex : animationVector)
+		{
+			Gear::eType type;
+			type = SetPartsValue(index->_name, &animation._end, index->_transform);
+
+			if (endIndex._name == type)
+			{
+				endIndex._end = animation._end;
+			}
+		}
+	}
+
+	read.UnLoad();
+
+	return true;
 }
