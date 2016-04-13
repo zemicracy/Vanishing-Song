@@ -48,15 +48,21 @@ void gInitalizer(std::shared_ptr<ActionCommand> &command,Transform transform,Col
 
 void ActionBoard::mInitialize(){
 	WorldReader reader;
-
+	bool result = false;
 	reader.Load("data/actionBoard.aether");
 	for ( auto itr : reader.GetInputWorldInfo()._object ){
 		if (itr->_name == "fore1"){
 			gInitalizer<ActionLeftStep>(m_actionCommand[0], itr->_transform, itr->_color,m_kForeground);
+			
 			continue;
 		}
 		if (itr->_name == "fore2"){
 			gInitalizer<ActionShortAttack>(m_actionCommand[2], itr->_transform, itr->_color, m_kForeground);
+			result = m_actionCommand[2]->LoadAnimation("data\\PlayerModel2.aether", "data\\PlayerWait.aether");
+			if (!result)
+			{
+				Debug::mErrorPrint("“Ç‚Ýž‚ÝŽ¸”s", __FILE__, Debug::eState::eWindow);
+			}
 			continue;
 		}
 		if (itr->_name == "fore3"){

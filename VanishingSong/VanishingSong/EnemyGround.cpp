@@ -41,12 +41,12 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 	for (auto index : read.GetInputWorldInfo()._object){
 
 		if (index->_name == "body"){
-			GetProperty()._enemy->m_pBody->_pColider->property._transform = index->_transform;
+		//	GetProperty()._enemy->m_pBody->_pColider->property._transform = index->_transform;
 			
 		}
 
 		if (index->_name == "West"){
-			GetProperty()._enemy->m_pWaist->_pColider->property._transform = index->_transform;
+		//	GetProperty()._enemy->m_pWaist->_pColider->property._transform = index->_transform;
 		}
 
 	}

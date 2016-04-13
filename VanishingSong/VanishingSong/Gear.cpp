@@ -37,16 +37,6 @@ void Gear::Release(){
 		_pGear.reset();
 		_pGear = nullptr;
 	}
-
-	// コライダーの解放
-	if (_pColider)
-	{
-		_pColider->Finalize();
-		_pColider.reset();
-		_pColider = nullptr;
-	}
-	
 	_type = eType::eNull;
 
-	_difference;
 }
