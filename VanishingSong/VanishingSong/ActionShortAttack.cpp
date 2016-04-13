@@ -13,8 +13,12 @@ ActionShortAttack::~ActionShortAttack()
 
 void ActionShortAttack::mAction(std::shared_ptr<GearFrame> gearFrame, float timeScale, int count){
 
-	Vector3 rotation;
-	rotation = Interpolation<Vector3>(Vector3(0, 10, 0), Vector3(20, 10, 0), 60, count);
-	mGetCharaEntity().mGearKeyframeTranslation(gearFrame->m_pLeftUpperArm, rotation);
+	Transform transform;
+	for (auto index : GetAnimationValue())
+	{
+
+		transform = mGetCharaEntity().mGetTransformInterpolation(index._start, index._end, 45, count);
+		gearFrame->SetTransformValue(index._name, transform);
+	}
 }
 

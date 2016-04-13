@@ -39,7 +39,7 @@ bool SceneSurvival::Initialize(){
 	auto view = m_pPlayer->mGetView();
 
 	m_penemyGround = std::make_shared<EnemyGround>();
-	m_penemyGround->mInitialize(view);
+	//m_penemyGround->mInitialize(view);
 
 	// アクションコマンドの初期化
 	m_pActionBoard = std::make_unique<ActionBoard>();
@@ -103,7 +103,7 @@ void SceneSurvival::Render(){
 	view->Render();
 	m_pPlayer->mRender(m_pixelShader.get(), m_pixelShader.get());
 	
-	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
+	//m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
 	m_pFieldArea->mRender(m_pixelShader.get());
 	return;
 }

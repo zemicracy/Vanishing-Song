@@ -63,9 +63,6 @@ public:
 
 	aetherClass::ViewCamera* mGetView();
 
-	std::shared_ptr<aetherClass::ModelBase> mGetCollider(const int);
-
-	int mGetColliderListSize()const;
 private:
 	/*
 	プレイヤーに対するキー入力処理
@@ -84,7 +81,6 @@ private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
 	std::shared_ptr<Gear> m_pTopGear;
-	std::vector<std::shared_ptr<aetherClass::ModelBase>> m_playerCollideList;
 	aetherClass::ViewCamera m_playerView;
 
 	CharaStatus m_status;

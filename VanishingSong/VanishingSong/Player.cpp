@@ -37,7 +37,7 @@ bool Player::mInitialize(){
 	mInitializeGear(m_pGearFrame, &m_playerView);
 
 	// パーツの初期位置
-	mLoadModelProperty(m_pGearFrame, "data\\Player2.aether");
+	mLoadModelProperty(m_pGearFrame, "data\\PlayerModel.aether");
 
 	if (kCharaDebug)
 	{
@@ -47,7 +47,8 @@ bool Player::mInitialize(){
 
 	offset = m_playerView.property._translation;
 	rotOffset = m_playerView.property._rotation;
-	m_playerView.property._lookAt = m_pTopGear->_pColider->property._transform._translation - offset;
+
+	m_charaEntity.mGearMove(m_pTopGear, Vector3(0, 20, 0));
 	return true;
 }
 
@@ -111,16 +112,14 @@ void Player::mUpdate(const float timeScale){
 		
 	}
 	
-	auto coliderRotation = m_pTopGear->_pColider->property._transform._rotation;
-	auto coliderTranslation = m_pTopGear->_pColider->property._transform._translation;
+	auto gearTranslation = m_pTopGear->_pGear->property._transform._translation;
 
 	Matrix4x4 rotationMatrix;
 	rotationMatrix.PitchYawRoll(hoge*kAetherRadian);
 	Vector3 position = transform._translation+offset;
 	position = position.TransformCoordNormal(rotationMatrix);
 
-	m_playerView.property._translation = m_pTopGear->_pColider->property._transform._translation+position;
-
+	m_playerView.property._translation = gearTranslation+position;
 	m_playerView.property._rotation = hoge+rotOffset;
 
 	return;
@@ -152,7 +151,7 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 	}
 
 	// アクションの実行
-	command->mAction(m_pGearFrame, timeScale, m_actionCount);
+	command->mAction(m_pGearFrame, timeScale,m_actionCount);
 
 	if (GameController::GetKey().KeyDownTrigger('F'))
 	{
@@ -192,15 +191,6 @@ aetherClass::ViewCamera *Player::mGetView(){
 	return &m_playerView;
 }
 
-//
-std::shared_ptr<aetherClass::ModelBase> Player::mGetCollider(const int id){
-	return m_playerCollideList[id];
-}
-
-int Player::mGetColliderListSize()const{
-	return m_playerCollideList.size();
-}
-
 /*
 ギア系の初期化をまとめたもの
 
@@ -209,26 +199,26 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 	gearFrame = std::make_shared<GearFrame>();
 
 	// 体のパーツ
-	gearFrame->m_pBody = m_charaEntity.mSetUpGear("null", Gear::eType::eBody, camera);
+	gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Player\\body.fbx", Gear::eType::eBody, camera);
 
 	// 腰のパーツ
-	gearFrame->m_pWaist = m_charaEntity.mSetUpGear("null", Gear::eType::eWaist, camera);
+	gearFrame->m_pWaist = m_charaEntity.mSetUpGear("Model\\Player\\waist.fbx", Gear::eType::eWaist, camera);
 
 	// 腕のパーツ
-	gearFrame->m_pLeftUpperArm = m_charaEntity.mSetUpGear("null", Gear::eType::eLeftUpperArm, camera);
-	gearFrame->m_pRightUpperArm = m_charaEntity.mSetUpGear("null", Gear::eType::eRightUpperArm, camera);
-	gearFrame->m_pLeftLowerArm = m_charaEntity.mSetUpGear("null", Gear::eType::eLeftLowerArm, camera);
-	gearFrame->m_pRightLowerArm = m_charaEntity.mSetUpGear("null", Gear::eType::eRightLowerArm, camera);
+	gearFrame->m_pLeftUpperArm = m_charaEntity.mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eLeftUpperArm, camera);
+	gearFrame->m_pRightUpperArm = m_charaEntity.mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eRightUpperArm, camera);
+	gearFrame->m_pLeftLowerArm = m_charaEntity.mSetUpGear("Model\\Player\\arm2.fbx", Gear::eType::eLeftLowerArm, camera);
+	gearFrame->m_pRightLowerArm = m_charaEntity.mSetUpGear("Model\\Player\\arm2.fbx", Gear::eType::eRightLowerArm, camera);
 
 	// 手のパーツ
-	gearFrame->m_pLeftHand = m_charaEntity.mSetUpGear("null", Gear::eType::eLeftHand, camera);
-	gearFrame->m_pRightHand = m_charaEntity.mSetUpGear("null", Gear::eType::eRightHand, camera);
+	gearFrame->m_pLeftHand = m_charaEntity.mSetUpGear("Model\\Player\\hand.fbx", Gear::eType::eLeftHand, camera);
+	gearFrame->m_pRightHand = m_charaEntity.mSetUpGear("Model\\Player\\hand.fbx", Gear::eType::eRightHand, camera);
 
 	// 足のパーツ
-	gearFrame->m_pLeftUpperLeg = m_charaEntity.mSetUpGear("null", Gear::eType::eLeftUpperLeg, camera);
-	gearFrame->m_pRightUpperLeg = m_charaEntity.mSetUpGear("null", Gear::eType::eRightUpperLeg, camera);
-	gearFrame->m_pLeftLowerLeg = m_charaEntity.mSetUpGear("null", Gear::eType::eLeftLowerLeg, camera);
-	gearFrame->m_pRightLowerLeg = m_charaEntity.mSetUpGear("null", Gear::eType::eRightLowerLeg, camera);
+	gearFrame->m_pLeftUpperLeg = m_charaEntity.mSetUpGear("Model\\Player\\leg1.fbx", Gear::eType::eLeftUpperLeg, camera);
+	gearFrame->m_pRightUpperLeg = m_charaEntity.mSetUpGear("Model\\Player\\leg1.fbx", Gear::eType::eRightUpperLeg, camera);
+	gearFrame->m_pLeftLowerLeg = m_charaEntity.mSetUpGear("Model\\Player\\leg2.fbx", Gear::eType::eLeftLowerLeg, camera);
+	gearFrame->m_pRightLowerLeg = m_charaEntity.mSetUpGear("Model\\Player\\leg2.fbx", Gear::eType::eRightLowerLeg, camera);
 
 	// 最上位に当たるパーツの設定
 	m_pTopGear = gearFrame->m_pBody;
@@ -271,11 +261,16 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 
 	for (auto index : read.GetInputWorldInfo()._object){
 
+		/*	体	*/
 		if (index->_name == "Body"){
-
 			SetLoadModelValue(gearFrame->m_pBody, index);
 		}
 
+		if (index->_name == "Waist"){
+			SetLoadModelValue(gearFrame->m_pWaist, index);
+		}
+
+		/*	左上半身*/
 		if (index->_name == "LeftUpperArm"){
 			SetLoadModelValue(gearFrame->m_pLeftUpperArm, index);
 		}
@@ -283,6 +278,42 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 		if (index->_name == "LeftLowerArm"){
 			SetLoadModelValue(gearFrame->m_pLeftLowerArm, index);
 		}
+
+		if (index->_name == "LeftHand"){
+			SetLoadModelValue(gearFrame->m_pLeftHand, index);
+		}
+
+		/*	右上半身	*/
+		if (index->_name == "RightUpperArm"){
+			SetLoadModelValue(gearFrame->m_pRightUpperArm, index);
+		}
+
+		if (index->_name == "RightLowerArm"){
+			SetLoadModelValue(gearFrame->m_pRightLowerArm, index);
+		}
+
+		if (index->_name == "RightHand"){
+			SetLoadModelValue(gearFrame->m_pRightHand, index);
+		}
+
+		/*	右足	*/
+		if (index->_name == "RightUpperLeg"){
+			SetLoadModelValue(gearFrame->m_pRightUpperLeg, index);
+		}
+
+		if (index->_name == "RightLowerLeg"){
+			SetLoadModelValue(gearFrame->m_pRightLowerLeg, index);
+		}
+
+		/*	左足	*/
+		if (index->_name == "LeftUpperLeg"){
+			SetLoadModelValue(gearFrame->m_pLeftUpperLeg, index);
+		}
+
+		if (index->_name == "LeftLowerLeg"){
+			SetLoadModelValue(gearFrame->m_pLeftLowerLeg, index);
+		}
+
 	}
 
 	// カメラの初期化
@@ -295,22 +326,21 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 }
 
 void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
-	gear->_pColider->property._transform = info->_transform;
+
+	gear->_pGear->property._transform = info->_transform;
 
 	if (gear->_pParent)
 	{
 		std::shared_ptr<Gear> pParent = gear->_pParent;
 		// 最上位との差
-		gear->_topDifference._translation = gear->_pColider->property._transform._translation - m_pTopGear->_pColider->property._transform._translation;
-		gear->_topDifference._rotation = gear->_pColider->property._transform._rotation - m_pTopGear->_pColider->property._transform._rotation;
+		gear->_topDifference._translation = gear->_pGear->property._transform._translation - m_pTopGear->_pGear->property._transform._translation;
+		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - m_pTopGear->_pGear->property._transform._rotation;
 
 		// 親との差
-		gear->_parentDifference._translation = gear->_pColider->property._transform._translation - m_pTopGear->_pColider->property._transform._translation;
-		gear->_parentDifference._rotation = gear->_pColider->property._transform._rotation - m_pTopGear->_pColider->property._transform._rotation;
+		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - m_pTopGear->_pGear->property._transform._translation;
+		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - m_pTopGear->_pGear->property._transform._rotation;
 	}
 
-	// コライダーの登録
-	m_playerCollideList.push_back(gear->_pColider);
 	return;
 }
 

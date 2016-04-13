@@ -7,6 +7,6 @@ public:
 	ActionLeftStep();
 	~ActionLeftStep();
 
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override;
+	void mAction(std::shared_ptr<GearFrame>, float timeScale,int frame)override;
 };
 
