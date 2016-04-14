@@ -71,6 +71,7 @@ public:
 
 	aetherClass::ViewCamera* mGetView();
 
+	std::shared_ptr<aetherClass::Cube> mGetColldier();
 private:
 	/*
 	プレイヤーに対するキー入力処理
@@ -85,6 +86,8 @@ private:
 	void mRotationAdjustment(std::shared_ptr<Gear>&);
 
 	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
+
+	void mInitializeCollider(std::shared_ptr<aetherClass::Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
@@ -98,6 +101,8 @@ private:
 	Offset m_cameraOffset;
 	aetherClass::Vector3 m_cameraRotation;
 	int m_actionCount;// アクションを行った数を保存しとく用
+
+	std::shared_ptr<aetherClass::Cube> m_pCubeCollider;
 };
 
 #endif

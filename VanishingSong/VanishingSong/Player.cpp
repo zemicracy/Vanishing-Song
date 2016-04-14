@@ -49,7 +49,10 @@ bool Player::mInitialize(){
 
 	m_cameraRotation = kVector3Zero;
 
+	// 初期位置の設定
 	m_charaEntity.mGearMove(m_pTopGear, Vector3(0, 20, 0));
+
+	mInitializeCollider(m_pCubeCollider, m_pTopGear->_pGear->property._transform._translation,Vector3(1, -5, -0));
 	return true;
 }
 
@@ -77,6 +80,13 @@ void Player::mFinalize(){
 	{
 		m_pActionCommand.reset();
 		m_pActionCommand = nullptr;
+	}
+
+	if (m_pCubeCollider)
+	{
+		m_pCubeCollider->Finalize();
+		m_pCubeCollider.reset();
+		m_pCubeCollider = nullptr;
 	}
 
 	// ステータスのリセット
@@ -111,6 +121,8 @@ void Player::mUpdate(const float timeScale){
 	// 実際の移動処理
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
 	
+	// コライダーも動かす
+	m_pCubeCollider->property._transform._translation += transform._translation;
 	
 	if (GameController::GetKey().IsKeyDown('Q'))
 	{
@@ -139,8 +151,12 @@ void Player::mUpdate(const float timeScale){
 void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
 
 	if (!m_pTopGear)return;
-
 	m_playerView.Render();
+
+	if (kCharaDebug)
+	{
+		m_pCubeCollider->Render(modelShader);
+	}
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
@@ -199,6 +215,10 @@ void Player::mResetPrevActionList(){
 //
 aetherClass::ViewCamera *Player::mGetView(){
 	return &m_playerView;
+}
+
+std::shared_ptr<Cube> Player::mGetColldier(){
+	return m_pCubeCollider;
 }
 
 /*
@@ -402,5 +422,13 @@ Transform Player::mReadKey(const float timeScale){
 	return transform;
 }
 
+void Player::mInitializeCollider(std::shared_ptr<aetherClass::Cube>& collider, Vector3 original, Vector3 offset){
+	collider = std::make_shared<Cube>();
+	collider->Initialize();
+	collider->property._transform._translation = original + offset;
+	collider->property._transform._scale = 10;
+	collider->property._color = Color(1, 0, 0, 0.5);
+	collider->SetCamera(&m_playerView);
+}
 
 
