@@ -4,8 +4,10 @@ class ActionLongAttack :
 	public ActionCommand
 {
 public:
-	ActionLongAttack();
-	~ActionLongAttack();
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override;
+	ActionLongAttack():ActionCommand(eCommandType::eLongDistanceAttack){}
+	~ActionLongAttack(){}
+	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override{
+
+	}
 };
 

@@ -4,9 +4,11 @@ class ActionShortAttack :
 	public ActionCommand
 {
 public:
-	ActionShortAttack();
-	~ActionShortAttack();
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override;
+	ActionShortAttack():ActionCommand(eCommandType::eShortDistanceAttack){}
+	~ActionShortAttack(){}
+	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override{
+
+	}
 
 };
 
