@@ -87,7 +87,7 @@ private:
 
 	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 
-	void mInitializeCollider(std::shared_ptr<aetherClass::Cube>& collider);
+	void mInitializeCollider(std::shared_ptr<aetherClass::Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;

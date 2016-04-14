@@ -53,7 +53,7 @@ void ActionBoard::mInitialize(){
 	for ( auto itr : reader.GetInputWorldInfo()._object ){
 		if (itr->_name == "fore1"){
 			gInitalizer<ActionLeftStep>(m_actionCommand[0], itr->_transform, itr->_color,m_kForeground);
-			
+			d
 			continue;
 		}
 		if (itr->_name == "fore2"){
