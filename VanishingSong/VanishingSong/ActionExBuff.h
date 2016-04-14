@@ -4,9 +4,11 @@ class ActionExBuff :
 	public ActionCommand
 {
 public:
-	ActionExBuff();
-	~ActionExBuff();
+	ActionExBuff() :ActionCommand(eCommandType::eSkill){}
+	~ActionExBuff(){}
 
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frameCount)override;
+	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frameCount)override{
+
+	}
 };
 

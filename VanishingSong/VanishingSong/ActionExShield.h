@@ -4,9 +4,11 @@ class ActionExShield :
 	public ActionCommand
 {
 public:
-	ActionExShield();
-	~ActionExShield();
+	ActionExShield() :ActionCommand(eCommandType::eSkill){}
+	~ActionExShield(){}
 
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frameCount)override;
+	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frameCount)override{
+
+	}
 };
 

@@ -6,8 +6,7 @@
 #include "ActionLeftStep.h"
 #include "ActionShield.h"
 #include "ActionStrongShield.h"
-#include "ActionSkill.h"
-
+#include "ActionExBuff.h"
 #include"Debug.h"
 #include"Const.h"
 
@@ -53,7 +52,6 @@ void ActionBoard::mInitialize(){
 	for ( auto itr : reader.GetInputWorldInfo()._object ){
 		if (itr->_name == "fore1"){
 			gInitalizer<ActionLeftStep>(m_actionCommand[0], itr->_transform, itr->_color,m_kForeground);
-			d
 			continue;
 		}
 		if (itr->_name == "fore2"){
@@ -67,7 +65,7 @@ void ActionBoard::mInitialize(){
 			continue;
 		}
 		if (itr->_name == "fore4"){
-			gInitalizer<ActionSkill>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
+			gInitalizer<ActionExBuff>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
 			continue;
 		}
 

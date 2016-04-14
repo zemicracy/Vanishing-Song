@@ -4,8 +4,10 @@ class ActionExHeel :
 	public ActionCommand
 {
 public:
-	ActionExHeel();
-	~ActionExHeel();
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frameCount)override;
+	ActionExHeel() :ActionCommand(eCommandType::eSkill){}
+	~ActionExHeel(){}
+	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frameCount)override{
+
+	}
 };
 
