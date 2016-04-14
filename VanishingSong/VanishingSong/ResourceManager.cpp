@@ -18,7 +18,7 @@ ResourceManager::~ResourceManager()
 	BGMを変えたい場合はここをいじってね
 */
 std::string ResourceManager::m_BgmPath[kMaxBGM] = {
-	"null",
+	"Sound/BGM.wav",
 	"null",
 	"null",
 	"null",
@@ -63,6 +63,7 @@ std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eCommandType type){
 */
 void ResourceManager::PlayBaseBGM(const int id){
 	m_pBaseBgmArray[id]->PlayToLoop();
+
 	return;
 }
 
@@ -89,7 +90,8 @@ bool ResourceManager::InitializeBGM(){
 		if (!result)
 		{
 			Debug::mErrorPrint("BGMの読み込みに失敗しました", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
-		}
+		}else
+		index->SetValume(-2000);
 	}
 
 	return true;
@@ -100,11 +102,11 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-	RegisterActionSound(eCommandType::eShortDistanceAttack, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eShortDistanceAttack, "Sound/do.wav");
 	RegisterActionSound(eCommandType::eLongDistanceAttack, "Sound/damage03.wav");
-	RegisterActionSound(eCommandType::eLeftStep, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eLeftStep, "Sound/mi.wav");
 	RegisterActionSound(eCommandType::eRightStep, "Sound/damage03.wav");
-	RegisterActionSound(eCommandType::eShield, "Sound/damage03.wav");
+	RegisterActionSound(eCommandType::eShield, "Sound/re.wav");
 	RegisterActionSound(eCommandType::eStrongShield, "Sound/damage03.wav");
 	RegisterActionSound(eCommandType::eSkill, "Sound/damage03.wav");
 	return true;
