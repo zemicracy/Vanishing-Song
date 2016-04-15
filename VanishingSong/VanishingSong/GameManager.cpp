@@ -16,6 +16,8 @@ void GameManager::mInitialize(){
 	m_day = kFirstDay;
 	m_isPause = false;
 	m_gameState = eState::eNull;
+	m_gameMode = eGameMode::eNull;
+	m_skillType = eSkillType::eNull;
 	return;
 }
 

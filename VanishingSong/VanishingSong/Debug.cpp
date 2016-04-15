@@ -35,7 +35,7 @@ void Debug::mErrorPrint(std::string errorMessgae, std::string FileName, const in
 	}
 	else if (state == Debug::eState::eConsole){
 		
-		std::cout <<"DebugMdoe Error :"<< errorMessgae << std::endl;
+		std::cout <<"DebugMode Error :"<< errorMessgae << std::endl;
 		std::cout << "ファイル名 :" << StringSplite(FileName,'\\') << "/" << "行数 :" << line << std::endl;
 	}
 

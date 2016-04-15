@@ -2,7 +2,8 @@
 #include <iostream>
 #include"PixelShader.h"
 #include <GameController.h>
-
+#include "GameManager.h"
+#include <Singleton.h>
 using namespace aetherClass;
 namespace{
 	const float kDefaultScaleTime = 1.0f;

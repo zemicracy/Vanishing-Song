@@ -3,9 +3,11 @@
 #include<PixelShader.h>
 #include<Rectangle3D.h>
 #include <GameController.h>
-
+#include "Debug.h"
 #include "SceneBattle.h"
-
+#include "SceneSurvival.h"
+#include <Singleton.h>
+#include "GameManager.h"
 using namespace aetherClass;
 
 SceneSkill::SceneSkill():
@@ -41,6 +43,8 @@ bool SceneSkill::Initialize(){
 	m_pModelBase->SetTexture(m_pTexture.get());
 
 	RegisterScene(new SceneBattle());
+	RegisterScene(new SceneSurvival());
+
 	return true;
 }
 
@@ -51,7 +55,8 @@ void SceneSkill::Finalize(){
 
 bool SceneSkill::Updater(){
 	if (GameController::GetMouse().IsLeftButtonTrigger()){
-		ChangeScene("Battle", LoadState::eUnuse, LoadWaitState::eUnuse);
+		Singleton<GameManager>::GetInstance().mSkillType(GameManager::eSkillType::eNull);
+		ChangeScene("Survival", LoadState::eUnuse, LoadWaitState::eUnuse);
 	}
 	return true;
 }
