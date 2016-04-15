@@ -19,6 +19,10 @@ void ActionSound::mPlaySoundAction(float volume){
 	m_sound.PlayToOneTime();
 }
 
+void ActionSound::mStop(){
+	m_sound.Stop();
+}
+
 bool ActionSound::mIsPlayEnd(){
 	return m_sound.IsPlayEnd();
 }

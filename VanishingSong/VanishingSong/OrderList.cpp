@@ -83,13 +83,17 @@ void OrderList::mUpdate(float){
 	if (m_orderList.size() == 0){
 		return;
 	}
-
 	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
-	if(GameController::GetKey().KeyDownTrigger(VK_SPACE)){
-		m_isStart = !m_isStart;
-		m_backImage->property._color._red = 1 - m_backImage->property._color._red;
-		sound->mPlaySoundAction(m_volume);
+	if (GameController::GetKey().KeyDownTrigger(VK_SPACE)){
+		if (!m_isStart){
+			mListPlay();
+		}
+		else{
+			sound->mStop();
+			mListStop();
+		}
 	}
+
 	if (m_isStart){
 
 		m_listFirst = m_orderList[0];
@@ -97,9 +101,7 @@ void OrderList::mUpdate(float){
 		if (sound->mIsPlayEnd() && m_orderList.size() != 0){
 			m_orderList.erase(m_orderList.begin());
 			if (m_orderList.size() == 0){
-				m_backImage->property._color._red = 1 - m_backImage->property._color._red;
-				m_isStart = false;
-				m_listFirst = std::make_shared<ActionNull>();
+				mListStop();
 				return;
 			}
 			auto nextSound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
@@ -124,7 +126,22 @@ int OrderList::mGetVolume(){
 }
 
 void OrderList::mAddOrder(std::shared_ptr<ActionCommand> input){
+	if (m_isStart)return;
 	if (m_orderList.size() >= m_kMaxOrderSize) return;
 	m_orderList.push_back(input);
 }
 
+
+void OrderList::mListPlay(){
+	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
+
+	m_backImage->property._color._red = 1 - m_backImage->property._color._red;
+	sound->mPlaySoundAction(m_volume);
+	m_isStart = true;
+}
+void OrderList::mListStop(){
+	m_orderList.clear();
+	m_listFirst = std::make_shared<ActionNull>();
+	m_backImage->property._color._red = 1 - m_backImage->property._color._red;
+	m_isStart = false;
+}
