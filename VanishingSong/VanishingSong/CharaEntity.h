@@ -76,9 +76,9 @@ public:
 	/*
 	アニメーションの値セット用
 	*/
-	bool LoadAnimation(std::vector<Animation>&animationVector,std::string startState, std::string endState);
+	bool mLoadAnimation(std::vector<Animation>&animationVector,std::string startState, std::string endState);
 
-	Gear::eType SetPartsValue(std::string, aetherClass::Transform* input, aetherClass::Transform value);
+	Gear::eType mSetPartsValue(std::string, aetherClass::Transform* input, aetherClass::Transform value);
 
 	aetherClass::Transform mGetTransformInterpolation(aetherClass::Transform, aetherClass::Transform, const int allFrame, const int nowFrame);
 };

@@ -16,8 +16,6 @@ public:
 		eBody,
 		
 		// òrÉpÅ[Éc
-		eRightShourlder,
-		eLeftShourlder,
 		eRightUpperArm,
 		eLeftUpperArm,
 		eRightLowerArm,

@@ -15,6 +15,8 @@ CharaEntity::~CharaEntity()
 {
 }
 
+/*
+*/
 std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType, aetherClass::ViewCamera* view){
 	std::shared_ptr<Gear> pGear;
 	bool success;
@@ -164,13 +166,13 @@ Transform CharaEntity::mGetTransformInterpolation(Transform first, Transform las
 	Transform output;
 
 	// à⁄ìÆ
-	output._translation = Interpolation<Vector3>(first._translation, last._translation, allFrame, nowFrame);
+	output._translation = gInterpolation<Vector3>(first._translation, last._translation, allFrame, nowFrame);
 
 	// âÒì]
-	output._rotation = Interpolation<Vector3>(first._rotation, last._rotation, allFrame, nowFrame);
+	output._rotation = gInterpolation<Vector3>(first._rotation, last._rotation, allFrame, nowFrame);
 
 	// ägëÂèkè¨
-	output._scale = Interpolation<Vector3>(first._scale, last._scale, allFrame, nowFrame);
+	output._scale = gInterpolation<Vector3>(first._scale, last._scale, allFrame, nowFrame);
 
 	return output;
 }
@@ -260,7 +262,7 @@ void CharaEntity::mGearKeyframeTranslation(std::shared_ptr<Gear> gear, aetherCla
 
 }
 
-Gear::eType CharaEntity::SetPartsValue(std::string partsName, Transform* input, Transform value){
+Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input, Transform value){
 	/*	ëÃ	*/
 	if (partsName == "Body"){
 
@@ -331,7 +333,9 @@ Gear::eType CharaEntity::SetPartsValue(std::string partsName, Transform* input, 
 	return Gear::eType::eNull;
 }
 
-bool CharaEntity::LoadAnimation(std::vector<Animation>&animationVector,std::string startState, std::string endState){
+/*
+*/
+bool CharaEntity::mLoadAnimation(std::vector<Animation>&animationVector,std::string startState, std::string endState){
 	WorldReader read;
 	bool result;
 	result = read.Load(startState);
@@ -342,7 +346,7 @@ bool CharaEntity::LoadAnimation(std::vector<Animation>&animationVector,std::stri
 	Animation animation;
 	for (auto index : read.GetInputWorldInfo()._object)
 	{
-		animation._name = SetPartsValue(index->_name, &animation._start, index->_transform);
+		animation._name = mSetPartsValue(index->_name, &animation._start, index->_transform);
 		animationVector.push_back(animation);
 	}
 	read.UnLoad();
@@ -358,7 +362,7 @@ bool CharaEntity::LoadAnimation(std::vector<Animation>&animationVector,std::stri
 		for (auto& endIndex : animationVector)
 		{
 			Gear::eType type;
-			type = SetPartsValue(index->_name, &animation._end, index->_transform);
+			type = mSetPartsValue(index->_name, &animation._end, index->_transform);
 
 			if (endIndex._name == type)
 			{

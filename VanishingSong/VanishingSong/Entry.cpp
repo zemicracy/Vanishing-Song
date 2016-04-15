@@ -10,7 +10,6 @@
 #include <GameSceneManager.h>
 #include "SceneSurvival.h"
 #include "VanishingSongFrame.h"
-
 using namespace aetherClass;
 
 namespace{
@@ -54,7 +53,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	}
 
 	//一番最初のシーンの設定
-	GameScene* scene = new SceneSurvival;
+	GameScene* scene = new SceneSurvival();
 	GameSceneManager::SetCurrentScene(scene);
 
 	//メインループの開始

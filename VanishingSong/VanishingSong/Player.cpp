@@ -7,6 +7,11 @@
 #include <GameClock.h>
 using namespace aetherClass;
 
+namespace{
+	const int kWaitAnimationFrame = 60;
+	const int kMoveAnimationFrame = 5;
+}
+
 Player::Player()
 {
 	m_pGearFrame = nullptr;
@@ -22,26 +27,29 @@ Player::~Player()
 
 //
 bool Player::mInitialize(){
+	bool result;
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤー デバッグモードです");
 		Debug::mPrint("プレイヤー 初期化を開始します");
-		Debug::mPrint("");
 	}
 
 	mFinalize();
 
 	m_playerView.property._translation = Vector3(0, 0, -20);
 	// ギア系の初期化用
-	mInitializeGear(m_pGearFrame, &m_playerView);
-
-	// パーツの初期位置
-	mLoadModelProperty(m_pGearFrame, "data\\PlayerModel.aether");
-
-	if (kCharaDebug)
+	result = mInitializeGear(m_pGearFrame, &m_playerView);
+	if (!result)
 	{
-		Debug::mPrint("プレイヤー 初期化終了しました");
-		Debug::mPrint("");
+		Debug::mErrorPrint("ギアの初期化に失敗", __FILE__, __LINE__);
+		return false;
+	}
+	// パーツの初期位置
+	result = mLoadModelProperty(m_pGearFrame, "data\\PlayerDefault.aether");
+	if (!result)
+	{
+		Debug::mErrorPrint("ギアの位置反映に失敗", __FILE__, __LINE__);
+		return false;
 	}
 
 	m_cameraOffset._translation = m_playerView.property._translation;
@@ -52,7 +60,16 @@ bool Player::mInitialize(){
 	// 初期位置の設定
 	m_charaEntity.mGearMove(m_pTopGear, Vector3(0, 20, 0));
 
-	mInitializeCollider(m_pCubeCollider, m_pTopGear->_pGear->property._transform._translation,Vector3(1, -5, -0));
+	// コライダーの初期化
+	mSetUpCollider(m_pCubeCollider, m_pTopGear->_pGear->property._transform._translation, Vector3(1, -5, -0));
+
+	/*	基本的なアニメーションの登録	*/
+	mRegisterAnimation(Player::eState::eMove, "data\\PlayerDefault.aether", "data\\PlayerMove.aether");
+	mRegisterAnimation(Player::eState::eWait, "data\\PlayerDefault.aether", "data\\PlayerWait.aether");
+	if (kCharaDebug)
+	{
+		Debug::mPrint("プレイヤー 初期化終了しました");
+	}
 	return true;
 }
 
@@ -91,10 +108,11 @@ void Player::mFinalize(){
 
 	// ステータスのリセット
 	m_status.Reset();
+	m_defaultAnimation.clear();
 
 	m_prevCommand = eCommandType::eNull;
-	m_state = Player::eState::eNull;
-	m_actionCount = NULL;
+	m_prevState = eState::eNull;
+
 	return;
 }
 
@@ -103,20 +121,20 @@ void Player::mFinalize(){
 プレイヤーの更新処理
 */
 void Player::mUpdate(const float timeScale){
-
+	Player::eState state= eState::eNull;
 	// 移動に使う値のを取得
 	Transform transform = mReadKey(timeScale);
 
 	// 移動に変化量があれば
 	if (transform._translation == kVector3Zero){
-		Debug::mPrint("WAIT");
-		
-		m_state = eState::eWait;
+		state = eState::eWait;
 	}
 	else{
-		Debug::mPrint("MOVE");
-		m_state = eState::eMove;
+		state = eState::eMove;
 	}
+
+	// 基本的なアニメーションの再生
+	mGetAnimationTransform(state,transform);
 
 	// 実際の移動処理
 	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
@@ -155,7 +173,7 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 
 	if (kCharaDebug)
 	{
-		m_pCubeCollider->Render(modelShader);
+	//	m_pCubeCollider->Render(modelShader);
 	}
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
@@ -172,19 +190,19 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 
 	// 前回と違えば実行数を0にする
 	if (m_status._nowCommand != m_prevCommand){
-		m_actionCount = kZeroPoint;
+		m_actionCount._commandFrame = kZeroPoint;
 		Debug::mPrint("Change Action");
 	}
 
 	// アクションの実行
-	command->mAction(m_pGearFrame, timeScale,m_actionCount);
+	command->mAction(m_pGearFrame, timeScale,m_actionCount._commandFrame);
 
 	if (GameController::GetKey().KeyDownTrigger('F'))
 	{
-		Debug::mPrint("Run Action :" + std::to_string(m_actionCount) + "回目");
+		Debug::mPrint("Run Action :" + std::to_string(m_actionCount._commandFrame) + "回目");
 	}
 	
-	m_actionCount += 1;
+	m_actionCount._commandFrame += 1;
 
 	// 状態を上書き
 	m_prevCommand = m_status._nowCommand;
@@ -199,7 +217,6 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 */
 void Player::mAddPrevActionCmmand(eCommandType action, const int id){
 	m_status._prevActionList[id] = action;
-
 	return;
 }
 
@@ -422,13 +439,112 @@ Transform Player::mReadKey(const float timeScale){
 	return transform;
 }
 
-void Player::mInitializeCollider(std::shared_ptr<aetherClass::Cube>& collider, Vector3 original, Vector3 offset){
+/*
+*/
+void Player::mSetUpCollider(std::shared_ptr<aetherClass::Cube>& collider, Vector3 original, Vector3 offset){
 	collider = std::make_shared<Cube>();
 	collider->Initialize();
 	collider->property._transform._translation = original + offset;
 	collider->property._transform._scale = 10;
 	collider->property._color = Color(1, 0, 0, 0.5);
 	collider->SetCamera(&m_playerView);
+	return;
+}
+
+/*
+*/
+void Player::mRegisterAnimation(Player::eState key, std::string first, std::string last){
+	std::vector<Animation> animationVector;
+	bool result = false;
+
+	// 既にある登録済みなら何もしない
+	if (m_defaultAnimation.find(key) != m_defaultAnimation.end()) return;
+
+	result = m_charaEntity.mLoadAnimation(animationVector, first, last);
+	if (!result)
+	{
+		Debug::mErrorPrint("読み込み失敗", __FILE__, __LINE__);
+		return;
+	}
+
+	// 登録
+	m_defaultAnimation.insert(std::make_pair(key, animationVector));
+
+	return;
+}
+
+/*
+*/
+void Player::mGetAnimationTransform(Player::eState state, Transform transform){
+
+	// 前回と違うときは更新
+	if (m_prevState != state){
+		m_actionCount._defaultFrame = NULL;
+		m_prevState = state;
+	}
+
+	Transform animationTransform;
+
+	if (m_defaultAnimation.find(state) == m_defaultAnimation.end()) return;
+
+	switch (state)
+	{
+	case Player::eState::eMove:
+		for (auto index : m_defaultAnimation[state])
+		{
+			animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end, kMoveAnimationFrame, m_actionCount._defaultFrame);
+
+			animationTransform._translation += transform._translation;
+			animationTransform._rotation += transform._rotation;
+			// アニメーションの反映
+			gGearFrameAnimation(m_pGearFrame, index._name, animationTransform);
+
+		}
+		break;
+	case Player::eState::eWait:
+		for (auto index : m_defaultAnimation[state])
+		{
+			animationTransform._translation += transform._translation;
+			animationTransform._rotation += transform._rotation;
+			animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end, kWaitAnimationFrame, m_actionCount._defaultFrame);
+			// アニメーションの反映
+			gGearFrameAnimation(m_pGearFrame, index._name, animationTransform);
+
+		}
+		break;
+	case Player::eState::eNull:
+		break;
+	default:
+		break;
+	}
+	
+	
+	if (state == eState::eWait){
+		// カウンターの状態に合わせてフレームカウントの更新
+		if (m_actionCount._changeDefaultFrame){
+			m_actionCount._defaultFrame -= 1;
+		}
+		else{
+			m_actionCount._defaultFrame += 1;
+		}
+
+		/*	カウンターの状態を切り替える	*/
+		if (m_actionCount._defaultFrame > kWaitAnimationFrame){
+			m_actionCount._changeDefaultFrame = true;
+		}
+		else if (m_actionCount._defaultFrame < kZeroPoint){
+			m_actionCount._changeDefaultFrame = false;
+		}
+	}
+	else{
+		m_actionCount._defaultFrame += 1;
+	}
+	
+	return;
 }
 
 
+void Player::mRegisterParts(Gear::eType, std::shared_ptr<Gear>&){
+
+	return;
+}

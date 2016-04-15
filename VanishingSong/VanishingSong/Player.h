@@ -6,6 +6,7 @@
 #include "CharaEntity.h"
 #include "Const.h"
 #include "ActionCommand.h"
+#include "Animation.h"
 #include <Cube.h>
 #include <ShaderBase.h>
 #include <Transform.h>
@@ -28,6 +29,28 @@ private:
 	{
 		aetherClass::Vector3 _translation;
 		aetherClass::Vector3 _rotation;
+	};
+
+
+	struct Counter{
+		Counter(){
+			Reset();
+		}
+
+		~Counter(){
+			Reset();
+		}
+		int _defaultFrame;
+		int _commandFrame;
+		bool _changeDefaultFrame;
+		bool _changeCommandFrame;
+	private:
+		void Reset(){
+			_defaultFrame = NULL;
+			_commandFrame = NULL;
+			_changeDefaultFrame = false;
+			_changeCommandFrame = false;
+		}
 	};
 public:
 	Player();
@@ -87,7 +110,13 @@ private:
 
 	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 
-	void mInitializeCollider(std::shared_ptr<aetherClass::Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
+	void mSetUpCollider(std::shared_ptr<aetherClass::Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
+
+	void mRegisterAnimation(Player::eState key, std::string first, std::string last);
+
+	void mGetAnimationTransform(Player::eState state,aetherClass::Transform);
+
+	void mRegisterParts(Gear::eType, std::shared_ptr<Gear>&);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
@@ -96,13 +125,17 @@ private:
 
 	CharaStatus m_status;
 	eCommandType m_prevCommand;
+	eState m_prevState;
 	CharaEntity m_charaEntity;
-	eState m_state;
 	Offset m_cameraOffset;
 	aetherClass::Vector3 m_cameraRotation;
-	int m_actionCount;// アクションを行った数を保存しとく用
+	Counter m_actionCount;			// アクションを行った数を保存しとく用
 
 	std::shared_ptr<aetherClass::Cube> m_pCubeCollider;
+
+	std::unordered_map<eState, std::vector<Animation>> m_defaultAnimation;
+
+	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearPartsHash;
 };
 
 #endif
