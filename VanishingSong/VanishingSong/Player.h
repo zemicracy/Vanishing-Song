@@ -31,7 +31,6 @@ private:
 		aetherClass::Vector3 _rotation;
 	};
 
-
 	struct Counter{
 		Counter(){
 			Reset();
@@ -51,6 +50,17 @@ private:
 			_changeDefaultFrame = false;
 			_changeCommandFrame = false;
 		}
+	};
+
+	
+	struct AnimationFrame{
+		std::vector<Animation> _animation;
+		int _animationFrame;
+	};
+
+	struct TransformState{
+		Player::eState _state;
+		aetherClass::Transform _transform;
 	};
 public:
 	Player();
@@ -100,7 +110,7 @@ private:
 	プレイヤーに対するキー入力処理
 	現状移動処理と回転処理
 	*/
-	aetherClass::Transform mReadKey(const float timeScale);
+	TransformState mReadKey(const float timeScale);
 
 	bool mInitializeGear(std::shared_ptr<GearFrame>&, aetherClass::ViewCamera*);
 
@@ -112,19 +122,21 @@ private:
 
 	void mSetUpCollider(std::shared_ptr<aetherClass::Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
 
-	void mRegisterAnimation(Player::eState key, std::string first, std::string last);
+	void mRegisterAnimation(Player::eState key,const int allFrame, std::string first, std::string last);
 
 	void mGetAnimationTransform(Player::eState state,aetherClass::Transform);
 
-	void mRegisterParts(Gear::eType, std::shared_ptr<Gear>&);
+	void mRegisterParts(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&,Gear::eType, std::shared_ptr<Gear>&);
+
+	void mLookAtView(aetherClass::ViewCamera&,aetherClass::Vector3 rotation,aetherClass::Vector3 lookAtPosition);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;
 	std::shared_ptr<ActionCommand> m_pActionCommand;
 	std::shared_ptr<Gear> m_pTopGear;
 	aetherClass::ViewCamera m_playerView;
 
-	aetherClass::Transform moveTransform;
-	Player::eState m_state;
+	aetherClass::Transform m_moveTransform;
+	
 	CharaStatus m_status;
 	eCommandType m_prevCommand;
 	eState m_prevState;
@@ -135,7 +147,7 @@ private:
 
 	std::shared_ptr<aetherClass::Cube> m_pCubeCollider;
 
-	std::unordered_map<eState, std::vector<Animation>> m_defaultAnimation;
+	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;
 
 	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearPartsHash;
 };

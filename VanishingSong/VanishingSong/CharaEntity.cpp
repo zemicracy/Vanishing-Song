@@ -103,30 +103,30 @@ void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move){
 	ギアを持つオブジェクトの回転用	
 	仕組みはmGearRenderと一緒
 */
-void CharaEntity::mBodyGearRotation(std::shared_ptr<Gear> gear, const Vector3 rotation){
+void CharaEntity::mTopGearRotation(std::shared_ptr<Gear> gear, const Vector3 rotation){
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
-
 	if (gear->_pParent)
 	{
-	
+
 		auto gearRotation = gear->_pParent->_pGear->property._transform._rotation;
 		auto gearTranslation = gear->_pParent->_pGear->property._transform._translation;
 
-		gear->_pGear->property._transform._rotation = gearRotation + gear->_parentDifference._rotation;
-
+		
 		Matrix4x4 rotationMatrix;
 		rotationMatrix.PitchYawRoll(gearRotation*kAetherRadian);
-		Vector3 position = gear->_parentDifference._translation;
+		Vector3 position = gear->_pGear->property._transform._translation;
 		position = position.TransformCoordNormal(rotationMatrix);
 
 		gear->_pGear->property._transform._translation = gearTranslation + position;
+
 	}
+	
 	gear->_pGear->property._transform._rotation += rotation;
 
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
-		mBodyGearRotation(child, rotation);
+		mTopGearRotation(child, rotation);
 	}
 
 

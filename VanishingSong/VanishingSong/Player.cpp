@@ -17,7 +17,6 @@ Player::Player()
 	m_pGearFrame = nullptr;
 	m_pTopGear = nullptr;
 	m_pActionCommand = nullptr;
-	m_state = Player::eState::eNull;
 }
 
 
@@ -59,15 +58,32 @@ bool Player::mInitialize(){
 	m_cameraRotation = kVector3Zero;
 
 	// 初期位置の設定
-//	m_charaEntity.mGearMove(m_pTopGear, Vector3(0, 20, 0));
-	moveTransform._translation._y = 20;
+	m_moveTransform._translation= Vector3(0,20,0);
+
+	// 連想配列に登録
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eBody, m_pGearFrame->m_pBody);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eWaist, m_pGearFrame->m_pWaist);
+
+	// 左
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftHand, m_pGearFrame->m_pLeftHand);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftLowerArm, m_pGearFrame->m_pLeftLowerArm);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftLowerLeg, m_pGearFrame->m_pLeftLowerLeg);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftUpperArm, m_pGearFrame->m_pLeftUpperArm);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftUpperLeg, m_pGearFrame->m_pLeftUpperLeg);
+
+	// 右
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eRightHand, m_pGearFrame->m_pRightHand);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eRightLowerArm, m_pGearFrame->m_pRightLowerArm);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eRightLowerLeg, m_pGearFrame->m_pRightLowerLeg);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eRightUpperArm, m_pGearFrame->m_pRightUpperArm);
+	mRegisterParts(m_pGearPartsHash, Gear::eType::eRightUpperLeg, m_pGearFrame->m_pRightUpperLeg);
 
 	// コライダーの初期化
 	mSetUpCollider(m_pCubeCollider, m_pTopGear->_pGear->property._transform._translation, Vector3(1, -5, -0));
 
 	/*	基本的なアニメーションの登録	*/
-	mRegisterAnimation(Player::eState::eMove, "data\\PlayerDefault.aether", "data\\PlayerMove.aether");
-	mRegisterAnimation(Player::eState::eWait, "data\\PlayerDefault.aether", "data\\PlayerWait.aether");
+	mRegisterAnimation(Player::eState::eMove, kMoveAnimationFrame,"data\\PlayerDefault.aether", "data\\PlayerMove.aether");
+	mRegisterAnimation(Player::eState::eWait, kWaitAnimationFrame,"data\\PlayerDefault.aether", "data\\PlayerWait.aether");
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤー 初期化終了しました");
@@ -125,20 +141,28 @@ void Player::mFinalize(){
 void Player::mUpdate(const float timeScale){
 	
 	Transform animTransform;
-	// 基本的なアニメーションの再生
-	mGetAnimationTransform(m_state,animTransform);
 
 	// 移動に使う値のを取得
-	moveTransform._translation += mReadKey(timeScale)._translation;
+	m_moveTransform._translation += mReadKey(timeScale)._transform._translation;
+	m_moveTransform._rotation += mReadKey(timeScale)._transform._rotation;
+	
+	eState state = mReadKey(timeScale)._state;
+	// 基本的なアニメーションの再生
+	mGetAnimationTransform(state, animTransform);
+
 
 	// 実際の移動処理
-	animTransform._translation += moveTransform._translation;
+	animTransform._translation += m_moveTransform._translation;
+	animTransform._rotation+= m_moveTransform._rotation;
+
 	m_charaEntity.mGearMove(m_pTopGear, animTransform._translation);
+	m_charaEntity.mTopGearRotation(m_pTopGear, m_moveTransform._rotation);
+
+	// コライダーは常にBodyと同じにしておく
+	m_pCubeCollider->property._transform._translation = m_pGearFrame->m_pBody->_pGear->property._transform._translation;
 	
-	// コライダーも動かす
-	m_pCubeCollider->property._transform._translation += animTransform._translation;
-	
-	if (GameController::GetKey().IsKeyDown('Q'))
+
+	/*if (GameController::GetKey().IsKeyDown('Q'))
 	{
 		m_cameraRotation._y += 1.03f;
 		
@@ -146,18 +170,9 @@ void Player::mUpdate(const float timeScale){
 	else if (GameController::GetKey().IsKeyDown('E')){
 		m_cameraRotation._y -= 1.03f;
 		
-	}
+	}*/
+	mLookAtView(m_playerView,m_cameraRotation,m_pTopGear->_pGear->property._transform._translation);
 	
-	auto gearTranslation = m_pTopGear->_pGear->property._transform._translation;
-
-	Matrix4x4 rotationMatrix;
-	rotationMatrix.PitchYawRoll(m_cameraRotation*kAetherRadian);
-	Vector3 position = m_cameraOffset._translation;
-	position = position.TransformCoordNormal(rotationMatrix);
-
-	m_playerView.property._translation = gearTranslation+position;
-	m_playerView.property._rotation = m_cameraRotation + m_cameraOffset._rotation;
-
 	return;
 }
 
@@ -391,53 +406,44 @@ void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
 キーを読み込む
 返りは今のところtransform
 */
-Transform Player::mReadKey(const float timeScale){
+Player::TransformState Player::mReadKey(const float timeScale){
 
-	Transform transform;
+	TransformState state;
 
 	// 奥行の移動(Z軸)
 	if (GameController::GetKey().IsKeyDown('W')){
-		transform._translation._z = GameClock::GetDeltaTime()*timeScale;
+		state._transform._translation._z = GameClock::GetDeltaTime()*timeScale;
 	}
 	else if (GameController::GetKey().IsKeyDown('S')){
-		transform._translation._z = -(GameClock::GetDeltaTime()*timeScale);
+		state._transform._translation._z = -(GameClock::GetDeltaTime()*timeScale);
 	}
 
 	// 横の移動(X軸)
 	if (GameController::GetKey().IsKeyDown('D')){
-		transform._translation._x = GameClock::GetDeltaTime()*timeScale;
+		state._transform._translation._x = GameClock::GetDeltaTime()*timeScale;
 	}
 	else if (GameController::GetKey().IsKeyDown('A')){
-		transform._translation._x = -(GameClock::GetDeltaTime()*timeScale);
-	}
-
-	//臨時上方向
-	if (GameController::GetKey().IsKeyDown('Z')){
-		transform._translation._y = GameClock::GetDeltaTime()*timeScale;
-	}
-	else if (GameController::GetKey().IsKeyDown('X')){
-		transform._translation._y = -(GameClock::GetDeltaTime()*timeScale);
+		state._transform._translation._x = -(GameClock::GetDeltaTime()*timeScale);
 	}
 
 	// 移動があれば
-	if ( transform._translation == kVector3Zero){
-		m_state = eState::eWait;
+	if (state._transform._translation == kVector3Zero){
+		state._state = eState::eWait;
 	}
 	else{
-		m_state = eState::eMove;
+		state._state = eState::eMove;
 	}
-
 
 	// キャラがデバッグモードじゃないならここで終了
-	if (!kCharaDebug) return transform;
+	if (!kCharaDebug) return state;
 
 	// 回転用(Y軸)
-	/*if (GameController::GetKey().IsKeyDown('Q')){
-		transform._rotation._y = GameClock::GetDeltaTime()*timeScale * 100;
+	if (GameController::GetKey().IsKeyDown('Q')){
+		state._transform._rotation._y = GameClock::GetDeltaTime()*timeScale * 1;
 	}
 	else if (GameController::GetKey().IsKeyDown('E')){
-		transform._rotation._y = -(GameClock::GetDeltaTime()*timeScale * 100);
-	}*/
+		state._transform._rotation._y = -(GameClock::GetDeltaTime()*timeScale * 1);
+	}
 
 	// デバッグ用
 	Vector3 debug = m_pTopGear->_pGear->property._transform._translation;
@@ -449,7 +455,7 @@ Transform Player::mReadKey(const float timeScale){
 		Debug::mPrint("------------------------");
 	}
 
-	return transform;
+	return state;
 }
 
 /*
@@ -466,22 +472,23 @@ void Player::mSetUpCollider(std::shared_ptr<aetherClass::Cube>& collider, Vector
 
 /*
 */
-void Player::mRegisterAnimation(Player::eState key, std::string first, std::string last){
-	std::vector<Animation> animationVector;
+void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::string first, std::string last){
+	AnimationFrame animation;
 	bool result = false;
 
 	// 既にある登録済みなら何もしない
 	if (m_defaultAnimation.find(key) != m_defaultAnimation.end()) return;
 
-	result = m_charaEntity.mLoadAnimation(animationVector, first, last);
+	result = m_charaEntity.mLoadAnimation(animation._animation, first, last);
 	if (!result)
 	{
 		Debug::mErrorPrint("読み込み失敗", __FILE__, __LINE__);
 		return;
 	}
+	animation._animationFrame = allFrame;
 
 	// 登録
-	m_defaultAnimation.insert(std::make_pair(key, animationVector));
+	m_defaultAnimation.insert(std::make_pair(key, animation));
 
 	return;
 }
@@ -500,39 +507,29 @@ void Player::mGetAnimationTransform(Player::eState m_state, Transform transform)
 
 	if (m_defaultAnimation.find(m_state) == m_defaultAnimation.end()) return;
 
-	switch (m_state)
+	/*	アニメーション実行処理	*/
+	const int allFrame = m_defaultAnimation[m_state]._animationFrame;
+	for (auto index : m_defaultAnimation[m_state]._animation)
 	{
-	case Player::eState::eMove:
-		for (auto index : m_defaultAnimation[m_state])
-		{
-			animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end, kMoveAnimationFrame, m_actionCount._defaultFrame);
+		animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end,allFrame , m_actionCount._defaultFrame);
 
-			animationTransform._translation += transform._translation;
-			animationTransform._rotation += transform._rotation;
-			// アニメーションの反映
-			gGearFrameAnimation(m_pGearFrame, index._name, animationTransform);
-
+		animationTransform._translation += transform._translation;
+		animationTransform._rotation += transform._rotation;
+		if (m_pGearPartsHash.find(index._name) != m_pGearPartsHash.end()){
+			m_pGearPartsHash[index._name]->_pGear->property._transform = animationTransform;
 		}
-		break;
-	case Player::eState::eWait:
-		for (auto index : m_defaultAnimation[m_state])
-		{
-			animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end, kWaitAnimationFrame, m_actionCount._defaultFrame);
-			animationTransform._translation += transform._translation;
-			animationTransform._rotation += transform._rotation;
-			// アニメーションの反映
-			gGearFrameAnimation(m_pGearFrame, index._name, animationTransform);
-
-		}
-		break;
-	case Player::eState::eNull:
-		break;
-	default:
-		break;
 	}
-	
+
 	
 	if (m_state == eState::eWait){
+		/*	カウンターの状態を切り替える	*/
+		if (m_actionCount._defaultFrame > kWaitAnimationFrame){
+			m_actionCount._changeDefaultFrame = true;
+		}
+		else if (m_actionCount._defaultFrame < kZeroPoint){
+			m_actionCount._changeDefaultFrame = false;
+		}
+
 		// カウンターの状態に合わせてフレームカウントの更新
 		if (m_actionCount._changeDefaultFrame){
 			m_actionCount._defaultFrame -= 1;
@@ -541,23 +538,33 @@ void Player::mGetAnimationTransform(Player::eState m_state, Transform transform)
 			m_actionCount._defaultFrame += 1;
 		}
 
-		/*	カウンターの状態を切り替える	*/
-		if (m_actionCount._defaultFrame > kWaitAnimationFrame){
-			m_actionCount._changeDefaultFrame = true;
-		}
-		else if (m_actionCount._defaultFrame < kZeroPoint){
-			m_actionCount._changeDefaultFrame = false;
-		}
 	}
 	else{
 		m_actionCount._defaultFrame += 1;
 	}
-	
+
 	return;
 }
 
 
-void Player::mRegisterParts(Gear::eType, std::shared_ptr<Gear>&){
+void Player::mRegisterParts(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash,Gear::eType type, std::shared_ptr<Gear>& parts){
 
+	// 登録済みなら何もしない
+	if (hash.find(type) != hash.end() || !parts)return;
+
+	hash.insert(std::make_pair(type, parts));
 	return;
+}
+
+
+void Player::mLookAtView(ViewCamera& view,Vector3 rotation,Vector3 lookAtPosition){
+	
+	Matrix4x4 rotationMatrix;
+	rotationMatrix.PitchYawRoll(rotation*kAetherRadian);
+	Vector3 position = m_cameraOffset._translation;
+	position = position.TransformCoordNormal(rotationMatrix);
+
+	view.property._translation = lookAtPosition + position;
+	view.property._rotation = rotation + m_cameraOffset._rotation;
+
 }

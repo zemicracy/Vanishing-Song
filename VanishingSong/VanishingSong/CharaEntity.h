@@ -48,7 +48,7 @@ public:
 		体全体を均一に回転する
 		仕組みはmGearRenderと一緒
 	*/
-	void mBodyGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
+	void mTopGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
 
 	/*
 		ギアを持つオブジェクトの回転用
