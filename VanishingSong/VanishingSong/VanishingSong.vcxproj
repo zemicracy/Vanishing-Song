@@ -11,7 +11,68 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionBoard.cpp" />
+    <ClCompile Include="ActionCommand.cpp" />
+    <ClCompile Include="ActionSound.cpp" />
+    <ClCompile Include="CharaEntity.cpp" />
+    <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="EnemyAI.cpp" />
+    <ClCompile Include="EnemyBase.cpp" />
+    <ClCompile Include="EnemyDie.cpp" />
+    <ClCompile Include="EnemyGround.cpp" />
+    <ClCompile Include="EnemyMove.cpp" />
+    <ClCompile Include="EnemyWait.cpp" />
     <ClCompile Include="Entry.cpp" />
+    <ClCompile Include="FieldArea.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="Gear.cpp" />
+    <ClCompile Include="GearFrame.cpp" />
+    <ClCompile Include="HalfFillShader.cpp" />
+    <ClCompile Include="HPGauge.cpp" />
+    <ClCompile Include="OrderList.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="SceneSurvival.cpp" />
+    <ClCompile Include="VanishingSongFrame.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ActionBoard.h" />
+    <ClInclude Include="ActionCommand.h" />
+    <ClInclude Include="ActionExAttack.h" />
+    <ClInclude Include="ActionExBuff.h" />
+    <ClInclude Include="ActionExHeel.h" />
+    <ClInclude Include="ActionExShield.h" />
+    <ClInclude Include="ActionLeftStep.h" />
+    <ClInclude Include="ActionLongAttack.h" />
+    <ClInclude Include="ActionNull.h" />
+    <ClInclude Include="ActionRightStep.h" />
+    <ClInclude Include="ActionShield.h" />
+    <ClInclude Include="ActionShortAttack.h" />
+    <ClInclude Include="ActionSound.h" />
+    <ClInclude Include="ActionStrongShield.h" />
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="CharaEntity.h" />
+    <ClInclude Include="CharaStatus.h" />
+    <ClInclude Include="Const.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="EnemyAI.h" />
+    <ClInclude Include="EnemyBase.h" />
+    <ClInclude Include="EnemyDie.h" />
+    <ClInclude Include="EnemyGround.h" />
+    <ClInclude Include="EnemyMove.h" />
+    <ClInclude Include="EnemyWait.h" />
+    <ClInclude Include="FieldArea.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="Gear.h" />
+    <ClInclude Include="GearFrame.h" />
+    <ClInclude Include="HalfFillShader.h" />
+    <ClInclude Include="HPGauge.h" />
+    <ClInclude Include="OrderList.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="SceneSurvival.h" />
+    <ClInclude Include="Utility.h" />
+    <ClInclude Include="VanishingSongFrame.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{921BB35A-103B-4AEE-B6AF-E06DE45B8921}</ProjectGuid>
