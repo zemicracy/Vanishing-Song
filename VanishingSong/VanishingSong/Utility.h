@@ -53,42 +53,58 @@ static void gGearFrameAnimation(std::shared_ptr<GearFrame> gearFrame, Gear::eTyp
 	switch (type)
 	{
 	case Gear::eType::eBody:
-		animation = trans.Transmatrix();
-		
-		gearFrame->m_pBody->_pGear->property._transform._translation.TransformCoordNormal(animation);
-		gearFrame->m_pBody->_pGear->property._transform._rotation.TransformCoordNormal(animation);
+		gearFrame->m_pBody->_pGear->property._transform = trans;
+
+		//animation = trans.Transmatrix();
+		//
+		//gearFrame->m_pBody->_pGear->property._transform._translation.TransformCoordNormal(animation);
+		//gearFrame->m_pBody->_pGear->property._transform._rotation.TransformCoordNormal(animation);
 		break;
 	case Gear::eType::eRightUpperArm:
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
+		gearFrame->m_pRightUpperArm->_pGear->property._transform = trans;
+
+		//gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
+		//gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
 		break;
 	case Gear::eType::eLeftUpperArm:
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
+		gearFrame->m_pLeftUpperArm->_pGear->property._transform = trans;
+
+		//gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
+		//gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
 		break;
 	case Gear::eType::eRightLowerArm:
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
+		gearFrame->m_pRightLowerArm->_pGear->property._transform = trans;
+
+		//gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
+		//gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
 
 		break;
 	case Gear::eType::eLeftLowerArm:
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
+		gearFrame->m_pLeftLowerArm->_pGear->property._transform = trans;
+
+		/*gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
+		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);*/
 
 		break;
 	case Gear::eType::eWaist:
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
+		gearFrame->m_pWaist->_pGear->property._transform = trans;
+
+		/*gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
+		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);*/
 
 		break;
 	case Gear::eType::eRightUpperLeg:
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
+		gearFrame->m_pRightUpperLeg->_pGear->property._transform = trans;
+
+		/*gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
+		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);*/
 
 		break;
 	case Gear::eType::eLeftUpperLeg:
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
-		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);
+		gearFrame->m_pLeftUpperLeg->_pGear->property._transform = trans;
+
+		/*gearFrame->m_pRightUpperArm->_pGear->property._transform._translation.TransformCoordNormal(animation);
+		gearFrame->m_pRightUpperArm->_pGear->property._transform._rotation.TransformCoordNormal(animation);*/
 
 		break;
 	case Gear::eType::eRightLowerLeg:
