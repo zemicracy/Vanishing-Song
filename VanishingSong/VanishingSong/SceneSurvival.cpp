@@ -6,7 +6,7 @@
 #include <Singleton.h>
 using namespace aetherClass;
 namespace{
-	const float kDefaultScaleTime = 1.0f;
+	const float kDefaultScaleTime = 100.0f;
 }
 SceneSurvival::SceneSurvival():
 GameScene("Survival", GetManager()) //Sceneごとの名前を設定
@@ -44,7 +44,7 @@ bool SceneSurvival::Initialize(){
 
 	// アクションコマンドの初期化
 	m_pActionBoard = std::make_unique<ActionBoard>();
-	m_pActionBoard->mInitialize();
+	m_pActionBoard->mInitialize(GameManager::eSkillType::eExAttack);
 
 	// オーダーリストの初期化
 	m_pOrderList = std::make_unique<OrderList>();
@@ -94,6 +94,7 @@ bool SceneSurvival::Updater(){
 
 	m_pPlayer->mCommand(m_pOrderList->mGetActionCommand(), kDefaultScaleTime);
 
+	m_pActionBoard->mUpdate(kDefaultScaleTime);
 	m_pOrderList->mUpdate(kDefaultScaleTime);
 	return true;
 }

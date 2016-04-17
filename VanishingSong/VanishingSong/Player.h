@@ -123,6 +123,8 @@ private:
 	std::shared_ptr<Gear> m_pTopGear;
 	aetherClass::ViewCamera m_playerView;
 
+	aetherClass::Transform moveTransform;
+	Player::eState m_state;
 	CharaStatus m_status;
 	eCommandType m_prevCommand;
 	eState m_prevState;

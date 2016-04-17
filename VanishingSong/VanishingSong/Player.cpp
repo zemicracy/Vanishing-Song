@@ -17,6 +17,7 @@ Player::Player()
 	m_pGearFrame = nullptr;
 	m_pTopGear = nullptr;
 	m_pActionCommand = nullptr;
+	m_state = Player::eState::eNull;
 }
 
 
@@ -58,7 +59,8 @@ bool Player::mInitialize(){
 	m_cameraRotation = kVector3Zero;
 
 	// 初期位置の設定
-	m_charaEntity.mGearMove(m_pTopGear, Vector3(0, 20, 0));
+//	m_charaEntity.mGearMove(m_pTopGear, Vector3(0, 20, 0));
+	moveTransform._translation._y = 20;
 
 	// コライダーの初期化
 	mSetUpCollider(m_pCubeCollider, m_pTopGear->_pGear->property._transform._translation, Vector3(1, -5, -0));
@@ -121,26 +123,20 @@ void Player::mFinalize(){
 プレイヤーの更新処理
 */
 void Player::mUpdate(const float timeScale){
-	Player::eState state= eState::eNull;
-	// 移動に使う値のを取得
-	Transform transform = mReadKey(timeScale);
-
-	// 移動に変化量があれば
-	if (transform._translation == kVector3Zero){
-		state = eState::eWait;
-	}
-	else{
-		state = eState::eMove;
-	}
-
+	
+	Transform animTransform;
 	// 基本的なアニメーションの再生
-	mGetAnimationTransform(state,transform);
+	mGetAnimationTransform(m_state,animTransform);
+
+	// 移動に使う値のを取得
+	moveTransform._translation += mReadKey(timeScale)._translation;
 
 	// 実際の移動処理
-	m_charaEntity.mGearMove(m_pTopGear, transform._translation);
+	animTransform._translation += moveTransform._translation;
+	m_charaEntity.mGearMove(m_pTopGear, animTransform._translation);
 	
 	// コライダーも動かす
-	m_pCubeCollider->property._transform._translation += transform._translation;
+	m_pCubeCollider->property._transform._translation += animTransform._translation;
 	
 	if (GameController::GetKey().IsKeyDown('Q'))
 	{
@@ -156,7 +152,7 @@ void Player::mUpdate(const float timeScale){
 
 	Matrix4x4 rotationMatrix;
 	rotationMatrix.PitchYawRoll(m_cameraRotation*kAetherRadian);
-	Vector3 position = transform._translation + m_cameraOffset._translation;
+	Vector3 position = m_cameraOffset._translation;
 	position = position.TransformCoordNormal(rotationMatrix);
 
 	m_playerView.property._translation = gearTranslation+position;
@@ -415,6 +411,23 @@ Transform Player::mReadKey(const float timeScale){
 		transform._translation._x = -(GameClock::GetDeltaTime()*timeScale);
 	}
 
+	//臨時上方向
+	if (GameController::GetKey().IsKeyDown('Z')){
+		transform._translation._y = GameClock::GetDeltaTime()*timeScale;
+	}
+	else if (GameController::GetKey().IsKeyDown('X')){
+		transform._translation._y = -(GameClock::GetDeltaTime()*timeScale);
+	}
+
+	// 移動があれば
+	if ( transform._translation == kVector3Zero){
+		m_state = eState::eWait;
+	}
+	else{
+		m_state = eState::eMove;
+	}
+
+
 	// キャラがデバッグモードじゃないならここで終了
 	if (!kCharaDebug) return transform;
 
@@ -475,22 +488,22 @@ void Player::mRegisterAnimation(Player::eState key, std::string first, std::stri
 
 /*
 */
-void Player::mGetAnimationTransform(Player::eState state, Transform transform){
+void Player::mGetAnimationTransform(Player::eState m_state, Transform transform){
 
 	// 前回と違うときは更新
-	if (m_prevState != state){
+	if (m_prevState != m_state){
 		m_actionCount._defaultFrame = NULL;
-		m_prevState = state;
+		m_prevState = m_state;
 	}
 
 	Transform animationTransform;
 
-	if (m_defaultAnimation.find(state) == m_defaultAnimation.end()) return;
+	if (m_defaultAnimation.find(m_state) == m_defaultAnimation.end()) return;
 
-	switch (state)
+	switch (m_state)
 	{
 	case Player::eState::eMove:
-		for (auto index : m_defaultAnimation[state])
+		for (auto index : m_defaultAnimation[m_state])
 		{
 			animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end, kMoveAnimationFrame, m_actionCount._defaultFrame);
 
@@ -502,11 +515,11 @@ void Player::mGetAnimationTransform(Player::eState state, Transform transform){
 		}
 		break;
 	case Player::eState::eWait:
-		for (auto index : m_defaultAnimation[state])
+		for (auto index : m_defaultAnimation[m_state])
 		{
+			animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end, kWaitAnimationFrame, m_actionCount._defaultFrame);
 			animationTransform._translation += transform._translation;
 			animationTransform._rotation += transform._rotation;
-			animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end, kWaitAnimationFrame, m_actionCount._defaultFrame);
 			// アニメーションの反映
 			gGearFrameAnimation(m_pGearFrame, index._name, animationTransform);
 
@@ -519,7 +532,7 @@ void Player::mGetAnimationTransform(Player::eState state, Transform transform){
 	}
 	
 	
-	if (state == eState::eWait){
+	if (m_state == eState::eWait){
 		// カウンターの状態に合わせてフレームカウントの更新
 		if (m_actionCount._changeDefaultFrame){
 			m_actionCount._defaultFrame -= 1;
