@@ -48,5 +48,6 @@ public:
 		eType _type;
 		aetherClass::Transform _parentDifference;
 		aetherClass::Transform _topDifference;
+		aetherClass::Transform _initialTransform;
 };
 

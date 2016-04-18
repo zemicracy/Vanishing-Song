@@ -112,8 +112,8 @@ void SceneSurvival::Render(){
 
 void SceneSurvival::UIRender(){
 
-	m_pActionBoard->mRender(m_pixelShader.get());
-	m_pOrderList->mRender(m_pixelShader.get());
+	//m_pActionBoard->mRender(m_pixelShader.get());
+	//m_pOrderList->mRender(m_pixelShader.get());
 	return;
 }
 

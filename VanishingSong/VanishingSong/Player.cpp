@@ -10,6 +10,7 @@ using namespace aetherClass;
 namespace{
 	const int kWaitAnimationFrame = 60;
 	const int kMoveAnimationFrame = 5;
+	const Vector3 kColliderOffset = Vector3(0, -5, 0);
 }
 
 Player::Player()
@@ -36,7 +37,7 @@ bool Player::mInitialize(){
 
 	mFinalize();
 
-	m_playerView.property._translation = Vector3(0, 0, -20);
+	
 	// ギア系の初期化用
 	result = mInitializeGear(m_pGearFrame, &m_playerView);
 	if (!result)
@@ -44,6 +45,10 @@ bool Player::mInitialize(){
 		Debug::mErrorPrint("ギアの初期化に失敗", __FILE__, __LINE__);
 		return false;
 	}
+
+	// 初期位置の設定
+	m_moveTransform._translation = Vector3(0, 26, 0);
+
 	// パーツの初期位置
 	result = mLoadModelProperty(m_pGearFrame, "data\\PlayerDefault.aether");
 	if (!result)
@@ -51,14 +56,12 @@ bool Player::mInitialize(){
 		Debug::mErrorPrint("ギアの位置反映に失敗", __FILE__, __LINE__);
 		return false;
 	}
-
+	//m_playerView.property._translation = Vector3(0, 500, -600);
+//	m_playerView.property._translation = Vector3(0, 100, -200);
 	m_cameraOffset._translation = m_playerView.property._translation;
 	m_cameraOffset._rotation = m_playerView.property._rotation;
 
 	m_cameraRotation = kVector3Zero;
-
-	// 初期位置の設定
-	m_moveTransform._translation= Vector3(0,20,0);
 
 	// 連想配列に登録
 	mRegisterParts(m_pGearPartsHash, Gear::eType::eBody, m_pGearFrame->m_pBody);
@@ -79,7 +82,7 @@ bool Player::mInitialize(){
 	mRegisterParts(m_pGearPartsHash, Gear::eType::eRightUpperLeg, m_pGearFrame->m_pRightUpperLeg);
 
 	// コライダーの初期化
-	mSetUpCollider(m_pCubeCollider, m_pTopGear->_pGear->property._transform._translation, Vector3(1, -5, -0));
+	mSetUpCollider(m_pCubeCollider, m_pTopGear->_pGear->property._transform._translation, kColliderOffset);
 
 	/*	基本的なアニメーションの登録	*/
 	mRegisterAnimation(Player::eState::eMove, kMoveAnimationFrame,"data\\PlayerDefault.aether", "data\\PlayerMove.aether");
@@ -140,26 +143,22 @@ void Player::mFinalize(){
 */
 void Player::mUpdate(const float timeScale){
 	
-	Transform animTransform;
+	// キーの処理を取得
+	TransformState transformState = mReadKey(timeScale);
 
 	// 移動に使う値のを取得
-	m_moveTransform._translation += mReadKey(timeScale)._transform._translation;
-	m_moveTransform._rotation += mReadKey(timeScale)._transform._rotation;
+	m_moveTransform._translation += transformState._transform._translation;
+	m_moveTransform._rotation += transformState._transform._rotation;
 	
-	eState state = mReadKey(timeScale)._state;
 	// 基本的なアニメーションの再生
-	mGetAnimationTransform(state, animTransform);
-
+	mGetAnimationTransform(transformState._state);
 
 	// 実際の移動処理
-	animTransform._translation += m_moveTransform._translation;
-	animTransform._rotation+= m_moveTransform._rotation;
-
-	m_charaEntity.mGearMove(m_pTopGear, animTransform._translation);
-	m_charaEntity.mTopGearRotation(m_pTopGear, m_moveTransform._rotation);
+	m_charaEntity.mGearMove(m_pTopGear, m_moveTransform._translation);
+	m_charaEntity.mGearRotation(m_pTopGear, m_pTopGear, m_moveTransform._rotation);
 
 	// コライダーは常にBodyと同じにしておく
-	m_pCubeCollider->property._transform._translation = m_pGearFrame->m_pBody->_pGear->property._transform._translation;
+	m_pCubeCollider->property._transform._translation = m_pGearFrame->m_pBody->_pGear->property._transform._translation + kColliderOffset;
 	
 
 	/*if (GameController::GetKey().IsKeyDown('Q'))
@@ -171,6 +170,8 @@ void Player::mUpdate(const float timeScale){
 		m_cameraRotation._y -= 1.03f;
 		
 	}*/
+
+	// カメラの処理
 	mLookAtView(m_playerView,m_cameraRotation,m_pTopGear->_pGear->property._transform._translation);
 	
 	return;
@@ -181,14 +182,13 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 
 	if (!m_pTopGear)return;
 	m_playerView.Render();
+	// 全ての親は体のパーツなので、必ず体のパーツから始める
+	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
 
 	if (kCharaDebug)
 	{
-	//	m_pCubeCollider->Render(modelShader);
+		//m_pCubeCollider->Render(modelShader);
 	}
-
-	// 全ての親は体のパーツなので、必ず体のパーツから始める
-	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
 
 	return;
 }
@@ -306,7 +306,7 @@ bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass:
 }
 
 /*
-
+	エディターから読み取り
 */
 bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::string modelDataFile){
 	WorldReader read;
@@ -386,7 +386,7 @@ bool Player::mLoadModelProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
 
 	gear->_pGear->property._transform = info->_transform;
-
+	gear->_initialTransform = info->_transform;
 	if (gear->_pParent)
 	{
 		std::shared_ptr<Gear> pParent = gear->_pParent;
@@ -395,8 +395,8 @@ void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
 		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - m_pTopGear->_pGear->property._transform._rotation;
 
 		// 親との差
-		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - m_pTopGear->_pGear->property._transform._translation;
-		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - m_pTopGear->_pGear->property._transform._rotation;
+		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - pParent->_pGear->property._transform._translation;
+		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - pParent->_pGear->property._transform._rotation;
 	}
 
 	return;
@@ -408,41 +408,41 @@ void Player::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
 */
 Player::TransformState Player::mReadKey(const float timeScale){
 
-	TransformState state;
+	TransformState output;
 
 	// 奥行の移動(Z軸)
 	if (GameController::GetKey().IsKeyDown('W')){
-		state._transform._translation._z = GameClock::GetDeltaTime()*timeScale;
+		output._transform._translation._z = GameClock::GetDeltaTime()*timeScale;
 	}
 	else if (GameController::GetKey().IsKeyDown('S')){
-		state._transform._translation._z = -(GameClock::GetDeltaTime()*timeScale);
+		output._transform._translation._z = -(GameClock::GetDeltaTime()*timeScale);
 	}
 
 	// 横の移動(X軸)
 	if (GameController::GetKey().IsKeyDown('D')){
-		state._transform._translation._x = GameClock::GetDeltaTime()*timeScale;
+		output._transform._translation._x = GameClock::GetDeltaTime()*timeScale;
 	}
 	else if (GameController::GetKey().IsKeyDown('A')){
-		state._transform._translation._x = -(GameClock::GetDeltaTime()*timeScale);
+		output._transform._translation._x = -(GameClock::GetDeltaTime()*timeScale);
 	}
 
 	// 移動があれば
-	if (state._transform._translation == kVector3Zero){
-		state._state = eState::eWait;
+	if (output._transform._translation == kVector3Zero){
+		output._state = eState::eWait;
 	}
 	else{
-		state._state = eState::eMove;
+		output._state = eState::eMove;
 	}
 
 	// キャラがデバッグモードじゃないならここで終了
-	if (!kCharaDebug) return state;
+	if (!kCharaDebug) return output;
 
 	// 回転用(Y軸)
 	if (GameController::GetKey().IsKeyDown('Q')){
-		state._transform._rotation._y = GameClock::GetDeltaTime()*timeScale * 1;
+		output._transform._rotation._y = GameClock::GetDeltaTime()*timeScale * 1;
 	}
 	else if (GameController::GetKey().IsKeyDown('E')){
-		state._transform._rotation._y = -(GameClock::GetDeltaTime()*timeScale * 1);
+		output._transform._rotation._y = -(GameClock::GetDeltaTime()*timeScale * 1);
 	}
 
 	// デバッグ用
@@ -455,7 +455,7 @@ Player::TransformState Player::mReadKey(const float timeScale){
 		Debug::mPrint("------------------------");
 	}
 
-	return state;
+	return output;
 }
 
 /*
@@ -495,7 +495,7 @@ void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::str
 
 /*
 */
-void Player::mGetAnimationTransform(Player::eState m_state, Transform transform){
+void Player::mGetAnimationTransform(Player::eState m_state){
 
 	// 前回と違うときは更新
 	if (m_prevState != m_state){
@@ -503,18 +503,20 @@ void Player::mGetAnimationTransform(Player::eState m_state, Transform transform)
 		m_prevState = m_state;
 	}
 
-	Transform animationTransform;
-
+	// 設定されていない場合何もしない
 	if (m_defaultAnimation.find(m_state) == m_defaultAnimation.end()) return;
+
+	Transform animationTransform;
 
 	/*	アニメーション実行処理	*/
 	const int allFrame = m_defaultAnimation[m_state]._animationFrame;
+
 	for (auto index : m_defaultAnimation[m_state]._animation)
 	{
+		// 補間の値を取得
 		animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end,allFrame , m_actionCount._defaultFrame);
 
-		animationTransform._translation += transform._translation;
-		animationTransform._rotation += transform._rotation;
+		// アニメーションの適用
 		if (m_pGearPartsHash.find(index._name) != m_pGearPartsHash.end()){
 			m_pGearPartsHash[index._name]->_pGear->property._transform = animationTransform;
 		}

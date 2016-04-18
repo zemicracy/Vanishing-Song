@@ -124,7 +124,7 @@ private:
 
 	void mRegisterAnimation(Player::eState key,const int allFrame, std::string first, std::string last);
 
-	void mGetAnimationTransform(Player::eState state,aetherClass::Transform);
+	void mGetAnimationTransform(Player::eState state);
 
 	void mRegisterParts(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&,Gear::eType, std::shared_ptr<Gear>&);
 
