@@ -1,10 +1,10 @@
 [Object]
-695,65,1,0,0,0,90,460,0,0,Rectangle2D,0.3,0.5,0,1,0,base,null_path
-710,80,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list1,null_path
-710,170,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list2,null_path
-710,250,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list3,null_path
-710,330,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list4,null_path
-710,410,0,0,0,0,60,60,0,0,Rectangle2D,1,1,0,1,0,list5,null_path
+200,420,1,0,0,0,360,80,0,0,Rectangle2D,0.3,0.5,0,1,0,base,null_path
+260,435,0,0,0,0,50,50,0,0,Rectangle2D,1,1,0,1,0,list1,null_path
+330,435,0,0,0,0,50,50,0,0,Rectangle2D,1,1,0,1,0,list2,null_path
+390,435,0,0,0,0,50,50,0,0,Rectangle2D,1,1,0,1,0,list3,null_path
+450,435,0,0,0,0,50,50,0,0,Rectangle2D,1,1,0,1,0,list4,null_path
+510,435,0,0,0,0,50,50,0,0,Rectangle2D,1,1,0,1,0,list5,null_path
 [Material]
 [Texture]
 none
