@@ -39,7 +39,6 @@ void Initializer(std::shared_ptr<SpriteBase> &sprite,Transform transform, Color 
 	sprite->property._transform = transform;
 	sprite->property._transform._translation._x *= kResolutionFromEditor_x;
 	sprite->property._transform._translation._y *= kResolutionFromEditor_y;
-	sprite->property._transform._translation._x -= 10;
 
 	sprite->property._color = color;
 
@@ -54,8 +53,8 @@ void OrderList::mInitialize(){
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "base"){
 			Initializer(m_backImage, itr->_transform, itr->_color);
-			m_backImage->property._transform._scale._y *= kResolutionFromEditor_y;
-			m_backImage->property._transform._translation._x += 10;
+			m_backImage->property._transform._scale._x *= kResolutionFromEditor_x;
+			m_backImage->property._transform._translation._y += 5;
 
 		}
 		if (itr->_name == "list1"){
