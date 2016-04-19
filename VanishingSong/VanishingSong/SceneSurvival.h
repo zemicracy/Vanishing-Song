@@ -6,6 +6,7 @@
 #include "FieldArea.h"
 #include "OrderList.h"
 #include "ActionBoard.h"
+#include <DirectXEntity.h>
 class SceneSurvival :
 	public aetherClass::GameScene
 {
@@ -39,6 +40,7 @@ private:
 	std::unique_ptr<FieldArea> m_pFieldArea;
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<ActionBoard> m_pActionBoard;
-
+	aetherClass::DirectXEntity m_directX;
+	bool m_isCursorVisible;
 };
 

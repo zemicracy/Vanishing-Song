@@ -11,6 +11,8 @@ using namespace aetherClass;
 namespace{
 	const int kWaitAnimationFrame = 60;
 	const int kMoveAnimationFrame = 5;
+	const float kCameraRotationMaxX = 15.0f;
+	const float kCameraRotationMinX = -15.0f;
 	const Vector3 kColliderOffset = Vector3(0, -5, 0); 
 	const Vector3 kPlayerInitialY = Vector3(0, 26, 0);
 }
@@ -70,6 +72,7 @@ bool Player::mInitialize(){
 	{
 		Debug::mPrint("プレイヤー 初期化終了しました");
 	}
+
 	return true;
 }
 
@@ -131,6 +134,8 @@ void Player::mUpdate(const float timeScale){
 
 	// カメラの処理
 	m_cameraRotation += getKeyValues._cameraRotation;
+
+	
 	mUpdateView(m_playerView, m_cameraRotation, m_pTopGear->_pGear->property._transform._translation);
 
 
@@ -139,12 +144,13 @@ void Player::mUpdate(const float timeScale){
 
 	// 移動に使う値のを取得
 	Matrix4x4 rotationMatrix;
-	rotationMatrix.PitchYawRoll(m_cameraRotation*kAetherRadian);
+	Vector3 rotationY = Vector3(0,m_cameraRotation._y,0);
+	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 
 	// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
 	Vector3 translation = getKeyValues._transform._translation.TransformCoordNormal(rotationMatrix);
 	m_playerTransform._translation += translation;
-	m_playerTransform._rotation += getKeyValues._cameraRotation;
+	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 
 	// 移動処理
 	m_charaEntity.mGearMove(m_pTopGear, m_playerTransform._translation);
@@ -192,27 +198,17 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 
 	/*	カメラの回転	*/
 	if (GameController::GetMouse().IsRightButtonDown()){
+		gLockMouseCursor(m_directXEntity.GetWindowHandle(kWindowName), false);
 		Vector2 cameraRotation = GameController::GetMouse().GetMouseMovement();
-		//LockMouseCursor(m_directX.GetWindowHandle(L"Scene"));
 		cameraRotation /= kAetherPI;
-		//output._cameraRotation._x += cameraRotation._y;
+		output._cameraRotation._x += cameraRotation._y;
 		output._cameraRotation._y += cameraRotation._x;
 
 	}
-
-	if (GameController::GetKey().IsKeyDown(VK_UP)){
-		output._cameraRotation._x += (GameClock::GetDeltaTime()*timeScale);
-	}
-	else if (GameController::GetKey().IsKeyDown(VK_DOWN)){
-		output._cameraRotation._x += -(GameClock::GetDeltaTime()*timeScale);
+	else{
+		gLockMouseCursor(m_directXEntity.GetWindowHandle(kWindowName), true);
 	}
 
-	if (GameController::GetKey().IsKeyDown(VK_RIGHT)){
-		output._cameraRotation._y += (GameClock::GetDeltaTime()*timeScale);
-	}
-	else if (GameController::GetKey().IsKeyDown(VK_LEFT)){
-		output._cameraRotation._y += -(GameClock::GetDeltaTime()*timeScale);
-	}
 
 	return output;
 }
@@ -445,7 +441,7 @@ void Player::mInitialPlayerView(CameraValue input){
 	m_playerView.property._rotation = input._rotation;
 	
 	// デバッグ用
-	m_playerView.property._translation = Vector3(0, 100, -200);
+	//m_playerView.property._translation = Vector3(0, 100, -200);
 
 	// カメラのオフセットの設定
 	m_cameraOffset._translation = m_playerView.property._translation;
@@ -559,9 +555,7 @@ void Player::mDefaultAnimation(Player::eState& m_state){
 void Player::mUpdateView(ViewCamera& view,Vector3& rotation,Vector3 lookAtPosition){
 
 	// カメラのリセット一応階といた
-	if (GameController::GetKey().IsKeyDown(VK_RETURN)){
-	rotation = kVector3Zero;
-	}
+	CheckCameraRotation(rotation);
 	Matrix4x4 rotationMatrix;
 	rotationMatrix.PitchYawRoll(rotation*kAetherRadian);
 	Vector3 position = m_cameraOffset._translation;
@@ -572,3 +566,15 @@ void Player::mUpdateView(ViewCamera& view,Vector3& rotation,Vector3 lookAtPositi
 
 	return;
 }
+
+
+void  Player::CheckCameraRotation(Vector3& rotation){
+	// カメラ可動範囲の上限の確認
+	if (rotation._x > kCameraRotationMaxX){
+		rotation._x = kCameraRotationMaxX;
+	}
+	else if (rotation._x < kCameraRotationMinX){
+		rotation._x = kCameraRotationMinX;
+	}
+}
+

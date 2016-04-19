@@ -6,7 +6,7 @@
 #include <Singleton.h>
 using namespace aetherClass;
 namespace{
-	const float kDefaultScaleTime = 100.0f;
+	const float kDefaultScaleTime = 1.0f;
 }
 SceneSurvival::SceneSurvival():
 GameScene("Survival", GetManager()) //Sceneごとの名前を設定
@@ -19,7 +19,7 @@ SceneSurvival::~SceneSurvival()
 }
 
 bool SceneSurvival::Initialize(){
-
+	
 	// シェーダーの詳細情報の設定
 	ShaderDesc textureDesc;
 
@@ -53,7 +53,7 @@ bool SceneSurvival::Initialize(){
 	m_pFieldArea = std::make_unique<FieldArea>();
 	m_pFieldArea->mInitialize();
 	m_pFieldArea->mSetCamera(view);
-
+	m_isCursorVisible = false;
 	return true;
 }
 
@@ -79,7 +79,7 @@ void SceneSurvival::Finalize(){
 		m_pPlayer.release();
 		m_pPlayer = nullptr;
 	}
-
+	m_isCursorVisible = false;
 	return;
 }
 
@@ -96,6 +96,7 @@ bool SceneSurvival::Updater(){
 
 	m_pActionBoard->mUpdate(kDefaultScaleTime);
 	m_pOrderList->mUpdate(kDefaultScaleTime);
+	
 	return true;
 }
 

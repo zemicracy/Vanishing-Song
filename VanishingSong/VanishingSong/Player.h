@@ -112,6 +112,7 @@ public:
 		コライダーの取得用
 	*/
 	std::shared_ptr<aetherClass::Cube> mGetBodyColldier();
+
 private:
 	
 	/*
@@ -158,6 +159,7 @@ private:
 	*/
 	KeyValues mReadKey(const float timeScale);
 
+	void CheckCameraRotation(aetherClass::Vector3&);
 
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;   // パーツの管理
@@ -174,7 +176,7 @@ private:
 	CharaEntity m_charaEntity;					// 便利関数のあるクラスオブジェクト
 	Offset m_cameraOffset;						//　カメラのオフセット
 	Counter m_actionCount;			// それぞれのアクションを行ったフレーム数を保存しとく用
-
+	aetherClass::DirectXEntity m_directXEntity;
 	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
 
 	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
