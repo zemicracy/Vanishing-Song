@@ -189,8 +189,46 @@ void CharaEntity::mGearPartsRotation(std::shared_ptr<Gear> top, std::shared_ptr<
 	return;
 }
 
+/*
+	˜A‘z”z—ñ‚É“o˜^
+*/
+void CharaEntity::mRegisterParts(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash, Gear::eType type, std::shared_ptr<Gear>& parts){
+
+	// “o˜^Ï‚İ‚È‚ç‰½‚à‚µ‚È‚¢
+	if (hash.find(type) != hash.end() || !parts)return;
+
+	// “o˜^
+	hash.insert(std::make_pair(type, parts));
+	return;
+}
 
 
+/*
+ƒp[ƒc‚Ì‰Šú‰»
+*/
+void CharaEntity::mSetLoadGearValue(std::shared_ptr<Gear>& top,std::shared_ptr<Gear>& gear, ObjectInfo* info){
+
+	gear->_pGear->property._transform = info->_transform;
+	gear->_initialTransform = info->_transform;
+
+	// ÅãˆÊ‚Æ‚Ì·
+	gear->_topDifference._translation = gear->_pGear->property._transform._translation - top->_pGear->property._transform._translation;
+	gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
+
+	if (gear->_pParent)
+	{
+		std::shared_ptr<Gear> pParent = gear->_pParent;
+		// e‚Æ‚Ì·
+		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - pParent->_pGear->property._transform._translation;
+		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - pParent->_pGear->property._transform._rotation;
+	}
+
+	return;
+}
+/*
+	’l‚Ì‘ã“ü‚Æ
+	•¶š—ñ‚©‚çenum‚É•ÏŠ·
+*/
 Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input, Transform value){
 	/*	‘Ì	*/
 	if (partsName == "Body"){

@@ -2,21 +2,30 @@
 #define _CONST_H
 #include <Vector3.h>
 #include "Debug.h"
+#include <string>
 /*
 	定数やマクロ関数を定義しておくファイル
 
 */
 namespace{
+	// ウィンドウ関連
+	const std::wstring kWindowName = L"Game";
+	const int kWindowWidth = 1280;
+	const int kWindowHeight = 720;
 
-	const bool kCharaDebug = true;
-
+	// 初期化用
 	const aetherClass::Vector3 kVector3Zero = aetherClass::Vector3(NULL, NULL, NULL);
 
-	const signed char kFirstDay = 1;
-	const signed char kLastDay = 1;
-
+	// Editorとの連携用
 	const float kResolutionFromEditor_x = 1.6;
 	const float kResolutionFromEditor_y = 1.2;
+
+	// デバッグ関係
+	const bool kCharaDebug = true;
+
+	// ゲームにかかわる定数
+	const signed char kFirstDay = 1;
+	const signed char kLastDay = 1;
 
 }
 #endif
