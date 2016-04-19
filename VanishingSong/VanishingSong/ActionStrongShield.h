@@ -4,9 +4,11 @@ class ActionStrongShield :
 	public ActionCommand
 {
 public:
-	ActionStrongShield();
-	~ActionStrongShield();
+	ActionStrongShield():ActionCommand(eCommandType::eStrongShield){}
+	~ActionStrongShield(){}
 
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override;
+	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override{
+
+	}
 };
 

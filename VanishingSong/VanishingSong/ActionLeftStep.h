@@ -4,9 +4,11 @@ class ActionLeftStep :
 	public ActionCommand
 {
 public:
-	ActionLeftStep();
-	~ActionLeftStep();
+	ActionLeftStep():ActionCommand(eCommandType::eLeftStep){}
+	~ActionLeftStep(){}
 
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override;
+	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frame)override{
+
+	}
 };
 

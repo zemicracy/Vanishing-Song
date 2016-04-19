@@ -1,6 +1,6 @@
 #include "ActionCommand.h"
-
-
+#include <WorldReader.h>
+using namespace aetherClass;
 ActionCommand::ActionCommand(eCommandType type){
 	m_type = type;
 }
@@ -37,4 +37,22 @@ void ActionCommand::mSetTexture(aetherClass::Texture *texture){
 
 CharaEntity ActionCommand::mGetCharaEntity(){
 	return m_entity;
+}
+
+
+
+
+std::vector<Animation>& ActionCommand::GetAnimationValue(){
+	return m_animation;
+}
+
+
+
+
+
+void ActionCommand::CallCount(const int count){
+	m_callCount = count;
+}
+int ActionCommand::CallCount()const{
+	return m_callCount;
 }

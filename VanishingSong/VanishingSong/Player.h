@@ -6,20 +6,62 @@
 #include "CharaEntity.h"
 #include "Const.h"
 #include "ActionCommand.h"
+#include "Animation.h"
 #include <Cube.h>
 #include <ShaderBase.h>
 #include <Transform.h>
-#include <WorldReader.h>
 #include <ViewCamera.h>
 #include <unordered_map>
 #include <vector>
 class Player
 {
 private:
+	/*	Playerの状態		*/
 	enum class eState{
 		eMove,
 		eWait,
 		eNull
+	};
+
+	/*	とりあえずカメラ用	*/
+	struct Offset
+	{
+		aetherClass::Vector3 _translation;
+		aetherClass::Vector3 _rotation;
+	};
+
+	struct Counter{
+		Counter(){
+			Reset();
+		}
+
+		~Counter(){
+			Reset();
+		}
+		int _defaultFrame;
+		int _commandFrame;
+		bool _changeDefaultFrame;
+		bool _changeCommandFrame;
+	private:
+		void Reset(){
+			_defaultFrame = NULL;
+			_commandFrame = NULL;
+			_changeDefaultFrame = false;
+			_changeCommandFrame = false;
+		}
+	};
+
+	
+	struct AnimationFrame{
+		std::vector<Animation> _animation;
+		int _animationFrame;
+	};
+
+	
+	struct KeyValues{
+		Player::eState _state;
+		aetherClass::Transform _transform;
+		aetherClass::Vector3 _cameraRotation;
 	};
 public:
 	Player();
@@ -61,38 +103,85 @@ public:
 	*/
 	void mFinalize();
 
+	/*
+		カメラオブジェクトのアドレス取得用
+	*/
 	aetherClass::ViewCamera* mGetView();
 
-	std::shared_ptr<aetherClass::ModelBase> mGetCollider(const int);
-
-	int mGetColliderListSize()const;
-private:
 	/*
-	プレイヤーに対するキー入力処理
-	現状移動処理と回転処理
+		コライダーの取得用
 	*/
-	aetherClass::Transform mReadKey(const float timeScale);
+	std::shared_ptr<aetherClass::Cube> mGetBodyColldier();
 
-	bool mInitializeGear(std::shared_ptr<GearFrame>&, aetherClass::ViewCamera*);
-
-	bool mLoadModelProperty(std::shared_ptr<GearFrame>&, std::string modelDataFile);
-
-	void mRotationAdjustment(std::shared_ptr<Gear>&);
-
-	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 private:
-	std::shared_ptr<GearFrame> m_pGearFrame;
-	std::shared_ptr<ActionCommand> m_pActionCommand;
-	std::shared_ptr<Gear> m_pTopGear;
-	std::vector<std::shared_ptr<aetherClass::ModelBase>> m_playerCollideList;
-	aetherClass::ViewCamera m_playerView;
+	
+	/*
+		カメラオブジェクトの初期化
+	*/
+	void mInitialPlayerView(CameraValue);
 
-	CharaStatus m_status;
-	eCommandType m_prevCommand;
-	CharaEntity m_charaEntity;
-	eState m_state;
+	/*
+		全てのギアの初期化
+	*/
+	bool mInitializeGearFrame(std::shared_ptr<GearFrame>&, aetherClass::ViewCamera*);
 
-	int m_actionCount;// アクションを行った数を保存しとく用
+	/*
+		エディターからの値を読み取るよう
+	*/
+	bool mLoadProperty(std::shared_ptr<GearFrame>&, std::string modelDataFile);
+	
+	/*
+		コライダーの初期化
+	*/
+	void mSetUpBodyCollider(std::shared_ptr<aetherClass::Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
+
+	/*
+		コライダーの更新処理
+	*/
+	void mUpdateBodyCollider(aetherClass::Transform&);
+	/*
+		アニメーションの登録
+	*/
+	void mRegisterAnimation(Player::eState key,const int allFrame, std::string first, std::string last);
+
+	/*
+		アニメーション再生用
+	*/
+	void mDefaultAnimation(Player::eState& state);
+
+	/*
+		カメラオブジェクトの更新
+	*/
+	void mUpdateView(aetherClass::ViewCamera&,aetherClass::Vector3& rotation,aetherClass::Vector3 lookAtPosition);
+
+	/*
+	キーやマウスの処理の読み取り
+	*/
+	KeyValues mReadKey(const float timeScale);
+
+	void CheckCameraRotation(aetherClass::Vector3&);
+
+private:
+	std::shared_ptr<GearFrame> m_pGearFrame;   // パーツの管理
+	std::shared_ptr<ActionCommand> m_pActionCommand;  // コマンド実行用
+	std::shared_ptr<Gear> m_pTopGear;            // 最上位パーツのポインタを入れておく
+	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
+
+	aetherClass::Transform m_playerTransform;   // プレイヤーの回転、移動、スケールを管理
+	aetherClass::Vector3 m_cameraRotation;		//　カメラの回転を管理
+
+	CharaStatus m_status;                      // プレイヤーのステータス
+	eCommandType m_prevCommand;					// 前回実行したコマンドの種類
+	eState m_prevState;							// 前回のプレイヤーの状態
+	CharaEntity m_charaEntity;					// 便利関数のあるクラスオブジェクト
+	Offset m_cameraOffset;						//　カメラのオフセット
+	Counter m_actionCount;			// それぞれのアクションを行ったフレーム数を保存しとく用
+	aetherClass::DirectXEntity m_directXEntity;
+	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
+
+	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
+
+	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearPartsHash;   // それぞれのギアのポインタを扱いやすいようにまとめた連想配列
 };
 
 #endif

@@ -20,6 +20,10 @@ private:
 	void OrderList::mFinalize();
 
 private:
+	void mListPlay();
+	void mListStop();
+
+private:
 	std::vector<std::shared_ptr<ActionCommand>>m_orderList;
 	std::shared_ptr<ActionCommand>m_listFirst;
 

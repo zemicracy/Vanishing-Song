@@ -16,8 +16,6 @@ public:
 		eBody,
 		
 		// òrÉpÅ[Éc
-		eRightShourlder,
-		eLeftShourlder,
 		eRightUpperArm,
 		eLeftUpperArm,
 		eRightLowerArm,
@@ -41,8 +39,6 @@ public:
 	Gear();
 	~Gear();
 	void Release();
-
-
 public:
 
 
@@ -50,8 +46,8 @@ public:
 		std::vector<std::shared_ptr<Gear>> _pChildren;
 		std::shared_ptr<aetherClass::FbxModel> _pGear;
 		eType _type;
-		std::shared_ptr<aetherClass::Cube> _pColider;
 		aetherClass::Transform _parentDifference;
 		aetherClass::Transform _topDifference;
+		aetherClass::Transform _initialTransform;
 };
 

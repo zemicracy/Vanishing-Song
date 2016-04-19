@@ -31,5 +31,7 @@ public:
 
 	void Release();
 
+	void SetTransformValue(Gear::eType, aetherClass::Transform);
+
 };
 
