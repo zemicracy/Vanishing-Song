@@ -43,12 +43,14 @@ public:
 	/*	ゲームモードセット、取得用*/
 	eGameMode mGameMode()const;
 	void mGameMode(const eGameMode);
+	
 private:
 	eState m_gameState;
 	bool m_isPause;
 	signed char m_day;
 	eSkillType m_skillType;
 	eGameMode m_gameMode;
+	
 };
 
 #endif
