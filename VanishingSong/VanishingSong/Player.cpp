@@ -157,6 +157,13 @@ void Player::mUpdate(const float timeScale){
 	m_charaEntity.mGearMove(m_pTopGear, m_moveTransform._translation);
 	m_charaEntity.mGearRotation(m_pTopGear, m_pTopGear, m_moveTransform._rotation);
 
+	static float rot= 0;
+	if (GameController::GetKey().IsKeyDown('G'))
+	{
+		rot += 1;
+	}
+	//m_charaEntity.mGearPartsRotation(m_pTopGear, m_pTopGear,Gear::eType::eWaist, Vector3(0, rot, 0));
+
 	// コライダーは常にBodyと同じにしておく
 	m_pCubeCollider->property._transform._translation = m_pGearFrame->m_pBody->_pGear->property._transform._translation + kColliderOffset;
 	
@@ -187,7 +194,7 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 
 	if (kCharaDebug)
 	{
-		//m_pCubeCollider->Render(modelShader);
+		m_pCubeCollider->Render(modelShader);
 	}
 
 	return;
@@ -254,6 +261,7 @@ std::shared_ptr<Cube> Player::mGetColldier(){
 
 */
 bool Player::mInitializeGear(std::shared_ptr<GearFrame>& gearFrame, aetherClass::ViewCamera* camera){
+	
 	gearFrame = std::make_shared<GearFrame>();
 
 	// 体のパーツ

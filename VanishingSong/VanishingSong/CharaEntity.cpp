@@ -125,7 +125,7 @@ void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear>
 
 	if (gear->_pParent)
 	{
-		// 最上位との差
+		// 最上位との差を更新
 		gear->_topDifference._translation = gear->_pGear->property._transform._translation -top->_pGear->property._transform._translation;
 		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
 
@@ -138,11 +138,11 @@ void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear>
 
 		Vector3 position = gear->_topDifference._translation;
 		position = position.TransformCoordNormal(rotationMatrix);
-
-		/*	応急処置	*/	
-		gear->_pGear->property._transform._translation._x = gearTranslation._x + position._x;
-		//gear->_pGear->property._transform._translation._y = gearTranslation._y + position._y;
+		
+		// 公転位置の決定
+		gear->_pGear->property._transform._translation = gearTranslation + position;
 	}
+
 
 	
 	// 子供がいればその分だけ再帰
@@ -150,6 +150,43 @@ void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear>
 		mGearRotation(top,child, rotation);
 	}
 
+}
+
+/*
+指定パーツのみ回転
+*/
+void CharaEntity::mGearPartsRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, Gear::eType notRotaionType, const Vector3 rotation){
+	if (!gear || !gear->_pGear)return;
+
+
+	gear->_pGear->property._transform._rotation += rotation;
+
+	if (gear->_pParent)
+	{
+		// 最上位との差を更新
+		gear->_topDifference._translation = gear->_pGear->property._transform._translation - top->_pGear->property._transform._translation;
+		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
+
+		auto gearRotation = top->_pGear->property._transform._rotation;
+		auto gearTranslation = top->_pGear->property._transform._translation;
+
+		Matrix4x4 rotationMatrix;
+		Vector3 rotationY = Vector3(0, gearRotation._y, 0);
+		rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
+
+		Vector3 position = gear->_topDifference._translation;
+		position = position.TransformCoordNormal(rotationMatrix);
+
+		// 公転位置の決定
+		gear->_pGear->property._transform._translation = gearTranslation + position;
+	}
+	
+	for (auto child : gear->_pChildren)
+	{
+		if (child->_type == notRotaionType || child->_type == Gear::eType::eNull) continue;
+		mGearPartsRotation(top,child,notRotaionType, rotation);
+	}
+	return;
 }
 
 

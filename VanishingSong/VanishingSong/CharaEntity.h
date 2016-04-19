@@ -41,6 +41,11 @@ public:
 	*/
 	void mGearRotation(std::shared_ptr<Gear> top,std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
 
+	/*
+		指定パーツのみ回転
+		第三引数で指定したパーツとその子供は回転をしない
+	*/
+	void mGearPartsRotation(std::shared_ptr<Gear> top,std::shared_ptr<Gear> gear,Gear::eType notRotaionType, const aetherClass::Vector3 rotation);
 
 	/*
 	アニメーションの値セット用
