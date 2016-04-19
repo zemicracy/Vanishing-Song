@@ -7,10 +7,9 @@
 
 using namespace aetherClass;
 
-EnemyGround::EnemyGround()
-{
-}
+EnemyGround::EnemyGround(){
 
+}
 
 EnemyGround::~EnemyGround()
 {
@@ -23,7 +22,9 @@ bool EnemyGround::mSetUp(){
 
 
 bool EnemyGround::mInitialize(ViewCamera* camera){
-	
+
+	mInitializeEnemyColider(camera,m_pCollider);
+
 	GetProperty().m_isRender = false;
 
 	GetProperty()._enemy = std::make_shared<GearFrame>();
@@ -31,27 +32,25 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 	GetCharaStatus()._nowAction = eActionType::eWait;
 
 	// 体のパーツ
-	GetProperty()._enemy->m_pBody = GetCharaEntity().mSetUpGear("null", Gear::eType::eBody, camera);
+	GetProperty()._enemy->m_pBody = GetCharaEntity().mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eBody, camera);
 
 	// 腰のパーツ
-	GetProperty()._enemy->m_pWaist = GetCharaEntity().mSetUpGear("null", Gear::eType::eWaist, camera);
+	GetProperty()._enemy->m_pWaist = GetCharaEntity().mSetUpGear("Model\\Player\\arm2.fbx", Gear::eType::eWaist, camera);
 
 	WorldReader read;
 	read.Load("data\\Enemy.aether");
 	for (auto index : read.GetInputWorldInfo()._object){
 
 		if (index->_name == "body"){
-		//	GetProperty()._enemy->m_pBody->_pColider->property._transform = index->_transform;
-			
+			GetProperty()._enemy->m_pBody->_pGear->property._transform._translation._y += 20;
 		}
 
 		if (index->_name == "West"){
-		//	GetProperty()._enemy->m_pWaist->_pColider->property._transform = index->_transform;
+			GetProperty()._enemy->m_pWaist->_pGear->property._transform._translation._y += 10;
 		}
 
 	}
 	read.UnLoad();
-
 
 	// 体にパーツとの親子関係
 	GetCharaEntity().mCreateRelationship(GetProperty()._enemy->m_pBody, GetProperty()._enemy->m_pWaist);
@@ -60,35 +59,31 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 
 }
 
+void EnemyGround::mInitializeEnemyColider(aetherClass::ViewCamera* camera, std::shared_ptr<aetherClass::Cube>& enemycolider){
+
+	enemycolider = std::make_shared<Cube>();
+	enemycolider->Initialize();
+	enemycolider->property._transform._translation = Vector3(10, 10, 10);
+	enemycolider->property._transform._scale = 5;
+	enemycolider->property._color = Color(1, 1, 1, 0.5);
+	enemycolider->SetCamera(camera);
+}
+
+
 void EnemyGround::mUpdate(){
 
-	mChangeAction();
 	m_AI=GetAI();
-	m_AI->UpdateRun(&GetProperty());
+	m_AI->UpdateRun(&GetProperty(),&GetProperty()._enemy->m_pBody->_pGear->property._transform._translation);
 }
 
 void EnemyGround::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	if (!GetProperty()._enemy->m_pBody)return;
 	if (GetProperty().m_isRender)return;
 
+	m_pCollider->Render(colider_shader);
+
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	GetCharaEntity().mGearRender(GetProperty()._enemy->m_pBody, model_shader, colider_shader);
-
-}
-
-void EnemyGround::mChangeAction(){
-
-	if (GameController::GetKey().IsKeyDown('R')){
-		GetCharaStatus()._nowAction = eActionType::eDie;
-	}
-
-	if (GameController::GetKey().IsKeyDown('Q')){
-		GetCharaStatus()._nowAction = eActionType::eMove;
-	}
-
-	if (GameController::GetKey().IsKeyDown('W')){
-		GetCharaStatus()._nowAction = eActionType::eWait;
-	}
 
 }
 
@@ -120,4 +115,15 @@ void EnemyGround::mFinalize(){
 		GetProperty()._enemy.reset();
 		GetProperty()._enemy= nullptr;
 	}
+
+	if (m_pCollider){
+		m_pCollider->Finalize();
+		m_pCollider.reset();
+		m_pCollider = nullptr;
+	}
 }
+
+void EnemyGround::GetSetEnemyAction(){
+	
+}
+

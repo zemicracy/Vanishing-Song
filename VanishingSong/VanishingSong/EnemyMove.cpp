@@ -1,6 +1,8 @@
 #include "EnemyMove.h"
 #include "Debug.h"
 
+using namespace aetherClass;
+
 EnemyMove::EnemyMove()
 {
 }
@@ -10,10 +12,7 @@ EnemyMove::~EnemyMove()
 {
 }
 
-void EnemyMove::UpdateRun(EnemyBase::Property* enemy){
+void EnemyMove::UpdateRun(EnemyBase::Property* enemy, aetherClass::Vector3* player_pos){
 
-	Debug::mPrint("a");
-	//enemy->_enemy->m_pBody->_pColider->property._transform._translation._x += 0.1f;
-//	enemy->_enemy->m_pWaist->_pColider->property._transform._translation._x += 0.1f;
-
+	
 }
