@@ -20,6 +20,7 @@ public:
 	struct Property{
 		aetherClass::Transform _transform;	//ˆÊ’u
 		std::shared_ptr<GearFrame> _enemy;
+		bool m_isRender;
 	};
 
 
@@ -29,14 +30,14 @@ public:
 	CharaEntity GetCharaEntity();
 	CharaStatus& GetCharaStatus();
 	Property& GetProperty();
-	void GetSetEnemyAction();
 
-
+	virtual void GetSetEnemyAction() = 0;
 	virtual bool mInitialize(aetherClass::ViewCamera*) = 0;
+	virtual void mInitializeEnemyColider(aetherClass::ViewCamera*,std::shared_ptr<aetherClass::Cube>& collider) = 0;
 	virtual void mUpdate() = 0;
 	virtual void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*) = 0;
 	virtual bool mSetUp() = 0;
-	virtual void mChangeAction() = 0;
+	virtual void mFinalize() = 0;
 
 private:
 	Property m_property;

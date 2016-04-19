@@ -6,26 +6,27 @@
 #include "GameController.h"
 
 class EnemyGround :
-	private EnemyBase
+	public EnemyBase
 {
 public:
 	EnemyGround();
 	~EnemyGround();
 
+	
+	void GetSetEnemyAction() ;
 	bool mInitialize(aetherClass::ViewCamera*) override;
+	void mInitializeEnemyColider(aetherClass::ViewCamera*,std::shared_ptr<aetherClass::Cube>& collider) override;
 	void mUpdate() override;
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*)override;
 	bool mSetUp() override;
-	void mChangeAction() override;
-
+	void mFinalize() override;
 	std::shared_ptr<EnemyAI> GetAI();
-
 
 
 private:
 
 	std::shared_ptr<EnemyAI> m_AI;
-	bool m_render;
+	std::shared_ptr<aetherClass::Cube> m_pCollider;
 	
 };
 #endif
