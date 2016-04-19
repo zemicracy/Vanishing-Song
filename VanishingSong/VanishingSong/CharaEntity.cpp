@@ -125,7 +125,7 @@ void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear>
 
 	if (gear->_pParent)
 	{
-		// 最上位との差
+		// 最上位との差を更新
 		gear->_topDifference._translation = gear->_pGear->property._transform._translation -top->_pGear->property._transform._translation;
 		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
 
@@ -138,11 +138,11 @@ void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear>
 
 		Vector3 position = gear->_topDifference._translation;
 		position = position.TransformCoordNormal(rotationMatrix);
-
-		/*	応急処置	*/	
-		gear->_pGear->property._transform._translation._x = gearTranslation._x + position._x;
-		//gear->_pGear->property._transform._translation._y = gearTranslation._y + position._y;
+		
+		// 公転位置の決定
+		gear->_pGear->property._transform._translation = gearTranslation + position;
 	}
+
 
 	
 	// 子供がいればその分だけ再帰
@@ -152,8 +152,83 @@ void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear>
 
 }
 
+/*
+指定パーツのみ回転
+*/
+void CharaEntity::mGearPartsRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, Gear::eType notRotaionType, const Vector3 rotation){
+	if (!gear || !gear->_pGear)return;
 
 
+	gear->_pGear->property._transform._rotation += rotation;
+
+	if (gear->_pParent)
+	{
+		// 最上位との差を更新
+		gear->_topDifference._translation = gear->_pGear->property._transform._translation - top->_pGear->property._transform._translation;
+		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
+
+		auto gearRotation = top->_pGear->property._transform._rotation;
+		auto gearTranslation = top->_pGear->property._transform._translation;
+
+		Matrix4x4 rotationMatrix;
+		Vector3 rotationY = Vector3(0, gearRotation._y, 0);
+		rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
+
+		Vector3 position = gear->_topDifference._translation;
+		position = position.TransformCoordNormal(rotationMatrix);
+
+		// 公転位置の決定
+		gear->_pGear->property._transform._translation = gearTranslation + position;
+	}
+	
+	for (auto child : gear->_pChildren)
+	{
+		if (child->_type == notRotaionType || child->_type == Gear::eType::eNull) continue;
+		mGearPartsRotation(top,child,notRotaionType, rotation);
+	}
+	return;
+}
+
+/*
+	連想配列に登録
+*/
+void CharaEntity::mRegisterParts(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash, Gear::eType type, std::shared_ptr<Gear>& parts){
+
+	// 登録済みなら何もしない
+	if (hash.find(type) != hash.end() || !parts)return;
+
+	// 登録
+	hash.insert(std::make_pair(type, parts));
+	return;
+}
+
+
+/*
+パーツの初期化
+*/
+void CharaEntity::mSetLoadGearValue(std::shared_ptr<Gear>& top,std::shared_ptr<Gear>& gear, ObjectInfo* info){
+
+	gear->_pGear->property._transform = info->_transform;
+	gear->_initialTransform = info->_transform;
+
+	// 最上位との差
+	gear->_topDifference._translation = gear->_pGear->property._transform._translation - top->_pGear->property._transform._translation;
+	gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
+
+	if (gear->_pParent)
+	{
+		std::shared_ptr<Gear> pParent = gear->_pParent;
+		// 親との差
+		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - pParent->_pGear->property._transform._translation;
+		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - pParent->_pGear->property._transform._rotation;
+	}
+
+	return;
+}
+/*
+	値の代入と
+	文字列からenumに変換
+*/
 Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input, Transform value){
 	/*	体	*/
 	if (partsName == "Body"){

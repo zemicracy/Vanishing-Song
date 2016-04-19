@@ -3,11 +3,11 @@
 #pragma comment (lib,"Aether.lib")
 #endif
 #include <memory>
-
 #include <AetherWindow.h>
 #include <GameController.h>
 #include <ConsoleWindow.h>
 #include <GameSceneManager.h>
+#include "Const.h"
 #include "SceneSurvival.h"
 #include "VanishingSongFrame.h"
 using namespace aetherClass;
@@ -15,8 +15,6 @@ using namespace aetherClass;
 namespace{
 	const int kError = -1;
 	const int kEnd = 0;
-	const int kWindowWidth = 1280;
-	const int kWindowHeight = 720;
 	const int kWindowNum = 1;
 }
 
@@ -43,7 +41,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	window->SetWindowStyles(desc);
 
 	//ウィンドウを作成しているウィンドウのオブジェクトのメンバ関数
-	window->Create(L"Game", Vector2(kWindowWidth, kWindowHeight));
+	window->Create(kWindowName, Vector2(kWindowWidth, kWindowHeight));
 
 	bool result = frame->Initialize(&window,kWindowNum,5000.0f,1.0f);
 
