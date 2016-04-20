@@ -7,7 +7,7 @@ public:
 	EnemyWait();
 	~EnemyWait();
 
-	void UpdateRun(EnemyBase::Property* enemy);
+	void UpdateRun(EnemyBase::Property*, aetherClass::Vector3*);
 
 };
 

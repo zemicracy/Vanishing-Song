@@ -7,6 +7,6 @@ public:
 	EnemyMove();
 	~EnemyMove();
 
-	void UpdateRun(EnemyBase::Property*)override;
+	void UpdateRun(EnemyBase::Property*, aetherClass::Vector3*)override;
 };
 
