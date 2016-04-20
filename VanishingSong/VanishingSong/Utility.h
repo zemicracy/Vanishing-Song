@@ -4,7 +4,6 @@
 #include <vector>
 #include "GearFrame.h"
 #include <Matrix4x4.h>
-#include "Debug.h"
 template<typename Type>
 static void ReleaseVector(std::vector<Type>& vector)
 {
@@ -45,28 +44,4 @@ static type gInterpolation(type first, type last, const int allFrameCount, const
 	return output;
 }
 
-
-/*
-マウスの固定や、消すよう
-*/
-static bool gLockMouseCursor(HWND hWnd, const bool visible){
-	RECT screen;
-	bool result = GetWindowRect(hWnd, &screen);
-	if (!result){
-		Debug::mErrorPrint("ウィンドウサイズの取得に失敗", __FILE__, __LINE__);
-		return false;
-	}
-	POINT screenCenter = { (screen.left + screen.right) / 2, (screen.top + screen.bottom) / 2 };
-
-	bool lock = !visible;
-	// マウスを固定
-	if (lock)
-	{
-		SetCursorPos(screenCenter.x, screenCenter.y);
-	}
-
-	// ここでマウスの切り替えを行う
-	ShowCursor(visible);
-	return true;
-}
 #endif

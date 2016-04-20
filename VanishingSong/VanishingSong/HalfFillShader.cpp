@@ -5,11 +5,6 @@ using namespace aetherFunction;
 
 HalfFillShader::HalfFillShader()
 {
-	_property._direction = 0;
-	_property._interpolation = 0;
-	_property._position = 0;
-	_property._beginRadius = 0;
-	_property._endRadius = 0;
 	m_fillTypeBuffer = nullptr;
 }
 
@@ -40,7 +35,8 @@ bool HalfFillShader::SetConstantBuffer(){
 	unsigned int bufferNumber;
 
 	this->Exception();
-
+	
+	//ƒf[ƒ^‚Ì“o˜^
 	result = GetDirect3DManager()->GetDeviceContext()->Map(m_fillTypeBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 	if (FAILED(result)){
 		return false;
@@ -57,6 +53,7 @@ bool HalfFillShader::SetConstantBuffer(){
 }
 
 void HalfFillShader::Exception(){
+	//‚O`‚P‚Ì”ÍˆÍ‚Éû‚ß‚é
 	if (_property._interpolation < 0){
 		_property._interpolation = 0;
 	}

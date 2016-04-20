@@ -1,8 +1,8 @@
 #pragma once
 
 #include<memory>
-#include"HalfFillShader.h"
 #include"SpriteBase.h"
+#include"HalfFillShader.h"
 class HPGauge
 {
 public:
@@ -16,7 +16,8 @@ private:
 	void mFinalize();
 
 	std::shared_ptr<aetherClass::SpriteBase>m_sprite;
-	std::shared_ptr<HalfFillShader>m_shader;
-	std::shared_ptr<aetherClass::Texture>m_texture;
+	std::shared_ptr<aetherClass::Texture>m_maskTexture;
+	HalfFillShader::FillType m_fillType;
+
 };
 

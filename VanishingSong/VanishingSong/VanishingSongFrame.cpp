@@ -3,9 +3,6 @@
 #include <Singleton.h>
 #include "ResourceManager.h"
 #include "GameManager.h"
-#include "GameController.h"
-
-using namespace aetherClass;
 VanishingSongFrame::VanishingSongFrame()
 {
 }
@@ -31,7 +28,6 @@ bool VanishingSongFrame::FrameRunningBuffer(){
 	// ポーズボタンが押されたかチェックする
 	Singleton<GameManager>::GetInstance().mCheckPauseKey();
 
-	
 	return true;
 }
 
