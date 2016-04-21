@@ -1,17 +1,18 @@
 #include "SceneSkill.h"
 #include <iostream>
-#include<PixelShader.h>
-#include<Rectangle3D.h>
+#include <PixelShader.h>
+#include <Rectangle3D.h>
 #include <GameController.h>
+#include <Singleton.h>
+
 #include "Debug.h"
 #include "SceneBattle.h"
 #include "SceneSurvival.h"
-#include <Singleton.h>
 #include "GameManager.h"
 using namespace aetherClass;
-
+const std::string SceneSkill::Name = "SkillSelection";
 SceneSkill::SceneSkill():
-GameScene("SkillSelection", GetManager())
+GameScene(Name, GetManager())
 {
 }
 

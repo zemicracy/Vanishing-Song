@@ -9,6 +9,7 @@
 #include <GameSceneManager.h>
 #include "Const.h"
 #include "SceneSurvival.h"
+#include "SceneTitle.h"
 #include "VanishingSongFrame.h"
 using namespace aetherClass;
 
@@ -54,6 +55,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	GameScene* scene = new SceneSurvival();
 	GameSceneManager::SetCurrentScene(scene);
 
+	frame->BackgroundColor(Color(0.5, 0.5, 0.5, 0.5));
 	//メインループの開始
 	frame->GameRun();
 

@@ -17,6 +17,9 @@ private:
 	std::unique_ptr<aetherClass::ShaderBase> m_pShaderBase;
 	std::unique_ptr<aetherClass::ViewCamera> m_pTitleView;
 	std::unique_ptr<aetherClass::Texture>m_pTexture;
+
+public:
+	static const std::string Name;
 public:
 	SceneSkill();
 	~SceneSkill();

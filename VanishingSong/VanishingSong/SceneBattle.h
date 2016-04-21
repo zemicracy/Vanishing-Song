@@ -37,6 +37,9 @@ public:
 	//ƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“Œø‰Ê‚ğİ’è
 	bool TransitionIn()override;
 	bool TransitionOut()override;
+
+public:
+	static const std::string Name;
 };
 
 

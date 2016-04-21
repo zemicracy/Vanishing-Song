@@ -8,8 +8,9 @@ using namespace aetherClass;
 namespace{
 	const float kDefaultScaleTime = 1.0f;
 }
+const std::string SceneSurvival::Name = "Survival";
 SceneSurvival::SceneSurvival():
-GameScene("Survival", GetManager()) //Scene‚²‚Æ‚Ì–¼‘O‚ğİ’è
+GameScene(Name, GetManager()) //Scene‚²‚Æ‚Ì–¼‘O‚ğİ’è
 {
 }
 

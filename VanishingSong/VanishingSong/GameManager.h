@@ -8,6 +8,8 @@ public:
 	enum class eGameMode{
 		eBattle,
 		eSurvaival,
+		ePractice,
+		eTutorial,
 		eNull
 	};
 	enum class eState{

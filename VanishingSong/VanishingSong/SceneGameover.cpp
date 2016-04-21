@@ -4,9 +4,9 @@
 #include<PixelShader.h>
 
 using namespace aetherClass;
-
+const std::string SceneGameover::Name = "Gameover";
 SceneGameover::SceneGameover():
-GameScene("Gameover", GetManager())
+GameScene(Name, GetManager())
 {
 }
 

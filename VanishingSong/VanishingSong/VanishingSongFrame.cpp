@@ -30,7 +30,6 @@ bool VanishingSongFrame::FrameRunningBuffer(){
 	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 	// ポーズボタンが押されたかチェックする
 	Singleton<GameManager>::GetInstance().mCheckPauseKey();
-
 	
 	return true;
 }
