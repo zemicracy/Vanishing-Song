@@ -1,12 +1,12 @@
-#ifndef _SCENEPRACTICE_H
-#define _SCENEPRACTICE_H
+#ifndef SCENETUTORIAL_H
+#define SCENETUTORIAL_H
 #include <GameScene.h>
-class ScenePractice :
+class SceneTutorial:
 	public aetherClass::GameScene
 {
 public:
-	ScenePractice();
-	~ScenePractice();
+	SceneTutorial();
+	~SceneTutorial();
 
 	//èâä˙âª
 	bool Initialize()override;
@@ -27,7 +27,6 @@ public:
 
 public:
 	static const std::string Name;
-
 };
 
 #endif

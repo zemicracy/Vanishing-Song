@@ -21,11 +21,18 @@ class SceneTitle :
 		eTutorial,
 		eExit
 	};
+
+	// カーソル用
 	struct ModeSelect{
 		float _cursorY;
 		int _modeNumber;
 	};
 
+	// シーン遷移用
+	struct SceneInfo{
+		GameManager::eGameMode _mode;
+		std::string _nextSceneName;
+	};
 public:
 	SceneTitle();
 
@@ -51,7 +58,7 @@ public:
 public:
 	static const std::string Name;
 private:
-	std::string mGetGameMode(const int index);
+	SceneInfo mGetGameMode(const int index);
 	void mChangeSelect(aetherClass::Vector2);
 	void mClickState();
 	bool mMenuSelectState();

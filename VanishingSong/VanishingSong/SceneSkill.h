@@ -8,7 +8,7 @@
 #include<memory>
 #include<ViewCamera.h>
 #include<Texture.h>
-
+#include "GameManager.h"
 class SceneSkill :
 	public aetherClass::GameScene
 {
@@ -40,6 +40,9 @@ public:
 	//ƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“Œø‰Ê‚ğİ’è
 	bool TransitionIn()override;
 	bool TransitionOut()override;
+
+private:
+	std::string mGetNextMode(GameManager::eGameMode);
 };
 
 #endif

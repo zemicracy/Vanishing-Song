@@ -10,6 +10,7 @@
 #include "Const.h"
 
 #include "SceneBattle.h"
+#include "SceneTutorial.h"
 #include "SceneSkill.h"
 using namespace aetherClass;
 using namespace aetherFunction;
@@ -194,24 +195,6 @@ bool SceneTitle::TransitionOut(){
 	return kTransitionEnd;
 }
 
-std::string SceneTitle::mGetGameMode(const int index){
-	switch (index){
-		case eNextMode::eSurvival:
-			break;
-		case eNextMode::eBattle:
-			break;
-		case eNextMode::ePractice:
-			break;
-		case eNextMode::eTutorial:
-			break;
-
-			// ここはならすべて終了
-		case eNextMode::eNull:
-		case eNextMode::eExit:
-			break;
-	}
-	return kExit;
-}
 
 void SceneTitle::mChangeSelect(Vector2 mouse){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
@@ -274,15 +257,52 @@ bool SceneTitle::mMenuSelectState(){
 		mouse._y > origin._y&&mouse._y <= origin._y + size._y){
 
 		if (GameController::GetMouse().IsLeftButtonTrigger()){
-			std::string nextSceneName = mGetGameMode(m_nowSelectMode);
+			SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 			// Exit以外が来たらシーンの遷移を開始
-			if (nextSceneName != kExit){
-				ChangeScene(nextSceneName, LoadState::eUse, LoadWaitState::eNull);
-			}
-			else{
+			if (nextState._nextSceneName != kExit){
+
+				// ゲームモードの設定
+				Singleton<GameManager>::GetInstance().mGameMode(nextState._mode);
+				// シーンの遷移
+				ChangeScene(nextState._nextSceneName, LoadState::eUse, LoadWaitState::eNull);
+			}else{
 				// 終了
 				return kShutdown;
 			}
 		}
 	}
+}
+
+
+SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
+	SceneInfo info;
+	info._mode = GameManager::eGameMode::eNull;
+	info._nextSceneName = kExit;
+	switch (index){
+	case eNextMode::eSurvival:
+		info._mode = GameManager::eGameMode::eSurvaival;
+		info._nextSceneName = SceneSkill::Name;
+		break;
+
+	case eNextMode::ePractice:
+		info._mode = GameManager::eGameMode::ePractice;
+		info._nextSceneName = SceneSkill::Name;
+		break;
+
+	case eNextMode::eBattle:
+		info._mode = GameManager::eGameMode::eBattle;
+		info._nextSceneName = SceneBattle::Name;
+		break;
+
+	case eNextMode::eTutorial:
+		info._mode = GameManager::eGameMode::eTutorial;
+		info._nextSceneName = SceneTutorial::Name;
+		break;
+
+		// ここはならすべて終了
+	case eNextMode::eNull:
+	case eNextMode::eExit:
+		break;
+	}
+	return info;
 }

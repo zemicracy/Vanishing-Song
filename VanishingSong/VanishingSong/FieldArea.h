@@ -9,6 +9,7 @@ public:
 	void mInitialize();
 	void mRender(aetherClass::ShaderBase*);
 	void mUpdate(float);
+	std::shared_ptr<aetherClass::ModelBase> mGetPartitionCube(const int number);
 	void mSetCamera(aetherClass::ViewCamera*);
 	FieldArea();
 	~FieldArea();

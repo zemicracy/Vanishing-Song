@@ -15,19 +15,19 @@ GameManager::~GameManager()
 void GameManager::mInitialize(){
 	m_day = kFirstDay;
 	m_isPause = false;
-	m_gameState = eState::eNull;
+	m_gameState = eGameState::eNull;
 	m_gameMode = eGameMode::eNull;
 	m_skillType = eSkillType::eNull;
 	return;
 }
 
 //
-void GameManager::mGameState(GameManager::eState state){
+void GameManager::mGameState(GameManager::eGameState state){
 	m_gameState = state;
 }
 
 //
-GameManager::eState GameManager::mGameState(){
+GameManager::eGameState GameManager::mGameState(){
 	return m_gameState;
 }
 
