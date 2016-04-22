@@ -32,7 +32,8 @@ public:
 	//ƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“Œø‰Ê
 	bool TransitionIn()override;
 	bool TransitionOut()override;
-
+public:
+	static const std::string Name;
 private:
 	std::shared_ptr<EnemyGround> m_penemyGround;
 	std::shared_ptr<aetherClass::ShaderBase> m_pixelShader;

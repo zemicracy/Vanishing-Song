@@ -6,9 +6,9 @@
 
 #include "SceneGameover.h"
 using namespace aetherClass;
-
+const std::string SceneBattle::Name = "Battle";
 SceneBattle::SceneBattle():
-GameScene("Battle", GetManager())
+GameScene(Name, GetManager())
 {
 }
 
