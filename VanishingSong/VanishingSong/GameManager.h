@@ -4,7 +4,7 @@
 class GameManager
 {
 public:
-
+	// 選択されたモード用
 	enum class eGameMode{
 		eBattle,
 		eSurvaival,
@@ -12,7 +12,9 @@ public:
 		eTutorial,
 		eNull
 	};
-	enum class eState{
+
+	// 現在の状態
+	enum class eGameState{
 		e1PWin,
 		e2PWin,
 		eClear,
@@ -20,6 +22,7 @@ public:
 		eNull
 	};
 
+	// スキルのタイプ
 	enum class eSkillType{
 		eExAttack,
 		eExShield,
@@ -27,13 +30,26 @@ public:
 		eExBuff,
 		eNull
 	};
+
+	// 日数
+	enum class eDay{
+		eNull,
+		e1day,
+		e2day,
+		e3day,
+		e4day,
+		e5day,
+		e6day,
+		e7day,
+		eLastDay,
+	};
 public:
 	GameManager();
 	~GameManager();
 	void mInitialize();
 	signed char mGetToDay();
-	void mGameState(eState);
-	eState mGameState();
+	void mGameState(eGameState);
+	eGameState mGameState();
 	bool mIsPause();
 	void mNextDay();
 	void mCheckPauseKey();
@@ -47,7 +63,7 @@ public:
 	void mGameMode(const eGameMode);
 	
 private:
-	eState m_gameState;
+	eGameState m_gameState;
 	bool m_isPause;
 	signed char m_day;
 	eSkillType m_skillType;

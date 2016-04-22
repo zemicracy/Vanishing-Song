@@ -104,3 +104,6 @@ void FieldArea::mUpdate(float){
 		
 }
 
+std::shared_ptr<aetherClass::ModelBase> FieldArea::mGetPartitionCube(const int number){
+	return m_partitionCube[number];
+}

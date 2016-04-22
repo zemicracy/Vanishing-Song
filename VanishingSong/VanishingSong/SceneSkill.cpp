@@ -6,9 +6,8 @@
 #include <Singleton.h>
 
 #include "Debug.h"
-#include "SceneBattle.h"
-#include "SceneSurvival.h"
-#include "GameManager.h"
+#include "SceneGame.h"
+
 using namespace aetherClass;
 const std::string SceneSkill::Name = "SkillSelection";
 SceneSkill::SceneSkill():
@@ -43,8 +42,7 @@ bool SceneSkill::Initialize(){
 	m_pModelBase->property._color = Color(0, 0, 0, 1);
 	m_pModelBase->SetTexture(m_pTexture.get());
 
-	RegisterScene(new SceneBattle());
-	RegisterScene(new SceneSurvival());
+	RegisterScene(new SceneGame());
 
 	return true;
 }
@@ -56,8 +54,9 @@ void SceneSkill::Finalize(){
 
 bool SceneSkill::Updater(){
 	if (GameController::GetMouse().IsLeftButtonTrigger()){
+		// ƒXƒLƒ‹‚Ì‘I‘ð
 		Singleton<GameManager>::GetInstance().mSkillType(GameManager::eSkillType::eNull);
-		ChangeScene("Survival", LoadState::eUnuse, LoadWaitState::eUnuse);
+		ChangeScene(SceneGame::Name, LoadState::eUnuse, LoadWaitState::eUnuse);
 	}
 	return true;
 }
