@@ -8,11 +8,16 @@
 #include "Debug.h"
 #include "SceneSkill.h"
 #include "Const.h"
+
+#include "SceneBattle.h"
+#include "SceneSkill.h"
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
 	const bool kPleaseClick = false;
 	const bool kMenuSelect = true;
+	const std::string kExit = "Exit";
+	const bool kShutdown = false;
 }
 const std::string SceneTitle::Name = "Title";
 SceneTitle::SceneTitle() :
@@ -26,7 +31,6 @@ GameScene(Name, GetManager())
 	m_pPushTexture = nullptr;
 	m_pMenu = nullptr;
 	m_pCursor = nullptr;
-	m_isExit = false;
 	m_nowSelectMode = NULL;
 }
 
@@ -40,7 +44,6 @@ SceneTitle::~SceneTitle()
 	m_pPushTexture = nullptr;
 	m_pMenu = nullptr;
 	m_pCursor = nullptr;
-	m_isExit = false;
 	m_nowSelectMode = NULL;
 }
 
@@ -51,7 +54,7 @@ bool SceneTitle::Initialize(){
 	desc._vertex._entryName = "vs_main";
 	desc._vertex._srcFile = L"Shader\\VertexShaderBase.hlsl";
 	desc._pixel._entryName = "ps_main";
-	desc._pixel._srcFile = L"Shader\\Texture.hlsl";
+	desc._pixel._srcFile = L"Shader\\Transparent.hlsl";
 	
 	m_pTextureShader = std::make_shared<PixelShader>();
 	m_pTextureShader->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
@@ -109,8 +112,8 @@ bool SceneTitle::Initialize(){
 	//次のシーン
 	RegisterScene(new SceneSkill());
 
-	m_isExit = false;
 	m_pushState = false;
+	m_alphaState = false;
 	m_nowSelectMode = NULL;
 	return true;
 }
@@ -149,41 +152,20 @@ void SceneTitle::Finalize(){
 	}
 
 	m_pushState = false;
-	m_isExit = false;
+
+	m_alphaState = false;
 	m_nowSelectMode = NULL;
 	return;
 }
 
 bool SceneTitle::Updater(){
-	if(GameController::GetMouse().IsLeftButtonTrigger()){
-
-		// 前回が押してください状態なら、画像を切り替える
-		if (m_pushState == kPleaseClick){
-			m_pMenu->SetTexture(m_pMenuTexture.get());
-			m_pushState = true;
-		}
-		else{
-			if (m_nowSelectMode != SceneTitle::eNextMode::eNull){
-				// 選択したシーンに行く
-			}
-		}
-	}
-
-
-
-	// それぞれの更新処理
-	if (m_pushState == kMenuSelect){
-		m_pCursor->Render(m_pColorShader.get());
-		// カーソルの移動処理
-		Vector2 mouse = GameController::GetMouse().GetMousePosition();
-		DirectXEntity directX;
-		Vector2 screenSize = GetWindowSize(directX.GetWindowHandle(kWindowName));
-		//ウィンドウサイズ調整
-		mouse._x = (mouse._x / (screenSize._x - GetSystemMetrics(SM_CXDLGFRAME) * 2))* screenSize._x;
-		mouse._y = (mouse._y / (screenSize._y - GetSystemMetrics(SM_CYCAPTION) - GetSystemMetrics(SM_CXDLGFRAME)))* screenSize._y;
-
-		// カーソルの切り替え
-		ChangeSelect(mouse);
+	
+	mClickState();
+	bool isUpdate = mMenuSelectState();
+	// まだ続けるか？
+	if (!isUpdate)
+	{
+		return kShutdown;
 	}
 	return true;
 }
@@ -212,10 +194,8 @@ bool SceneTitle::TransitionOut(){
 	return kTransitionEnd;
 }
 
-GameManager::eGameMode SceneTitle::mGetGameMode(const int index){
+std::string SceneTitle::mGetGameMode(const int index){
 	switch (index){
-		case eNextMode::eNull:
-		break;
 		case eNextMode::eSurvival:
 			break;
 		case eNextMode::eBattle:
@@ -224,19 +204,85 @@ GameManager::eGameMode SceneTitle::mGetGameMode(const int index){
 			break;
 		case eNextMode::eTutorial:
 			break;
+
+			// ここはならすべて終了
+		case eNextMode::eNull:
 		case eNextMode::eExit:
-			m_isExit = true;
 			break;
 	}
-	return GameManager::eGameMode::eNull;
+	return kExit;
 }
 
-void SceneTitle::ChangeSelect(Vector2 mouse){
+void SceneTitle::mChangeSelect(Vector2 mouse){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
 	for (auto index : m_cursorArray){
 		if (index._cursorY<mouse._y&&index._cursorY + cursorSize>mouse._y){
 			m_pCursor->property._transform._translation._y = index._cursorY;
 			m_nowSelectMode = index._modeNumber;
+		}
+	}
+}
+
+
+void SceneTitle::mClickState(){
+	if (m_pushState != kPleaseClick)return;
+
+	if (GameController::GetMouse().IsLeftButtonTrigger()){
+		m_pMenu->SetTexture(m_pMenuTexture.get());
+		m_pushState = kMenuSelect;
+	}
+
+	// 増減の選択
+	if (m_pMenu->property._color._alpha >= 1.1f){
+		m_alphaState = false;
+	}
+	else if(m_pMenu->property._color._alpha <= -0.1f){
+		m_alphaState = true;
+	}
+
+	// 増減の実行
+	if (m_alphaState){
+		m_pMenu->property._color._alpha += 0.01;
+	}
+	else{
+		m_pMenu->property._color._alpha -= 0.01;
+	}
+
+}
+
+
+bool SceneTitle::mMenuSelectState(){
+	if (m_pushState != kMenuSelect)return true;
+
+	m_pCursor->Render(m_pColorShader.get());
+	m_pMenu->property._color._alpha = 1;
+	// カーソルの移動処理
+	Vector2 mouse = GameController::GetMouse().GetMousePosition();
+	DirectXEntity directX;
+	Vector2 screenSize = GetWindowSize(directX.GetWindowHandle(kWindowName));
+	//ウィンドウサイズ調整
+	mouse._x = (mouse._x / (screenSize._x - GetSystemMetrics(SM_CXDLGFRAME) * 2))* screenSize._x;
+	mouse._y = (mouse._y / (screenSize._y - GetSystemMetrics(SM_CYCAPTION) - GetSystemMetrics(SM_CXDLGFRAME)))* screenSize._y;
+
+	// カーソルの切り替え
+	mChangeSelect(mouse);
+
+	// カーソルの上でクリックしたら
+	Vector3 size = m_pCursor->property._transform._scale;
+	Vector3 origin = m_pCursor->property._transform._translation;
+	if (mouse._x > origin._x&&mouse._x <= origin._x + size._x&&
+		mouse._y > origin._y&&mouse._y <= origin._y + size._y){
+
+		if (GameController::GetMouse().IsLeftButtonTrigger()){
+			std::string nextSceneName = mGetGameMode(m_nowSelectMode);
+			// Exit以外が来たらシーンの遷移を開始
+			if (nextSceneName != kExit){
+				ChangeScene(nextSceneName, LoadState::eUse, LoadWaitState::eNull);
+			}
+			else{
+				// 終了
+				return kShutdown;
+			}
 		}
 	}
 }

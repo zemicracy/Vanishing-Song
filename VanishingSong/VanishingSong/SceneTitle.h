@@ -51,8 +51,10 @@ public:
 public:
 	static const std::string Name;
 private:
-	GameManager::eGameMode mGetGameMode(const int index);
-	void ChangeSelect(aetherClass::Vector2);
+	std::string mGetGameMode(const int index);
+	void mChangeSelect(aetherClass::Vector2);
+	void mClickState();
+	bool mMenuSelectState();
 private:
 	std::unique_ptr<aetherClass::SpriteBase> m_pLogo;
 	std::shared_ptr<aetherClass::ShaderBase> m_pTextureShader;
@@ -65,7 +67,7 @@ private:
 	std::array<ModeSelect, 5> m_cursorArray;
 	bool m_pushState;
 	int m_nowSelectMode;
-	bool m_isExit;
+	bool m_alphaState;
 };
 
 #endif
