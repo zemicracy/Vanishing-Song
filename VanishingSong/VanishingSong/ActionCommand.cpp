@@ -25,6 +25,7 @@ aetherClass::SpriteBase::Property& ActionCommand::mGetProperty(){
 void ActionCommand::mCreate(){
 	m_pSprite = std::make_shared<aetherClass::Rectangle2D>();
 	m_pSprite->Initialize();
+	mOnCreate();
 }
 
 void ActionCommand::mRender(aetherClass::ShaderBase *shader){
@@ -42,7 +43,7 @@ CharaEntity ActionCommand::mGetCharaEntity(){
 
 
 
-std::vector<Animation>& ActionCommand::GetAnimationValue(){
+std::vector<Animation>& ActionCommand::mGetAnimationValue(){
 	return m_animation;
 }
 
@@ -50,9 +51,9 @@ std::vector<Animation>& ActionCommand::GetAnimationValue(){
 
 
 
-void ActionCommand::CallCount(const int count){
+void ActionCommand::mCallCount(const int count){
 	m_callCount = count;
 }
-int ActionCommand::CallCount()const{
+int ActionCommand::mCallCount()const{
 	return m_callCount;
 }

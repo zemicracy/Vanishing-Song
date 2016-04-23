@@ -7,15 +7,26 @@
 #include "Const.h"
 #include "ActionCommand.h"
 #include "Animation.h"
+
 #include <Cube.h>
 #include <ShaderBase.h>
 #include <Transform.h>
 #include <ViewCamera.h>
 #include <unordered_map>
 #include <vector>
+#include "Equipment.h"
 class Player
 {
 private:
+
+	// 
+	struct BulletPool{
+		std::shared_ptr<Equipment> _bullet;
+		bool _isRun;
+		int _number;
+	};
+
+
 	/*	Playerの状態		*/
 	enum class eState{
 		eMove,
@@ -161,10 +172,16 @@ private:
 
 	void CheckCameraRotation(aetherClass::Vector3&);
 
+	template<class type>
+	void mSetupWeapon(std::shared_ptr<Equipment>& weapon, std::string model);
+
+	void mWeaponRun(eCommandType);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;   // パーツの管理
 	std::shared_ptr<ActionCommand> m_pActionCommand;  // コマンド実行用
 	std::shared_ptr<Gear> m_pTopGear;            // 最上位パーツのポインタを入れておく
+	std::shared_ptr<Equipment> m_pOriginalBullets;
+	std::vector<BulletPool> m_pBullets;
 	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
 
 	aetherClass::Transform m_playerTransform;   // プレイヤーの回転、移動、スケールを管理

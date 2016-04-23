@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Debug.h"
 #include "Utility.h"
+#include "Bullet.h"
 #include <MathUtility.h>
 #include <GameController.h>
 #include <WorldReader.h>
@@ -13,6 +14,7 @@ namespace{
 	const int kMoveAnimationFrame = 5;
 	const float kCameraRotationMaxX = 15.0f;
 	const float kCameraRotationMinX = -15.0f;
+	const float kCameraY = 500.0f;
 	const Vector3 kColliderOffset = Vector3(0, -5, 0); 
 	const Vector3 kPlayerInitialY = Vector3(0, 26, 0);
 }
@@ -73,6 +75,8 @@ bool Player::mInitialize(){
 		Debug::mPrint("プレイヤー 初期化終了しました");
 	}
 
+	// 武器系の初期化用
+	mSetupWeapon<Bullet>(m_pOriginalBullets, "Model\\Weapon\\bullet.fbx");
 	return true;
 }
 
@@ -80,10 +84,13 @@ bool Player::mInitialize(){
 解放処理
 */
 void Player::mFinalize(){
-	m_defaultAnimation.clear();
-
-	m_pGearPartsHash.clear();
-
+	
+	if (!m_defaultAnimation.empty()){
+		for (auto index : m_defaultAnimation){
+			index.second._animation.clear();
+		}
+		m_defaultAnimation.clear();
+	}
 	if (m_pGearFrame)
 	{
 		m_pGearFrame->Release();
@@ -113,13 +120,30 @@ void Player::mFinalize(){
 		m_pBodyCollider = nullptr;
 	}
 
+	if (m_pOriginalBullets){
+		m_pOriginalBullets.reset();
+		m_pOriginalBullets = nullptr;
+	}
+
+	if (!m_pBullets.empty()){
+		for (auto index : m_pBullets){
+			if (!index._bullet)continue;
+			index._bullet.reset();
+			index._bullet = nullptr;
+
+			index._isRun = false;
+			index._number = NULL;
+		}
+	}
+
 	// ステータスのリセット
 	m_status.Reset();
-	m_defaultAnimation.clear();
 
 	m_prevCommand = eCommandType::eNull;
 	m_prevState = eState::eNull;
 	m_cameraRotation = kVector3Zero;
+	m_pGearPartsHash.clear();
+
 	return;
 }
 
@@ -152,6 +176,23 @@ void Player::mUpdate(const float timeScale){
 	m_playerTransform._translation += translation;
 	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 
+	// 弾の複製
+	if (GameController::GetKey().KeyDownTrigger('B')){
+		BulletPool bullet;
+		bullet._bullet = std::make_shared<Bullet>();
+		*bullet._bullet = *m_pOriginalBullets;
+		bullet._isRun = true;
+		bullet._number = 0;
+		bullet._bullet->mGetTransform()._translation = m_playerTransform._translation;
+		m_pBullets.push_back(bullet);
+	}
+
+	// 弾の発射
+	for (auto& index : m_pBullets){
+		Vector3 hogehohge = Vector3(0, 0, 10);
+		Vector3 bulletMove = hogehohge.TransformCoordNormal(rotationMatrix);
+		index._bullet->mGetTransform()._translation += bulletMove;
+	}
 	// 移動処理
 	m_charaEntity.mGearMove(m_pTopGear, m_playerTransform._translation);
 
@@ -197,18 +238,19 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 
 
 	/*	カメラの回転	*/
-	if (GameController::GetMouse().IsRightButtonDown()){
-		gLockMouseCursor(m_directXEntity.GetWindowHandle(kWindowName), false);
-		Vector2 cameraRotation = GameController::GetMouse().GetMouseMovement();
-		cameraRotation /= kAetherPI;
-		output._cameraRotation._x += cameraRotation._y;
-		output._cameraRotation._y += cameraRotation._x;
+	Vector2 mousePosition = GameController::GetMouse().GetMousePosition();
 
-	}
-	else{
-		gLockMouseCursor(m_directXEntity.GetWindowHandle(kWindowName), true);
-	}
+	/*	コマンドやオーダーリストの箇所以外のみに反応する*/
+	if (mousePosition._y < kCameraY){
+		if (GameController::GetMouse().IsRightButtonDown()){
+			gLockMouseCursor(m_directXEntity.GetWindowHandle(kWindowName), true);
+			Vector2 cameraRotation = GameController::GetMouse().GetMouseMovement();
+			cameraRotation /= kAetherPI;
+			output._cameraRotation._x += cameraRotation._y;
+			output._cameraRotation._y += cameraRotation._x;
 
+		}
+	}
 
 	return output;
 }
@@ -220,6 +262,11 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 	m_playerView.Render();
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
+
+	for (auto index : m_pBullets){
+		Debug::mPrint("きた");
+		index._bullet->mRender(modelShader);
+	}
 
 	if (kCharaDebug)
 	{
@@ -238,7 +285,7 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 	// 前回と違えば実行数を0にする
 	if (m_status._nowCommand != m_prevCommand){
 		m_actionCount._commandFrame = kZeroPoint;
-		Debug::mPrint("Change Action");
+		command->mCallCount(0);
 	}
 
 	// アクションの実行
@@ -250,6 +297,8 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 	}
 	
 	m_actionCount._commandFrame += 1;
+	const int callCount = command->mCallCount();
+	command->mCallCount(callCount + 1);
 
 	// 状態を上書き
 	m_prevCommand = m_status._nowCommand;
@@ -501,6 +550,9 @@ void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::str
 */
 void Player::mDefaultAnimation(Player::eState& m_state){
 
+	// 現在のコマンドがNULL以外ならアニメーションは再生しない
+	//if (m_status._nowCommand != eCommandType::eNull)return;
+	
 	// 前回と違うときは更新
 	if (m_prevState != m_state){
 		m_actionCount._defaultFrame = NULL;
@@ -568,7 +620,7 @@ void Player::mUpdateView(ViewCamera& view,Vector3& rotation,Vector3 lookAtPositi
 }
 
 
-void  Player::CheckCameraRotation(Vector3& rotation){
+void Player::CheckCameraRotation(Vector3& rotation){
 	// カメラ可動範囲の上限の確認
 	if (rotation._x > kCameraRotationMaxX){
 		rotation._x = kCameraRotationMaxX;
@@ -578,3 +630,13 @@ void  Player::CheckCameraRotation(Vector3& rotation){
 	}
 }
 
+template<class type>
+void Player::mSetupWeapon(std::shared_ptr<Equipment>& weapon, std::string model){
+	weapon = std::make_shared<type>();
+	weapon->mCreate(mGetView(),model);
+	return;
+}
+
+void Player::mWeaponRun(eCommandType type){
+
+}

@@ -7,6 +7,9 @@ class ActionShortAttack :
 public:
 	ActionShortAttack():ActionCommand(eCommandType::eShortDistanceAttack){}
 	~ActionShortAttack(){}
+	void mOnCreate()override{
+
+	}
 	void mAction(std::shared_ptr<GearFrame> gearFrame, float timeScale, int count)override{
 
 		aetherClass::Vector3 rotation;

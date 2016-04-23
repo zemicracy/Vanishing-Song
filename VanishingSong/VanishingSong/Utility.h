@@ -49,7 +49,7 @@ static type gInterpolation(type first, type last, const int allFrameCount, const
 /*
 マウスの固定や、消すよう
 */
-static bool gLockMouseCursor(HWND hWnd, const bool visible){
+static bool gLockMouseCursor(HWND hWnd, const bool lock){
 	RECT screen;
 	bool result = GetWindowRect(hWnd, &screen);
 	if (!result){
@@ -58,7 +58,6 @@ static bool gLockMouseCursor(HWND hWnd, const bool visible){
 	}
 	POINT screenCenter = { (screen.left + screen.right) / 2, (screen.top + screen.bottom) / 2 };
 
-	bool lock = !visible;
 	// マウスを固定
 	if (lock)
 	{
@@ -66,7 +65,7 @@ static bool gLockMouseCursor(HWND hWnd, const bool visible){
 	}
 
 	// ここでマウスの切り替えを行う
-	ShowCursor(visible);
+	//ShowCursor(visible);
 	return true;
 }
 #endif

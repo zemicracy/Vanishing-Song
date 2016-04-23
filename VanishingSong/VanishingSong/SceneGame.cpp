@@ -8,15 +8,20 @@
 #include "SceneTitle.h"
 using namespace aetherClass;
 namespace{
-	const float kDefaultScaleTime = 1.0f;
+	const float kDefaultScaleTime = 10.0f; 
+	const float kCommandTimeScale = 1.0f;
+	const bool kError = false;
 }
 const std::string SceneGame::Name = "Game";
+
 SceneGame::SceneGame():
 GameScene(Name, GetManager()) //Sceneごとの名前を設定
 {
 	m_nowMode = GameManager::eGameMode::eNull;
 	m_nowDay = GameManager::eDay::eNull;
+	m_gameState = eState::eNull;
 	m_dayTime = NULL;
+
 }
 
 
@@ -24,7 +29,9 @@ SceneGame::~SceneGame()
 {
 	m_nowMode = GameManager::eGameMode::eNull;
 	m_nowDay = GameManager::eDay::eNull;
+	m_gameState = eState::eNull;
 	m_dayTime = NULL;
+
 }
 
 bool SceneGame::Initialize(){
@@ -54,24 +61,39 @@ bool SceneGame::Initialize(){
 	m_pOrderList = std::make_unique<OrderList>();
 	m_pOrderList->mInitialize();
 
+	// ステージオブジェクト
 	m_pFieldArea = std::make_unique<FieldArea>();
 	m_pFieldArea->mInitialize();
 	m_pFieldArea->mSetCamera(view);
 
+	// フェードイン・アウトを行う
+	m_pFadeObject = std::make_unique<FadeManager>();
 	// ゲームモードの取得
 	// このシーンに来ている時点で、サバイバルか、プラクティスが選択されている
-	m_nowMode = Singleton<GameManager>::GetInstance().mGameMode();
-	m_nowDay = GameManager::eDay::e1day;
+	m_nowMode = Singleton<GameManager>::GetInstance().mGameMode(); 
+	m_nowMode = GameManager::eGameMode::eSurvaival;
 	mInitializeMode(m_nowMode);
 	m_dayTime = 0.0f;
 	
+	m_pResultBord = std::make_unique<ResultBord>();
+	m_pResultBord->mInitialize(m_nowMode);
+
 	RegisterScene(new SceneTitle());
+
+	// ゲームの状態を登録
+	m_gameState = eState::eRun;
+
 	return true;
 }
 
 // 解放処理
 // 全ての解放
 void SceneGame::Finalize(){
+	if (m_pResultBord){
+		m_pResultBord->mFinalize();
+		m_pResultBord.release();
+		m_pResultBord = nullptr;
+	}
 
 	if (m_pActionBoard){
 		m_pActionBoard.release();
@@ -101,25 +123,39 @@ void SceneGame::Finalize(){
 	}
 	m_nowMode = GameManager::eGameMode::eNull;
 	m_nowDay = GameManager::eDay::eNull;
+	m_gameState = eState::eNull;
 	m_dayTime = NULL;
 	return;
 }
 
 // 更新処理
 bool SceneGame::Updater(){
+	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
+		bool result = mFadeState(m_gameState);
+		if (!result){
+			return true;
+		}
+	}
+
+
+	if (m_gameState == eState::eExit){
+		// 終了ならタイトルに戻る
+		ChangeScene(SceneTitle::Name, LoadState::eUse, LoadWaitState::eUnuse);
+	}
+
 	bool result = false;
 	// 時刻の取得
 	m_dayTime += GameClock::GetDeltaTime();
 	// サバイバルモード時の更新処理
-	result = this->mSurvivalUpdate(kDefaultScaleTime, m_dayTime);
+	result = this->mSurvivalMainUpdate(kDefaultScaleTime, m_dayTime);
 	if (!result){
-		return false;
+		return kError;
 	}
 
 	// ぷラクティモード時の更新処理
-	result = this->mPracticeUpdate(kDefaultScaleTime,m_dayTime);
+	result = this->mPracticeMainUpdate(kDefaultScaleTime, m_dayTime);
 	if (!result){
-		return false;
+		return kError;
 	}
 	return true;
 }
@@ -134,7 +170,11 @@ void SceneGame::Render(){
 void SceneGame::UIRender(){
 	this->mSurvivalUIRender();
 	this->mPracticeUIRender();
-	
+	mShowResult(m_nowDay, m_pixelShader.get(), m_pixelShader.get());
+
+	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
+		m_pFadeObject->mRedner(m_pixelShader.get());
+	}
 	return;
 }
 
@@ -175,7 +215,10 @@ bool SceneGame::mInitializeMode(GameManager::eGameMode mode){
 	switch (mode)
 	{
 	case GameManager::eGameMode::eSurvaival:
+		m_nowDay = GameManager::eDay::e1day;
+		mRegisterDay();
 		Debug::mPrint("サバイバルモード");
+
 		break;
 	case GameManager::eGameMode::ePractice:
 		Debug::mPrint("プラクティスモード");
@@ -191,10 +234,11 @@ bool SceneGame::mInitializeMode(GameManager::eGameMode mode){
 /*
 	サバイバルモード時の更新処理
 */
-bool SceneGame::mSurvivalUpdate(const float timeScale, const float nowTime){
-	if (m_nowMode != GameManager::eGameMode::eSurvaival)return true;
-
-	m_pPlayer->mUpdate(kDefaultScaleTime);
+bool SceneGame::mSurvivalMainUpdate(const float timeScale, const float nowTime){
+	if (m_nowMode != GameManager::eGameMode::eSurvaival || m_gameState != eState::eRun)return true;
+	if (GameController::GetKey().KeyDownTrigger(VK_RETURN)){
+		m_gameState = eState::eResult;
+	}
 
 	auto actionCommand = m_pActionBoard->mSelectType();
 	if (actionCommand){
@@ -202,9 +246,11 @@ bool SceneGame::mSurvivalUpdate(const float timeScale, const float nowTime){
 	}
 
 	m_pPlayer->mCommand(m_pOrderList->mGetActionCommand(), kDefaultScaleTime);
+	m_pPlayer->mUpdate(kDefaultScaleTime);
 
-	m_pActionBoard->mUpdate(kDefaultScaleTime);
+	m_pActionBoard->mUpdate(kCommandTimeScale);
 	m_pOrderList->mUpdate(kDefaultScaleTime);
+
 	return true;
 }
 
@@ -219,6 +265,8 @@ void SceneGame::mSurvivalRender(){
 
 	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
 	m_pFieldArea->mRender(m_pixelShader.get());
+
+	
 }
 
 //
@@ -227,14 +275,16 @@ void SceneGame::mSurvivalUIRender(){
 
 	m_pActionBoard->mRender(m_pixelShader.get());
 	m_pOrderList->mRender(m_pixelShader.get());
+	
+	
 }
 
 
 /*
 	プラクティス以下略
 */
-bool SceneGame::mPracticeUpdate(const float timeScale, const float nowTime){
-	if (m_nowMode != GameManager::eGameMode::ePractice)return true;
+bool SceneGame::mPracticeMainUpdate(const float timeScale, const float nowTime){
+	if (m_nowMode != GameManager::eGameMode::ePractice || m_gameState != eState::eRun)return true;
 
 }
 
@@ -248,4 +298,77 @@ void SceneGame::mPracticeRender(){
 //
 void SceneGame::mPracticeUIRender(){
 	if (m_nowMode != GameManager::eGameMode::ePractice)return;
+}
+
+/*
+	リザルトの表示用
+*/
+void SceneGame::mShowResult(GameManager::eDay nowDay, ShaderBase* defaultShader,ShaderBase* bularShader){
+	if (m_gameState != eState::eResult)return;
+
+	m_pResultBord->mSetupData(m_resultData, nowDay); // 内部的には一回しか呼ばれない
+
+	auto mouse = GameController::GetMouse().GetMousePosition();
+	bool click = GameController::GetMouse().IsLeftButtonTrigger();
+	auto state = m_pResultBord->mUpdate(mouse, click);
+
+	if (state == ResultBord::eClickState::eExit){
+		m_gameState = eState::eExit;
+		return;
+	}
+	else if (state == ResultBord::eClickState::eNextDay){
+		// 次の日に進む処理
+		auto prevDay = m_nowDay;
+		m_nowDay = m_dayHash[prevDay];
+		m_gameState = eState::eFadeIn;
+	}
+	m_pResultBord->mRender(defaultShader, bularShader);
+	return;
+}
+
+void SceneGame::mRegisterDayHash(GameManager::eDay key, GameManager::eDay value){
+	if (m_dayHash.find(key) != m_dayHash.end())return;
+
+	m_dayHash.insert(std::make_pair(key, value));
+
+	return;
+}
+
+//
+bool SceneGame::mFadeState(SceneGame::eState state){ 
+	if (state == eState::eFadeIn || state == eState::eFadeOut){
+		bool isEnd = false;
+		switch (state)
+		{
+		case eState::eFadeIn:
+			isEnd = m_pFadeObject->In(1.0f);
+			if (isEnd){
+				m_gameState = eState::eFadeOut;
+			}
+			break;
+
+		case eState::eFadeOut:
+			isEnd = m_pFadeObject->Out(1.0f);
+			if (isEnd){
+				m_gameState = eState::eRun;
+			}
+			break;
+		}
+		if (!isEnd) return false;
+	}
+	return true;
+}
+
+//
+void SceneGame::mRegisterDay(){
+	mRegisterDayHash(GameManager::eDay::e1day, GameManager::eDay::e2day);
+	mRegisterDayHash(GameManager::eDay::e2day, GameManager::eDay::e3day);
+	mRegisterDayHash(GameManager::eDay::e3day, GameManager::eDay::e4day);
+	mRegisterDayHash(GameManager::eDay::e4day, GameManager::eDay::e5day);
+	mRegisterDayHash(GameManager::eDay::e5day, GameManager::eDay::e6day);
+	mRegisterDayHash(GameManager::eDay::e6day, GameManager::eDay::e7day);
+	mRegisterDayHash(GameManager::eDay::e7day, GameManager::eDay::eLastDay);
+	mRegisterDayHash(GameManager::eDay::eLastDay, GameManager::eDay::eNull);
+
+	return;
 }

@@ -23,6 +23,13 @@ namespace{
 	// デバッグ関係
 	const bool kCharaDebug = true;
 
+	// 空間分割の番号
+	const int kPartition1 = 0;
+	const int kPartition2 = 1;
+	const int kPartition3 = 2;
+	const int kPartition4 = 3;
+
+
 	// ゲームにかかわる定数
 	const signed char kFirstDay = 1;
 	const signed char kLastDay = 1;

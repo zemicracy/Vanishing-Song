@@ -19,7 +19,7 @@ public:
 
 	void mRender(aetherClass::ShaderBase*);
 	void mSetTexture(aetherClass::Texture*);
-
+	
 	virtual void mAction(std::shared_ptr<GearFrame>, float timeScale,int frameCount) = 0;
 
 	CharaEntity mGetCharaEntity();
@@ -28,12 +28,12 @@ public:
 	/*
 		アニメーションの値取得用
 	*/
-	std::vector<Animation>& GetAnimationValue();
+	std::vector<Animation>& mGetAnimationValue();
 
-	void CallCount(const int);
-	int CallCount()const;
+	void mCallCount(const int);
+	int mCallCount()const;
 private:
-	
+	virtual void mOnCreate() = 0;
 private:
 	eCommandType m_type;
 	std::shared_ptr<aetherClass::Rectangle2D>m_pSprite;
