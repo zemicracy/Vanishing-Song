@@ -1,0 +1,10 @@
+[Object]
+110,705,0,0,0,0,90,90,0,0,Rectangle2D,0,0.7,1,1,0,mpGauge,null_path
+0,570,0,0,0,0,150,150,0,0,Rectangle2D,1,1,0,1,0,hpGauge,null_path
+[Material]
+[Texture]
+none
+[Camera]
+0,0,-10,0,0,0
+[Light]
+0,10,0
