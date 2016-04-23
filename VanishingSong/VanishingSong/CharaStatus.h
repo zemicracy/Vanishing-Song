@@ -42,8 +42,10 @@ struct CharaStatus
 		Reset();
 	}
 
-	int _hp;
-	int _mp;
+	float _hp;
+	float _mp;
+	int _maxhp;
+	int _maxmp;
 	unsigned int _level;
 	int _experiencePoint;
 	int _attackPoint;
@@ -57,6 +59,8 @@ struct CharaStatus
 	void Reset(){
 		_hp = kZeroPoint;
 		_mp = kZeroPoint;
+		_maxhp = kZeroPoint;
+		_maxmp = kZeroPoint;
 		_buff = eBuffType::eNull;
 		_level = kZeroPoint;
 		_experiencePoint = kZeroPoint;
