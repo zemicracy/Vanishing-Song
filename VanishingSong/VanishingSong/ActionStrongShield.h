@@ -6,7 +6,9 @@ class ActionStrongShield :
 public:
 	ActionStrongShield():ActionCommand(eCommandType::eStrongShield){}
 	~ActionStrongShield(){}
+	void mOnCreate()override{
 
+	}
 	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override{
 
 	}

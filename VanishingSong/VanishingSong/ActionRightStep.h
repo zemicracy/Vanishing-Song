@@ -6,7 +6,9 @@ class ActionRightStep :
 public:
 	ActionRightStep():ActionCommand(eCommandType::eRightStep){}
 	~ActionRightStep(){}
+	void mOnCreate()override{
 
+	}
 	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override{
 
 	}

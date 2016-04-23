@@ -6,7 +6,9 @@ class ActionLeftStep :
 public:
 	ActionLeftStep():ActionCommand(eCommandType::eLeftStep){}
 	~ActionLeftStep(){}
+	void mOnCreate()override{
 
+	}
 	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frame)override{
 
 	}

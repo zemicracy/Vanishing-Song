@@ -6,10 +6,25 @@
 #include "FieldArea.h"
 #include "OrderList.h"
 #include "ActionBoard.h"
+#include "ResultBord.h"
+#include "FadeManager.h"
 #include <DirectXEntity.h>
 class SceneGame :
 	public aetherClass::GameScene
 {
+private:
+
+	enum class eState{
+		eRun,
+		ePause,
+		eExit,
+		eResult,
+		eFadeIn,
+		eShowDay,
+		eFadeOut,
+		eNull
+	};
+	
 public:
 	SceneGame();
 	~SceneGame();
@@ -39,14 +54,22 @@ private:
 	bool mInitalizeShader();
 	bool mInitializeMode(GameManager::eGameMode);
 	
-	bool mSurvivalUpdate(const float timeScale,const float nowTime);
-	bool mPracticeUpdate(const float timeScale, const float nowTime);
+	bool mSurvivalMainUpdate(const float timeScale,const float nowTime);
+	bool mPracticeMainUpdate(const float timeScale, const float nowTime);
 
 	void mSurvivalRender();
 	void mPracticeRender();
 
 	void mSurvivalUIRender();
 	void mPracticeUIRender();
+
+	void mShowResult(GameManager::eDay, aetherClass::ShaderBase* defaultShader, aetherClass::ShaderBase* bularShader);
+
+	bool mFadeState(eState);
+	void mResetProperty(); // 変数の初期化等々
+
+	void mRegisterDayHash(GameManager::eDay key, GameManager::eDay value);
+	void mRegisterDay();
 private:
 	std::shared_ptr<EnemyGround> m_penemyGround;
 	std::shared_ptr<aetherClass::ShaderBase> m_pixelShader;
@@ -54,11 +77,15 @@ private:
 	std::unique_ptr<FieldArea> m_pFieldArea;
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<ActionBoard> m_pActionBoard;
+	std::unique_ptr<ResultBord> m_pResultBord;
+	std::unique_ptr<FadeManager> m_pFadeObject;
 	aetherClass::DirectXEntity m_directX;
 	GameManager::eGameMode m_nowMode;
 	GameManager::eDay m_nowDay;
-
-	// 終了時刻保持用
+	std::unordered_map<GameManager::eDay, GameManager::eDay> m_dayHash;
+	ResultData m_resultData; // リザルト表示時に使用
+	eState m_gameState;
+	// 経過時間保持用
 	float m_dayTime;
 };
 

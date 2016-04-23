@@ -6,6 +6,10 @@ class ActionExHeel :
 public:
 	ActionExHeel() :ActionCommand(eCommandType::eSkill){}
 	~ActionExHeel(){}
+
+	void mOnCreate()override{
+
+	}
 	void mAction(std::shared_ptr<GearFrame>, float timeScale, int frameCount)override{
 
 	}
