@@ -125,6 +125,8 @@ public:
 	*/
 	std::shared_ptr<aetherClass::Cube> mGetBodyColldier();
 
+	// 壁に当たった時の処理
+	void OnHitWall();
 private:
 	
 	/*
@@ -184,11 +186,12 @@ private:
 	std::shared_ptr<Gear> m_pTopGear;            // 最上位パーツのポインタを入れておく
 	std::shared_ptr<Equipment> m_equipment;     // 現在の装備中の武器
 
-
+	bool m_isHitWall;
 	std::array<BulletPool,kMaxBullet> m_pBullets;
 	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
 
 	aetherClass::Transform m_playerTransform;   // プレイヤーの回転、移動、スケールを管理
+	aetherClass::Transform m_prevTransform;     // 前回のトランスフォーム情報
 	aetherClass::Vector3 m_cameraRotation;		//　カメラの回転を管理
 
 	CharaStatus m_status;                      // プレイヤーのステータス

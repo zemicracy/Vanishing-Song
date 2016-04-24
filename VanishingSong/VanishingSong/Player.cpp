@@ -78,6 +78,7 @@ bool Player::mInitialize(){
 	// 武器系の初期化用
 	//mSetupWeapon<Bullet>(m_pOriginalBullets, "Model\\Weapon\\bullet.fbx");
 	mSetupBullet(mGetView());
+	m_isHitWall = false;
 	return true;
 }
 
@@ -167,11 +168,18 @@ void Player::mUpdate(const float timeScale){
 	Vector3 rotationY = Vector3(0,m_cameraRotation._y,0);
 	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 
-	// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
-	Vector3 translation = getKeyValues._transform._translation.TransformCoordNormal(rotationMatrix);
-	m_playerTransform._translation += translation;
 	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
+	// 壁に当たっているかの判定
+	if (m_isHitWall){
+		m_playerTransform._translation = m_prevTransform._translation;
+	}
+	else{
+		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
+		Vector3 translation = getKeyValues._transform._translation.TransformCoordNormal(rotationMatrix);
+		m_playerTransform._translation += translation;
+	}
 
+	m_isHitWall = false;
 	// 弾の発射
 	for (auto index : m_pBullets){
 		if (!index._isRun)continue;
@@ -482,7 +490,7 @@ void Player::mInitialPlayerView(CameraValue input){
 	m_playerView.property._rotation = input._rotation;
 	
 	// デバッグ用
-	//m_playerView.property._translation = Vector3(0, 100, -200);
+	m_playerView.property._translation = Vector3(0, 100, -200);
 
 	// カメラのオフセットの設定
 	m_cameraOffset._translation = m_playerView.property._translation;
@@ -673,4 +681,12 @@ void Player::mWeaponRun(eCommandType type, const int callFrame){
 
 std::array<Player::BulletPool, kMaxBullet>& Player::mGetBullet(){
 	return m_pBullets;
+}
+
+// 壁に当たった時の処理
+void Player::OnHitWall(){
+	Debug::mPrint("壁と当たった");
+	m_prevTransform = m_playerTransform;
+	m_isHitWall = true;
+	return;
 }
