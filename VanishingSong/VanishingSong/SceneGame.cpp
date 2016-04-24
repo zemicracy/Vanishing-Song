@@ -249,8 +249,8 @@ bool SceneGame::mSurvivalMainUpdate(const float timeScale, const float nowTime){
 		m_pOrderList->mAddOrder(actionCommand);
 	}
 
-	m_pPlayer->mCommand(m_pOrderList->mGetActionCommand(), kDefaultScaleTime);
-	m_pPlayer->mUpdate(kDefaultScaleTime);
+//	m_pPlayer->mCommand(m_pOrderList->mGetActionCommand(), kDefaultScaleTime);
+	m_pPlayer->mUpdate(kDefaultScaleTime, m_pOrderList->mGetActionCommand());
 
 	m_pActionBoard->mUpdate(kCommandTimeScale);
 	m_pOrderList->mUpdate(kDefaultScaleTime);

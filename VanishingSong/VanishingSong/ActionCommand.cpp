@@ -35,7 +35,7 @@ void ActionCommand::mReset(){
 }
 
 
-void ActionCommand::mAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>> hash, float timeScale, int frameCount){
+void ActionCommand::mAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash, float timeScale, int frameCount){
 	
 	mOnAction(hash, timeScale, frameCount);
 	m_isCall = true;

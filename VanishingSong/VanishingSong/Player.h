@@ -86,7 +86,7 @@ public:
 	/*
 	更新処理
 	*/
-	void mUpdate(const float timeScale);
+	void mUpdate(const float timeScale,std::shared_ptr<ActionCommand> command);
 
 	/*
 	描画処理
@@ -175,7 +175,9 @@ private:
 	*/
 	KeyValues mReadKey(const float timeScale);
 	
-	void CheckCameraRotation(aetherClass::Vector3&);
+	void mCheckCameraRotation(aetherClass::Vector3&);
+
+	void mUpdateBullet(const float ,aetherClass::Matrix4x4&,std::array<BulletPool, kMaxBullet>&);
 
 	// 弾以外の初期化用
 	template<class type>
@@ -189,6 +191,7 @@ private:
 	std::shared_ptr<Equipment> m_equipment;     // 現在の装備中の武器
 
 	bool m_isHitWall;
+	bool m_isCall;
 	std::array<BulletPool,kMaxBullet> m_pBullets;
 	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
 

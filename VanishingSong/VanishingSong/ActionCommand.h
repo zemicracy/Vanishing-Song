@@ -22,7 +22,7 @@ public:
 	void mRender(aetherClass::ShaderBase*);
 	void mSetTexture(aetherClass::Texture*);
 	
-	void mAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>, float timeScale, int frameCount);
+	void mAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, float timeScale, int frameCount);
 
 	CharaEntity mGetCharaEntity();
 
@@ -40,7 +40,7 @@ public:
 	int mCallCount()const;
 private:
 	virtual void mOnCreate() = 0;
-	virtual void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>, float timeScale, int frameCount) = 0;
+	virtual void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, float timeScale, int frameCount) = 0;
 private:
 	eCommandType m_type;
 	std::shared_ptr<aetherClass::Rectangle2D>m_pSprite;

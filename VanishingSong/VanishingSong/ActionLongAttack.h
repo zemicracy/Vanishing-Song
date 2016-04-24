@@ -17,12 +17,23 @@ public:
 	~ActionLongAttack(){}
 
 	void mOnCreate()override{
-		
+		this->mRegisterAnimation(5, "data\\PlayerGunStanby.aether", "data\\PlayerGunGo.aether");
 	}
 
 	// 実際の実行処理
-	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>, float timeScale, int count)override{
-		
+	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash, float timeScale, int count)override{
+		aetherClass::Transform animationTransform;
+		const int allFrame = this->mGetAnimation()._animation.size();
+		for (auto index : this->mGetAnimation()._animation)
+		{
+			// 補間の値を取得
+			animationTransform = this->mGetCharaEntity().mGetTransformInterpolation(index._start, index._end, 5,count);
+
+			// アニメーションの適用
+			if (hash.find(index._name) != hash.end()){
+				hash[index._name]->_pGear->property._transform = animationTransform;
+			}
+		}
 	}
 };
 
