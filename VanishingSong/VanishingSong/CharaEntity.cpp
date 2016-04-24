@@ -83,16 +83,27 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 	ギアの移動用関数
 	仕組みはmGearRenderと一緒
 */
-void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move){
+void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move, std::string type){
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
 
-	// ギアとそのコライダーを動かす
-	gear->_pGear->property._transform._translation += move;
+	if (type == "+="){
+		// ギアとそのコライダーを動かす
+		gear->_pGear->property._transform._translation += move;
 
+	}
+	else if (type == "="){
+		gear->_pGear->property._transform._translation = move;
+
+	}
+	else{
+		gear->_pGear->property._transform._translation += move;
+
+	}
+	
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
-		mGearMove(child, move);
+		mGearMove(child, move,type);
 	}
 
 	return;

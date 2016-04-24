@@ -38,7 +38,7 @@ public:
 		ギアを持つオブジェクトの移動用
 		仕組みはmGearRenderと一緒
 	*/
-	void mGearMove(std::shared_ptr<Gear> gear, const aetherClass::Vector3 move);
+	void mGearMove(std::shared_ptr<Gear> gear, const aetherClass::Vector3 move,std::string type = "+=");
 
 	/*
 		最初に渡されたパーツを中心に公転する
