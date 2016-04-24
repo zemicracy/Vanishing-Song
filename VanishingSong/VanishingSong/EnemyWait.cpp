@@ -10,7 +10,7 @@ EnemyWait::~EnemyWait()
 {
 }
 
-void EnemyWait::UpdateRun(EnemyBase::Property* enemy, aetherClass::Vector3* player_pos){
+void EnemyWait::mUpdateRun(EnemyBase::Property* enemy, aetherClass::Vector3* player_pos){
 
 }
 	
