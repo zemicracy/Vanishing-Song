@@ -16,10 +16,21 @@ public:
 		eGround,
 		eNull
 	};
+
+	struct EnemyStatus{
+		int _hp;
+		int _mp;
+		int _attack;
+		int _defense;
+		int _level;
+	};
 	
 	struct Property{
+	
 		aetherClass::Transform _transform;	//位置
-		std::shared_ptr<GearFrame> _enemy;
+		std::shared_ptr<GearFrame> _penemy;	//Enemy本体
+		std::shared_ptr<aetherClass::Cube> _pcolider;	//Enemyコライダー
+		aetherClass::Vector3* _colliderPosition;
 		bool m_isRender;
 	};
 
@@ -27,13 +38,14 @@ public:
 public:
 	EnemyBase();
 	virtual ~EnemyBase()=default;
-	CharaEntity GetCharaEntity();
-	CharaStatus& GetCharaStatus();
-	Property& GetProperty();
+	CharaEntity mGetCharaEntity();
+	CharaStatus& mGetCharaStatus();
+	Property& mGetProperty();
+	EnemyStatus& mGetEnemyStatus();
 
-	virtual void GetSetEnemyAction() = 0;
+	virtual void mGetSetEnemyAction() = 0;
 	virtual bool mInitialize(aetherClass::ViewCamera*) = 0;
-	virtual void mInitializeEnemyColider(aetherClass::ViewCamera*,std::shared_ptr<aetherClass::Cube>& collider) = 0;
+	virtual void mInitializeEnemyColider(aetherClass::ViewCamera*) = 0;
 	virtual void mUpdate() = 0;
 	virtual void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*) = 0;
 	virtual bool mSetUp() = 0;
@@ -42,6 +54,7 @@ public:
 private:
 	Property m_property;
 	CharaStatus m_status;
+	EnemyStatus m_enemystatus;
 	eEnemyType m_type;
 	CharaEntity m_charaEntity;
 };

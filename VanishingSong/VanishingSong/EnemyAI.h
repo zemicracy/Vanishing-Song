@@ -9,11 +9,11 @@ public:
 	~EnemyAI();
 
 	std::shared_ptr<EnemyAI> GetAI();
-
-	virtual void UpdateRun(EnemyBase::Property*,aetherClass::Vector3*) = 0;
+	virtual void mUpdateRun(EnemyBase::Property*,aetherClass::Vector3*) = 0;
 
 private:
 	std::shared_ptr<EnemyAI> m_AI;
+
 
 
 };
