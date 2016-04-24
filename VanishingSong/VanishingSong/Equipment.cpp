@@ -23,6 +23,7 @@ bool Equipment::mCreate(ViewCamera* camera, std::string path){
 		return false;
 	}
 	m_pCollider->property._color = Color(1.0f, 0.0f, 0.0f, 0.5f);
+	m_pCollider->property._transform._scale = 17;
 	m_pCollider->SetCamera(camera);
 	return true;
 }

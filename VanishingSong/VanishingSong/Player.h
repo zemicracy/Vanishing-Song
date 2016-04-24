@@ -127,6 +127,8 @@ public:
 
 	// 壁に当たった時の処理
 	void OnHitWall();
+
+	std::array<BulletPool, kMaxBullet>& mGetBullet();
 private:
 	
 	/*
@@ -172,7 +174,7 @@ private:
 	キーやマウスの処理の読み取り
 	*/
 	KeyValues mReadKey(const float timeScale);
-	std::array<BulletPool, kMaxBullet>& mGetBullet();
+	
 	void CheckCameraRotation(aetherClass::Vector3&);
 
 	// 弾以外の初期化用
