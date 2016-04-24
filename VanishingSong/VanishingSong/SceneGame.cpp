@@ -8,7 +8,7 @@
 #include "SceneTitle.h"
 using namespace aetherClass;
 namespace{
-	const float kDefaultScaleTime = 10.0f; 
+	const float kDefaultScaleTime = 100.0f; 
 	const float kCommandTimeScale = 1.0f;
 	const bool kError = false;
 }
@@ -44,8 +44,9 @@ bool SceneGame::Initialize(){
 		return false;
 	}
 
+	
 	// プレイヤーの初期化
-	m_pPlayer = std::make_unique<Player>();
+	m_pPlayer = std::make_shared<Player>();
 	m_pPlayer->mInitialize();
 
 	auto view = m_pPlayer->mGetView();
@@ -62,7 +63,7 @@ bool SceneGame::Initialize(){
 	m_pOrderList->mInitialize();
 
 	// ステージオブジェクト
-	m_pFieldArea = std::make_unique<FieldArea>();
+	m_pFieldArea = std::make_shared<FieldArea>();
 	m_pFieldArea->mInitialize();
 	m_pFieldArea->mSetCamera(view);
 
@@ -80,6 +81,9 @@ bool SceneGame::Initialize(){
 
 	RegisterScene(new SceneTitle());
 
+	m_pCollideManager = std::make_unique<CollideManager>();
+
+	m_pCollideManager->mInitialize(m_pPlayer, nullptr, m_pFieldArea);
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
 
@@ -106,13 +110,13 @@ void SceneGame::Finalize(){
 	}
 
 	if (m_pFieldArea){
-		m_pFieldArea.release();
+		m_pFieldArea.reset();
 		m_pFieldArea = nullptr;
 	}
 
 	if (m_pPlayer){
 		m_pPlayer->mFinalize();
-		m_pPlayer.release();
+		m_pPlayer.reset();
 		m_pPlayer = nullptr;
 	}
 
@@ -136,8 +140,6 @@ bool SceneGame::Updater(){
 			return true;
 		}
 	}
-
-
 	if (m_gameState == eState::eExit){
 		// 終了ならタイトルに戻る
 		ChangeScene(SceneTitle::Name, LoadState::eUse, LoadWaitState::eUnuse);
@@ -157,6 +159,8 @@ bool SceneGame::Updater(){
 	if (!result){
 		return kError;
 	}
+
+	m_pCollideManager->mUpdate();
 	return true;
 }
 

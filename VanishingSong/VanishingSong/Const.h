@@ -29,6 +29,7 @@ namespace{
 	const int kPartition3 = 2;
 	const int kPartition4 = 3;
 
+	const int kPartitionSize = 4;
 
 	// ƒQ[ƒ€‚É‚©‚©‚í‚é’è”
 	const signed char kFirstDay = 1;

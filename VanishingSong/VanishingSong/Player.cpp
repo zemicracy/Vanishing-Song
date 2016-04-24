@@ -76,7 +76,8 @@ bool Player::mInitialize(){
 	}
 
 	// 武器系の初期化用
-	mSetupWeapon<Bullet>(m_pOriginalBullets, "Model\\Weapon\\bullet.fbx");
+	//mSetupWeapon<Bullet>(m_pOriginalBullets, "Model\\Weapon\\bullet.fbx");
+	mSetupBullet(mGetView());
 	return true;
 }
 
@@ -120,11 +121,6 @@ void Player::mFinalize(){
 		m_pBodyCollider = nullptr;
 	}
 
-	if (m_pOriginalBullets){
-		m_pOriginalBullets.reset();
-		m_pOriginalBullets = nullptr;
-	}
-
 	if (!m_pBullets.empty()){
 		for (auto index : m_pBullets){
 			if (!index._bullet)continue;
@@ -142,7 +138,7 @@ void Player::mFinalize(){
 	m_prevCommand = eCommandType::eNull;
 	m_prevState = eState::eNull;
 	m_cameraRotation = kVector3Zero;
-	m_pGearPartsHash.clear();
+	m_pGearHash.clear();
 
 	return;
 }
@@ -176,23 +172,14 @@ void Player::mUpdate(const float timeScale){
 	m_playerTransform._translation += translation;
 	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 
-	// 弾の複製
-	if (GameController::GetKey().KeyDownTrigger('B')){
-		BulletPool bullet;
-		bullet._bullet = std::make_shared<Bullet>();
-		*bullet._bullet = *m_pOriginalBullets;
-		bullet._isRun = true;
-		bullet._number = 0;
-		bullet._bullet->mGetTransform()._translation = m_playerTransform._translation;
-		m_pBullets.push_back(bullet);
-	}
-
 	// 弾の発射
-	for (auto& index : m_pBullets){
-		Vector3 hogehohge = Vector3(0, 0, 10);
-		Vector3 bulletMove = hogehohge.TransformCoordNormal(rotationMatrix);
+	for (auto index : m_pBullets){
+		if (!index._isRun)continue;
+		Vector3 bulletSpeed = Vector3(0, 0, 10);
+		Vector3 bulletMove = bulletSpeed.TransformCoordNormal(rotationMatrix);
 		index._bullet->mGetTransform()._translation += bulletMove;
 	}
+
 	// 移動処理
 	m_charaEntity.mGearMove(m_pTopGear, m_playerTransform._translation);
 
@@ -264,7 +251,7 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
 
 	for (auto index : m_pBullets){
-		Debug::mPrint("きた");
+		if (!index._isRun)continue;
 		index._bullet->mRender(modelShader);
 	}
 
@@ -288,10 +275,15 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 		command->mCallCount(0);
 	}
 
-	// アクションの実行
-	command->mAction(m_pGearFrame, timeScale,m_actionCount._commandFrame);
+	// 呼ばれていなければ
+	if (!command->mIsCall()){
+		mWeaponRun(m_status._nowCommand, m_actionCount._commandFrame);
+	}
 
-	if (GameController::GetKey().KeyDownTrigger('F'))
+	// アクションの実行
+	command->mAction(m_pGearHash, timeScale,m_actionCount._commandFrame);
+
+	if (command->mGetType()!= eCommandType::eNull)
 	{
 		Debug::mPrint("Run Action :" + std::to_string(m_actionCount._commandFrame) + "回目");
 	}
@@ -386,22 +378,22 @@ bool Player::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherC
 
 	//
 	// 連想配列に登録
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eBody, m_pGearFrame->m_pBody);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eWaist, m_pGearFrame->m_pWaist);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eBody, m_pGearFrame->m_pBody);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eWaist, m_pGearFrame->m_pWaist);
 
 	// 左
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftHand, m_pGearFrame->m_pLeftHand);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftLowerArm, m_pGearFrame->m_pLeftLowerArm);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftLowerLeg, m_pGearFrame->m_pLeftLowerLeg);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftUpperArm, m_pGearFrame->m_pLeftUpperArm);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eLeftUpperLeg, m_pGearFrame->m_pLeftUpperLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftHand, m_pGearFrame->m_pLeftHand);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftLowerArm, m_pGearFrame->m_pLeftLowerArm);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftLowerLeg, m_pGearFrame->m_pLeftLowerLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftUpperArm, m_pGearFrame->m_pLeftUpperArm);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftUpperLeg, m_pGearFrame->m_pLeftUpperLeg);
 
 	// 右
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eRightHand, m_pGearFrame->m_pRightHand);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eRightLowerArm, m_pGearFrame->m_pRightLowerArm);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eRightLowerLeg, m_pGearFrame->m_pRightLowerLeg);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eRightUpperArm, m_pGearFrame->m_pRightUpperArm);
-	m_charaEntity.mRegisterParts(m_pGearPartsHash, Gear::eType::eRightUpperLeg, m_pGearFrame->m_pRightUpperLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightHand, m_pGearFrame->m_pRightHand);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightLowerArm, m_pGearFrame->m_pRightLowerArm);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightLowerLeg, m_pGearFrame->m_pRightLowerLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightUpperArm, m_pGearFrame->m_pRightUpperArm);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightUpperLeg, m_pGearFrame->m_pRightUpperLeg);
 
 	return true;
 }
@@ -573,8 +565,8 @@ void Player::mDefaultAnimation(Player::eState& m_state){
 		animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end,allFrame , m_actionCount._defaultFrame);
 
 		// アニメーションの適用
-		if (m_pGearPartsHash.find(index._name) != m_pGearPartsHash.end()){
-			m_pGearPartsHash[index._name]->_pGear->property._transform = animationTransform;
+		if (m_pGearHash.find(index._name) != m_pGearHash.end()){
+			m_pGearHash[index._name]->_pGear->property._transform = animationTransform;
 		}
 	}
 
@@ -637,6 +629,48 @@ void Player::mSetupWeapon(std::shared_ptr<Equipment>& weapon, std::string model)
 	return;
 }
 
-void Player::mWeaponRun(eCommandType type){
+//
+void Player::mSetupBullet(ViewCamera* view){
+	for (auto&index : m_pBullets){
+		index._bullet = std::make_shared<Bullet>();
+		index._bullet->mCreate(view,"Model\\Weapon\\bullet.fbx");
+		index._isRun = false;
+		index._number = 0;
+	}
+}
 
+//
+void Player::mWeaponRun(eCommandType type, const int callFrame){
+	switch (type)
+	{
+	case eCommandType::eShortDistanceAttack:
+		break;
+	case eCommandType::eLongDistanceAttack:{
+		for (auto& index : m_pBullets){
+			if (index._isRun)continue;
+			index._bullet->mGetTransform()._translation = m_pTopGear->_pGear->property._transform._translation;
+			index._isRun = true;
+			break;
+		}
+	}
+		break;
+	case eCommandType::eRightStep:
+		break;
+	case eCommandType::eLeftStep:
+		break;
+	case eCommandType::eShield:
+		break;
+	case eCommandType::eStrongShield:
+		break;
+	case eCommandType::eSkill:
+		break;
+	case eCommandType::eNull:
+		break;
+	default:
+		break;
+	}
+}
+
+std::array<Player::BulletPool, kMaxBullet>& Player::mGetBullet(){
+	return m_pBullets;
 }

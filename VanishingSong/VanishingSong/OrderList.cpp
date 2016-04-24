@@ -98,6 +98,7 @@ void OrderList::mUpdate(float){
 		m_listFirst = m_orderList[0];
 
 		if (sound->mIsPlayEnd() && m_orderList.size() != 0){
+			m_listFirst->mReset();
 			m_orderList.erase(m_orderList.begin());
 			if (m_orderList.size() == 0){
 				mListStop();

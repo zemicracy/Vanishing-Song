@@ -9,7 +9,7 @@ public:
 	void mOnCreate()override{
 
 	}
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override{
+	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>, float timeScale, int count)override{
 
 	}
 };

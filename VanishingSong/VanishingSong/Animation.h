@@ -9,4 +9,10 @@ struct Animation
 	Gear::eType _name;
 };
 
+
+struct AnimationFrame{
+	std::vector<Animation> _animation;
+	int _animationFrame;
+};
+
 #endif
