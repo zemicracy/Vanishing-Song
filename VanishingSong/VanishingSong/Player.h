@@ -15,18 +15,17 @@
 #include <unordered_map>
 #include <vector>
 #include "Equipment.h"
+namespace{
+	const int kMaxBullet = 10;
+}
 class Player
 {
 private:
-
-	// 
-	struct BulletPool{
-		std::shared_ptr<Equipment> _bullet;
-		bool _isRun;
-		int _number;
+	struct Weapons{
+		std::shared_ptr<Equipment> _sord;
+		std::shared_ptr<Equipment> _gun;
+		std::shared_ptr<Equipment> _shield;
 	};
-
-
 	/*	Playerの状態		*/
 	enum class eState{
 		eMove,
@@ -61,18 +60,20 @@ private:
 			_changeCommandFrame = false;
 		}
 	};
-
-	
-	struct AnimationFrame{
-		std::vector<Animation> _animation;
-		int _animationFrame;
-	};
-
 	
 	struct KeyValues{
 		Player::eState _state;
 		aetherClass::Transform _transform;
 		aetherClass::Vector3 _cameraRotation;
+	};
+
+
+public:
+	// 
+	struct BulletPool{
+		std::shared_ptr<Equipment> _bullet;
+		bool _isRun;
+		int _number;
 	};
 public:
 	Player();
@@ -169,19 +170,22 @@ private:
 	キーやマウスの処理の読み取り
 	*/
 	KeyValues mReadKey(const float timeScale);
-
+	std::array<BulletPool, kMaxBullet>& mGetBullet();
 	void CheckCameraRotation(aetherClass::Vector3&);
 
+	// 弾以外の初期化用
 	template<class type>
 	void mSetupWeapon(std::shared_ptr<Equipment>& weapon, std::string model);
-
-	void mWeaponRun(eCommandType);
+	void mSetupBullet(aetherClass::ViewCamera*);
+	void mWeaponRun(eCommandType,const int callFrame);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;   // パーツの管理
 	std::shared_ptr<ActionCommand> m_pActionCommand;  // コマンド実行用
 	std::shared_ptr<Gear> m_pTopGear;            // 最上位パーツのポインタを入れておく
-	std::shared_ptr<Equipment> m_pOriginalBullets;
-	std::vector<BulletPool> m_pBullets;
+	std::shared_ptr<Equipment> m_equipment;     // 現在の装備中の武器
+
+
+	std::array<BulletPool,kMaxBullet> m_pBullets;
 	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
 
 	aetherClass::Transform m_playerTransform;   // プレイヤーの回転、移動、スケールを管理
@@ -198,7 +202,7 @@ private:
 
 	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
 
-	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearPartsHash;   // それぞれのギアのポインタを扱いやすいようにまとめた連想配列
+	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearHash;   // それぞれのギアのポインタを扱いやすいようにまとめた連想配列
 };
 
 #endif

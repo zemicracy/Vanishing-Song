@@ -77,6 +77,7 @@ void FieldArea::mInitialize(){
 
 	m_ground[1] = std::make_shared<Skybox>();
 	m_ground[1]->Initialize();
+	
 
 }
 

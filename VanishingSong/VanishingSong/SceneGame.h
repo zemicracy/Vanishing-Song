@@ -7,6 +7,7 @@
 #include "OrderList.h"
 #include "ActionBoard.h"
 #include "ResultBord.h"
+#include "CollideManager.h"
 #include "FadeManager.h"
 #include <DirectXEntity.h>
 class SceneGame :
@@ -73,12 +74,13 @@ private:
 private:
 	std::shared_ptr<EnemyGround> m_penemyGround;
 	std::shared_ptr<aetherClass::ShaderBase> m_pixelShader;
-	std::unique_ptr<Player> m_pPlayer;
-	std::unique_ptr<FieldArea> m_pFieldArea;
+	std::shared_ptr<Player> m_pPlayer;
+	std::shared_ptr<FieldArea> m_pFieldArea;
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<ActionBoard> m_pActionBoard;
 	std::unique_ptr<ResultBord> m_pResultBord;
 	std::unique_ptr<FadeManager> m_pFadeObject;
+	std::unique_ptr<CollideManager> m_pCollideManager;
 	aetherClass::DirectXEntity m_directX;
 	GameManager::eGameMode m_nowMode;
 	GameManager::eDay m_nowDay;
