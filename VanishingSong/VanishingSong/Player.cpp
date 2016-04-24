@@ -17,6 +17,7 @@ namespace{
 	const float kCameraY = 500.0f;
 	const Vector3 kColliderOffset = Vector3(0, -5, 0); 
 	const Vector3 kPlayerInitialY = Vector3(0, 26, 0);
+	const Vector3 kBulletSpeed = Vector3(0, 0, 10);
 }
 
 Player::Player()
@@ -79,6 +80,7 @@ bool Player::mInitialize(){
 	//mSetupWeapon<Bullet>(m_pOriginalBullets, "Model\\Weapon\\bullet.fbx");
 	mSetupBullet(mGetView());
 	m_isHitWall = false;
+	m_isCall = true;
 	return true;
 }
 
@@ -148,7 +150,7 @@ void Player::mFinalize(){
 /*
 プレイヤーの更新処理
 */
-void Player::mUpdate(const float timeScale){
+void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> command){
 	
 	// キーの処理を取得
 	KeyValues getKeyValues = mReadKey(timeScale);
@@ -156,22 +158,25 @@ void Player::mUpdate(const float timeScale){
 	// カメラの処理
 	m_cameraRotation += getKeyValues._cameraRotation;
 
-	
+	// カメラの更新
 	mUpdateView(m_playerView, m_cameraRotation, m_pTopGear->_pGear->property._transform._translation);
 
 
 	// 基本的なアニメーションの再生
 	mDefaultAnimation(getKeyValues._state);
+	
+	// コマンドの処理
+	mCommand(command, timeScale);
 
 	// 移動に使う値のを取得
 	Matrix4x4 rotationMatrix;
 	Vector3 rotationY = Vector3(0,m_cameraRotation._y,0);
 	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
-
-	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
+	
 	// 壁に当たっているかの判定
 	if (m_isHitWall){
 		m_playerTransform._translation = m_prevTransform._translation;
+		m_isHitWall = false;
 	}
 	else{
 		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
@@ -179,16 +184,8 @@ void Player::mUpdate(const float timeScale){
 		m_playerTransform._translation += translation;
 	}
 
-	m_isHitWall = false;
-	// 弾の発射
-	for (auto index : m_pBullets){
-		if (!index._isRun)continue;
-		Vector3 bulletSpeed = Vector3(0, 0, 10);
-		Vector3 bulletMove = bulletSpeed.TransformCoordNormal(rotationMatrix);
-		index._bullet->mGetTransform()._translation += bulletMove;
-		index._bullet->mUpdate(timeScale);
-	}
-
+	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
+	
 	// 移動処理
 	m_charaEntity.mGearMove(m_pTopGear, m_playerTransform._translation);
 
@@ -197,6 +194,15 @@ void Player::mUpdate(const float timeScale){
 
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_pTopGear->_pGear->property._transform);
+
+	// 初めて呼ばれたならそれぞれの武器処理を開始
+	if (!m_isCall){
+		mWeaponRun(m_status._nowCommand, m_actionCount._commandFrame);
+	}
+
+	// 弾の更新
+	mUpdateBullet(timeScale, rotationMatrix, m_pBullets);
+	
 	return;
 }
 
@@ -283,11 +289,7 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 		m_actionCount._commandFrame = kZeroPoint;
 		command->mCallCount(0);
 	}
-
-	// 呼ばれていなければ
-	if (!command->mIsCall()){
-		mWeaponRun(m_status._nowCommand, m_actionCount._commandFrame);
-	}
+	m_isCall = command->mIsCall();
 
 	// アクションの実行
 	command->mAction(m_pGearHash, timeScale,m_actionCount._commandFrame);
@@ -551,9 +553,6 @@ void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::str
 */
 void Player::mDefaultAnimation(Player::eState& m_state){
 
-	// 現在のコマンドがNULL以外ならアニメーションは再生しない
-	//if (m_status._nowCommand != eCommandType::eNull)return;
-	
 	// 前回と違うときは更新
 	if (m_prevState != m_state){
 		m_actionCount._defaultFrame = NULL;
@@ -608,20 +607,31 @@ void Player::mDefaultAnimation(Player::eState& m_state){
 void Player::mUpdateView(ViewCamera& view,Vector3& rotation,Vector3 lookAtPosition){
 
 	// カメラのリセット一応階といた
-	CheckCameraRotation(rotation);
+	mCheckCameraRotation(rotation);
 	Matrix4x4 rotationMatrix;
 	rotationMatrix.PitchYawRoll(rotation*kAetherRadian);
 	Vector3 position = m_cameraOffset._translation;
 	position = position.TransformCoordNormal(rotationMatrix);
 
-	view.property._translation = lookAtPosition + position;
+	view.property._translation = Vector3(lookAtPosition._x,NULL,lookAtPosition._z) + position;
 	view.property._rotation = rotation + m_cameraOffset._rotation;
 
 	return;
 }
 
+void Player::mUpdateBullet(const float timeScale, aetherClass::Matrix4x4& rotationMatrix, std::array<BulletPool, kMaxBullet>& bullets){
+	// 弾の発射
+	for (auto index : m_pBullets){
+		if (!index._isRun)continue;
+		Vector3 bulletSpeed = kBulletSpeed;
+		Vector3 bulletMove = bulletSpeed.TransformCoordNormal(rotationMatrix);
+		index._bullet->mGetTransform()._translation += bulletMove;
+		index._bullet->mUpdate(timeScale);
+	}
+	return;
+}
 
-void Player::CheckCameraRotation(Vector3& rotation){
+void Player::mCheckCameraRotation(Vector3& rotation){
 	// カメラ可動範囲の上限の確認
 	if (rotation._x > kCameraRotationMaxX){
 		rotation._x = kCameraRotationMaxX;
