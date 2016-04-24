@@ -1,7 +1,12 @@
 #include "CollideManager.h"
 #include <Physics.h>
 #include "Const.h"
+#include <GameController.h>
 using namespace aetherFunction;
+using namespace aetherClass;
+namespace{
+	const int kWallCount = 2;
+}
 CollideManager::CollideManager()
 {
 }
@@ -23,23 +28,65 @@ void CollideManager::mInitialize(std::shared_ptr<Player> player, std::shared_ptr
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	mCheckFieldArea();
+	mCheckHitWall(m_filedNumber);
+	mCheckFieldAreaBullet();
 }
 
-void CollideManager::mCheckFieldArea(){
-	bool isHit = false;
-	for (int id = m_filedNumber; id < kPartitionSize; ++id){
-		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
-			m_filedNumber = id;
-			isHit = true;
-			Debug::mPrint("今のエリア番号：" + std::to_string(id));
+
+void CollideManager::mCheckHitWall(const int number){
+
+	// プレイヤー用
+	for (auto wall : m_filed->mGetPartitionWall(number)){
+		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
+			m_player->OnHitWall();
+		
 			break;
 		}
 	}
 
-	if (!isHit){
-		m_filedNumber = 0;
-		mCheckFieldArea();
+	// 弾用
+	// 壁にぶつかったら消える
+	for (auto& bullet : m_player->mGetBullet()){
+		for (auto wall : m_filed->mGetPartitionWall(bullet._number))
+			if (CollideBoxOBB(*wall, *bullet._bullet->mGetCollider())){
+			Debug::mPrint("かべにぶつかった");
+			bullet._isRun = false;
+			break;
+		}
 	}
+	return;
+}
+
+/*
+	現在のプレイヤーの空間を取得
+*/
+void CollideManager::mCheckFieldArea(){
+	if (GameController::GetKey().KeyDownTrigger('M')){
+		Debug::mPrint(std::to_string(m_filedNumber));
+	}
+
+	// 前回の番号からプラスしていく
+	for (int id = m_filedNumber; id < kPartitionSize; ++id){
+		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
+			m_filedNumber = id;
+			return;
+		}
+	}
+
+	// 前回の番号からマイナスしていく
+	for (int id = m_filedNumber; id >= 0; --id){
+		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
+			m_filedNumber = id;
+			return;
+		}
+	}
+
+	// もし当たっていなかったら
+	// 値を0にして再帰
+	/*m_filedNumber = 0;
+	mCheckFieldArea();*/
+
+	return;
 }
 
 void CollideManager::mHitPlayerAttack(){
@@ -49,4 +96,31 @@ void CollideManager::mHitPlayerAttack(){
 
 void CollideManager::mHitEnemyAttack(){
 
+}
+
+
+void CollideManager::mCheckFieldAreaBullet(){
+	
+	for (auto& bullet:m_player->mGetBullet()){
+		if (!bullet._isRun)continue;
+		bool isHit = false;
+		// 前回の番号からプラスしていく
+		for (int id = bullet._number; id < kPartitionSize; ++id){
+			if (CollideBoxOBB(*bullet._bullet->mGetCollider(), *m_filed->mGetPartitionCube(id))){
+				bullet._number = id;
+				break;
+			}
+		}
+
+		// 次の弾に行く
+		if (isHit)continue;
+
+		// 前回の番号からマイナスしていく
+		for (int id = bullet._number; id >= 0; --id){
+			if (CollideBoxOBB(*bullet._bullet->mGetCollider(), *m_filed->mGetPartitionCube(id))){
+				bullet._number = id;
+				return;
+			}
+		}
+	}
 }

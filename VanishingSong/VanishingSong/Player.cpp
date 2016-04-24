@@ -186,6 +186,7 @@ void Player::mUpdate(const float timeScale){
 		Vector3 bulletSpeed = Vector3(0, 0, 10);
 		Vector3 bulletMove = bulletSpeed.TransformCoordNormal(rotationMatrix);
 		index._bullet->mGetTransform()._translation += bulletMove;
+		index._bullet->mUpdate(timeScale);
 	}
 
 	// ˆÚ“®ˆ—
@@ -293,7 +294,7 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 
 	if (command->mGetType()!= eCommandType::eNull)
 	{
-		Debug::mPrint("Run Action :" + std::to_string(m_actionCount._commandFrame) + "‰ñ–Ú");
+	//	Debug::mPrint("Run Action :" + std::to_string(m_actionCount._commandFrame) + "‰ñ–Ú");
 	}
 	
 	m_actionCount._commandFrame += 1;
@@ -685,7 +686,7 @@ std::array<Player::BulletPool, kMaxBullet>& Player::mGetBullet(){
 
 // •Ç‚É“–‚½‚Á‚½‚Ìˆ—
 void Player::OnHitWall(){
-	Debug::mPrint("•Ç‚Æ“–‚½‚Á‚½");
+
 	m_prevTransform = m_playerTransform;
 	m_isHitWall = true;
 	return;
