@@ -1,11 +1,13 @@
 #include "SceneGame.h"
 #include <iostream>
 #include <PixelShader.h>
+#include"FragmentShader.h"
 #include <GameController.h>
 #include <GameClock.h>
 #include "GameManager.h"
 #include <Singleton.h>
 #include "SceneTitle.h"
+
 using namespace aetherClass;
 namespace{
 	const float kDefaultScaleTime = 100.0f; 
@@ -200,10 +202,10 @@ bool SceneGame::mInitalizeShader(){
 	textureDesc._vertex._srcFile = L"Shader/VertexShaderBase.hlsl";
 
 	textureDesc._pixel._entryName = "ps_main";
-	textureDesc._pixel._srcFile = L"Shader/BasicColor.hlsl";
+	textureDesc._pixel._srcFile = L"Shader/Fragment.hlsl";
 
 	// ピクセルシェーダーの作成
-	m_pixelShader = std::make_shared<PixelShader>();
+	m_pixelShader = std::make_shared<FragmentShader>();
 	result = m_pixelShader->Initialize(textureDesc, ShaderType::eVertex | ShaderType::ePixel);
 	if (!result){
 		return false;
@@ -267,7 +269,7 @@ void SceneGame::mSurvivalRender(){
 	view->Render();
 	m_pPlayer->mRender(m_pixelShader.get(), m_pixelShader.get());
 
-	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
+	//m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
 	m_pFieldArea->mRender(m_pixelShader.get());
 
 	
