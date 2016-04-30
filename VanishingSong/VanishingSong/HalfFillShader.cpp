@@ -48,7 +48,6 @@ bool HalfFillShader::SetConstantBuffer(){
 	bufferNumber = 1;
 	GetDirect3DManager()->GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_fillTypeBuffer);
 
-
 	return true;
 }
 
