@@ -33,6 +33,10 @@ public:
 		// 手のパーツ
 		eRightHand,
 		eLeftHand,
+
+		// 手のパーツ
+		eRightFoot,
+		eLeftFoot,
 		eNull,
 	};
 

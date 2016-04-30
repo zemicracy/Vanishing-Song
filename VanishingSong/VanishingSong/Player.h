@@ -98,6 +98,7 @@ public:
 	*/
 	eCommandType mCommand(std::shared_ptr<ActionCommand>, const float timeScale);
 
+	eCommandType mGetNowCommandType();
 	/*
 	実行したものの登録
 	第一引数：アクションの種類

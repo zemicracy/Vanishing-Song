@@ -7,12 +7,14 @@
 #include <Singleton.h>
 #include "SceneTitle.h"
 using namespace aetherClass;
+
+const std::string SceneGame::Name = "Game";
+
 namespace{
 	const float kDefaultScaleTime = 100.0f; 
 	const float kCommandTimeScale = 1.0f;
 	const bool kError = false;
 }
-const std::string SceneGame::Name = "Game";
 
 SceneGame::SceneGame():
 GameScene(Name, GetManager()) //Sceneごとの名前を設定
@@ -44,13 +46,11 @@ bool SceneGame::Initialize(){
 		return false;
 	}
 
-	
 	// プレイヤーの初期化
 	m_pPlayer = std::make_shared<Player>();
 	m_pPlayer->mInitialize();
 
 	auto view = m_pPlayer->mGetView();
-
 	m_penemyGround = std::make_shared<EnemyGround>();
 	m_penemyGround->mInitialize(view);
 
@@ -69,6 +69,7 @@ bool SceneGame::Initialize(){
 
 	// フェードイン・アウトを行う
 	m_pFadeObject = std::make_unique<FadeManager>();
+
 	// ゲームモードの取得
 	// このシーンに来ている時点で、サバイバルか、プラクティスが選択されている
 	m_nowMode = Singleton<GameManager>::GetInstance().mGameMode(); 
@@ -167,7 +168,6 @@ bool SceneGame::Updater(){
 void SceneGame::Render(){
 	this->mSurvivalRender();
 	this->mPracticeRender();
-	
 	return;
 }
 
@@ -194,21 +194,27 @@ bool SceneGame::TransitionOut(){
 
 bool SceneGame::mInitalizeShader(){
 	// シェーダーの詳細情報の設定
-	ShaderDesc textureDesc;
+	ShaderDesc desc;
 	bool result = false;
-	textureDesc._vertex._entryName = "vs_main";
-	textureDesc._vertex._srcFile = L"Shader/VertexShaderBase.hlsl";
+	desc._vertex._entryName = "vs_main";
+	desc._pixel._entryName = "ps_main";
 
-	textureDesc._pixel._entryName = "ps_main";
-	textureDesc._pixel._srcFile = L"Shader/BasicColor.hlsl";
+	desc._vertex._srcFile = L"Shader/VertexShaderBase.hlsl";
+	desc._pixel._srcFile = L"Shader/BasicColor.hlsl";
 
 	// ピクセルシェーダーの作成
 	m_pixelShader = std::make_shared<PixelShader>();
-	result = m_pixelShader->Initialize(textureDesc, ShaderType::eVertex | ShaderType::ePixel);
+	result = m_pixelShader->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
 	if (!result){
 		return false;
 	}
 
+	desc._pixel._srcFile = L"Shader/Texture.hlsl";
+	m_textureShader = std::make_shared<PixelShader>();
+	result = m_textureShader->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
+	if (!result){
+		return false;
+	}
 	return true;
 }
 
@@ -238,9 +244,11 @@ bool SceneGame::mInitializeMode(GameManager::eGameMode mode){
 /*
 	サバイバルモード時の更新処理
 */
+
 bool SceneGame::mSurvivalMainUpdate(const float timeScale, const float nowTime){
 	if (m_nowMode != GameManager::eGameMode::eSurvaival || m_gameState != eState::eRun)return true;
-	if (GameController::GetKey().KeyDownTrigger(VK_RETURN)){
+	m_dayTime += GameClock::GetDeltaTime();
+	if (m_dayTime >300){
 		m_gameState = eState::eResult;
 	}
 
@@ -249,7 +257,6 @@ bool SceneGame::mSurvivalMainUpdate(const float timeScale, const float nowTime){
 		m_pOrderList->mAddOrder(actionCommand);
 	}
 
-//	m_pPlayer->mCommand(m_pOrderList->mGetActionCommand(), kDefaultScaleTime);
 	m_pPlayer->mUpdate(kDefaultScaleTime, m_pOrderList->mGetActionCommand());
 
 	m_pActionBoard->mUpdate(kCommandTimeScale);
@@ -265,12 +272,12 @@ void SceneGame::mSurvivalRender(){
 	if (m_nowMode != GameManager::eGameMode::eSurvaival)return;
 	auto view = m_pPlayer->mGetView();
 	view->Render();
-	m_pPlayer->mRender(m_pixelShader.get(), m_pixelShader.get());
+	m_pPlayer->mRender(m_textureShader.get(), m_pixelShader.get());
 
 	m_penemyGround->mRender(m_pixelShader.get(),m_pixelShader.get());
 	m_pFieldArea->mRender(m_pixelShader.get());
 
-	
+	return;
 }
 
 //
@@ -280,7 +287,7 @@ void SceneGame::mSurvivalUIRender(){
 	m_pActionBoard->mRender(m_pixelShader.get());
 	m_pOrderList->mRender(m_pixelShader.get());
 	
-	
+	return;
 }
 
 
@@ -290,6 +297,7 @@ void SceneGame::mSurvivalUIRender(){
 bool SceneGame::mPracticeMainUpdate(const float timeScale, const float nowTime){
 	if (m_nowMode != GameManager::eGameMode::ePractice || m_gameState != eState::eRun)return true;
 
+	return true;
 }
 
 /*
@@ -323,10 +331,13 @@ void SceneGame::mShowResult(GameManager::eDay nowDay, ShaderBase* defaultShader,
 	else if (state == ResultBord::eClickState::eNextDay){
 		// 次の日に進む処理
 		auto prevDay = m_nowDay;
+		mFinalizeParam(prevDay);
 		m_nowDay = m_dayHash[prevDay];
 		m_gameState = eState::eFadeIn;
+		m_dayTime = NULL;
 	}
 	m_pResultBord->mRender(defaultShader, bularShader);
+
 	return;
 }
 
@@ -352,6 +363,8 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 			break;
 
 		case eState::eFadeOut:
+			// 次の日に進むにあたっての初期化処理
+			mInitializeParam(m_nowDay);
 			isEnd = m_pFadeObject->Out(1.0f);
 			if (isEnd){
 				m_gameState = eState::eRun;
@@ -375,4 +388,14 @@ void SceneGame::mRegisterDay(){
 	mRegisterDayHash(GameManager::eDay::eLastDay, GameManager::eDay::eNull);
 
 	return;
+}
+
+// 次の日に進む前の解放処理
+void SceneGame::mFinalizeParam(GameManager::eDay prevDay){
+
+}
+
+// 次の日に必要なものの初期化処理
+void SceneGame::mInitializeParam(GameManager::eDay nextDay){
+
 }

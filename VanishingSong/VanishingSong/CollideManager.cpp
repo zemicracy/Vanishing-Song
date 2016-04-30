@@ -81,21 +81,37 @@ void CollideManager::mCheckFieldArea(){
 		}
 	}
 
-	// もし当たっていなかったら
-	// 値を0にして再帰
-	/*m_filedNumber = 0;
-	mCheckFieldArea();*/
-
 	return;
 }
 
-void CollideManager::mHitPlayerAttack(){
+// プレイヤーの攻撃が敵に当たっているかの確認
+void CollideManager::mCheckHitPlayerAttack(){
+	// 弾が当たっているかの確認
+	for (auto& bullet : m_player->mGetBullet()){
+		
+	}
+
+	if (m_player->mGetNowCommandType() != eCommandType::eShortDistanceAttack)return;
+	// 近接攻撃が当たっているかの確認
 
 }
 
+// 敵の攻撃がプレイヤーに当たっているかの確認
+void CollideManager::mCheckHitEnemyAttack(){
+	bool isHit = false;
 
-void CollideManager::mHitEnemyAttack(){
+	if (!isHit)return;
 
+	// プレイヤーの状態に合わせてダメージ量の計算
+	switch (m_player->mGetNowCommandType())
+	{
+	case eCommandType::eShield:
+		break;
+	case eCommandType::eStrongShield:
+		break;
+	default:
+		break;
+	}
 }
 
 

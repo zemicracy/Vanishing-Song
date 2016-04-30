@@ -17,7 +17,7 @@ CharaEntity::~CharaEntity()
 
 /*
 */
-std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType, aetherClass::ViewCamera* view){
+std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType, aetherClass::ViewCamera* view, std::string directry){
 	std::shared_ptr<Gear> pGear;
 	bool success;
 
@@ -41,7 +41,7 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 
 	pGear->_pGear->SetCamera(view);
 	// テクスチャの読み込み
-	//pGear->_pGear->SetTextureDirectoryName("texture");
+	pGear->_pGear->SetTextureDirectoryName(directry);
 	
 	return pGear;
 }
@@ -69,7 +69,7 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
 
-	gear->_pGear->Render(colider_shader);
+	gear->_pGear->Render(model_shader);
 
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
@@ -297,6 +297,11 @@ Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input,
 		return Gear::eType::eRightLowerLeg;
 	}
 
+	if (partsName == "RightFoot"){
+		*input = value;
+		return Gear::eType::eRightFoot;
+	}
+
 	/*	左足	*/
 	if (partsName == "LeftUpperLeg"){
 		*input = value;
@@ -306,6 +311,11 @@ Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input,
 	if (partsName == "LeftLowerLeg"){
 		*input = value;
 		return Gear::eType::eLeftLowerLeg;
+	}
+
+	if (partsName == "LeftFoot"){
+		*input = value;
+		return Gear::eType::eLeftFoot;
 	}
 
 	return Gear::eType::eNull;

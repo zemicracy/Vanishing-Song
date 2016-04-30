@@ -117,6 +117,7 @@ bool ResourceManager::InitializeActionSound(){
 	テクスチャの初期化
 */
 bool ResourceManager::InitializeTexture(){
+	RegisterTexture("skybox", "Texture\\GameBack.jpg");
 	return true;
 }
 
@@ -200,7 +201,7 @@ bool ResourceManager::RegisterTexture(std::string registerName, std::string path
 	}
 
 	// 登録処理
-	std::shared_ptr<Texture> texture;
+	std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 	texture->Load(path);
 	m_pTextureHash.insert(std::make_pair(registerName, texture));
 

@@ -168,7 +168,7 @@ std::shared_ptr<ActionCommand> ActionBoard::mSelectType(){
 }
 
 void ActionBoard::mChangeAnimation(float timeScale, int target){
-	float moveVol = 7.6;
+	float moveVol = 7.6f;
 	if (m_frameCnt[target] >= 140){
 		m_frameCnt[target] = 140;
 	}

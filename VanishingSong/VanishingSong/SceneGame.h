@@ -71,9 +71,14 @@ private:
 
 	void mRegisterDayHash(GameManager::eDay key, GameManager::eDay value);
 	void mRegisterDay();
+
+	void mFinalizeParam(GameManager::eDay);
+	void mInitializeParam(GameManager::eDay);
 private:
 	std::shared_ptr<EnemyGround> m_penemyGround;
 	std::shared_ptr<aetherClass::ShaderBase> m_pixelShader;
+	std::shared_ptr<aetherClass::ShaderBase> m_textureShader;
+
 	std::shared_ptr<Player> m_pPlayer;
 	std::shared_ptr<FieldArea> m_pFieldArea;
 	std::unique_ptr<OrderList> m_pOrderList;

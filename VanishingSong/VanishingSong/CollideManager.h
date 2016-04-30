@@ -15,8 +15,8 @@ private:
 	void mCheckFieldArea();
 	void mCheckFieldAreaBullet();
 	void mCheckHitWall(const int number);
-	void mHitPlayerAttack();
-	void mHitEnemyAttack();
+	void mCheckHitPlayerAttack();
+	void mCheckHitEnemyAttack();
 private:
 	std::shared_ptr<Player> m_player;
 	std::shared_ptr<EnemyManager> m_enemys;

@@ -109,6 +109,22 @@ void GearFrame::Release()
 		m_pLeftHand.reset();
 		m_pLeftHand = nullptr;
 	}
+
+	// ¶Žè‚Ì‰ð•ú
+	if (m_pLeftFoot)
+	{
+		m_pLeftFoot->Release();
+		m_pLeftFoot.reset();
+		m_pLeftFoot = nullptr;
+	}
+
+	// ¶Žè‚Ì‰ð•ú
+	if (m_pRightFoot)
+	{
+		m_pRightFoot->Release();
+		m_pRightFoot.reset();
+		m_pRightFoot = nullptr;
+	}
 }
 
 void GearFrame::SetTransformValue(Gear::eType type, aetherClass::Transform value){
@@ -151,6 +167,14 @@ void GearFrame::SetTransformValue(Gear::eType type, aetherClass::Transform value
 	case Gear::eType::eLeftHand:
 		m_pLeftHand->_pGear->property._transform = value;
 		break;
+
+	case Gear::eType::eLeftFoot:
+		m_pLeftFoot->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eRightFoot:
+		m_pRightFoot->_pGear->property._transform = value;
+		break;
+
 	case Gear::eType::eNull:
 		break;
 	default:
