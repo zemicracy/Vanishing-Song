@@ -14,8 +14,7 @@ using namespace aetherClass;
 const std::string SceneGame::Name = "Game";
 
 namespace{
-	const float kDefaultScaleTime = 100.0f; 
-	const float kCommandTimeScale = 1.0f;
+	const float kScaleTime = 1.0f; 
 	const bool kError = false;
 	const float kDayTime = 300.0f;
 }
@@ -136,10 +135,10 @@ bool SceneGame::Updater(){
 	}
 
 	// それぞれのモードの更新処理
-	m_pMode->mMainUpdate(m_pOrderList->mGetActionCommand(), kDefaultScaleTime, m_dayTime);
+	m_pMode->mMainUpdate(m_pOrderList->mGetActionCommand(), kScaleTime, m_dayTime);
 	
-	m_pActionBoard->mUpdate(kCommandTimeScale);
-	m_pOrderList->mUpdate(kDefaultScaleTime);
+	m_pActionBoard->mUpdate(kScaleTime);
+	m_pOrderList->mUpdate(kScaleTime);
 
 	return true;
 }

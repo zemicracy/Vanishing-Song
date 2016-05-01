@@ -18,6 +18,7 @@ namespace{
 	const Vector3 kColliderOffset = Vector3(0, -5, 0); 
 	const Vector3 kPlayerInitialY = Vector3(0, 20, 0);
 	const Vector3 kBulletSpeed = Vector3(0, 0, 10);
+	const float kDefaultMove = 100.0f;
 }
 
 Player::Player()
@@ -216,18 +217,18 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 
 	// âúçsÇÃà⁄ìÆ(Zé≤)
 	if (GameController::GetKey().IsKeyDown('W')){
-		output._transform._translation._z = GameClock::GetDeltaTime()*timeScale;
+		output._transform._translation._z = GameClock::GetDeltaTime()*timeScale*kDefaultMove;
 	}
 	else if (GameController::GetKey().IsKeyDown('S')){
-		output._transform._translation._z = -(GameClock::GetDeltaTime()*timeScale);
+		output._transform._translation._z = -(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
 	// â°ÇÃà⁄ìÆ(Xé≤)
 	if (GameController::GetKey().IsKeyDown('D')){
-		output._transform._translation._x = GameClock::GetDeltaTime()*timeScale;
+		output._transform._translation._x = GameClock::GetDeltaTime()*timeScale*kDefaultMove;
 	}
 	else if (GameController::GetKey().IsKeyDown('A')){
-		output._transform._translation._x = -(GameClock::GetDeltaTime()*timeScale);
+		output._transform._translation._x = -(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
 	// à⁄ìÆÇ™Ç†ÇÍÇŒ
