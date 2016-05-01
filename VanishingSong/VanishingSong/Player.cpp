@@ -702,7 +702,7 @@ std::array<Player::BulletPool, kMaxBullet>& Player::mGetBullet(){
 }
 
 // 壁に当たった時の処理
-void Player::OnHitWall(){
+void Player::mOnHitWall(){
 
 	m_prevTransform = m_playerTransform;
 	m_isHitWall = true;
@@ -711,4 +711,21 @@ void Player::OnHitWall(){
 
 eCommandType Player::mGetNowCommandType(){
 	return m_status._nowCommand;
+}
+
+ResultData Player::mGetResultData(){
+	return m_resultData;
+}
+
+void Player::mDayReset(){
+
+	// 弾の初期化
+	for (auto&bullet : m_pBullets){
+		bullet._isRun = false;
+	}
+
+	// リザルトに使うデータの初期化
+	m_resultData.mReset();
+
+	// 位置を初期位置にする
 }

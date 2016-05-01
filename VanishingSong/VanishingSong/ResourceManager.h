@@ -6,7 +6,7 @@
 #include <array>
 #include <GameSound.h>
 #include <Texture.h>
-
+#include <ShaderBase.h>
 namespace{
 	const int kMaxBGM = 8;
 }
@@ -31,6 +31,8 @@ public:
 
 	std::shared_ptr<ActionSound> GetActionSound(eCommandType);
 
+	// 基本的に使うシェーダーの取得用
+	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& mGetShaderHash();
 private:
 
 	/*
@@ -49,6 +51,12 @@ private:
 	bool InitializeTexture();
 
 	/*
+	テクスチャの初期化
+	*/
+	bool InitializeShader();
+
+
+	/*
 		アクションコマンドに対応した音の解放処理
 	*/
 	void FinalizeSound();
@@ -64,6 +72,11 @@ private:
 	void FinalizeTexture();
 
 	/*
+	シェーダーの解放処理
+	*/
+	void FinalizeSahder();
+
+	/*
 		アクションコマンドに対応した音の登録用
 	*/
 	bool RegisterActionSound(eCommandType, std::string path);
@@ -72,8 +85,16 @@ private:
 		テクスチャの登録用
 	*/
 	bool RegisterTexture(std::string registerName,std::string path);
+
+	/*
+		シェーダーの登録用
+	*/
+	template<class ShaderType>
+	bool RegisterShader(std::string registerName, aetherClass::ShaderDesc);
 private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>> m_pTextureHash;
+	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>> m_pShaderHash;
+
 	std::unordered_map<eCommandType, std::shared_ptr<ActionSound>> m_pActionSoundHash;
 	std::array<std::shared_ptr<aetherClass::GameSound>,kMaxBGM> m_pBaseBgmArray;
 	static std::string m_BgmPath[kMaxBGM];

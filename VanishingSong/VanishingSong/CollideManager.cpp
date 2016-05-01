@@ -38,7 +38,7 @@ void CollideManager::mCheckHitWall(const int number){
 	// プレイヤー用
 	for (auto wall : m_filed->mGetPartitionWall(number)){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
-			m_player->OnHitWall();
+			m_player->mOnHitWall();
 		
 			break;
 		}
