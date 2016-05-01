@@ -7,6 +7,6 @@ public:
 	EnemyDie();
 	~EnemyDie();
 
-	void UpdateRun(EnemyBase::Property*,aetherClass::Vector3*)override;
+	void mUpdateRun(EnemyBase::Property*,aetherClass::Vector3*)override;
 };
 

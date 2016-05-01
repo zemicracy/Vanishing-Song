@@ -1,3 +1,4 @@
+#include "CharaEntity.h"
 #include "EnemyMove.h"
 #include "Debug.h"
 
@@ -12,7 +13,11 @@ EnemyMove::~EnemyMove()
 {
 }
 
-void EnemyMove::UpdateRun(EnemyBase::Property* enemy, aetherClass::Vector3* player_pos){
+void EnemyMove::mUpdateRun(EnemyBase::Property* enemy, aetherClass::Vector3* player_pos){
+	
+	m_charaEntity.mGearMove(enemy->_penemy->m_pBody, enemy->_penemy->m_pWaist, enemy->_penemy->m_pBody->_pGear->property._transform._translation,std::string("+"));
 
+	//enemy->_penemy->m_pBody->_pGear->property._transform._translation._x += 1.0f;
+	
 	
 }

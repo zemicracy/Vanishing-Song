@@ -32,27 +32,31 @@ float4 ps_main(PixelInputType input) : SV_TARGET{
 
 		float dataLen = length(spline);
 
-		if (-dataLen > texCoord / 2){
-			return shaderTexture.Sample(SampleType, input.tex) * Color;
+		if (dataLen > texCoord / 2){
+			float4 texCol = shaderTexture.Sample(SampleType, input.tex);
+				if (texCol.a != 0){
+					texCol.rgb = texCol.rgb + Color.rgb;
+					return texCol;
+				}
 		}
-		return float4(0, 0, 0, 0);
 	}
 	else if (flg == 1){
 		float2 convertTex = input.tex - _position;	//íÜêSï‚ê≥
-		//float texCoord = length(input.tex) - length((0.5,0.5));
-		//float startPos = sin(beginRadius*0.0174532925f);
-		//float endPos = sin((beginRadius + (360 * _interpolation))*0.0174532925f)+1;
 
 		float startRad = beginRadius * 0.0174532925f;
 		float endRad = ((endRadius * _interpolation) + beginRadius)*0.0174532925f;
 
-		float nowRad = 180 + (atan2(convertTex.y, convertTex.x) * 180 / 3.14);
+		float nowRad = 180 + (atan2(convertTex.y*_direction.y, convertTex.x*_direction.x) * 180 / 3.14);
 		nowRad = nowRad *0.0174532925f;
 		if (startRad < nowRad && endRad > nowRad){
-			return shaderTexture.Sample(SampleType, input.tex) * Color;
+			float4 texCol = shaderTexture.Sample(SampleType, input.tex);
+				if (texCol.a != 0){
+					texCol.rgb = texCol.rgb + Color.rgb;
+					return texCol;
+				}
 		}
 	}
 
 	//others
-	return float4(0, 0, 0, 0);
+	return float4(0,0,0,0);
 }
