@@ -51,7 +51,7 @@ static type gInterpolation(type first, type last, const int allFrameCount, const
 */
 static bool gLockMouseCursor(HWND hWnd, const bool lock){
 	RECT screen;
-	bool result = GetWindowRect(hWnd, &screen);
+	BOOL result = GetWindowRect(hWnd, &screen);
 	if (!result){
 		Debug::mErrorPrint("ウィンドウサイズの取得に失敗", __FILE__, __LINE__);
 		return false;

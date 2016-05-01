@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 #include "Debug.h"
 #include"ActionSound.h"
+#include "PixelShader.h"
 using namespace aetherClass;
 ResourceManager::ResourceManager()
 {
@@ -36,6 +37,8 @@ bool ResourceManager::Initialize(){
 	InitializeBGM();
 	InitializeActionSound();
 	InitializeTexture();
+
+	InitializeShader();
 	return true;
 }
 
@@ -47,7 +50,7 @@ void ResourceManager::Finalize(){
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
-	
+	InitializeShader();
 	return;
 }
 
@@ -117,8 +120,28 @@ bool ResourceManager::InitializeActionSound(){
 	ƒeƒNƒXƒ`ƒƒ‚Ì‰Šú‰»
 */
 bool ResourceManager::InitializeTexture(){
+	RegisterTexture("skybox", "Texture\\GameBack.jpg");
 	return true;
 }
+
+/*
+ƒVƒF[ƒ_[‚Ì‰Šú‰»
+*/
+bool ResourceManager::InitializeShader(){
+	ShaderDesc desc;
+	desc._vertex._entryName = "vs_main";
+	desc._pixel._entryName = "ps_main";
+
+	desc._vertex._srcFile = L"Shader\\VertexShaderBase.hlsl";
+	desc._pixel._srcFile = L"Shader\\BasicColor.hlsl";
+	RegisterShader<PixelShader>("color", desc);
+
+	desc._pixel._srcFile = L"Shader\\Texture.hlsl";
+	RegisterShader<PixelShader>("texture", desc);
+
+	return true;
+}
+
 
 /*
 BGM‚Ì”z—ñ‚Ì—v‘f‚ğíœ
@@ -165,6 +188,18 @@ void ResourceManager::FinalizeTexture(){
 	return;
 }
 
+void ResourceManager::FinalizeSahder(){
+	for (auto index : m_pShaderHash)
+	{
+		if (!index.second)continue;
+		index.second->Finalize();
+		index.second.reset();
+		index.second = nullptr;
+	}
+	m_pShaderHash.clear();
+	return;
+}
+
 /*
 	ƒAƒNƒVƒ‡ƒ“ƒRƒ}ƒ“ƒh‚É‘Î‰‚µ‚½ƒTƒEƒ“ƒh‚Ì“o˜^	
 */
@@ -200,9 +235,38 @@ bool ResourceManager::RegisterTexture(std::string registerName, std::string path
 	}
 
 	// “o˜^ˆ—
-	std::shared_ptr<Texture> texture;
+	std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 	texture->Load(path);
 	m_pTextureHash.insert(std::make_pair(registerName, texture));
 
 	return true;
+}
+
+
+
+template<class Type>
+bool ResourceManager::RegisterShader(std::string registerName, ShaderDesc desc){
+	auto findMap = m_pTextureHash.find(registerName);
+
+	// ‚·‚Å‚É‚»‚Ì–¼‘O‚Å“o˜^‚µ‚Ä‚¢‚é‚Ì‚Å‚ ‚ê‚Î‰½‚à‚µ‚È‚¢
+	if (findMap != m_pTextureHash.end())
+	{
+		Debug::mErrorPrint("Šù‚É“o˜^Ï‚İ‚ÌƒL[‚Ì‚½‚ß“o˜^‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
+		return false;
+	}
+
+	// “o˜^ˆ—
+	std::shared_ptr<ShaderBase> shader = std::make_shared<Type>();
+	bool result = shader->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
+	if (!result){
+		Debug::mErrorPrint("‰Šú‰»‚É¸”s", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
+		return false;
+	}
+	m_pShaderHash.insert(std::make_pair(registerName, shader));
+
+	return true;
+}
+
+std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& ResourceManager::mGetShaderHash(){
+	return m_pShaderHash;
 }

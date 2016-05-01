@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <vector>
 #include "Equipment.h"
+#include "ResultBord.h"
 namespace{
 	const int kMaxBullet = 10;
 }
@@ -98,6 +99,7 @@ public:
 	*/
 	eCommandType mCommand(std::shared_ptr<ActionCommand>, const float timeScale);
 
+	eCommandType mGetNowCommandType();
 	/*
 	実行したものの登録
 	第一引数：アクションの種類
@@ -126,9 +128,14 @@ public:
 	std::shared_ptr<aetherClass::Cube> mGetBodyColldier();
 
 	// 壁に当たった時の処理
-	void OnHitWall();
+	void mOnHitWall();
 
 	std::array<BulletPool, kMaxBullet>& mGetBullet();
+
+	ResultData mGetResultData();
+
+	// 日が変わるときの処理
+	void mDayReset();
 private:
 	
 	/*
@@ -211,6 +218,8 @@ private:
 	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
 
 	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearHash;   // それぞれのギアのポインタを扱いやすいようにまとめた連想配列
+
+	ResultData m_resultData;
 };
 
 #endif

@@ -3,6 +3,8 @@
 #include<Cube.h>
 #include<WorldReader.h>
 #include <Physics.h>
+#include "ResourceManager.h"
+#include <Singleton.h>
 using namespace aetherFunction;
 using namespace aetherClass;
 FieldArea::FieldArea()
@@ -78,7 +80,8 @@ void FieldArea::mInitialize(){
 
 	m_ground[1] = std::make_shared<Skybox>();
 	m_ground[1]->Initialize();
-	
+	m_ground[1]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("skybox").get());
+
 	// 先にコライダーの検出をする
 	int nextNumber = NULL;
 	for (int i = 0; i < m_partitionCube.size(); ++i){
@@ -103,17 +106,13 @@ void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
 	for (auto itr : m_wall){
 		itr->SetCamera(camera);
 	}
-
 }
 
 
 void FieldArea::mRender(aetherClass::ShaderBase* shader){
-	for (auto itr : m_ground){
-		itr->Render(shader);
-	}
-	for (auto itr : m_wall){
-		itr->Render(shader);
-	}
+	
+	m_ground[1]->Render(shader);
+	m_ground[0]->Render(shader);
 }
 
 void FieldArea::mUpdate(float){

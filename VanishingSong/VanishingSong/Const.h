@@ -10,15 +10,15 @@
 namespace{
 	// ウィンドウ関連
 	const std::wstring kWindowName = L"Game";
-	const int kWindowWidth = 1280;
-	const int kWindowHeight = 720;
+	const float kWindowWidth = 1280.0f;
+	const float kWindowHeight = 720.0f;
 
 	// 初期化用
 	const aetherClass::Vector3 kVector3Zero = aetherClass::Vector3(NULL, NULL, NULL);
 
 	// Editorとの連携用
-	const float kResolutionFromEditor_x = 1.6;
-	const float kResolutionFromEditor_y = 1.2;
+	const float kResolutionFromEditor_x = 1.6f;
+	const float kResolutionFromEditor_y = 1.2f;
 
 	// デバッグ関係
 	const bool kCharaDebug = true;

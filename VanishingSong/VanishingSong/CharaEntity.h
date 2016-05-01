@@ -18,7 +18,7 @@ public:
 	/*
 		ギアの初期化用
 	*/
-	 std::shared_ptr<Gear> mSetUpGear(std::string path, Gear::eType, aetherClass::ViewCamera*);
+	 std::shared_ptr<Gear> mSetUpGear(std::string path, Gear::eType, aetherClass::ViewCamera*,std::string);
 
 	 /*
 		親子関係構築用

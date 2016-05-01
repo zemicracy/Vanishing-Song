@@ -1,14 +1,9 @@
 #pragma once
 #include<GameScene.h>
 #include "ShaderBase.h"
-#include "EnemyGround.h"
-#include "Player.h"
-#include "FieldArea.h"
-#include "OrderList.h"
-#include "ActionBoard.h"
 #include "ResultBord.h"
-#include "CollideManager.h"
 #include "FadeManager.h"
+#include "Mode.h"
 #include <DirectXEntity.h>
 class SceneGame :
 	public aetherClass::GameScene
@@ -50,19 +45,10 @@ public:
 	bool TransitionOut()override;
 public:
 	static const std::string Name;
+
 private:
-	// 初期化処理
-	bool mInitalizeShader();
-	bool mInitializeMode(GameManager::eGameMode);
 	
-	bool mSurvivalMainUpdate(const float timeScale,const float nowTime);
-	bool mPracticeMainUpdate(const float timeScale, const float nowTime);
-
-	void mSurvivalRender();
-	void mPracticeRender();
-
-	void mSurvivalUIRender();
-	void mPracticeUIRender();
+	std::shared_ptr<Mode> mReturnMode(GameManager::eGameMode);
 
 	void mShowResult(GameManager::eDay, aetherClass::ShaderBase* defaultShader, aetherClass::ShaderBase* bularShader);
 
@@ -72,22 +58,22 @@ private:
 	void mRegisterDayHash(GameManager::eDay key, GameManager::eDay value);
 	void mRegisterDay();
 private:
-	std::shared_ptr<EnemyGround> m_penemyGround;
-	std::shared_ptr<aetherClass::ShaderBase> m_pixelShader;
-	std::shared_ptr<Player> m_pPlayer;
-	std::shared_ptr<FieldArea> m_pFieldArea;
-	std::unique_ptr<OrderList> m_pOrderList;
-	std::unique_ptr<ActionBoard> m_pActionBoard;
+
 	std::unique_ptr<ResultBord> m_pResultBord;
 	std::unique_ptr<FadeManager> m_pFadeObject;
-	std::unique_ptr<CollideManager> m_pCollideManager;
+	std::unique_ptr<OrderList> m_pOrderList;
+	std::unique_ptr<ActionBoard> m_pActionBoard;
+
+	std::shared_ptr<Mode> m_pMode;
 	aetherClass::DirectXEntity m_directX;
-	GameManager::eGameMode m_nowMode;
+
 	GameManager::eDay m_nowDay;
 	std::unordered_map<GameManager::eDay, GameManager::eDay> m_dayHash;
 	ResultData m_resultData; // リザルト表示時に使用
 	eState m_gameState;
 	// 経過時間保持用
 	float m_dayTime;
+
+
 };
 
