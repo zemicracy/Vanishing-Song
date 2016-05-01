@@ -1,6 +1,5 @@
 #include "EnemyBase.h"
 
-
 EnemyBase::EnemyBase()
 {
 }
@@ -12,5 +11,9 @@ CharaEntity EnemyBase::GetCharaEntity()
 
 CharaStatus& EnemyBase::GetCharaStatus(){
 	return m_status;
+}
+
+EnemyBase::Property& EnemyBase::GetProperty(){
+	return m_property;
 }
 

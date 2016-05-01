@@ -39,7 +39,6 @@ void Initializer(std::shared_ptr<SpriteBase> &sprite,Transform transform, Color 
 	sprite->property._transform = transform;
 	sprite->property._transform._translation._x *= kResolutionFromEditor_x;
 	sprite->property._transform._translation._y *= kResolutionFromEditor_y;
-	sprite->property._transform._translation._x -= 10;
 
 	sprite->property._color = color;
 
@@ -54,8 +53,8 @@ void OrderList::mInitialize(){
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "base"){
 			Initializer(m_backImage, itr->_transform, itr->_color);
-			m_backImage->property._transform._scale._y *= kResolutionFromEditor_y;
-			m_backImage->property._transform._translation._x += 10;
+			m_backImage->property._transform._scale._x *= kResolutionFromEditor_x;
+			m_backImage->property._transform._translation._y += 5;
 
 		}
 		if (itr->_name == "list1"){
@@ -83,23 +82,26 @@ void OrderList::mUpdate(float){
 	if (m_orderList.size() == 0){
 		return;
 	}
-
 	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
-	if(GameController::GetKey().KeyDownTrigger(VK_SPACE)){
-		m_isStart = !m_isStart;
-		m_backImage->property._color._red = 1 - m_backImage->property._color._red;
-		sound->mPlaySoundAction(m_volume);
+	if (GameController::GetKey().KeyDownTrigger(VK_SPACE)){
+		if (!m_isStart){
+			mListPlay();
+		}
+		else{
+			sound->mStop();
+			mListStop();
+		}
 	}
+
 	if (m_isStart){
 
 		m_listFirst = m_orderList[0];
 
 		if (sound->mIsPlayEnd() && m_orderList.size() != 0){
+			m_listFirst->mReset();
 			m_orderList.erase(m_orderList.begin());
 			if (m_orderList.size() == 0){
-				m_backImage->property._color._red = 1 - m_backImage->property._color._red;
-				m_isStart = false;
-				m_listFirst = std::make_shared<ActionNull>();
+				mListStop();
 				return;
 			}
 			auto nextSound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
@@ -124,7 +126,22 @@ int OrderList::mGetVolume(){
 }
 
 void OrderList::mAddOrder(std::shared_ptr<ActionCommand> input){
+	if (m_isStart)return;
 	if (m_orderList.size() >= m_kMaxOrderSize) return;
 	m_orderList.push_back(input);
 }
 
+
+void OrderList::mListPlay(){
+	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
+
+	m_backImage->property._color._red = 1 - m_backImage->property._color._red;
+	sound->mPlaySoundAction(m_volume);
+	m_isStart = true;
+}
+void OrderList::mListStop(){
+	m_orderList.clear();
+	m_listFirst = std::make_shared<ActionNull>();
+	m_backImage->property._color._red = 1 - m_backImage->property._color._red;
+	m_isStart = false;
+}

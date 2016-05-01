@@ -23,7 +23,7 @@ float4 ps_main(PixelInputType input) : SV_TARGET
 	if(Color.w > 0){
 	float4 col2 = Color;
 	col2 = (col2 - (1-Color.a));
-	output.rgb = col2.rgb + output.rgb;
+	output.rgb = col2.rgb; //+ output.rgb;
 	}
 
 	return output;

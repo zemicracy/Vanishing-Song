@@ -21,14 +21,8 @@ void Gear::Release(){
 		_pParent = nullptr;
 	}
 
-	// 子供配列の要素削除
-	for (auto index : _pChildren)
-	{
-		if (!index)continue;
-		index->Release();
-		index.reset();
-		index = nullptr;
-	}
+	// 配列をきれいにする
+	_pChildren.clear();
 
 	// ギアの解放
 	if (_pGear)
@@ -37,15 +31,6 @@ void Gear::Release(){
 		_pGear.reset();
 		_pGear = nullptr;
 	}
-
-	// コライダーの解放
-	if (_pColider)
-	{
-		_pColider->Finalize();
-		_pColider.reset();
-		_pColider = nullptr;
-	}
-	
 	_type = eType::eNull;
 
 }

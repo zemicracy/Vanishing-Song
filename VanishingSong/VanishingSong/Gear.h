@@ -16,8 +16,6 @@ public:
 		eBody,
 		
 		// 腕パーツ
-		eRightShourlder,
-		eLeftShourlder,
 		eRightUpperArm,
 		eLeftUpperArm,
 		eRightLowerArm,
@@ -35,14 +33,16 @@ public:
 		// 手のパーツ
 		eRightHand,
 		eLeftHand,
+
+		// 手のパーツ
+		eRightFoot,
+		eLeftFoot,
 		eNull,
 	};
 
 	Gear();
 	~Gear();
 	void Release();
-
-
 public:
 
 
@@ -50,8 +50,8 @@ public:
 		std::vector<std::shared_ptr<Gear>> _pChildren;
 		std::shared_ptr<aetherClass::FbxModel> _pGear;
 		eType _type;
-		std::shared_ptr<aetherClass::Cube> _pColider;
 		aetherClass::Transform _parentDifference;
 		aetherClass::Transform _topDifference;
+		aetherClass::Transform _initialTransform;
 };
 

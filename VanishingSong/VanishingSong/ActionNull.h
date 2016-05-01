@@ -6,6 +6,9 @@ public:
 	ActionNull() :
 		ActionCommand(eCommandType::eNull){}
 	~ActionNull() = default;
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override{}
+	void mOnCreate()override{
+
+	}
+	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, float timeScale, int count)override{}
 };
 
