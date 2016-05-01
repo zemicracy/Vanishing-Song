@@ -184,7 +184,7 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 		m_playerTransform._translation += translation;
 	}
 
-	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
+//	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 	
 	// 移動処理
 	m_charaEntity.mGearMove(m_pTopGear, m_playerTransform._translation);
@@ -499,7 +499,7 @@ void Player::mInitialPlayerView(CameraValue input){
 	// デバッグ用
 	// 初期位置の設定
 	m_playerTransform._translation = kPlayerInitialY;
-	m_playerView.property._translation = Vector3(0, 50, -400);
+	m_playerView.property._translation += Vector3(0, 50, -400);
 
 	// カメラのオフセットの設定
 	m_cameraOffset._translation = m_playerView.property._translation;
