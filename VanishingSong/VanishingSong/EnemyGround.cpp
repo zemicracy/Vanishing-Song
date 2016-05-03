@@ -31,9 +31,9 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 	mGetCharaStatus()._nowAction = eActionType::eWait;
 
 	// 体のパーツ
-	mGetProperty()._penemy->m_pBody = mGetCharaEntity().mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eBody, camera);
+	mGetProperty()._penemy->m_pBody = mGetCharaEntity().mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eBody, camera,"null");
 	// 腰のパーツ
-	mGetProperty()._penemy->m_pWaist = mGetCharaEntity().mSetUpGear("Model\\Player\\arm2.fbx", Gear::eType::eWaist, camera);
+	mGetProperty()._penemy->m_pWaist = mGetCharaEntity().mSetUpGear("Model\\Player\\arm2.fbx", Gear::eType::eWaist, camera,"null");
 
 	WorldReader read;
 	read.Load("data\\Enemy.aether");

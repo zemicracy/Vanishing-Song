@@ -61,13 +61,11 @@ private:
 
 	std::unique_ptr<ResultBord> m_pResultBord;
 	std::unique_ptr<FadeManager> m_pFadeObject;
-	std::unique_ptr<OrderList> m_pOrderList;
-	std::unique_ptr<ActionBoard> m_pActionBoard;
 
 	std::shared_ptr<Mode> m_pMode;
 	aetherClass::DirectXEntity m_directX;
 
-	GameManager::eDay m_nowDay;
+	GameManager::eDay m_day;
 	std::unordered_map<GameManager::eDay, GameManager::eDay> m_dayHash;
 	ResultData m_resultData; // リザルト表示時に使用
 	eState m_gameState;

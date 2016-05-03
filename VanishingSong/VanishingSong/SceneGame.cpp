@@ -23,7 +23,7 @@ SceneGame::SceneGame():
 GameScene(Name, GetManager()) //Sceneごとの名前を設定
 {
 
-	m_nowDay = GameManager::eDay::eNull;
+	m_day = GameManager::eDay::eNull;
 	m_gameState = eState::eNull;
 	m_dayTime = NULL;
 
@@ -33,47 +33,44 @@ GameScene(Name, GetManager()) //Sceneごとの名前を設定
 SceneGame::~SceneGame()
 {
 
-	m_nowDay = GameManager::eDay::eNull;
+	m_day = GameManager::eDay::eNull;
 	m_gameState = eState::eNull;
 	m_dayTime = NULL;
 
 }
 
 bool SceneGame::Initialize(){
+	bool result = true;
 
 	Finalize();
 
 	// シーンの登録
 	RegisterScene(new SceneTitle());
 
-	bool result = false;
-
-	// アクションコマンドの初期化
-	m_pActionBoard = std::make_unique<ActionBoard>();
-	auto skill = Singleton<GameManager>::GetInstance().mSkillType();
-	skill = GameManager::eSkillType::eExAttack;
-	m_pActionBoard->mInitialize(skill);
-
-	// オーダーリストの初期化
-	m_pOrderList = std::make_unique<OrderList>();
-	m_pOrderList->mInitialize();
-
 	// フェードイン・アウトを行う
 	m_pFadeObject = std::make_unique<FadeManager>();
 
 	// ゲームモードの取得
 	// このシーンに来ている時点で、サバイバルか、プラクティスが選択されている
-	auto nowMode = Singleton<GameManager>::GetInstance().mGameMode(); 
-	nowMode = GameManager::eGameMode::eSurvaival;
+	auto mode = Singleton<GameManager>::GetInstance().mGameMode(); 
+	mode = GameManager::eGameMode::eSurvaival;
 
 	
 	m_pResultBord = std::make_unique<ResultBord>();
-	m_pResultBord->mInitialize(nowMode);
+	m_pResultBord->mInitialize(mode);
 	
 	// 現在のモードの取得
-	m_pMode = mReturnMode(nowMode);
-	m_pMode->mInitialize(m_nowDay);
+	m_pMode = mReturnMode(mode);
 
+	// スキルの取得
+	auto skill = Singleton<GameManager>::GetInstance().mSkillType();
+	skill = GameManager::eSkillType::eExAttack;
+
+	result = m_pMode->mInitialize(skill,m_day);
+	if (!result){
+		Debug::mErrorPrint("モードの初期化失敗", __FILE__, Debug::eState::eWindow);
+		return false;
+	}
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
 
@@ -83,23 +80,20 @@ bool SceneGame::Initialize(){
 // 解放処理
 // 全ての解放
 void SceneGame::Finalize(){
-	if (m_pActionBoard){
-		m_pActionBoard.release();
-		m_pActionBoard = nullptr;
+	
+	if (m_pMode){
+		m_pMode->mFinalize();
+		m_pMode.reset();
+		m_pMode = nullptr;
 	}
-
-	if (m_pOrderList){
-		m_pOrderList.release();
-		m_pOrderList = nullptr;
-	}
-
+	
 	if (m_pResultBord){
 		m_pResultBord->mFinalize();
 		m_pResultBord.release();
 		m_pResultBord = nullptr;
 	}
 
-	m_nowDay = GameManager::eDay::eNull;
+	m_day = GameManager::eDay::eNull;
 	m_gameState = eState::eNull;
 	m_dayTime = NULL;
 	return;
@@ -113,6 +107,11 @@ bool SceneGame::Updater(){
 			return true;
 		}
 	}
+
+	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
+		m_gameState = eState::eExit;
+	}
+
 	if (m_gameState == eState::eExit){
 		// 終了ならタイトルに戻る
 		ChangeScene(SceneTitle::Name, LoadState::eUse, LoadWaitState::eUnuse);
@@ -127,18 +126,10 @@ bool SceneGame::Updater(){
 		m_gameState = eState::eResult;
 	}
 
-	//m_pActionBoard->mUpdate(kCommandTimeScale);
-	
-	auto actionCommand = m_pActionBoard->mSelectType();
-	if (actionCommand){
-		m_pOrderList->mAddOrder(actionCommand);
-	}
-
 	// それぞれのモードの更新処理
-	m_pMode->mMainUpdate(m_pOrderList->mGetActionCommand(), kScaleTime, m_dayTime);
+	m_pMode->mMainUpdate(kScaleTime, m_dayTime);
 	
-	m_pActionBoard->mUpdate(kScaleTime);
-	m_pOrderList->mUpdate(kScaleTime);
+	
 
 	return true;
 }
@@ -152,14 +143,12 @@ void SceneGame::Render(){
 void SceneGame::UIRender(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 
-	m_pActionBoard->mRender(shaderHash["color"].get());
+	m_pMode->mMainUIRender(shaderHash);
 
-	m_pOrderList->mRender(shaderHash["color"].get());
-
-	mShowResult(m_nowDay, shaderHash["color"].get(), shaderHash["color"].get());
+	mShowResult(m_day, shaderHash["fragment"].get(), shaderHash["fragment"].get());
 
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
-		m_pFadeObject->mRedner(shaderHash["color"].get());
+		m_pFadeObject->mRedner(shaderHash["fragment"].get());
 	}
 	return;
 }
@@ -179,7 +168,7 @@ std::shared_ptr<Mode> SceneGame::mReturnMode(GameManager::eGameMode mode){
 	switch (mode)
 	{
 	case GameManager::eGameMode::eSurvaival:
-		m_nowDay = GameManager::eDay::e1day;
+		m_day = GameManager::eDay::e1day;
 		mRegisterDay();
 		Debug::mPrint("サバイバルモード");
 
@@ -214,9 +203,9 @@ void SceneGame::mShowResult(GameManager::eDay nowDay, ShaderBase* defaultShader,
 	}
 	else if (state == ResultBord::eClickState::eNextDay){
 		// 次の日に進む処理
-		auto prevDay = m_nowDay;
+		auto prevDay = m_day;
 		m_pMode->mPrevDayFinalize(prevDay);
-		m_nowDay = m_dayHash[prevDay];
+		m_day = m_dayHash[prevDay];
 		m_gameState = eState::eFadeIn;
 		m_dayTime = NULL;
 	}
@@ -240,7 +229,7 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 
 		case eState::eFadeOut:
 			// 次の日に進むにあたっての初期化処理
-			m_pMode->mNextDayInitialize(m_nowDay);
+			m_pMode->mNextDayInitialize(m_day);
 			isEnd = m_pFadeObject->Out(1.0f);
 			if (isEnd){
 				m_gameState = eState::eRun;

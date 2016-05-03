@@ -24,8 +24,7 @@ namespace{
 Player::Player()
 {
 	m_pGearFrame = nullptr;
-	m_pTopGear = nullptr;
-	m_pActionCommand = nullptr;
+	m_topGear = nullptr;
 }
 
 
@@ -66,11 +65,11 @@ bool Player::mInitialize(){
 
 
 	// コライダーの初期化
-	mSetUpBodyCollider(m_pBodyCollider, m_pTopGear->_pGear->property._transform._translation, kColliderOffset);
+	mSetUpBodyCollider(m_pBodyCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
 
 	/*	基本的なアニメーションの登録	*/
-	mRegisterAnimation(Player::eState::eMove, kMoveAnimationFrame,"data\\PlayerDefault.aether", "data\\PlayerMove.aether");
-	mRegisterAnimation(Player::eState::eWait, kWaitAnimationFrame,"data\\PlayerDefault.aether", "data\\PlayerWait.aether");
+	mRegisterAnimation(Player::eState::eMove, kMoveAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Move.aether");
+	mRegisterAnimation(Player::eState::eWait, kWaitAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤー 初期化終了しました");
@@ -81,6 +80,12 @@ bool Player::mInitialize(){
 	mSetupBullet(mGetView());
 	m_isHitWall = false;
 	m_isCall = true;
+
+	// とりあえず
+	m_status._maxhp = 100;
+	m_status._maxmp = 100;
+	m_status._hp = 100;
+	m_status._mp = 100;
 	return true;
 }
 
@@ -95,26 +100,12 @@ void Player::mFinalize(){
 		}
 		m_defaultAnimation.clear();
 	}
+	
 	if (m_pGearFrame)
 	{
 		m_pGearFrame->Release();
 		m_pGearFrame.reset();
 		m_pGearFrame = nullptr;
-	}
-
-	// 
-	if (m_pTopGear)
-	{
-		m_pTopGear->Release();
-		m_pTopGear.reset();
-		m_pTopGear = nullptr;
-	}
-
-	// アクションコマンド
-	if (m_pActionCommand)
-	{
-		m_pActionCommand.reset();
-		m_pActionCommand = nullptr;
 	}
 
 	if (m_pBodyCollider)
@@ -127,6 +118,7 @@ void Player::mFinalize(){
 	if (!m_pBullets.empty()){
 		for (auto index : m_pBullets){
 			if (!index._bullet)continue;
+			index._bullet->mDestroy();
 			index._bullet.reset();
 			index._bullet = nullptr;
 
@@ -141,8 +133,8 @@ void Player::mFinalize(){
 	m_prevCommand = eCommandType::eNull;
 	m_prevState = eState::eNull;
 	m_cameraRotation = kVector3Zero;
-	m_pGearHash.clear();
-
+	
+	
 	return;
 }
 
@@ -159,7 +151,7 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 	m_cameraRotation += getKeyValues._cameraRotation;
 
 	// カメラの更新
-	mUpdateView(m_playerView, m_cameraRotation, m_pTopGear->_pGear->property._transform._translation);
+	mUpdateView(m_playerView, m_cameraRotation, m_topGear->_pGear->property._transform._translation);
 
 
 	// 基本的なアニメーションの再生
@@ -185,16 +177,16 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 		m_playerTransform._translation += translation;
 	}
 
-//	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
+	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 	
 	// 移動処理
-	m_charaEntity.mGearMove(m_pTopGear, m_playerTransform._translation);
+	m_charaEntity.mGearMove(m_topGear, m_playerTransform._translation);
 
 	// 回転処理
-	m_charaEntity.mGearRotation(m_pTopGear, m_pTopGear, m_playerTransform._rotation);
+	m_charaEntity.mGearRotation(m_topGear, m_topGear, m_playerTransform._rotation);
 
 	// コライダーの更新処理
-	mUpdateBodyCollider(m_pTopGear->_pGear->property._transform);
+	mUpdateBodyCollider(m_topGear->_pGear->property._transform);
 
 	// 初めて呼ばれたならそれぞれの武器処理を開始
 	if (!m_isCall){
@@ -261,10 +253,10 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 //
 void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
 
-	if (!m_pTopGear)return;
+	if (!m_topGear)return;
 	m_playerView.Render();
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
-	m_charaEntity.mGearRender(m_pTopGear, modelShader, colliderShader);
+	m_charaEntity.mGearRender(m_topGear, modelShader, colliderShader);
 
 	for (auto index : m_pBullets){
 		if (!index._isRun)continue;
@@ -273,7 +265,7 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 
 	if (kCharaDebug)
 	{
-	//	m_pBodyCollider->Render(modelShader);
+		m_pBodyCollider->Render(colliderShader);
 	}
 
 	return;
@@ -350,7 +342,7 @@ bool Player::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherC
 	gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Player\\body.fbx", Gear::eType::eBody, camera,"Model\\Player\\tex");
 
 	// 腰のパーツ
-	gearFrame->m_pWaist = m_charaEntity.mSetUpGear("Model\\Player\\hip.fbx", Gear::eType::eWaist, camera, "Model\\Player\\tex");
+	gearFrame->m_pWaist = m_charaEntity.mSetUpGear("Model\\Player\\waist.fbx", Gear::eType::eWaist, camera, "Model\\Player\\tex");
 
 	// 腕のパーツ
 	gearFrame->m_pLeftUpperArm = m_charaEntity.mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eLeftUpperArm, camera, "Model\\Player\\tex");
@@ -371,7 +363,7 @@ bool Player::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherC
 	gearFrame->m_pLeftFoot= m_charaEntity.mSetUpGear("Model\\Player\\foot.fbx", Gear::eType::eLeftFoot, camera, "Model\\Player\\tex");
 	gearFrame->m_pRightFoot= m_charaEntity.mSetUpGear("Model\\Player\\foot.fbx", Gear::eType::eRightFoot, camera, "Model\\Player\\tex");
 	// 最上位に当たるパーツの設定
-	m_pTopGear = gearFrame->m_pBody;
+	m_topGear = gearFrame->m_pBody;
 
 	// それぞれのパーツとの親子関係構築
 	m_charaEntity.mCreateRelationship(gearFrame->m_pBody, gearFrame->m_pWaist);
@@ -430,55 +422,63 @@ bool Player::mLoadProperty(std::shared_ptr<GearFrame>& gearFrame, std::string mo
 
 		/*	体	*/
 		if (index->_name == "Body"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pBody, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pBody, index);
 		}
 
 		if (index->_name == "Waist"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pWaist, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pWaist, index);
 		}
 
 		/*	左上半身*/
 		if (index->_name == "LeftUpperArm"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pLeftUpperArm, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftUpperArm, index);
 		}
 
 		if (index->_name == "LeftLowerArm"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pLeftLowerArm, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftLowerArm, index);
 		}
 
 		if (index->_name == "LeftHand"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pLeftHand, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftHand, index);
 		}
 
 		/*	右上半身	*/
 		if (index->_name == "RightUpperArm"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pRightUpperArm, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightUpperArm, index);
 		}
 
 		if (index->_name == "RightLowerArm"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pRightLowerArm, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightLowerArm, index);
 		}
 
 		if (index->_name == "RightHand"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pRightHand, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightHand, index);
 		}
 
 		/*	右足	*/
 		if (index->_name == "RightUpperLeg"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pRightUpperLeg, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightUpperLeg, index);
 		}
 
 		if (index->_name == "RightLowerLeg"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pRightLowerLeg, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightLowerLeg, index);
+		}
+
+		if (index->_name == "RightFoot"){
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightFoot, index);
 		}
 
 		/*	左足	*/
 		if (index->_name == "LeftUpperLeg"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pLeftUpperLeg, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftUpperLeg, index);
 		}
 
 		if (index->_name == "LeftLowerLeg"){
-			m_charaEntity.mSetLoadGearValue(m_pTopGear, gearFrame->m_pLeftLowerLeg, index);
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftLowerLeg, index);
+		}
+
+		if (index->_name == "LeftFoot"){
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftFoot, index);
 		}
 
 	}
@@ -500,10 +500,10 @@ void Player::mInitialPlayerView(CameraValue input){
 	// デバッグ用
 	// 初期位置の設定
 	m_playerTransform._translation = kPlayerInitialY;
-	m_playerView.property._translation += Vector3(0, 50, -400);
+
 
 	// カメラのオフセットの設定
-	m_cameraOffset._translation = m_playerView.property._translation;
+	m_cameraOffset._translation = m_playerView.property._translation + m_playerTransform._translation+Vector3(0,0,-50);
 	m_cameraOffset._rotation = m_playerView.property._rotation;
 
 	return;
@@ -675,7 +675,7 @@ void Player::mWeaponRun(eCommandType type, const int callFrame){
 	case eCommandType::eLongDistanceAttack:{
 		for (auto& index : m_pBullets){
 			if (index._isRun)continue;
-			index._bullet->mGetTransform()._translation = m_pTopGear->_pGear->property._transform._translation;
+			index._bullet->mGetTransform()._translation = m_topGear->_pGear->property._transform._translation;
 			index._isRun = true;
 			break;
 		}
@@ -729,4 +729,8 @@ void Player::mDayReset(){
 	m_resultData.mReset();
 
 	// 位置を初期位置にする
+}
+
+CharaStatus& Player::mGetStatus(){
+	return m_status;
 }

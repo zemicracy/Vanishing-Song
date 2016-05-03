@@ -10,9 +10,9 @@ ModePractice::~ModePractice()
 {
 }
 
-bool ModePractice::mInitialize(GameManager::eDay firstDay){
+bool ModePractice::mInitialize(GameManager::eSkillType skill,GameManager::eDay firstDay){
 	// 親クラスのInitialize関数の呼び出し
-	Mode::mInitialize(firstDay);
+	Mode::mInitialize(skill, firstDay);
 	return true;
 }
 
@@ -20,9 +20,16 @@ void ModePractice::mUpdate(std::shared_ptr<ActionCommand> command, const float t
 
 	return;
 }
+
+
 void ModePractice::mRender(ShaderHash shaderHash){
 
 }
+
+void ModePractice::mUIRender(ShaderHash shaderHash){
+
+}
+
 
 // 次の日に進むときの初期化処理
 void ModePractice::mNextDayInitialize(GameManager::eDay nextDay){

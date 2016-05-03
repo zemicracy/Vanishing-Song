@@ -13,6 +13,7 @@
 #include "OrderList.h"
 #include "ActionBoard.h"
 #include "CollideManager.h"
+#include "GaugeManager.h"
 typedef std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>> ShaderHash;
 class Mode
 {
@@ -20,10 +21,10 @@ public:
 	Mode();
 	~Mode();
 
-	virtual bool mInitialize(GameManager::eDay firstDay);
-	void mMainUpdate(std::shared_ptr<ActionCommand> command, const float timeScale, const float nowTime);
+	virtual bool mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay);
+	void mMainUpdate(const float timeScale, const float nowTime);
 	void mMainRender(ShaderHash shader);
-
+	void mMainUIRender(ShaderHash shader);
 	// Ÿ‚Ì“ú‚Éi‚Ş‚Æ‚«‚Ì‰Šú‰»ˆ—
 	virtual void mNextDayInitialize(GameManager::eDay nextDay) = 0;
 
@@ -39,14 +40,16 @@ protected:
 private:
 	virtual void mUpdate(std::shared_ptr<ActionCommand> command, const float timeScale, const float nowTime) = 0;
 	virtual void mRender(ShaderHash shader) = 0;
+	virtual void mUIRender(ShaderHash shader) = 0;
 private:
 
 	//std::shared_ptr<EnemyManager> m_penemyGround;
 	std::shared_ptr<Player> m_pPlayer;
 	std::shared_ptr<FieldArea> m_pFieldArea;
-
+	std::unique_ptr<GaugeManager> m_pPlayerGaugeManager;
 	std::unique_ptr<CollideManager> m_pCollideManager;
-
+	std::unique_ptr<OrderList> m_pOrderList;
+	std::unique_ptr<ActionBoard> m_pActionBoard;
 	bool m_isInitialize;
 };
 

@@ -89,8 +89,8 @@ private:
 	/*
 		シェーダーの登録用
 	*/
-	template<class ShaderType>
-	bool RegisterShader(std::string registerName, aetherClass::ShaderDesc);
+	template<class Type>
+	std::shared_ptr<Type> RegisterShader(std::string registerName, aetherClass::ShaderDesc);
 private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>> m_pTextureHash;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>> m_pShaderHash;

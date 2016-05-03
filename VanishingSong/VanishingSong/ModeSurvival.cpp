@@ -1,5 +1,5 @@
 #include "ModeSurvival.h"
-
+#include "FragmentShader.h"
 
 ModeSurvival::ModeSurvival()
 {
@@ -11,9 +11,9 @@ ModeSurvival::~ModeSurvival()
 }
 
 
-bool ModeSurvival::mInitialize(GameManager::eDay firstDay){
+bool ModeSurvival::mInitialize(GameManager::eSkillType skill,GameManager::eDay firstDay){
 	// 親クラスのInitialize関数の呼び出し
-	Mode::mInitialize(firstDay);
+	Mode::mInitialize(skill, firstDay);
 	return true;
 }
 
@@ -23,10 +23,16 @@ void ModeSurvival::mUpdate(std::shared_ptr<ActionCommand> command, const float t
 	
 	return;
 }
+
+
 void ModeSurvival::mRender(ShaderHash shaderHash){
-	
+
 	mGetPlayer()->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	mGetFieldArea()->mRender(shaderHash["color"].get());
+	return;
+}
+
+void ModeSurvival::mUIRender(ShaderHash shaderHash){
 	return;
 }
 

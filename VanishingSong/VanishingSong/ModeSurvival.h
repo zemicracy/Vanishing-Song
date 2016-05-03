@@ -8,8 +8,8 @@ public:
 	ModeSurvival();
 	~ModeSurvival();
 
-	bool mInitialize(GameManager::eDay firstDay)override;
-	void mRender(ShaderHash shader)override;
+	bool mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay)override;
+	
 
 	// Ÿ‚Ì“ú‚Éi‚Ş‚Æ‚«‚Ì‰Šú‰»ˆ—
 	void mNextDayInitialize(GameManager::eDay nextDay)override;
@@ -19,6 +19,8 @@ public:
 
 private:
 	void mUpdate(std::shared_ptr<ActionCommand> command, const float timeScale, const float nowTime) override;
+	void mRender(ShaderHash shader)override;
+	void mUIRender(ShaderHash shader)override;
 };
 
 #endif

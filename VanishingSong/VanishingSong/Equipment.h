@@ -18,8 +18,9 @@ public:
 	void mRender(aetherClass::ShaderBase*);
 	std::shared_ptr<aetherClass::Cube> mGetCollider();
 	aetherClass::Transform& mGetTransform();
-private:
 	void mDestroy();
+private:
+	
 	virtual void mOnUpdate(const float){}
 private:
 	std::shared_ptr<aetherClass::FbxModel> m_pObject;
