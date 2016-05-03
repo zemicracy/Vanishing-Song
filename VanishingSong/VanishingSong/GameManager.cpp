@@ -49,15 +49,6 @@ void GameManager::mNextDay(){
 	return;
 }
 
-// ポーズボタンが押されたかの判定
-void GameManager::mCheckPauseKey(){
-	if (GameController::GetKey().KeyDownTrigger(VK_PAUSE))
-	{
-		m_isPause = !m_isPause;
-		Debug::mPrint("PauseState :" + std::to_string(m_isPause));
-	}
-}
-
 //
 GameManager::eSkillType GameManager::mSkillType()const{
 	return m_skillType;

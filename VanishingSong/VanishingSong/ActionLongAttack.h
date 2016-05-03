@@ -17,7 +17,7 @@ public:
 	~ActionLongAttack(){}
 
 	void mOnCreate()override{
-		this->mRegisterAnimation(5, "data\\PlayerGunStanby.aether", "data\\PlayerGunGo.aether");
+		this->mRegisterAnimation(5, "data\\Player\\GunStanby.aether", "data\\Player\\GunGo.aether");
 	}
 
 	// ÀÛ‚ÌÀsˆ—

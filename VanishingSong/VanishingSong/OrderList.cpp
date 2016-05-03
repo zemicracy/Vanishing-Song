@@ -153,9 +153,9 @@ void OrderList::mRender(aetherClass::ShaderBase* shader){
 		m_pSpriteList[i]->property._color = m_orderList[i]->mGetProperty()._color;
 		m_pSpriteList[i]->Render(shader);
 	}
-	static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eTexture;
+	//static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eTexture;
 	m_pVolumeImage->Render(shader);
-	static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eColor;
+	//static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eColor;
 }
 
 std::shared_ptr<ActionCommand> OrderList::mGetActionCommand(){

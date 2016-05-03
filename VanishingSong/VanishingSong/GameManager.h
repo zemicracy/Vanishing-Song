@@ -52,7 +52,6 @@ public:
 	eGameState mGameState();
 	bool mIsPause();
 	void mNextDay();
-	void mCheckPauseKey();
 
 	/*	スキルセット、取得用*/
 	eSkillType mSkillType()const;

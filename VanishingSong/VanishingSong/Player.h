@@ -133,7 +133,7 @@ public:
 	std::array<BulletPool, kMaxBullet>& mGetBullet();
 
 	ResultData mGetResultData();
-
+	CharaStatus& mGetStatus();
 	// 日が変わるときの処理
 	void mDayReset();
 private:
@@ -193,8 +193,8 @@ private:
 	void mWeaponRun(eCommandType,const int callFrame);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;   // パーツの管理
-	std::shared_ptr<ActionCommand> m_pActionCommand;  // コマンド実行用
-	std::shared_ptr<Gear> m_pTopGear;            // 最上位パーツのポインタを入れておく
+
+	std::shared_ptr<Gear> m_topGear;            // 最上位パーツのポインタを入れておく
 	std::shared_ptr<Equipment> m_equipment;     // 現在の装備中の武器
 
 	bool m_isHitWall;

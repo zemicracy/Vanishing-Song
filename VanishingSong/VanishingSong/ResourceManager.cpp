@@ -37,7 +37,6 @@ bool ResourceManager::Initialize(){
 	InitializeBGM();
 	InitializeActionSound();
 	InitializeTexture();
-
 	InitializeShader();
 	return true;
 }
@@ -147,7 +146,7 @@ bool ResourceManager::InitializeShader(){
 BGMの配列の要素を削除
 */
 void ResourceManager::FinalizeBGM(){
-	for (auto index : m_pBaseBgmArray)
+	for (auto& index : m_pBaseBgmArray)
 	{
 		if (!index)continue;
 		index.reset();
@@ -162,7 +161,7 @@ void ResourceManager::FinalizeBGM(){
 	アクションコマンドに対応する連想配列の解放処理
 */
 void ResourceManager::FinalizeSound(){
-	for (auto index : m_pActionSoundHash)
+	for (auto& index : m_pActionSoundHash)
 	{
 		if (!index.second)continue;
 		index.second.reset();
@@ -178,7 +177,7 @@ void ResourceManager::FinalizeSound(){
 	テクスチャの配列を削除
 */
 void ResourceManager::FinalizeTexture(){
-	for (auto index : m_pTextureHash)
+	for (auto& index : m_pTextureHash)
 	{
 		if (!index.second)continue;
 		index.second.reset();
@@ -189,7 +188,7 @@ void ResourceManager::FinalizeTexture(){
 }
 
 void ResourceManager::FinalizeSahder(){
-	for (auto index : m_pShaderHash)
+	for (auto& index : m_pShaderHash)
 	{
 		if (!index.second)continue;
 		index.second->Finalize();
@@ -245,18 +244,18 @@ bool ResourceManager::RegisterTexture(std::string registerName, std::string path
 
 
 template<class Type>
-bool ResourceManager::RegisterShader(std::string registerName, ShaderDesc desc){
+std::shared_ptr<Type> ResourceManager::RegisterShader(std::string registerName, ShaderDesc desc){
 	auto findMap = m_pTextureHash.find(registerName);
 
 	// すでにその名前で登録しているのであれば何もしない
 	if (findMap != m_pTextureHash.end())
 	{
 		Debug::mErrorPrint("既に登録済みのキーのため登録ができませんでした", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
-		return false;
+		return nullptr;
 	}
 
 	// 登録処理
-	std::shared_ptr<ShaderBase> shader = std::make_shared<Type>();
+	std::shared_ptr<Type> shader = std::make_shared<Type>();
 	bool result = shader->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
 	if (!result){
 		Debug::mErrorPrint("初期化に失敗", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
@@ -264,7 +263,7 @@ bool ResourceManager::RegisterShader(std::string registerName, ShaderDesc desc){
 	}
 	m_pShaderHash.insert(std::make_pair(registerName, shader));
 
-	return true;
+	return shader;
 }
 
 std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& ResourceManager::mGetShaderHash(){
