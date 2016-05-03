@@ -132,23 +132,22 @@ void OrderList::mUpdate(float){
 
 	//リストが空なら
 	if (m_orderList.size() == 0){
+		m_listFirst->mReset();
+		m_listFirst = std::make_shared<ActionNull>();
 		return;
 	}
-	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
 	if (GameController::GetKey().KeyDownTrigger(VK_SPACE)){
 		if (!m_isStart){
 			mListPlay();
 		}
 		else{
-			sound->mStop();
 			mListStop();
 		}
 	}
 
 	//以下再生中の処理
-	if (!m_isStart)return;					//再生中じゃなかったら戻る
-	if (!m_isJustTiming || m_isPlayCommand){ 
-		//再生済み or タイミングじゃなかったら戻る
+	if (!m_isStart || !m_isJustTiming || m_isPlayCommand){ 
+		//再生済み or タイミングじゃない or 再生中じゃないと戻る
 		m_listFirst->mReset();
 		m_listFirst = std::make_shared<ActionNull>();
 		return;
@@ -156,6 +155,7 @@ void OrderList::mUpdate(float){
 
 
 	//再生可能なら再生
+	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
 	m_listFirst = m_orderList[0];
 	sound->mStop();
 	sound->mPlaySoundAction(m_volume*10);
@@ -207,7 +207,6 @@ void OrderList::mListStop(){
 		sound->mStop();
 	}
 	m_orderList.clear();
-	m_listFirst = std::make_shared<ActionNull>();
 	m_pBackImage->property._color._red = 1 - m_pBackImage->property._color._red;
 	m_isStart = false;
 }
