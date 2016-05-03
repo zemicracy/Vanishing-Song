@@ -14,8 +14,10 @@ using namespace aetherClass;
 OrderList::OrderList()
 {
 	m_isStart = false;
+	m_isJustTiming = false;
+	m_isPlayCommand = false;
 	m_volume = -20;
-	m_bpm = 90;
+	m_bpm = 100;
 }
 
 
@@ -102,15 +104,28 @@ void OrderList::mUpdate(float){
 		float onestep = 60 / m_bpm;
 		float timeFrame = 60 * onestep;
 		float onceRadius = 360 / timeFrame;
-		m_timeRadian += onceRadius * kAetherRadian;
-		float scale = int(sin(m_timeRadian)*10) % 10 > 8 ? sin(m_timeRadian) : 0;
-		scale *= 6;
+		m_timeRadian += onceRadius;
+		if (m_timeRadian >= 360){
+			m_timeRadian = 0;
+		}
+		float scale = sin(m_timeRadian*kAetherRadian) >= 0.8 ? sin(m_timeRadian*kAetherRadian) : 0;
+		if (scale >= 1){
+			m_isJustTiming = true; 
+		}
+		else {
+			m_isPlayCommand = false;
+			m_isJustTiming = false;
+		}
+
+		//拡大縮小をするために
+		scale *= 8;
 		m_pVolumeImage->property._transform._scale = 0.5 * (m_kMaxVolume + m_volume) + 70 + scale;
 
 		auto size = (m_pVolumeImage->property._transform._scale);
 		m_pVolumeImage->property._transform._translation = m_volumeOrigin - (size / 2);
 		m_pVolumeImage->property._transform._translation._z = 0;
 	}
+
 //	Debug::mPrint(std::to_string(GameController::GetMouse().GetWheelMovement()));
 //	Debug::mPrint("Volume" + std::to_string(m_volume));
 
@@ -130,22 +145,31 @@ void OrderList::mUpdate(float){
 		}
 	}
 
-	//再生中の処理
-	if (m_isStart){
-		m_listFirst = m_orderList[0];
+	//以下再生中の処理
+	if (!m_isStart)return;					//再生中じゃなかったら戻る
+	if (!m_isJustTiming || m_isPlayCommand){ 
+		//再生済み or タイミングじゃなかったら戻る
+		m_listFirst->mReset();
+		m_listFirst = std::make_shared<ActionNull>();
+		return;
+	}
 
-		if (sound->mIsPlayEnd() && m_orderList.size() != 0){
+
+	//再生可能なら再生
+	m_listFirst = m_orderList[0];
+	sound->mStop();
+	sound->mPlaySoundAction(m_volume*10);
+	m_isPlayCommand = true;
+
+	//次をセット
+		if (m_orderList.size() != 0){
 			m_listFirst->mReset();
 			m_orderList.erase(m_orderList.begin());
 			if (m_orderList.size() == 0){
 				mListStop();
 				return;
 			}
-			auto nextSound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
-			nextSound->mPlaySoundAction(m_volume*10);
 		}
-	}
-	
 }
 void OrderList::mRender(aetherClass::ShaderBase* shader){
 	m_pBackImage->Render(shader);
@@ -153,9 +177,9 @@ void OrderList::mRender(aetherClass::ShaderBase* shader){
 		m_pSpriteList[i]->property._color = m_orderList[i]->mGetProperty()._color;
 		m_pSpriteList[i]->Render(shader);
 	}
-	static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eTexture;
+//	static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eTexture;
 	m_pVolumeImage->Render(shader);
-	static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eColor;
+//	static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eColor;
 }
 
 std::shared_ptr<ActionCommand> OrderList::mGetActionCommand(){
@@ -174,10 +198,7 @@ void OrderList::mAddOrder(std::shared_ptr<ActionCommand> input){
 
 
 void OrderList::mListPlay(){
-	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
-
 	m_pBackImage->property._color._red = 1 - m_pBackImage->property._color._red;
-	sound->mPlaySoundAction(m_volume*10);
 	m_isStart = true;
 }
 void OrderList::mListStop(){
@@ -202,4 +223,8 @@ void OrderList::mException(){
 
 void OrderList::mSetBPM(float bpm){
 	m_bpm = bpm;
+}
+
+bool OrderList::mIsJustTiming(){
+	return m_isJustTiming;
 }

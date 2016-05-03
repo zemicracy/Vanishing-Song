@@ -13,19 +13,19 @@ public:
 	void mInitialize();
 
 	std::shared_ptr<ActionCommand> mGetActionCommand();
+
+	//AccesserMethod
+	void mSetBPM(float);
 	int mGetVolume();
-	bool mIsStart();
-
+	bool mIsJustTiming();
 private:
-	void OrderList::mFinalize();
+	void mFinalize();
 
-private:
 	void mListPlay();
 	void mListStop();
 	void mException();
 
-	//AccesserMethod
-	void mSetBPM(float);
+
 private:
 	std::vector<std::shared_ptr<ActionCommand>>m_orderList;
 	std::shared_ptr<ActionCommand>m_listFirst;
@@ -38,6 +38,8 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTexture;
 
 	bool m_isStart;
+	bool m_isPlayCommand;
+	bool m_isJustTiming;
 	float m_volume;	//âºëzêîíl
 	float m_bpm;
 	float m_timeRadian;
