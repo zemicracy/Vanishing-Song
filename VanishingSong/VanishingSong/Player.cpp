@@ -56,7 +56,7 @@ bool Player::mInitialize(){
 	
 
 	// パーツの初期位置
-	result = mLoadProperty(m_pGearFrame, "data\\PlayerDefault.aether");
+	result = mLoadProperty(m_pGearFrame, "data\\Player\\Stay.aether");
 	if (!result)
 	{
 		Debug::mErrorPrint("Editorからの位置反映に失敗", __FILE__, __LINE__);
