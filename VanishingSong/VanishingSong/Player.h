@@ -75,6 +75,7 @@ public:
 		std::shared_ptr<Equipment> _bullet;
 		bool _isRun;
 		int _number;
+		aetherClass::Vector3 _moveValue;
 	};
 public:
 	Player();

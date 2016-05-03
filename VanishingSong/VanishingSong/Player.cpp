@@ -53,16 +53,14 @@ bool Player::mInitialize(){
 		return false;
 	}
 
-	
-
 	// パーツの初期位置
 	result = mLoadProperty(m_pGearFrame, "data\\Player\\Stay.aether");
+
 	if (!result)
 	{
 		Debug::mErrorPrint("Editorからの位置反映に失敗", __FILE__, __LINE__);
 		return false;
 	}
-
 
 	// コライダーの初期化
 	mSetUpBodyCollider(m_pBodyCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
@@ -166,7 +164,7 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 	
 	// 壁に当たっているかの判定
-	if (m_isHitWall){
+	if (m_isHitWall || m_status._nowCommand != eCommandType::eNull){
 		Vector3 revision = m_prevTransform._translation.Normalize();
 		m_playerTransform._translation = m_prevTransform._translation - Vector3(revision._x, 0, revision._z);
 		m_isHitWall = false;
@@ -180,8 +178,9 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 	
 	// 移動処理
-	m_charaEntity.mGearMove(m_topGear, m_playerTransform._translation);
 
+	m_charaEntity.mGearMove(m_topGear, m_playerTransform._translation);
+	
 	// 回転処理
 	m_charaEntity.mGearRotation(m_topGear, m_topGear, m_playerTransform._rotation);
 
@@ -280,6 +279,7 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 	// 前回と違えば実行数を0にする
 	if (m_status._nowCommand != m_prevCommand){
 		m_actionCount._commandFrame = kZeroPoint;
+		m_prevTransform = m_playerTransform;
 		command->mCallCount(0);
 	}
 	m_isCall = command->mIsCall();
@@ -628,11 +628,9 @@ void Player::mUpdateView(ViewCamera& view,Vector3& rotation,Vector3 lookAtPositi
 
 void Player::mUpdateBullet(const float timeScale, aetherClass::Matrix4x4& rotationMatrix, std::array<BulletPool, kMaxBullet>& bullets){
 	// 弾の発射
-	for (auto index : m_pBullets){
+	for (auto index : bullets){
 		if (!index._isRun)continue;
-		Vector3 bulletSpeed = kBulletSpeed;
-		Vector3 bulletMove = bulletSpeed.TransformCoordNormal(rotationMatrix);
-		index._bullet->mGetTransform()._translation += bulletMove;
+		index._bullet->mGetTransform()._translation += index._moveValue;
 		index._bullet->mUpdate(timeScale);
 	}
 	return;
@@ -675,7 +673,13 @@ void Player::mWeaponRun(eCommandType type, const int callFrame){
 	case eCommandType::eLongDistanceAttack:{
 		for (auto& index : m_pBullets){
 			if (index._isRun)continue;
-			index._bullet->mGetTransform()._translation = m_topGear->_pGear->property._transform._translation;
+			Matrix4x4 rotationMatrix;
+			Vector3 rotationY = Vector3(0, m_cameraRotation._y,0);
+			rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
+			Vector3 value = kBulletSpeed;
+			const Vector3 vector = value.TransformCoordNormal(rotationMatrix);
+			index._bullet->mGetTransform()._translation = m_prevTransform._translation;
+			index._moveValue = vector;
 			index._isRun = true;
 			break;
 		}
