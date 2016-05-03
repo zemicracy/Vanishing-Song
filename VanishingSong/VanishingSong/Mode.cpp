@@ -42,6 +42,7 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 	m_pPlayerGaugeManager->mInitialize();
 	m_pPlayerGaugeManager->mSetCharaStatus(&m_pPlayer->mGetStatus());
 
+	m_state = eState::eNull;
 	m_isInitialize = true;
 	return true;
 }
@@ -87,7 +88,7 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 		Debug::mPrint("初期化が終了していません");
 		return;
 	}
-
+	
 	m_pActionBoard->mUpdate(timeScale);
 
 	auto actionCommand = m_pActionBoard->mSelectType();
@@ -102,21 +103,27 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 	mUpdate(m_pOrderList->mGetActionCommand(),timeScale,nowTime);
 
 	m_pPlayerGaugeManager->mUpdate(timeScale);
+
 	// 当たり判定の更新
-	if (m_pCollideManager){
-		m_pCollideManager->mUpdate();
+	m_pCollideManager->mUpdate();
+
+	bool playerDead = mGetPlayer()->mIsDead();
+	if (playerDead){
+		mSetState(eState::eGameOver);
 	}
 
 	return;
 }
 
-void Mode::mMainRender(ShaderHash shader){
+void Mode::mMainRender(ShaderHash shaderHash){
 	if (!m_isInitialize){
 		Debug::mPrint("初期化が終了していません");
 		return;
 	}
 	
-	mRender(shader);
+	mRender(shaderHash);
+	mGetPlayer()->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	mGetFieldArea()->mRender(shaderHash["color"].get(), shaderHash["texture"].get());
 	return;
 }
 
@@ -125,7 +132,7 @@ void Mode::mMainUIRender(ShaderHash shader){
 		Debug::mPrint("初期化が終了していません");
 		return;
 	}
-	return;
+	
 	m_pActionBoard->mRender(shader["color"].get());
 	m_pOrderList->mRender(shader["color"].get());
 	m_pPlayerGaugeManager->mRender();
@@ -139,4 +146,13 @@ std::shared_ptr<Player> Mode::mGetPlayer(){
 }
 std::shared_ptr<FieldArea> Mode::mGetFieldArea(){
 	return m_pFieldArea;
+}
+
+
+Mode::eState Mode::mGetState(){
+	return m_state;
+}
+
+void  Mode::mSetState(Mode::eState state){
+	m_state = state;
 }

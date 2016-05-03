@@ -129,8 +129,26 @@ bool SceneGame::Updater(){
 	// それぞれのモードの更新処理
 	m_pMode->mMainUpdate(kScaleTime, m_dayTime);
 	
-	
+	// 状態の更新
+	auto state = m_pMode->mGetState();
 
+	// 特に何も変化ないなら何もしない
+	if (state == Mode::eState::eNull)return true;
+
+	switch (state)
+	{
+	case Mode::eState::eClear:
+		m_gameState = eState::eResult;
+		break;
+	case Mode::eState::eGameOver:
+		break;
+	case Mode::eState::eNextDay:
+		m_gameState = eState::eResult;
+		break;
+
+	default:
+		break;
+	}
 	return true;
 }
 
@@ -145,10 +163,10 @@ void SceneGame::UIRender(){
 
 	m_pMode->mMainUIRender(shaderHash);
 
-	mShowResult(m_day, shaderHash["fragment"].get(), shaderHash["fragment"].get());
+	mShowResult(m_day, shaderHash["color"].get(), shaderHash["color"].get());
 
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
-		m_pFadeObject->mRedner(shaderHash["fragment"].get());
+		m_pFadeObject->mRedner(shaderHash["color"].get());
 	}
 	return;
 }

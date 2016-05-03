@@ -2,6 +2,9 @@
 #include "Debug.h"
 #include "Utility.h"
 #include "Bullet.h"
+#include "Sord.h"
+#include "Shield.h"
+#include "Gun.h"
 #include <MathUtility.h>
 #include <GameController.h>
 #include <WorldReader.h>
@@ -68,13 +71,17 @@ bool Player::mInitialize(){
 	/*	基本的なアニメーションの登録	*/
 	mRegisterAnimation(Player::eState::eMove, kMoveAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Move.aether");
 	mRegisterAnimation(Player::eState::eWait, kWaitAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
+	mRegisterAnimation(Player::eState::eHitDamage, kWaitAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤー 初期化終了しました");
 	}
 
 	// 武器系の初期化用
-	//mSetupWeapon<Bullet>(m_pOriginalBullets, "Model\\Weapon\\bullet.fbx");
+	/*mSetupWeapon<Sord>(m_wepons._sord, "path");
+	mSetupWeapon<Shield>(m_wepons._shield, "path");
+	mSetupWeapon<Gun>(m_wepons._gun, "path");
+*/
 	mSetupBullet(mGetView());
 	m_isHitWall = false;
 	m_isCall = true;
@@ -141,7 +148,9 @@ void Player::mFinalize(){
 プレイヤーの更新処理
 */
 void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> command){
-	
+
+	mCheckDead();
+
 	// キーの処理を取得
 	KeyValues getKeyValues = mReadKey(timeScale);
 
@@ -151,9 +160,24 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 	// カメラの更新
 	mUpdateView(m_playerView, m_cameraRotation, m_topGear->_pGear->property._transform._translation);
 
+	// 移動があれば
+	Player::eState state;
+
+	// ダメージをくらっている状態じゃなかったら
+	if (m_status._action != eActionType::eHitDamage){
+		if (getKeyValues._transform._translation == kVector3Zero){
+			state = eState::eWait;
+		}
+		else{
+			state = eState::eMove;
+		}
+	}
+	else{
+		state = eState::eHitDamage;
+	}
 
 	// 基本的なアニメーションの再生
-	mDefaultAnimation(getKeyValues._state);
+	mDefaultAnimation(state);
 	
 	// コマンドの処理
 	mCommand(command, timeScale);
@@ -164,7 +188,7 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 	
 	// 壁に当たっているかの判定
-	if (m_isHitWall || m_status._nowCommand != eCommandType::eNull){
+	if (m_isHitWall || m_status._command != eCommandType::eNull){
 		Vector3 revision = m_prevTransform._translation.Normalize();
 		m_playerTransform._translation = m_prevTransform._translation - Vector3(revision._x, 0, revision._z);
 		m_isHitWall = false;
@@ -175,10 +199,10 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 		m_playerTransform._translation += translation;
 	}
 
+	// 向きだけ変える
 	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 	
 	// 移動処理
-
 	m_charaEntity.mGearMove(m_topGear, m_playerTransform._translation);
 	
 	// 回転処理
@@ -189,12 +213,13 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 
 	// 初めて呼ばれたならそれぞれの武器処理を開始
 	if (!m_isCall){
-		mWeaponRun(m_status._nowCommand, m_actionCount._commandFrame);
+		mWeaponRun(m_status._command, m_actionCount._commandFrame);
 	}
 
 	// 弾の更新
 	mUpdateBullet(timeScale, rotationMatrix, m_pBullets);
-	
+
+	mCheckDead();
 	return;
 }
 
@@ -221,15 +246,6 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 	else if (GameController::GetKey().IsKeyDown('A')){
 		output._transform._translation._x = -(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
-
-	// 移動があれば
-	if (output._transform._translation == kVector3Zero){
-		output._state = eState::eWait;
-	}
-	else{
-		output._state = eState::eMove;
-	}
-
 
 	/*	カメラの回転	*/
 	Vector2 mousePosition = GameController::GetMouse().GetMousePosition();
@@ -274,14 +290,15 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeScale){
 
 	// 今から行うアクションを取得
-	m_status._nowCommand = command->mGetType();
+	m_status._command = command->mGetType();
 
 	// 前回と違えば実行数を0にする
-	if (m_status._nowCommand != m_prevCommand){
+	if (m_status._command != m_prevCommand){
 		m_actionCount._commandFrame = kZeroPoint;
 		m_prevTransform = m_playerTransform;
 		command->mCallCount(0);
 	}
+
 	m_isCall = command->mIsCall();
 
 	// アクションの実行
@@ -297,7 +314,7 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 	command->mCallCount(callCount + 1);
 
 	// 状態を上書き
-	m_prevCommand = m_status._nowCommand;
+	m_prevCommand = m_status._command;
 
 	return m_prevCommand;
 }
@@ -308,7 +325,7 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 第二引数：何番目のアクションか
 */
 void Player::mAddPrevActionCmmand(eCommandType action, const int id){
-	m_status._prevActionList[id] = action;
+	m_status._prevCommandList[id] = action;
 	return;
 }
 
@@ -316,7 +333,7 @@ void Player::mAddPrevActionCmmand(eCommandType action, const int id){
 NULLで埋め尽くす
 */
 void Player::mResetPrevActionList(){
-	m_status._prevActionList.fill(eCommandType::eNull);
+	m_status._prevCommandList.fill(eCommandType::eNull);
 
 	return;
 }
@@ -558,23 +575,23 @@ void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::str
 /*
 	基本的なアニメーションの再生
 */
-void Player::mDefaultAnimation(Player::eState& m_state){
+void Player::mDefaultAnimation(Player::eState& state){
 
 	// 前回と違うときは更新
-	if (m_prevState != m_state){
+	if (m_prevState != state){
 		m_actionCount._defaultFrame = NULL;
-		m_prevState = m_state;
+		m_prevState = state;
 	}
 
 	// 設定されていない場合何もしない
-	if (m_defaultAnimation.find(m_state) == m_defaultAnimation.end()) return;
+	if (m_defaultAnimation.find(state) == m_defaultAnimation.end()) return;
 
 	Transform animationTransform;
 
 	/*	アニメーション実行処理	*/
-	const int allFrame = m_defaultAnimation[m_state]._animationFrame;
+	const int allFrame = m_defaultAnimation[state]._animationFrame;
 
-	for (auto index : m_defaultAnimation[m_state]._animation)
+	for (auto index : m_defaultAnimation[state]._animation)
 	{
 		// 補間の値を取得
 		animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end,allFrame , m_actionCount._defaultFrame);
@@ -585,28 +602,39 @@ void Player::mDefaultAnimation(Player::eState& m_state){
 		}
 	}
 
-	
-	if (m_state == eState::eWait){
-		/*	カウンターの状態を切り替える	*/
-		if (m_actionCount._defaultFrame > kWaitAnimationFrame){
-			m_actionCount._changeDefaultFrame = true;
-		}
-		else if (m_actionCount._defaultFrame < kZeroPoint){
-			m_actionCount._changeDefaultFrame = false;
-		}
+	switch (state)
+	{
+		case eState::eWait:
+			/*	カウンターの状態を切り替える	*/
+			if (m_actionCount._defaultFrame > kWaitAnimationFrame){
+				m_actionCount._changeDefaultFrame = true;
+			}
+			else if (m_actionCount._defaultFrame < kZeroPoint){
+				m_actionCount._changeDefaultFrame = false;
+			}
 
-		// カウンターの状態に合わせてフレームカウントの更新
-		if (m_actionCount._changeDefaultFrame){
-			m_actionCount._defaultFrame -= 1;
-		}
-		else{
+			// カウンターの状態に合わせてフレームカウントの更新
+			if (m_actionCount._changeDefaultFrame){
+				m_actionCount._defaultFrame -= 1;
+			}
+			else{
+				m_actionCount._defaultFrame += 1;
+			}
+			break;
+
+		case eState::eMove:
 			m_actionCount._defaultFrame += 1;
-		}
-
+			break;
+		case eState::eHitDamage:
+			m_actionCount._defaultFrame += 1;
+			if (m_actionCount._defaultFrame > allFrame){
+				m_status._action = eActionType::eNull;
+			}
+			break;
+	default:
+		break;
 	}
-	else{
-		m_actionCount._defaultFrame += 1;
-	}
+	
 
 	return;
 }
@@ -714,8 +742,8 @@ void Player::mOnHitWall(){
 	return;
 }
 
-eCommandType Player::mGetNowCommandType(){
-	return m_status._nowCommand;
+eCommandType Player::mGetCommandType(){
+	return m_status._command;
 }
 
 ResultData Player::mGetResultData(){
@@ -737,4 +765,28 @@ void Player::mDayReset(){
 
 CharaStatus& Player::mGetStatus(){
 	return m_status;
+}
+
+void Player::mOnHitEnemyAttack(const CharaStatus){
+	if (m_status._action == eActionType::eHitDamage)return; // 連続で当たるのを防止
+	m_status._hp -= 10;
+	m_status._action = eActionType::eHitDamage;
+	return;
+}
+
+void Player::mCheckDead(){
+	if (m_status._hp <= 0){
+		m_isDead = true;
+	}
+	else{
+		m_isDead = false;
+	}
+	return;
+}
+
+/*
+	プレイヤー死亡：true
+*/
+bool Player::mIsDead(){
+	return m_isDead;
 }

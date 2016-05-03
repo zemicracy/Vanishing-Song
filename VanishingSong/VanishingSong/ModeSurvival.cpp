@@ -27,8 +27,7 @@ void ModeSurvival::mUpdate(std::shared_ptr<ActionCommand> command, const float t
 
 void ModeSurvival::mRender(ShaderHash shaderHash){
 
-	mGetPlayer()->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	mGetFieldArea()->mRender(shaderHash["color"].get());
+	
 	return;
 }
 

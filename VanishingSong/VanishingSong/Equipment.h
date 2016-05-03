@@ -22,6 +22,7 @@ public:
 private:
 	
 	virtual void mOnUpdate(const float){}
+	virtual void mOnInitialize(){}
 private:
 	std::shared_ptr<aetherClass::FbxModel> m_pObject;
 	std::shared_ptr<aetherClass::Cube> m_pCollider;

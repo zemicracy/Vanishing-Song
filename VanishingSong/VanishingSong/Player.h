@@ -31,6 +31,7 @@ private:
 	enum class eState{
 		eMove,
 		eWait,
+		eHitDamage,
 		eNull
 	};
 
@@ -63,7 +64,7 @@ private:
 	};
 	
 	struct KeyValues{
-		Player::eState _state;
+
 		aetherClass::Transform _transform;
 		aetherClass::Vector3 _cameraRotation;
 	};
@@ -100,7 +101,7 @@ public:
 	*/
 	eCommandType mCommand(std::shared_ptr<ActionCommand>, const float timeScale);
 
-	eCommandType mGetNowCommandType();
+	eCommandType mGetCommandType();
 	/*
 	実行したものの登録
 	第一引数：アクションの種類
@@ -131,12 +132,16 @@ public:
 	// 壁に当たった時の処理
 	void mOnHitWall();
 
+	void mOnHitEnemyAttack(const CharaStatus);
+
 	std::array<BulletPool, kMaxBullet>& mGetBullet();
 
 	ResultData mGetResultData();
 	CharaStatus& mGetStatus();
 	// 日が変わるときの処理
 	void mDayReset();
+
+	bool mIsDead();
 private:
 	
 	/*
@@ -187,6 +192,7 @@ private:
 
 	void mUpdateBullet(const float ,aetherClass::Matrix4x4&,std::array<BulletPool, kMaxBullet>&);
 
+	void mCheckDead();
 	// 弾以外の初期化用
 	template<class type>
 	void mSetupWeapon(std::shared_ptr<Equipment>& weapon, std::string model);
@@ -221,6 +227,9 @@ private:
 	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearHash;   // それぞれのギアのポインタを扱いやすいようにまとめた連想配列
 
 	ResultData m_resultData;
+
+	Weapons m_wepons;
+	bool m_isDead;
 };
 
 #endif
