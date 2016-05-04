@@ -1,32 +1,31 @@
 #pragma once
 
 
-#include"Rectangle3D.h"
-#include<memory.h>
-class EffectGenerator
+#include"Rectangle2D.h"
+#include<memory>
+class EffectGenerator2D
 {
 public:
-	EffectGenerator();
-	~EffectGenerator();
+	EffectGenerator2D();
+	~EffectGenerator2D();
 
 	//Texture load method
 	void mLoadEffect(int maxData, std::string EffectName, std::string folderpath);
 	//Effect Starter
-	void mPlay(std::string Effectname,std::string instanceName, aetherClass::Transform transform, aetherClass::Vector3 flgBillboard = aetherClass::Vector3(1.0f, 1.0f, 1.0f));
+	void mPlay(std::string Effectname, std::string instanceName, aetherClass::Transform transform);
 
 	//absolute need.
-	bool mInitialize(aetherClass::ViewCamera*);
+	bool mInitialize();
 	void mRender(aetherClass::ShaderBase* shader);
 	void mUpdate(float timescale);
-	
+
 	//accessor Method
 	aetherClass::Transform& mGetTransform(std::string key);
 
 private:
 	void mFinalize();
-	
-	std::shared_ptr<aetherClass::ModelBase>m_pRect;
-	aetherClass::ViewCamera* m_camera;
+
+	std::shared_ptr<aetherClass::SpriteBase>m_pRect;
 
 	//All Key is same Key
 	std::unordered_map<std::string, std::vector<std::shared_ptr<aetherClass::Texture>>>m_textureList;
@@ -35,11 +34,9 @@ private:
 	struct EffectInfo{
 		std::vector<std::shared_ptr<aetherClass::Texture>>::iterator _iterator;
 		aetherClass::Transform _transform;
-		aetherClass::Vector3 _flgBillboard;
 		std::string _Effectname;
 	};
-	std::unordered_map<std::string,EffectInfo>m_effectList;
-	ID3D11DepthStencilState *m_depthStencilState;
+	std::unordered_map<std::string, EffectInfo>m_effectList;
 
 };
 
