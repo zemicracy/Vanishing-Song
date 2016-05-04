@@ -13,5 +13,7 @@ public:
 	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, float timeScale, int frameCount)override{
 
 	}
+
+	void mOnReset()override{}
 };
 

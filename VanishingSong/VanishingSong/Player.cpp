@@ -5,6 +5,8 @@
 #include "Sord.h"
 #include "Shield.h"
 #include "Gun.h"
+#include "ActionNull.h"
+
 #include <MathUtility.h>
 #include <GameController.h>
 #include <WorldReader.h>
@@ -78,10 +80,10 @@ bool Player::mInitialize(){
 	}
 
 	// 武器系の初期化用
-	/*mSetupWeapon<Sord>(m_wepons._sord, "path");
-	mSetupWeapon<Shield>(m_wepons._shield, "path");
-	mSetupWeapon<Gun>(m_wepons._gun, "path");
-*/
+	mSetupWeapon<Sord>(m_wepons._sord, "Model\\Weapon\\bullet.fbx");
+	mSetupWeapon<Shield>(m_wepons._shield, "Model\\Weapon\\bullet.fbx");
+	mSetupWeapon<Gun>(m_wepons._gun, "Model\\Weapon\\bullet.fbx");
+
 	mSetupBullet(mGetView());
 	m_isHitWall = false;
 	m_isCall = true;
@@ -91,6 +93,8 @@ bool Player::mInitialize(){
 	m_status._maxmp = 100;
 	m_status._hp = 100;
 	m_status._mp = 100;
+
+	m_command = std::make_shared<ActionNull>();
 	return true;
 }
 
@@ -176,11 +180,11 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 		state = eState::eHitDamage;
 	}
 
-	// 基本的なアニメーションの再生
-	mDefaultAnimation(state);
-	
 	// コマンドの処理
 	mCommand(command, timeScale);
+	
+	// 基本的なアニメーションの再生
+	mDefaultAnimation(state);
 
 	// 移動に使う値のを取得
 	Matrix4x4 rotationMatrix;
@@ -273,6 +277,9 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_topGear, modelShader, colliderShader);
 
+	// 武器の描画
+	mWeponRender(m_status._command, colliderShader);
+
 	for (auto index : m_pBullets){
 		if (!index._isRun)continue;
 		index._bullet->mRender(modelShader);
@@ -290,32 +297,36 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeScale){
 
 	// 今から行うアクションを取得
-	m_status._command = command->mGetType();
+	m_commandType = command->mGetType();
+
+	// Null以外の時にコマンドを変える
+	if (m_commandType != eCommandType::eNull)
+	{
+		m_command = command;
+		m_status._command = m_commandType;
+	}
 
 	// 前回と違えば実行数を0にする
 	if (m_status._command != m_prevCommand){
 		m_actionCount._commandFrame = kZeroPoint;
 		m_prevTransform = m_playerTransform;
-		command->mCallCount(0);
+		m_command->mCallCount(0);
 	}
 
-	m_isCall = command->mIsCall();
+	m_isCall = m_command->mIsCall();
 
 	// アクションの実行
-	command->mAction(m_pGearHash, timeScale,m_actionCount._commandFrame);
+	m_command->mAction(m_pGearHash, timeScale, m_actionCount._commandFrame);
 
-	if (command->mGetType()!= eCommandType::eNull)
-	{
-	//	Debug::mPrint("Run Action :" + std::to_string(m_actionCount._commandFrame) + "回目");
-	}
-	
 	m_actionCount._commandFrame += 1;
-	const int callCount = command->mCallCount();
-	command->mCallCount(callCount + 1);
+	const int callCount = m_command->mCallCount();
+	m_command->mCallCount(callCount + 1);
 
+	if (m_command->mIsEnd()){
+		m_status._command = eCommandType::eNull;
+	}
 	// 状態を上書き
 	m_prevCommand = m_status._command;
-
 	return m_prevCommand;
 }
 
@@ -577,6 +588,8 @@ void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::str
 */
 void Player::mDefaultAnimation(Player::eState& state){
 
+	if (m_status._command != eCommandType::eNull)return;
+
 	// 前回と違うときは更新
 	if (m_prevState != state){
 		m_actionCount._defaultFrame = NULL;
@@ -689,6 +702,30 @@ void Player::mSetupBullet(ViewCamera* view){
 		index._bullet->mCreate(view,"Model\\Weapon\\bullet.fbx");
 		index._isRun = false;
 		index._number = 0;
+	}
+}
+
+void Player::mWeponRender(eCommandType type, aetherClass::ShaderBase* shader){
+	switch (type)
+	{
+	case eCommandType::eShortDistanceAttack:
+		m_wepons._sord->mRender(shader);
+		break;
+	case eCommandType::eLongDistanceAttack:
+		m_wepons._gun->mRender(shader);
+		break;
+	case eCommandType::eShield:
+		m_wepons._shield->mRender(shader);
+		break;
+	case eCommandType::eStrongShield:
+		m_wepons._shield->mRender(shader);
+		break;
+	case eCommandType::eSkill:
+		break;
+	case eCommandType::eNull:
+		break;
+	default:
+		break;
 	}
 }
 

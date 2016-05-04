@@ -27,6 +27,14 @@ private:
 		std::shared_ptr<Equipment> _gun;
 		std::shared_ptr<Equipment> _shield;
 	};
+
+	enum class eWeaponType{
+		eSord,
+		eGun,
+		eShield,
+		eNull
+	};
+
 	/*	Player‚Ìó‘Ô		*/
 	enum class eState{
 		eMove,
@@ -198,6 +206,7 @@ private:
 	void mSetupWeapon(std::shared_ptr<Equipment>& weapon, std::string model);
 	void mSetupBullet(aetherClass::ViewCamera*);
 	void mWeaponRun(eCommandType,const int callFrame);
+	void mWeponRender(eCommandType, aetherClass::ShaderBase*);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;   // ƒp[ƒc‚ÌŠÇ—
 
@@ -230,6 +239,9 @@ private:
 
 	Weapons m_wepons;
 	bool m_isDead;
+
+	std::shared_ptr<ActionCommand> m_command;
+	eCommandType m_commandType;
 };
 
 #endif
