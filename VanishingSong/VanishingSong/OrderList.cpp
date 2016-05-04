@@ -18,6 +18,7 @@ OrderList::OrderList()
 	m_isPlayCommand = false;
 	m_volume = -20;
 	m_bpm = 100;
+	m_IfUseMp = 0;
 }
 
 
@@ -95,7 +96,7 @@ void OrderList::mInitialize(){
 }
 
 void OrderList::mUpdate(float){
-	
+	m_IfUseMp = 0;
 	//音量変化
 	m_volume += GameController::GetMouse().GetWheelMovement() / 10;
 	mException();
@@ -143,6 +144,17 @@ void OrderList::mUpdate(float){
 		else{
 			mListStop();
 		}
+	}
+
+	//使用予定のMPを計算する
+	for (auto itr : m_orderList){
+		itr->mSetExUseMP(itr->mGetBaseUseMp() + int((m_kMaxVolume + m_volume) / 20));
+		m_IfUseMp += itr->mGetExUseMP();
+	}
+	//足りなければ再生フラグををなかったコトに
+	if (m_IfUseMp > *m_charaMp){
+		m_pBackImage->property._color._red = 1 - m_pBackImage->property._color._red;
+		m_isStart = false;
 	}
 
 	//以下再生中の処理
@@ -201,6 +213,7 @@ void OrderList::mListPlay(){
 	m_pBackImage->property._color._red = 1 - m_pBackImage->property._color._red;
 	m_isStart = true;
 }
+
 void OrderList::mListStop(){
 	if (m_orderList.size() > 0){
 		auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_orderList[0]->mGetType());
@@ -226,4 +239,12 @@ void OrderList::mSetBPM(float bpm){
 
 bool OrderList::mIsJustTiming(){
 	return m_isJustTiming;
+}
+
+float OrderList::mGetIfUseMp(){
+	return m_IfUseMp;
+}
+
+void OrderList::mSetCharaMp(float *mp){
+	m_charaMp = mp;
 }
