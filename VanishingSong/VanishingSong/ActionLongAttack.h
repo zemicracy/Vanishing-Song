@@ -17,14 +17,14 @@ public:
 	~ActionLongAttack(){}
 
 	void mOnCreate()override{
-		this->mRegisterAnimation(5, "data\\Player\\GunStanby.aether", "data\\Player\\GunGo.aether");
+		this->mRegisterAnimation("aaa",5, "data\\Player\\GunStanby.aether", "data\\Player\\GunGo.aether");
 	}
 
 	// ÀÛ‚ÌÀsˆ—
 	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash, float timeScale, int count)override{
 		aetherClass::Transform animationTransform;
-		const int allFrame = this->mGetAnimation()._animation.size();
-		for (auto index : this->mGetAnimation()._animation)
+		const int allFrame = this->mGetAnimation("aaa")._animation.size();
+		for (auto index : this->mGetAnimation("aaa")._animation)
 		{
 			// •âŠÔ‚Ì’l‚ğæ“¾
 			animationTransform = this->mGetCharaEntity().mGetTransformInterpolation(index._start, index._end, 5,count);
@@ -35,5 +35,7 @@ public:
 			}
 		}
 	}
+
+	void mOnReset()override{}
 };
 

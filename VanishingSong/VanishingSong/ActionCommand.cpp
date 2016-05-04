@@ -27,11 +27,14 @@ void ActionCommand::mCreate(){
 	m_pSprite->Initialize();
 	mOnCreate();
 	m_isCall = false;
+	m_isEnd = false;
 }
 
 
 void ActionCommand::mReset(){
+	mOnReset();
 	m_isCall = false;
+	m_isEnd = false;
 }
 
 
@@ -62,24 +65,28 @@ bool ActionCommand::mIsCall(){
 /*
 ÉAÉjÉÅÅ[ÉVÉáÉìÇÃìoò^
 */
-void ActionCommand::mRegisterAnimation(const int allFrame, std::string first, std::string last){
+void ActionCommand::mRegisterAnimation(std::string key, const int allFrame, std::string first, std::string last){
 	bool result = false;
-	m_animation._animation.clear();
+	AnimationFrame animation;
+	animation._animation.clear();
 
-	result = mGetCharaEntity().mLoadAnimation(m_animation._animation, first, last);
+	result = mGetCharaEntity().mLoadAnimation(animation._animation, first, last);
 	if (!result)
 	{
 		Debug::mErrorPrint("ì«Ç›çûÇ›é∏îs", __FILE__, __LINE__);
 		return;
 	}
-	m_animation._animationFrame = allFrame;
+	animation._animationFrame = allFrame;
+
+	m_animation.insert(std::make_pair(key, animation));
 }
 
 
 
 
-AnimationFrame ActionCommand::mGetAnimation(){
-	return m_animation;
+AnimationFrame ActionCommand::mGetAnimation(std::string key){
+	if (m_animation.find(key) == m_animation.end())return AnimationFrame();
+	return m_animation[key];
 }
 
 
@@ -91,4 +98,13 @@ void ActionCommand::mCallCount(const int count){
 }
 int ActionCommand::mCallCount()const{
 	return m_callCount;
+}
+
+
+bool ActionCommand::mIsEnd(){
+	return m_isEnd;
+}
+
+void ActionCommand::mIsEnd(const bool isEnd){
+	m_isEnd = isEnd;
 }

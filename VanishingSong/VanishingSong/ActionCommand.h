@@ -29,26 +29,34 @@ public:
 	/*
 	アニメーションの登録
 	*/
-	void mRegisterAnimation(const int allFrame, std::string first, std::string last);
+	void mRegisterAnimation(std::string key ,const int allFrame, std::string first, std::string last);
 	
 	/*
 		アニメーションの値取得用
 	*/
-	AnimationFrame mGetAnimation();
+	AnimationFrame mGetAnimation(std::string key);
 
 	void mCallCount(const int);
 	int mCallCount()const;
+
+	bool mIsEnd();
+
+protected:
+	void mIsEnd(const bool);
 private:
 	virtual void mOnCreate() = 0;
 	virtual void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, float timeScale, int frameCount) = 0;
+	virtual void mOnReset() = 0;
+	
+
 private:
 	eCommandType m_type;
 	std::shared_ptr<aetherClass::Rectangle2D>m_pSprite;
 	CharaEntity m_entity;
 
-	AnimationFrame m_animation;
-	AnimationFrame m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
+	std::unordered_map<std::string, AnimationFrame> m_animation;
 	int m_callCount;
 	bool m_isCall;
+	bool m_isEnd;
 };
 
