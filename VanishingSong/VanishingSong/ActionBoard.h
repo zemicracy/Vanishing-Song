@@ -15,6 +15,7 @@ public:
 	void mUpdate(float);
 	std::shared_ptr<ActionCommand> mSelectType();
 	
+	//AccessorMethod
 private:
 	void mChangeGround(int );
 	void mChangeAnimation(float,int);
