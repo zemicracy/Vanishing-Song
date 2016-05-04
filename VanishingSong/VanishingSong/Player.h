@@ -104,11 +104,6 @@ public:
 	*/
 	void mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader);
 
-	/*
-	アクション実行用
-	*/
-	eCommandType mCommand(std::shared_ptr<ActionCommand>, const float timeScale);
-
 	eCommandType mGetCommandType();
 	/*
 	実行したものの登録
@@ -150,8 +145,15 @@ public:
 	void mDayReset();
 
 	bool mIsDead();
+
+	float& mGetMP();
 private:
-	
+
+	/*
+	アクション実行用
+	*/
+	void mCommand(std::shared_ptr<ActionCommand>, const float timeScale);
+
 	/*
 		カメラオブジェクトの初期化
 	*/
@@ -205,8 +207,9 @@ private:
 	template<class type>
 	void mSetupWeapon(std::shared_ptr<Equipment>& weapon, std::string model);
 	void mSetupBullet(aetherClass::ViewCamera*);
-	void mWeaponRun(eCommandType,const int callFrame);
+	void mWeaponFirstRun(eCommandType,const int callFrame);
 	void mWeponRender(eCommandType, aetherClass::ShaderBase*);
+
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;   // パーツの管理
 

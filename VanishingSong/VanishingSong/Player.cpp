@@ -217,7 +217,7 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 
 	// 初めて呼ばれたならそれぞれの武器処理を開始
 	if (!m_isCall){
-		mWeaponRun(m_status._command, m_actionCount._commandFrame);
+		mWeaponFirstRun(m_status._command, m_actionCount._commandFrame);
 	}
 
 	// 弾の更新
@@ -294,7 +294,7 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 }
 
 //
-eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeScale){
+void Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeScale){
 
 	// 今から行うアクションを取得
 	m_commandType = command->mGetType();
@@ -322,12 +322,13 @@ eCommandType Player::mCommand(std::shared_ptr<ActionCommand> command, const floa
 	const int callCount = m_command->mCallCount();
 	m_command->mCallCount(callCount + 1);
 
+	// 状態を上書き
+	m_prevCommand = m_status._command;
+
 	if (m_command->mIsEnd()){
 		m_status._command = eCommandType::eNull;
 	}
-	// 状態を上書き
-	m_prevCommand = m_status._command;
-	return m_prevCommand;
+	return;
 }
 
 /*
@@ -730,7 +731,7 @@ void Player::mWeponRender(eCommandType type, aetherClass::ShaderBase* shader){
 }
 
 //
-void Player::mWeaponRun(eCommandType type, const int callFrame){
+void Player::mWeaponFirstRun(eCommandType type, const int callFrame){
 	switch (type)
 	{
 	case eCommandType::eShortDistanceAttack:
@@ -826,4 +827,8 @@ void Player::mCheckDead(){
 */
 bool Player::mIsDead(){
 	return m_isDead;
+}
+
+float& Player::mGetMP(){
+	return m_status._mp;
 }
