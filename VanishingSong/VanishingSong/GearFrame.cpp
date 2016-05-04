@@ -109,4 +109,75 @@ void GearFrame::Release()
 		m_pLeftHand.reset();
 		m_pLeftHand = nullptr;
 	}
+
+	// ¶Žè‚Ì‰ð•ú
+	if (m_pLeftFoot)
+	{
+		m_pLeftFoot->Release();
+		m_pLeftFoot.reset();
+		m_pLeftFoot = nullptr;
+	}
+
+	// ¶Žè‚Ì‰ð•ú
+	if (m_pRightFoot)
+	{
+		m_pRightFoot->Release();
+		m_pRightFoot.reset();
+		m_pRightFoot = nullptr;
+	}
+}
+
+void GearFrame::SetTransformValue(Gear::eType type, aetherClass::Transform value){
+	switch (type)
+	{
+	case Gear::eType::eBody:
+		m_pBody->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eRightUpperArm:
+		m_pRightUpperArm->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eLeftUpperArm:
+		m_pLeftUpperArm->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eRightLowerArm:
+		m_pRightLowerArm->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eLeftLowerArm:
+		m_pLeftLowerArm->_pGear->property._transform = value;
+
+		break;
+	case Gear::eType::eWaist:
+		m_pWaist->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eRightUpperLeg:
+		m_pRightUpperLeg->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eLeftUpperLeg:
+		m_pLeftUpperLeg->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eRightLowerLeg:
+		m_pRightLowerLeg->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eLeftLowerLeg:
+		m_pLeftLowerLeg->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eRightHand:
+		m_pRightHand->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eLeftHand:
+		m_pLeftHand->_pGear->property._transform = value;
+		break;
+
+	case Gear::eType::eLeftFoot:
+		m_pLeftFoot->_pGear->property._transform = value;
+		break;
+	case Gear::eType::eRightFoot:
+		m_pRightFoot->_pGear->property._transform = value;
+		break;
+
+	case Gear::eType::eNull:
+		break;
+	default:
+		break;
+	}
 }

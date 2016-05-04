@@ -4,9 +4,15 @@ class ActionLeftStep :
 	public ActionCommand
 {
 public:
-	ActionLeftStep();
-	~ActionLeftStep();
+	ActionLeftStep():ActionCommand(eCommandType::eLeftStep){}
+	~ActionLeftStep(){}
+	void mOnCreate()override{
 
-	void mAction(std::shared_ptr<GearFrame>, float timeScale, int count)override;
+	}
+	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, float timeScale, int frame)override{
+		mIsEnd(true);
+	}
+
+	void mOnReset()override{}
 };
 

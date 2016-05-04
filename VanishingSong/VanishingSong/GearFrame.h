@@ -29,7 +29,12 @@ public:
 	std::shared_ptr<Gear> m_pRightHand;
 	std::shared_ptr<Gear> m_pLeftHand;
 
+	// ‘«
+	std::shared_ptr<Gear> m_pRightFoot;
+	std::shared_ptr<Gear> m_pLeftFoot;
 	void Release();
+
+	void SetTransformValue(Gear::eType, aetherClass::Transform);
 
 };
 

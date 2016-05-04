@@ -7,8 +7,11 @@ class FieldArea
 {
 public:
 	void mInitialize();
-	void mRender(aetherClass::ShaderBase*);
+	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUpdate(float);
+	std::shared_ptr<aetherClass::ModelBase> mGetPartitionCube(const int number);
+	std::array<std::shared_ptr<aetherClass::ModelBase>, 2>& mGetPartitionWall(const int number);
+
 	void mSetCamera(aetherClass::ViewCamera*);
 	FieldArea();
 	~FieldArea();
@@ -17,6 +20,6 @@ private:
 	std::array<std::shared_ptr<aetherClass::ModelBase>, 4>m_wall;
 	std::array<std::shared_ptr<aetherClass::ModelBase>, 4>m_partitionCube;
 	std::array<std::shared_ptr<aetherClass::ModelBase>, 2>m_ground;
-
+	std::array<std::array<std::shared_ptr<aetherClass::ModelBase>, 2>, 4> m_partitionWall;
 };
 

@@ -2,6 +2,8 @@
 #include "Debug.h"
 #include "Const.h"
 #include "Utility.h"
+#include <WorldReader.h>
+
 using namespace aetherClass;
 
 CharaEntity::CharaEntity()
@@ -13,20 +15,14 @@ CharaEntity::~CharaEntity()
 {
 }
 
-std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType, aetherClass::ViewCamera* view){
+/*
+*/
+std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType, aetherClass::ViewCamera* view, std::string directry){
 	std::shared_ptr<Gear> pGear;
 	bool success;
 
 	// 自分のパーツの初期化
 	pGear = std::make_shared<Gear>();
-
-	// コライダーの初期化
-	pGear->_pColider = std::make_shared<Cube>();
-	pGear->_pColider->Initialize();
-
-	// コライダーの色を赤に設定
-	pGear->_pColider->property._color = Color(1.0f, 0.0f, 0.0f, 0.3f);
-	pGear->_pColider->SetCamera(view);
 
 	// パーツの本体
 	pGear->_pGear = std::make_shared<FbxModel>();
@@ -45,7 +41,7 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 
 	pGear->_pGear->SetCamera(view);
 	// テクスチャの読み込み
-	//pGear->_pGear->SetTextureDirectoryName("texture");
+	pGear->_pGear->SetTextureDirectoryName(directry);
 	
 	return pGear;
 }
@@ -55,8 +51,7 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 */
 void CharaEntity::mCreateRelationship(std::shared_ptr<Gear> parentGear, std::shared_ptr<Gear> child){
 	// 初期化が正常に終わっていないのなら何もしない
-	if (!parentGear || !child||
-		!parentGear->_pGear,!child->_pGear)return;
+	if (!parentGear || !child)return;
 
 	parentGear->_pChildren.push_back(child);
 	
@@ -74,12 +69,7 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
 
-	// デバッグモードの時はコライダーの表示
-	if (kCharaDebug&&gear->_pColider)
-	{
-		gear->_pColider->Render(colider_shader);
-	}
-	gear->_pGear->Render(colider_shader);
+	gear->_pGear->Render(model_shader);
 
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
@@ -93,181 +83,284 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 	ギアの移動用関数
 	仕組みはmGearRenderと一緒
 */
-void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move){
+void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move, std::string type){
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
 
-	// ギアとそのコライダーを動かす
-	gear->_pGear->property._transform._translation += move;
-	gear->_pColider->property._transform._translation += move;
+	if (type == "+="){
+		// ギアとそのコライダーを動かす
+		gear->_pGear->property._transform._translation += move;
 
-	// 子供がいればその分だけ再帰
-	for (auto child : gear->_pChildren){
-		mGearMove(child, move);
 	}
+	else if (type == "="){
+		gear->_pGear->property._transform._translation = move;
 
-	return;
-}
+	}
+	else{
+		gear->_pGear->property._transform._translation += move;
 
-/*
-	ギアを持つオブジェクトの回転用	
-	仕組みはmGearRenderと一緒
-*/
-void CharaEntity::mBodyGearRotation(std::shared_ptr<Gear> gear, const Vector3 rotation){
-	// 初期化が正常に終わっていないのなら何もしない
-	if (!gear || !gear->_pGear)return;
-
-	if (gear->_pParent)
-	{
+	}
 	
-		auto coliderRotation = gear->_pParent->_pColider->property._transform._rotation;
-		auto coliderTranslation = gear->_pParent->_pColider->property._transform._translation;
-
-		gear->_pColider->property._transform._rotation = coliderRotation + gear->_parentDifference._rotation;
-
-		Matrix4x4 rotationMatrix;
-		rotationMatrix.PitchYawRoll(coliderRotation*kAetherRadian);
-		Vector3 position = gear->_parentDifference._translation;
-		position = position.TransformCoordNormal(rotationMatrix);
-
-		gear->_pColider->property._transform._translation = coliderTranslation + position;
-	}
-	gear->_pColider->property._transform._rotation += rotation;
-
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
-		mBodyGearRotation(child, rotation);
-	}
-
-
-	return;
-}
-
-
-//
-void CharaEntity::mPartsGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation){
-	// 初期化が正常に終わっていないのなら何もしない
-	if (!gear || !gear->_pGear || !gear->_pParent)return;
-
-	auto coliderRotation = gear->_pParent->_pColider->property._transform._rotation;
-	auto coliderTranslation = gear->_pParent->_pColider->property._transform._translation;
-
-	gear->_pColider->property._transform._rotation = coliderRotation + gear->_parentDifference._rotation;
-
-	Matrix4x4 rotationMatrix;
-	rotationMatrix.PitchYawRoll(coliderRotation*kAetherRadian);
-	Vector3 position = gear->_parentDifference._translation;
-	position = position.TransformCoordNormal(rotationMatrix);
-
-	gear->_pColider->property._transform._translation = coliderTranslation + position;
-
-	gear->_parentDifference._rotation += rotation;
-
-	// 子供がいればその分だけ再帰
-	for (auto child : gear->_pChildren){
-		mPartsGearRotation(child, rotation);
+		mGearMove(child, move,type);
 	}
 
 	return;
 }
-
 
 Transform CharaEntity::mGetTransformInterpolation(Transform first, Transform last, const int allFrame, const int nowFrame){
 	Transform output;
 
 	// 移動
-	output._translation = Interpolation<Vector3>(first._translation, last._translation, allFrame, nowFrame);
+	output._translation = gInterpolation<Vector3>(first._translation, last._translation, allFrame, nowFrame);
 
 	// 回転
-	output._rotation = Interpolation<Vector3>(first._rotation, last._rotation, allFrame, nowFrame);
+	output._rotation = gInterpolation<Vector3>(first._rotation, last._rotation, allFrame, nowFrame);
 
 	// 拡大縮小
-	output._scale = Interpolation<Vector3>(first._scale, last._scale, allFrame, nowFrame);
+	output._scale = gInterpolation<Vector3>(first._scale, last._scale, allFrame, nowFrame);
 
 	return output;
 }
 
 
 /*
-ギアを持つオブジェクトの回転用
-体全体を均一に回転する
-仕組みはmGearRenderと一緒
-キーフレームアニメーション用
+	公転	
 */
-void CharaEntity::mBodyGearKeyframeRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation){
-	// 初期化が正常に終わっていないのなら何もしない
+void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, aetherClass::Vector3 rotation){
+	
 	if (!gear || !gear->_pGear)return;
+	gear->_pGear->property._transform._rotation += rotation;
+
 
 	if (gear->_pParent)
 	{
+		// 最上位との差を更新
+		gear->_topDifference._translation = gear->_pGear->property._transform._translation -top->_pGear->property._transform._translation;
+		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
 
-		auto coliderRotation = gear->_pParent->_pColider->property._transform._rotation;
-		auto coliderTranslation = gear->_pParent->_pColider->property._transform._translation;
-
-		gear->_pColider->property._transform._rotation = coliderRotation + gear->_parentDifference._rotation;
+		auto gearRotation = top->_pGear->property._transform._rotation;
+		auto gearTranslation = top->_pGear->property._transform._translation;
 
 		Matrix4x4 rotationMatrix;
-		rotationMatrix.PitchYawRoll(coliderRotation*kAetherRadian);
-		Vector3 position = gear->_parentDifference._translation;
+		Vector3 rotationY = Vector3(0, gearRotation._y, 0);
+		rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
+
+		Vector3 position = gear->_topDifference._translation;
 		position = position.TransformCoordNormal(rotationMatrix);
-
-		gear->_pColider->property._transform._translation = coliderTranslation + position;
+		
+		// 公転位置の決定
+		gear->_pGear->property._transform._translation = gearTranslation + position;
 	}
-	gear->_pColider->property._transform._rotation = rotation;
 
+
+	
 	// 子供がいればその分だけ再帰
 	for (auto child : gear->_pChildren){
-		mBodyGearKeyframeRotation(child, rotation);
+		mGearRotation(top,child, rotation);
 	}
 
-
-}
-/*
-ギアを持つオブジェクトの回転用
-部分部分を回転できる
-仕組みはmGearRenderと一緒
-キーフレームアニメーション用
-*/
-void CharaEntity::mPartsGearKeyframeRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation){
-	// 初期化が正常に終わっていないのなら何もしない
-	if (!gear || !gear->_pGear || !gear->_pParent)return;
-
-	auto coliderRotation = gear->_pParent->_pColider->property._transform._rotation;
-	auto coliderTranslation = gear->_pParent->_pColider->property._transform._translation;
-
-	gear->_pColider->property._transform._rotation = coliderRotation + gear->_parentDifference._rotation;
-
-	Matrix4x4 rotationMatrix;
-	rotationMatrix.PitchYawRoll(coliderRotation*kAetherRadian);
-	Vector3 position = gear->_parentDifference._translation;
-	position = position.TransformCoordNormal(rotationMatrix);
-
-	gear->_pColider->property._transform._translation = coliderTranslation + position;
-
-	gear->_parentDifference._rotation = rotation;
-
-	// 子供がいればその分だけ再帰
-	for (auto child : gear->_pChildren){
-		mPartsGearKeyframeRotation(child, rotation);
-	}
 }
 
-
 /*
-ギアを持つオブジェクトの移動用
-仕組みはmGearRenderと一緒
+指定パーツのみ回転
 */
-void CharaEntity::mGearKeyframeTranslation(std::shared_ptr<Gear> gear, aetherClass::Vector3 move){
-	// 初期化が正常に終わっていないのなら何もしない
+void CharaEntity::mGearPartsRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, Gear::eType notRotaionType, const Vector3 rotation){
 	if (!gear || !gear->_pGear)return;
 
-	// ギアとそのコライダーを動かす
-	gear->_pGear->property._transform._translation = move+gear->_topDifference._translation;
-	gear->_pColider->property._transform._translation = move + gear->_topDifference._translation;
 
-	// 子供がいればその分だけ再帰
-	for (auto child : gear->_pChildren){
-		mGearKeyframeTranslation(child, move);
+	gear->_pGear->property._transform._rotation += rotation;
+
+	if (gear->_pParent)
+	{
+		// 最上位との差を更新
+		gear->_topDifference._translation = gear->_pGear->property._transform._translation - top->_pGear->property._transform._translation;
+		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
+
+		auto gearRotation = top->_pGear->property._transform._rotation;
+		auto gearTranslation = top->_pGear->property._transform._translation;
+
+		Matrix4x4 rotationMatrix;
+		Vector3 rotationY = Vector3(0, gearRotation._y, 0);
+		rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
+
+		Vector3 position = gear->_topDifference._translation;
+		position = position.TransformCoordNormal(rotationMatrix);
+
+		// 公転位置の決定
+		gear->_pGear->property._transform._translation = gearTranslation + position;
+	}
+	
+	for (auto child : gear->_pChildren)
+	{
+		if (child->_type == notRotaionType || child->_type == Gear::eType::eNull) continue;
+		mGearPartsRotation(top,child,notRotaionType, rotation);
+	}
+	return;
+}
+
+/*
+	連想配列に登録
+*/
+void CharaEntity::mRegisterParts(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash, Gear::eType type, std::shared_ptr<Gear>& parts){
+
+	// 登録済みなら何もしない
+	if (hash.find(type) != hash.end() || !parts)return;
+
+	// 登録
+	hash.insert(std::make_pair(type, parts));
+	return;
+}
+
+
+/*
+パーツの初期化
+*/
+void CharaEntity::mSetLoadGearValue(std::shared_ptr<Gear>& top,std::shared_ptr<Gear>& gear, ObjectInfo* info){
+
+	gear->_pGear->property._transform = info->_transform;
+	gear->_initialTransform = info->_transform;
+
+	// 最上位との差
+	gear->_topDifference._translation = gear->_pGear->property._transform._translation - top->_pGear->property._transform._translation;
+	gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - top->_pGear->property._transform._rotation;
+
+	if (gear->_pParent)
+	{
+		std::shared_ptr<Gear> pParent = gear->_pParent;
+		// 親との差
+		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - pParent->_pGear->property._transform._translation;
+		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - pParent->_pGear->property._transform._rotation;
 	}
 
+	return;
+}
+/*
+	値の代入と
+	文字列からenumに変換
+*/
+Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input, Transform value){
+	/*	体	*/
+	if (partsName == "Body"){
+
+		*input = value;
+		return Gear::eType::eBody;
+	}
+
+	if (partsName == "Waist"){
+		*input = value;
+		return Gear::eType::eWaist;
+	}
+
+	/*	左上半身*/
+	if (partsName == "LeftUpperArm"){
+		*input = value;
+		return Gear::eType::eLeftUpperArm;
+	}
+
+	if (partsName == "LeftLowerArm"){
+		*input = value;
+		return Gear::eType::eLeftLowerArm;
+	}
+
+	if (partsName == "LeftHand"){
+		*input = value;
+
+		return Gear::eType::eLeftHand;
+	}
+
+	/*	右上半身	*/
+	if (partsName == "RightUpperArm"){
+		*input = value;
+		return Gear::eType::eRightUpperArm;
+	}
+
+	if (partsName == "RightLowerArm"){
+		*input = value;
+		return Gear::eType::eRightLowerArm;
+	}
+
+	if (partsName == "RightHand"){
+		*input = value;
+		return Gear::eType::eRightHand;
+	}
+
+	/*	右足	*/
+	if (partsName == "RightUpperLeg"){
+		*input = value;
+		return Gear::eType::eRightUpperLeg;
+	}
+
+	if (partsName == "RightLowerLeg"){
+		*input = value;
+		return Gear::eType::eRightLowerLeg;
+	}
+
+	if (partsName == "RightFoot"){
+		*input = value;
+		return Gear::eType::eRightFoot;
+	}
+
+	/*	左足	*/
+	if (partsName == "LeftUpperLeg"){
+		*input = value;
+		return Gear::eType::eLeftUpperLeg;
+	}
+
+	if (partsName == "LeftLowerLeg"){
+		*input = value;
+		return Gear::eType::eLeftLowerLeg;
+	}
+
+	if (partsName == "LeftFoot"){
+		*input = value;
+		return Gear::eType::eLeftFoot;
+	}
+
+	return Gear::eType::eNull;
+}
+
+/*
+キーフレームアニメーションを読み込むよう
+*/
+bool CharaEntity::mLoadAnimation(std::vector<Animation>&animationVector,std::string startState, std::string endState){
+	WorldReader read;
+	bool result;
+	result = read.Load(startState);
+	if (!result)
+	{
+		return false;
+	}
+	Animation animation;
+	for (auto index : read.GetInputWorldInfo()._object)
+	{
+		animation._name = mSetPartsValue(index->_name, &animation._start, index->_transform);
+		animationVector.push_back(animation);
+	}
+	read.UnLoad();
+
+	result = read.Load(endState);
+	if (!result)
+	{
+		return false;
+	}
+
+	for (auto index : read.GetInputWorldInfo()._object)
+	{
+		for (auto& endIndex : animationVector)
+		{
+			Gear::eType type;
+			type = mSetPartsValue(index->_name, &animation._end, index->_transform);
+
+			if (endIndex._name == type)
+			{
+				endIndex._end = animation._end;
+			}
+		}
+	}
+
+	read.UnLoad();
+
+	return true;
 }

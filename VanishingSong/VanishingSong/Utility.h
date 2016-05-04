@@ -1,8 +1,10 @@
 #ifndef _UTILITY_H
 #define _UTILITY_H
 
-#include<vector>
-
+#include <vector>
+#include "GearFrame.h"
+#include <Matrix4x4.h>
+#include "Debug.h"
 template<typename Type>
 static void ReleaseVector(std::vector<Type>& vector)
 {
@@ -29,7 +31,12 @@ static void ReleaseVector(std::vector<Type>& vector)
 	第四引数：今のフレーム数
 */
 template<class type>
-static type Interpolation(type first, type last, const int allFrameCount, const int nowCount){
+static type gInterpolation(type first, type last, const int allFrameCount, const int nowCount){
+	
+	// 最大フレーム数を越えそうなら最後の状態を返す
+	if (allFrameCount <= nowCount) return last;
+	
+
 	type output;
 	float allFrame = static_cast<float>(allFrameCount);
 	float nowFrame = static_cast<float>(nowCount);
@@ -39,5 +46,26 @@ static type Interpolation(type first, type last, const int allFrameCount, const 
 }
 
 
+/*
+マウスの固定や、消すよう
+*/
+static bool gLockMouseCursor(HWND hWnd, const bool lock){
+	RECT screen;
+	BOOL result = GetWindowRect(hWnd, &screen);
+	if (!result){
+		Debug::mErrorPrint("ウィンドウサイズの取得に失敗", __FILE__, __LINE__);
+		return false;
+	}
+	POINT screenCenter = { (screen.left + screen.right) / 2, (screen.top + screen.bottom) / 2 };
 
+	// マウスを固定
+	if (lock)
+	{
+		SetCursorPos(screenCenter.x, screenCenter.y);
+	}
+
+	// ここでマウスの切り替えを行う
+	//ShowCursor(visible);
+	return true;
+}
 #endif

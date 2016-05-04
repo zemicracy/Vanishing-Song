@@ -13,10 +13,213 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ActionCommand">
+      <UniqueIdentifier>{5f0433f6-221e-4c66-83a3-5e66e7927c5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{4a7e7a2f-4b4d-494c-848b-6c30a251ccae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{ee61c645-33d3-4041-939a-1ed91b692ee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Enemy">
+      <UniqueIdentifier>{6ac16b2c-cc63-48e7-8e8d-ecd1aeb477d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{9b23b9cd-4ad3-47b9-a64e-b7cb8ef56433}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zFrame">
+      <UniqueIdentifier>{b2dfc0c1-e607-4c7f-a204-523db6817abe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Property">
+      <UniqueIdentifier>{8f427b97-8075-4f59-ad6a-92e2ae4668c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other">
+      <UniqueIdentifier>{39ebe0a5-1eab-4511-bd13-4a97f2d30e2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Entry.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="ActionBoard.cpp">
+      <Filter>ActionCommand</Filter>
     </ClCompile>
+    <ClCompile Include="ActionCommand.cpp">
+      <Filter>ActionCommand</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderList.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionSound.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyAI.cpp">
+      <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBase.cpp">
+      <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyDie.cpp">
+      <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyGround.cpp">
+      <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyMove.cpp">
+      <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyWait.cpp">
+      <Filter>Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CharaEntity.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSurvival.cpp">
+      <Filter>zFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="VanishingSongFrame.cpp">
+      <Filter>zFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="Entry.cpp">
+      <Filter>zFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="Gear.cpp">
+      <Filter>Property</Filter>
+    </ClCompile>
+    <ClCompile Include="GearFrame.cpp">
+      <Filter>Property</Filter>
+    </ClCompile>
+    <ClCompile Include="FieldArea.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="HalfFillShader.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="HPGauge.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ActionBoard.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionCommand.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionShortAttack.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderList.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionSound.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionLeftStep.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionLongAttack.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionNull.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionRightStep.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionShield.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionStrongShield.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyAI.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBase.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyDie.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyGround.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyMove.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyWait.h">
+      <Filter>Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaEntity.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaStatus.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Const.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSurvival.h">
+      <Filter>zFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="VanishingSongFrame.h">
+      <Filter>zFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="Gear.h">
+      <Filter>Property</Filter>
+    </ClInclude>
+    <ClInclude Include="GearFrame.h">
+      <Filter>Property</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldArea.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="HPGauge.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="HalfFillShader.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionExAttack.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionExBuff.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionExHeel.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionExShield.h">
+      <Filter>ActionCommand</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

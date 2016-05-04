@@ -13,6 +13,7 @@ public:
 	void mLoad(std::string path);
 	bool mIsPlayEnd();
 	void mPlaySoundAction(float);
+	void mStop();
 	private:
 		aetherClass::GameSound m_sound;
 };

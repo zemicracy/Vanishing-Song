@@ -1,9 +1,14 @@
+/*
+	ギアに関する関数をまとめたクラス
+*/
 #ifndef _CHARAENTITY_H
 #define _CHARAENTITY_H
 
 #include <memory>
 #include "GearFrame.h"
 #include "Const.h"
+#include "Animation.h"
+#include <WorldReader.h>
 class CharaEntity
 {
 public:
@@ -13,7 +18,7 @@ public:
 	/*
 		ギアの初期化用
 	*/
-	 std::shared_ptr<Gear> mSetUpGear(std::string path, Gear::eType, aetherClass::ViewCamera*);
+	 std::shared_ptr<Gear> mSetUpGear(std::string path, Gear::eType, aetherClass::ViewCamera*,std::string);
 
 	 /*
 		親子関係構築用
@@ -33,47 +38,40 @@ public:
 		ギアを持つオブジェクトの移動用
 		仕組みはmGearRenderと一緒
 	*/
-	void mGearMove(std::shared_ptr<Gear> gear, const aetherClass::Vector3 move);
+	void mGearMove(std::shared_ptr<Gear> gear, const aetherClass::Vector3 move,std::string type = "+=");
 
 	/*
-	ギアを持つオブジェクトの移動用
-	仕組みはmGearRenderと一緒
+		最初に渡されたパーツを中心に公転する
 	*/
-	void mGearKeyframeTranslation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 move);
+	void mGearRotation(std::shared_ptr<Gear> top,std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
+
+	/*
+		指定パーツのみ回転
+		第三引数で指定したパーツとその子供は回転をしない
+	*/
+	void mGearPartsRotation(std::shared_ptr<Gear> top,std::shared_ptr<Gear> gear,Gear::eType notRotaionType, const aetherClass::Vector3 rotation);
+
+	/*
+		連想配列に登録用
+	*/
+	void mRegisterParts(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, Gear::eType, std::shared_ptr<Gear>&);
+
+	/*
+		値の設定用
+		親と、最上位パーツの差を求め、保存する
+	*/
+	void mSetLoadGearValue(std::shared_ptr<Gear>& top, std::shared_ptr<Gear>& gear, ObjectInfo*);
 
 
 	/*
-		ギアを持つオブジェクトの回転用
-		体全体を均一に回転する
-		仕組みはmGearRenderと一緒
+	アニメーションの値セット用
 	*/
-	void mBodyGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
-
-	/*
-		ギアを持つオブジェクトの回転用
-		部分部分を回転できる
-		仕組みはmGearRenderと一緒
-	*/
-	void mPartsGearRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
-
-	/*
-	ギアを持つオブジェクトの回転用
-	体全体を均一に回転する
-	仕組みはmGearRenderと一緒
-	キーフレームアニメーション用
-	*/
-	void mBodyGearKeyframeRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
-
-	/*
-	ギアを持つオブジェクトの回転用
-	部分部分を回転できる
-	仕組みはmGearRenderと一緒
-	キーフレームアニメーション用
-	*/
-	void mPartsGearKeyframeRotation(std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
-
+	bool mLoadAnimation(std::vector<Animation>&animationVector,std::string startState, std::string endState);
 
 	aetherClass::Transform mGetTransformInterpolation(aetherClass::Transform, aetherClass::Transform, const int allFrame, const int nowFrame);
+
+private:
+	Gear::eType mSetPartsValue(std::string, aetherClass::Transform* input, aetherClass::Transform value);
 };
 
 

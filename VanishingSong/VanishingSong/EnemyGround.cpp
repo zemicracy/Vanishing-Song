@@ -1,130 +1,167 @@
 #include "EnemyGround.h"
+#include "EnemyMove.h"
+#include "EnemyDie.h"
+#include "EnemyWait.h"
 #include <WorldReader.h>
 #include "Debug.h"
 
 using namespace aetherClass;
 
-EnemyGround::EnemyGround()
-{
-}
+EnemyGround::EnemyGround(){
 
+}
 
 EnemyGround::~EnemyGround()
 {
+	mFinalize();
 }
 
 bool EnemyGround::mSetUp(){
 	return true;
 }
 
-
 bool EnemyGround::mInitialize(ViewCamera* camera){
 
-	m_render = false;
+	//描画するかどうか
+	mGetProperty().m_isRender = false;
+	mGetProperty()._penemy = std::make_shared<GearFrame>();
 
-	m_pGearFrame = std::make_shared<GearFrame>();
-
-	GetCharaStatus()._nowAction = eActionType::eWait;
+	//最初の行動パターン
+	mGetCharaStatus()._action = eActionType::eWait;
 
 	// 体のパーツ
-	m_pGearFrame->m_pBody = GetCharaEntity().mSetUpGear("null", Gear::eType::eBody, camera);
-
+	mGetProperty()._penemy->m_pBody = mGetCharaEntity().mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eBody, camera, "Model\\Player\\tex");
 	// 腰のパーツ
-	m_pGearFrame->m_pWaist = GetCharaEntity().mSetUpGear("null", Gear::eType::eWaist, camera);
+	mGetProperty()._penemy->m_pWaist = mGetCharaEntity().mSetUpGear("Model\\Player\\arm2.fbx", Gear::eType::eWaist, camera, "Model\\Player\\tex");
 
-
-
-	// TODO: 沼倉君ここバグ起きてる。おそらくテキストファイルがないだけだから追加しといて
-	/*WorldReader read;
-	bool result = read.Load("data\\Enemy.aether");
-	if (!result)
-	{
-		return false;
-	}
+	WorldReader read;
+	read.Load("data\\Enemy.aether");
 	for (auto index : read.GetInputWorldInfo()._object){
 
 		if (index->_name == "body"){
-			m_pGearFrame->m_pBody->_pColider->property._transform = index->_transform;
-
+			SetLoadModelValue(mGetProperty()._penemy->m_pBody, index);
+			mGetProperty()._penemy->m_pBody->_pGear->property._transform._scale = 10;
 		}
 
 		if (index->_name == "West"){
-			m_pGearFrame->m_pWaist->_pColider->property._transform = index->_transform;
+			SetLoadModelValue(mGetProperty()._penemy->m_pWaist, index);
+			mGetProperty()._penemy->m_pWaist->_pGear->property._transform._scale = 10;
 		}
-
 	}
-	read.UnLoad();*/
+	read.UnLoad();
 
+	// 最上位に当たるパーツの設定
+	m_pTopGear = mGetProperty()._penemy->m_pBody;
 
 	// 体にパーツとの親子関係
-	GetCharaEntity().mCreateRelationship(m_pGearFrame->m_pBody, m_pGearFrame->m_pWaist);
-
-	m_pGearFrame->m_pBody->_pColider->property._transform._translation._x += 0.01f;
-	m_pGearFrame->m_pWaist->_pColider->property._transform._translation._y -= 2.0f;
-
+	mGetCharaEntity().mCreateRelationship(m_pTopGear, mGetProperty()._penemy->m_pWaist);
+	mGetProperty()._colliderPosition = &m_pTopGear->_pGear->property._transform._translation;
 	return true;
 
 }
 
+//コライダーの初期化
+void EnemyGround::mInitializeEnemyColider(ViewCamera* camera){
+	mGetProperty()._pcolider = std::make_shared<Cube>();
+	mGetProperty()._pcolider->Initialize();
+	mGetProperty()._pcolider->property._transform._translation = m_pTopGear->_pGear->property._transform._translation;
+	mGetProperty()._pcolider->property._transform._scale = Vector3(6, 3, 4);
+	mGetProperty()._pcolider->property._color = Color(1, 1, 1, 0.5);
+	mGetProperty()._pcolider->SetCamera(camera);
+}
+
+//更新処理
 void EnemyGround::mUpdate(){
 
-	mChangeAction();
+	m_AI=GetAI();
 
-	m_pGearFrame->m_pBody->_pColider->property._color = Color(1, 1, 1, 1);
+	//AIのUpdateの呼び出し
+	m_AI->mUpdateRun(&mGetProperty(), &m_pTopGear->_pGear->property._transform._translation);
 
-	m_pGearFrame->m_pWaist->_pColider->property._color = Color(1, 1, 1, 1);
-
-	switch (GetCharaStatus()._nowAction)
-	{
-	case eActionType::eWait:
-		Debug::mPrint("Wait");
-		break;
-	case eActionType::eMove:
-		Debug::mPrint("Move");
-		mEnemyMove();
-		break;
-	case eActionType::eNull:
-		Debug::mPrint("Null");
-		break;
-	case eActionType::eAttack:
-		Debug::mPrint("Attack");
-		break;
-	case eActionType::eDie:
-		mEnemyDie();
-		Debug::mPrint("Die");
-		break;
-	}
-
+	mGetProperty()._pcolider->property._transform._translation = *mGetProperty()._colliderPosition;
+	mGetProperty()._pcolider->property._transform._translation._x = mGetProperty()._colliderPosition->_x -5;
+	
 }
 
 void EnemyGround::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
-	if (!m_pGearFrame->m_pBody)return;
-	if (m_render)return;
+	if (mGetProperty().m_isRender)return;
+
+	mGetProperty()._pcolider->Render(colider_shader);
 
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
-	GetCharaEntity().mGearRender(m_pGearFrame->m_pBody, model_shader, colider_shader);
-
+	mGetCharaEntity().mGearRender(m_pTopGear, model_shader, colider_shader);
 }
 
-void EnemyGround::mEnemyDie(){
+void EnemyGround::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
 
-	m_render = true;
+	gear->_pGear->property._transform = info->_transform;
+	gear->_initialTransform = info->_transform;
+	if (gear->_pParent)
+	{
+		std::shared_ptr<Gear> pParent = gear->_pParent;
+		// 最上位との差
+		gear->_topDifference._translation = gear->_pGear->property._transform._translation - m_pTopGear->_pGear->property._transform._translation;
+		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - m_pTopGear->_pGear->property._transform._rotation;
 
-}
-
-
-void EnemyGround::mChangeAction(){
-
-	if (GameController::GetKey().IsKeyDown('R')){
-		GetCharaStatus()._nowAction = eActionType::eDie;
+		// 親との差
+		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - pParent->_pGear->property._transform._translation;
+		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - pParent->_pGear->property._transform._rotation;
 	}
 
-	if (GameController::GetKey().IsKeyDown('Q')){
-		GetCharaStatus()._nowAction = eActionType::eMove;
+	return;
+}
+
+
+//EnemyAI
+std::shared_ptr<EnemyAI> EnemyGround::GetAI(){
+
+	switch (mGetCharaStatus()._action)
+	{
+		//待機
+	case eActionType::eWait:
+		return std::make_shared<EnemyWait>();
+		//移動
+	case eActionType::eMove:
+		return std::make_shared<EnemyMove>();
+
+
+	case eActionType::eNull:
+		
+	case eActionType::eAttack:
+		//死亡
+	case eActionType::eDie:
+		return std::make_shared<EnemyDie>();
+		
+	default:
+		break;
 	}
+
 }
 
-void EnemyGround::mEnemyMove(){
+void EnemyGround::mFinalize(){
 
-	m_pGearFrame->m_pBody->_pColider->property._transform._translation._x += 0.01f;
+	if (mGetProperty()._penemy)
+	{
+		mGetProperty()._penemy->Release();
+		mGetProperty()._penemy.reset();
+		mGetProperty()._penemy= nullptr;
+	}
+
+	if (mGetProperty()._pcolider){
+		mGetProperty()._pcolider->Finalize();
+		mGetProperty()._pcolider.reset();
+		mGetProperty()._pcolider = nullptr;
+	}
+	if (m_pTopGear)
+	{
+		m_pTopGear->Release();
+		m_pTopGear.reset();
+		m_pTopGear = nullptr;
+	}
+
 }
+
+void EnemyGround::mGetSetEnemyAction(){
+	
+}
+

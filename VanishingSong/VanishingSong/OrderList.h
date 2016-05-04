@@ -13,20 +13,38 @@ public:
 	void mInitialize();
 
 	std::shared_ptr<ActionCommand> mGetActionCommand();
-	int mGetVolume();
-	bool mIsStart();
 
+	//AccesserMethod
+	void mSetBPM(float);
+	int mGetVolume();
+	bool mIsJustTiming();
 private:
-	void OrderList::mFinalize();
+	void mFinalize();
+
+	void mListPlay();
+	void mListStop();
+	void mException();
+
 
 private:
 	std::vector<std::shared_ptr<ActionCommand>>m_orderList;
 	std::shared_ptr<ActionCommand>m_listFirst;
 
-	std::array<std::shared_ptr<aetherClass::SpriteBase>,5>m_spriteList;
-	std::shared_ptr<aetherClass::SpriteBase>m_backImage;
+	std::array<std::shared_ptr<aetherClass::SpriteBase>,5>m_pSpriteList;
+	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
+	std::shared_ptr<aetherClass::SpriteBase>m_pBackImage;
+	aetherClass::Vector3 m_volumeOrigin;
+	
+	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTexture;
+
 	bool m_isStart;
-	float m_volume;
+	bool m_isPlayCommand;
+	bool m_isJustTiming;
+	float m_volume;	//âºëzêîíl
+	float m_bpm;
+	float m_timeRadian;
 	const char m_kMaxOrderSize = 5;
+	const float m_kMaxVolume = 100;
+	
 };
 

@@ -3,6 +3,9 @@
 #include <Singleton.h>
 #include "ResourceManager.h"
 #include "GameManager.h"
+#include "GameController.h"
+
+using namespace aetherClass;
 VanishingSongFrame::VanishingSongFrame()
 {
 }
@@ -24,10 +27,9 @@ bool VanishingSongFrame::InitializeBuffer(){
 
 //　１フレームごとに実行される
 bool VanishingSongFrame::FrameRunningBuffer(){
+	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 
-	// ポーズボタンが押されたかチェックする
-	Singleton<GameManager>::GetInstance().CheckPauseKey();
-
+	
 	return true;
 }
 

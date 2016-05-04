@@ -3,21 +3,20 @@
 #pragma comment (lib,"Aether.lib")
 #endif
 #include <memory>
-
 #include <AetherWindow.h>
 #include <GameController.h>
 #include <ConsoleWindow.h>
 #include <GameSceneManager.h>
-#include "SceneSurvival.h"
+#include "Const.h"
+#include "SceneGame.h"
+#include "SceneTitle.h"
 #include "VanishingSongFrame.h"
-
+#include "Load.h"
 using namespace aetherClass;
 
 namespace{
 	const int kError = -1;
 	const int kEnd = 0;
-	const int kWindowWidth = 1280;
-	const int kWindowHeight = 720;
 	const int kWindowNum = 1;
 }
 
@@ -44,7 +43,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	window->SetWindowStyles(desc);
 
 	//ウィンドウを作成しているウィンドウのオブジェクトのメンバ関数
-	window->Create(L"Game", Vector2(kWindowWidth, kWindowHeight));
+	window->Create(kWindowName, Vector2(kWindowWidth, kWindowHeight));
 
 	bool result = frame->Initialize(&window,kWindowNum,5000.0f,1.0f);
 
@@ -53,10 +52,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 		return kError;
 	}
 
-	//一番最初のシーンの設定
-	GameScene* scene = new SceneSurvival;
-	GameSceneManager::SetCurrentScene(scene);
-
+	//一番最初のシーンとロード画面の設定
+	GameSceneManager::SetCurrentScene(new SceneGame());
+	GameSceneManager::SetLoadScreen(new Load());
+	frame->BackgroundColor(Color(0, 0, 0, 0));
 	//メインループの開始
 	frame->GameRun();
 

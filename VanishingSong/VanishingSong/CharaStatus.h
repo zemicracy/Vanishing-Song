@@ -21,6 +21,7 @@ enum class eActionType
 	eMove,
 	eWait,
 	eAttack,
+	eHitDamage,
 	eDie,
 	eNull
 };
@@ -42,28 +43,33 @@ struct CharaStatus
 		Reset();
 	}
 
-	int _hp;
-	int _mp;
+	float _hp;
+	float _mp;
+	int _maxhp;
+	int _maxmp;
 	unsigned int _level;
 	int _experiencePoint;
 	int _attackPoint;
 	int _shieldPoint;
 	eBuffType _buff;
-	eCommandType _nowCommand;
-	eActionType _nowAction;
-	std::array<eCommandType, kMaxOrderList> _prevActionList;
+	eCommandType _command;
+	eActionType _action;
+	std::array<eCommandType, kMaxOrderList> _prevCommandList;
 
 	// èâä˙âªóp
 	void Reset(){
 		_hp = kZeroPoint;
 		_mp = kZeroPoint;
+		_maxhp = kZeroPoint;
+		_maxmp = kZeroPoint;
 		_buff = eBuffType::eNull;
 		_level = kZeroPoint;
 		_experiencePoint = kZeroPoint;
 		_attackPoint = kZeroPoint;
 		_shieldPoint = kZeroPoint;
-		_nowCommand = eCommandType::eNull;
-		_prevActionList.fill(eCommandType::eNull);
+		_command = eCommandType::eNull;
+		_action = eActionType::eNull;
+		_prevCommandList.fill(eCommandType::eNull);
 	}
 };
 
