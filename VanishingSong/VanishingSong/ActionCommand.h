@@ -40,9 +40,14 @@ public:
 	int mCallCount()const;
 
 	bool mIsEnd();
+	void mSetExUseMP(float ifUseMP);
+	float mGetExUseMP();
+	float mGetBaseUseMp();
 
 protected:
 	void mIsEnd(const bool);
+protected:
+	float m_baseUseMP;
 private:
 	virtual void mOnCreate() = 0;
 	virtual void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, float timeScale, int frameCount) = 0;
@@ -58,5 +63,6 @@ private:
 	int m_callCount;
 	bool m_isCall;
 	bool m_isEnd;
+	float m_ExUseMP;
 };
 

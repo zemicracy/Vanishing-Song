@@ -208,7 +208,7 @@ bool ActionBoard::mIntersect(std::shared_ptr<ActionCommand> itr){
 			//“–‚½‚Á‚Ä‚½‚ç‚»‚ê‚ð•Ô‚·
 			if (mousePosition._x > position._x && mousePosition._y > position._y &&
 				mousePosition._x < position._x + size._x && mousePosition._y < position._y + size._y){
-				return true;
+					return true;
 			}
 			return false;
 }

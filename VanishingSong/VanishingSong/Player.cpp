@@ -24,6 +24,7 @@ namespace{
 	const Vector3 kPlayerInitialY = Vector3(0, 20, 0);
 	const Vector3 kBulletSpeed = Vector3(0, 0, 10);
 	const float kDefaultMove = 100.0f;
+	const float kDefaultMpHeal = 0.05;
 }
 
 Player::Player()
@@ -299,6 +300,12 @@ void Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeSc
 	// 今から行うアクションを取得
 	m_commandType = command->mGetType();
 
+	// 回復
+	if (m_status._command == eCommandType::eNull&&m_status._mp<m_status._maxmp){
+		m_status._mp += kDefaultMpHeal;
+	}
+
+
 	// Null以外の時にコマンドを変える
 	if (m_commandType != eCommandType::eNull)
 	{
@@ -308,9 +315,14 @@ void Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeSc
 
 	// 前回と違えば実行数を0にする
 	if (m_status._command != m_prevCommand){
+		
 		m_actionCount._commandFrame = kZeroPoint;
 		m_prevTransform = m_playerTransform;
 		m_command->mCallCount(0);
+
+		if (m_status._command != eCommandType::eNull){
+			m_status._mp -= m_command->mGetExUseMP();
+		}
 	}
 
 	m_isCall = m_command->mIsCall();
@@ -326,6 +338,7 @@ void Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeSc
 	m_prevCommand = m_status._command;
 
 	if (m_command->mIsEnd()){
+
 		m_status._command = eCommandType::eNull;
 	}
 	return;
