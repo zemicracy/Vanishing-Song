@@ -23,6 +23,7 @@ public:
 		m_animationName[3] = "four";
 		m_frame = 0;
 		m_count = 0;
+		m_baseUseMP = 5;
 	}
 
 	//
