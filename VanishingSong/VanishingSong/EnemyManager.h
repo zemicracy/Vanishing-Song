@@ -14,7 +14,12 @@ public:
 	EnemyManager();
 	~EnemyManager();
 
-
+	struct AreaProperty{
+		int area_max_x;
+		int area_min_x;
+		int area_max_z;
+		int area_min_z;
+	};
 	
 	bool mInitilize(aetherClass::ViewCamera*);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
@@ -30,10 +35,12 @@ public:
 private:
 	
 	std::vector<std::shared_ptr<EnemyGround>> m_pEnemy;
-	std::map<std::string, std::shared_ptr<EnemyGround>> m_EnemyMap;
+	std::array<std::vector<std::shared_ptr<EnemyGround>>,4> m_enemyArray;
 	std::array<aetherClass::Vector3, 4>	m_pEnemySpawner;
+	AreaProperty areaProperty[4];
 	float time;
+	float actiontime;
 	int m_Enemy_Max;
-
+	
 };
 #endif
