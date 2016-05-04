@@ -18,6 +18,8 @@ public:
 	void mSetBPM(float);
 	int mGetVolume();
 	bool mIsJustTiming();
+	float mIfUseMp();
+	void mSetCharaMp(float *mp);
 private:
 	void mFinalize();
 
@@ -43,6 +45,10 @@ private:
 	float m_volume;	//‰¼‘z”’l
 	float m_bpm;
 	float m_timeRadian;
+	float m_IfUseMp;
+	float *m_charaMp;
+
+	//’è”
 	const char m_kMaxOrderSize = 5;
 	const float m_kMaxVolume = 100;
 	
