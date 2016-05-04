@@ -39,8 +39,10 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 	m_pCollideManager->mInitialize(m_pPlayer, nullptr, m_pFieldArea);
 
 	m_pPlayerGaugeManager = std::make_unique<GaugeManager>();
-	m_pPlayerGaugeManager->mInitialize();
+	m_pPlayerGaugeManager->mInitialize();	
 	m_pPlayerGaugeManager->mSetCharaStatus(&m_pPlayer->mGetStatus());
+
+	m_pOrderList->mSetCharaMp(&m_pPlayer->mGetStatus()._mp);
 
 	m_state = eState::eNull;
 	m_isInitialize = true;
@@ -102,6 +104,7 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 	// 更新処理
 	mUpdate(m_pOrderList->mGetActionCommand(),timeScale,nowTime);
 
+	m_pPlayerGaugeManager->mSetuseMp(m_pOrderList->mGetIfUseMp());
 	m_pPlayerGaugeManager->mUpdate(timeScale);
 
 	// 当たり判定の更新

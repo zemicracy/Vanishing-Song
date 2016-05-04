@@ -7,6 +7,7 @@ public:
 	ActionExBuff() :ActionCommand(eCommandType::eSkill){}
 	~ActionExBuff(){}
 	void mOnCreate()override{
+		m_baseUseMP = 5;
 
 	}
 

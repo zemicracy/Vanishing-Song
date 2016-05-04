@@ -18,7 +18,7 @@ public:
 	void mSetBPM(float);
 	int mGetVolume();
 	bool mIsJustTiming();
-	float mIfUseMp();
+	float mGetIfUseMp();
 	void mSetCharaMp(float *mp);
 private:
 	void mFinalize();
