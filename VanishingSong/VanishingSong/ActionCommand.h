@@ -40,6 +40,9 @@ public:
 	int mCallCount()const;
 
 	bool mIsEnd();
+	void mSetExUseMP(float ifUseMP);
+	float mGetExUseMP();
+	float mGetBaseUseMp();
 
 protected:
 	void mIsEnd(const bool);
@@ -58,5 +61,7 @@ private:
 	int m_callCount;
 	bool m_isCall;
 	bool m_isEnd;
+	float m_baseUseMP;
+	float m_ExUseMP;
 };
 

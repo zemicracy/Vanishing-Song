@@ -23,6 +23,9 @@ aetherClass::SpriteBase::Property& ActionCommand::mGetProperty(){
 }
 
 void ActionCommand::mCreate(){
+	m_baseUseMP = 0;
+	m_ExUseMP = 0;
+
 	m_pSprite = std::make_shared<aetherClass::Rectangle2D>();
 	m_pSprite->Initialize();
 	mOnCreate();
@@ -107,4 +110,14 @@ bool ActionCommand::mIsEnd(){
 
 void ActionCommand::mIsEnd(const bool isEnd){
 	m_isEnd = isEnd;
+}
+
+void ActionCommand::mSetExUseMP(float ifUseMP){
+	m_ExUseMP = ifUseMP;
+}
+float ActionCommand::mGetExUseMP(){
+	return m_ExUseMP;
+}
+float ActionCommand::mGetBaseUseMp(){
+	return m_baseUseMP;
 }
