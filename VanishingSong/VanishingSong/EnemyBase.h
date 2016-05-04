@@ -25,13 +25,24 @@ public:
 		int _level;
 	};
 	
+	struct EnemyMoveRange{
+		int enemy_max_x;
+		int enemy_min_x;
+		int enemy_max_z;
+		int enemy_min_z;
+	};
+
 	struct Property{
-	
 		aetherClass::Transform _transform;	//位置
 		std::shared_ptr<GearFrame> _penemy;	//Enemy本体
 		std::shared_ptr<aetherClass::Cube> _pcolider;	//Enemyコライダー
 		aetherClass::Vector3* _colliderPosition;
+		aetherClass::Vector3 _nextDirection;
+		int _enemyAreaNo;
 		bool m_isRender;
+		bool _isMoveJudge;
+		EnemyMoveRange _enemyMoveRange;
+		bool flag;
 	};
 
 
