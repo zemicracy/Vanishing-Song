@@ -15,8 +15,16 @@
 #include "CollideManager.h"
 #include "GaugeManager.h"
 typedef std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>> ShaderHash;
+
 class Mode
 {
+public:
+	enum class eState{
+		eClear,
+		eGameOver,
+		eNextDay,
+		eNull
+	};
 public:
 	Mode();
 	~Mode();
@@ -33,10 +41,11 @@ public:
 
 	virtual void mFinalize();
 
+	eState mGetState();
 protected:
 	std::shared_ptr<Player> mGetPlayer();
 	std::shared_ptr<FieldArea> mGetFieldArea();
-
+	void mSetState(eState);
 private:
 	virtual void mUpdate(std::shared_ptr<ActionCommand> command, const float timeScale, const float nowTime) = 0;
 	virtual void mRender(ShaderHash shader) = 0;
@@ -51,6 +60,7 @@ private:
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<ActionBoard> m_pActionBoard;
 	bool m_isInitialize;
+	eState m_state;
 };
 
 #endif

@@ -12,11 +12,11 @@ public:
 	void mUpdate();
 
 private:
-	void mCheckFieldArea();
+	int mCheckPlayerFieldArea();
 	void mCheckFieldAreaBullet();
 	void mCheckHitWall(const int number);
-	void mCheckHitPlayerAttack();
-	void mCheckHitEnemyAttack();
+	void mCheckHitPlayerAttack(const int);
+	void mCheckHitEnemyAttack(const int);
 private:
 	std::shared_ptr<Player> m_player;
 	std::shared_ptr<EnemyManager> m_enemys;

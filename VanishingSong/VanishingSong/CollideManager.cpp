@@ -27,9 +27,11 @@ void CollideManager::mInitialize(std::shared_ptr<Player> player, std::shared_ptr
 //
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
-	mCheckFieldArea();
-	mCheckHitWall(m_filedNumber);
+	const int playerNumber = mCheckPlayerFieldArea();
+	mCheckHitWall(playerNumber);
 	mCheckFieldAreaBullet();
+	mCheckHitPlayerAttack(playerNumber);
+	mCheckHitEnemyAttack(playerNumber);
 }
 
 
@@ -59,8 +61,9 @@ void CollideManager::mCheckHitWall(const int number){
 
 /*
 	現在のプレイヤーの空間を取得
+	格納場所 m_fieldNumber
 */
-void CollideManager::mCheckFieldArea(){
+int CollideManager::mCheckPlayerFieldArea(){
 	if (GameController::GetKey().KeyDownTrigger('M')){
 		Debug::mPrint(std::to_string(m_filedNumber));
 	}
@@ -69,7 +72,7 @@ void CollideManager::mCheckFieldArea(){
 	for (int id = m_filedNumber; id < kPartitionSize; ++id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
 			m_filedNumber = id;
-			return;
+			return m_filedNumber;
 		}
 	}
 
@@ -77,33 +80,33 @@ void CollideManager::mCheckFieldArea(){
 	for (int id = m_filedNumber; id >= 0; --id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
 			m_filedNumber = id;
-			return;
+			return m_filedNumber;
 		}
 	}
 
-	return;
+	return m_filedNumber;
 }
 
 // プレイヤーの攻撃が敵に当たっているかの確認
-void CollideManager::mCheckHitPlayerAttack(){
+void CollideManager::mCheckHitPlayerAttack(const int playerNumber){
 	// 弾が当たっているかの確認
 	for (auto& bullet : m_player->mGetBullet()){
 		
 	}
 
-	if (m_player->mGetNowCommandType() != eCommandType::eShortDistanceAttack)return;
+	if (m_player->mGetCommandType() != eCommandType::eShortDistanceAttack)return;
 	// 近接攻撃が当たっているかの確認
 
 }
 
 // 敵の攻撃がプレイヤーに当たっているかの確認
-void CollideManager::mCheckHitEnemyAttack(){
+void CollideManager::mCheckHitEnemyAttack(const int playerNumber){
 	bool isHit = false;
-
+	// 判定しようね
 	if (!isHit)return;
 
 	// プレイヤーの状態に合わせてダメージ量の計算
-	switch (m_player->mGetNowCommandType())
+	switch (m_player->mGetCommandType())
 	{
 	case eCommandType::eShield:
 		break;

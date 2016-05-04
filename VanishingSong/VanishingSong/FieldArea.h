@@ -7,7 +7,7 @@ class FieldArea
 {
 public:
 	void mInitialize();
-	void mRender(aetherClass::ShaderBase*);
+	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUpdate(float);
 	std::shared_ptr<aetherClass::ModelBase> mGetPartitionCube(const int number);
 	std::array<std::shared_ptr<aetherClass::ModelBase>, 2>& mGetPartitionWall(const int number);
