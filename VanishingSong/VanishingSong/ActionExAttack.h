@@ -7,6 +7,7 @@ public:
 	ActionExAttack() :ActionCommand(eCommandType::eSkill){}
 	~ActionExAttack(){}
 	void mOnCreate()override{
+		m_baseUseMP = 5;
 
 	}
 

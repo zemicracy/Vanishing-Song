@@ -18,6 +18,8 @@ public:
 
 	void mOnCreate()override{
 		this->mRegisterAnimation("aaa",5, "data\\Player\\GunStanby.aether", "data\\Player\\GunGo.aether");
+
+		m_baseUseMP = 5;
 	}
 
 	// ÀÛ‚ÌÀsˆ—

@@ -7,6 +7,7 @@ public:
 	ActionLeftStep():ActionCommand(eCommandType::eLeftStep){}
 	~ActionLeftStep(){}
 	void mOnCreate()override{
+		m_baseUseMP = 5;
 
 	}
 	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>&, float timeScale, int frame)override{

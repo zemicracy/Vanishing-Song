@@ -148,7 +148,7 @@ void OrderList::mUpdate(float){
 
 	//使用予定のMPを計算する
 	for (auto itr : m_orderList){
-		itr->mSetExUseMP(itr->mGetBaseUseMp() + int(m_volume / 10));
+		itr->mSetExUseMP(itr->mGetBaseUseMp() + int((m_kMaxVolume + m_volume) / 20));
 		m_IfUseMp += itr->mGetExUseMP();
 	}
 	//足りなければ再生フラグををなかったコトに
@@ -241,7 +241,7 @@ bool OrderList::mIsJustTiming(){
 	return m_isJustTiming;
 }
 
-float OrderList::mIfUseMp(){
+float OrderList::mGetIfUseMp(){
 	return m_IfUseMp;
 }
 
