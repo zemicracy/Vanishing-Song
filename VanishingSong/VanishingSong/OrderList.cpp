@@ -152,7 +152,7 @@ void OrderList::mUpdate(float){
 		m_IfUseMp += itr->mGetExUseMP();
 	}
 	//足りなければ再生フラグををなかったコトに
-	if (m_IfUseMp > *m_charaMp){
+	if (m_IfUseMp > *m_charaMp && m_isStart){
 		m_pBackImage->property._color._red = 1 - m_pBackImage->property._color._red;
 		m_isStart = false;
 	}
