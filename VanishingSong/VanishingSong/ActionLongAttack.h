@@ -23,7 +23,7 @@ public:
 	// ÀÛ‚ÌÀsˆ—
 	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash, float timeScale, int count)override{
 		aetherClass::Transform animationTransform;
-		const int allFrame = this->mGetAnimation("aaa")._animation.size();
+		const int allFrame = this->mGetAnimation("aaa")._animationFrame;
 		for (auto index : this->mGetAnimation("aaa")._animation)
 		{
 			// •âŠÔ‚Ì’l‚ğæ“¾
@@ -34,6 +34,12 @@ public:
 				hash[index._name]->_pGear->property._transform = animationTransform;
 			}
 		}
+
+
+		if (count >= allFrame){
+			mIsEnd(true);
+		}
+		return;
 	}
 
 	void mOnReset()override{}
