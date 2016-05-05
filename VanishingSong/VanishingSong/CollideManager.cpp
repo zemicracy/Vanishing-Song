@@ -41,7 +41,6 @@ void CollideManager::mCheckHitWall(const int number){
 	for (auto wall : m_filed->mGetPartitionWall(number)){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
 			m_player->mOnHitWall();
-		
 			break;
 		}
 	}
@@ -88,7 +87,14 @@ int CollideManager::mCheckPlayerFieldArea(){
 void CollideManager::mCheckHitPlayerAttack(const int playerNumber){
 	// ’e‚ª“–‚½‚Á‚Ä‚¢‚é‚©‚ÌŠm”F
 	for (auto& bullet : m_player->mGetBullet()){
-	
+		if (!bullet._isRun)continue;
+		for (auto& enemy : m_enemyManager->mEnemyGet(bullet._number)){
+			if (CollideBoxOBB(*enemy->mGetProperty()._pcolider, *bullet._bullet->mGetCollider())){
+				// “G‚Æ’e‚ª“–‚½‚Á‚Ä‚¢‚½‚ç
+				bullet._isRun = false;
+				enemy->mEnemyOnHit();
+			}
+		}
 	}
 
 	if (m_player->mGetCommandType() != eCommandType::eShortDistanceAttack)return;
