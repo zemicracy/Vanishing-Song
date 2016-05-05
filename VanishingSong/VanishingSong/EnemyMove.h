@@ -8,13 +8,9 @@ public:
 	~EnemyMove();
 
 	void mUpdateRun(EnemyBase::Property*, aetherClass::Vector3*)override;
-	void mTargetMove(EnemyBase::Property*,float,float);
+	void mTargetMove(EnemyBase::Property*);
 
 private:
 	CharaEntity m_charaEntity;
-	int randomValuex;
-	int randomValuez;
-	bool flag;
-
 };
 
