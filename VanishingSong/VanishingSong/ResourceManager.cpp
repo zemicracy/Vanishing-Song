@@ -138,6 +138,8 @@ bool ResourceManager::InitializeShader(){
 	desc._pixel._srcFile = L"Shader\\Texture.hlsl";
 	RegisterShader<PixelShader>("texture", desc);
 
+	desc._pixel._srcFile = L"Shader\\Transparent.hlsl";
+	RegisterShader<PixelShader>("transparent", desc);
 	return true;
 }
 

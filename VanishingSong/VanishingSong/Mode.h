@@ -47,7 +47,7 @@ protected:
 	std::shared_ptr<FieldArea> mGetFieldArea();
 	void mSetState(eState);
 private:
-	virtual void mUpdate(std::shared_ptr<ActionCommand> command, const float timeScale, const float nowTime) = 0;
+	virtual void mUpdate(const float timeScale, const float nowTime) = 0;
 	virtual void mRender(ShaderHash shader) = 0;
 	virtual void mUIRender(ShaderHash shader) = 0;
 private:
