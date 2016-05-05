@@ -16,9 +16,9 @@ class SceneTitle :
 	enum eNextMode{
 		eNull = 0,
 		eSurvival,
-		eBattle,
 		ePractice,
 		eTutorial,
+		eBattle,
 		eExit
 	};
 

@@ -112,6 +112,10 @@ bool SceneGame::Updater(){
 		m_gameState = eState::eExit;
 	}
 
+	if (GameController::GetKey().KeyDownTrigger('T')){
+		m_gameState = eState::eResult;
+	}
+
 	if (m_gameState == eState::eExit){
 		// 終了ならタイトルに戻る
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
