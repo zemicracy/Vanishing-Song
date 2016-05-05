@@ -111,6 +111,9 @@ void EnemyGround::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* inf
 	return;
 }
 
+void EnemyGround::mEnemyOnHit(){
+	mGetCharaStatus()._action == eActionType::eDie;
+}
 
 //EnemyAI
 std::shared_ptr<EnemyAI> EnemyGround::GetAI(){
@@ -123,7 +126,6 @@ std::shared_ptr<EnemyAI> EnemyGround::GetAI(){
 		//ˆÚ“®
 	case eActionType::eMove:
 		return std::make_shared<EnemyMove>();
-
 
 	case eActionType::eNull:
 		
