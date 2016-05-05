@@ -8,7 +8,6 @@
 #include <ConsoleWindow.h>
 #include <GameSceneManager.h>
 #include "Const.h"
-#include "SceneGame.h"
 #include "SceneTitle.h"
 #include "VanishingSongFrame.h"
 #include "Load.h"
@@ -52,10 +51,12 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 		return kError;
 	}
 
-	//一番最初のシーンとロード画面の設定
-	GameSceneManager::SetCurrentScene(new SceneGame());
+	GameSceneManager::SetCurrentScene(new SceneTitle());
 	GameSceneManager::SetLoadScreen(new Load());
+	
+	// 背景色の設定
 	frame->BackgroundColor(Color(0, 0, 0, 0));
+	
 	//メインループの開始
 	frame->GameRun();
 
