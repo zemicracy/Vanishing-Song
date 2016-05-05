@@ -112,6 +112,7 @@ bool SceneGame::Updater(){
 		m_gameState = eState::eExit;
 	}
 
+	// デバッグ用
 	if (GameController::GetKey().KeyDownTrigger('T')){
 		m_gameState = eState::eResult;
 	}
@@ -125,7 +126,7 @@ bool SceneGame::Updater(){
 	if (m_gameState == eState::eResult)return true;
 
 	// 時刻の取得
-	m_dayTime += GameClock::GetDeltaTime();
+	m_dayTime += (float)GameClock::GetDeltaTime();
 	
 	// 最後の日以外は制限時間になったらリザルト画面に行く
 	if (m_dayTime > kDayTime && m_day != GameManager::eDay::eLastDay){
@@ -133,6 +134,7 @@ bool SceneGame::Updater(){
 	}
 
 	bool result = false;
+
 	// それぞれのモードの更新処理
 	m_pMode->mMainUpdate(kScaleTime, m_dayTime);
 	
@@ -205,6 +207,7 @@ std::shared_ptr<Mode> SceneGame::mReturnMode(GameManager::eGameMode mode){
 		return std::make_shared<ModePractice>();
 
 	case GameManager::eGameMode::eNull:
+	default:
 		assert(!"不正な値を検出しました :Part SG");
 		return nullptr;
 	}
