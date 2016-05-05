@@ -61,9 +61,8 @@ private:
 	std::array<std::unique_ptr<aetherClass::SpriteBase>, kMaxGetNote> m_pNote; // Žæ“¾‚µ‚½‰¹•„‚Ì•\Ž¦—p
 	std::unique_ptr<aetherClass::SpriteBase> m_pClickObject;
 	std::unique_ptr<aetherClass::SpriteBase> m_pMainBord;
+	std::unique_ptr<aetherClass::Texture> m_pMainBordTexture;
 	std::unique_ptr<aetherClass::SpriteBase> m_pBlurObject;
-
-
 
 	std::unordered_map<eClickState, std::shared_ptr<aetherClass::Texture>> m_pClickTexture;
 
