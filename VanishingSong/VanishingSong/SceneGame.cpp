@@ -16,7 +16,7 @@ const std::string SceneGame::Name = "Game";
 namespace{
 	const float kScaleTime = 1.0f; 
 	const bool kError = false;
-	const float kDayTime = 300.0f;
+	const float kDayTime = 180.0f; // 一日の時間
 }
 
 SceneGame::SceneGame():
@@ -118,21 +118,24 @@ bool SceneGame::Updater(){
 		return true;
 	}
 
-	bool result = false;
+	if (m_gameState == eState::eResult)return true;
+
 	// 時刻の取得
 	m_dayTime += GameClock::GetDeltaTime();
-
-	if (m_dayTime > kDayTime){
+	
+	// 最後の日以外は制限時間になったらリザルト画面に行く
+	if (m_dayTime > kDayTime && m_day != GameManager::eDay::eLastDay){
 		m_gameState = eState::eResult;
 	}
 
+	bool result = false;
 	// それぞれのモードの更新処理
 	m_pMode->mMainUpdate(kScaleTime, m_dayTime);
 	
 	// 状態の更新
 	auto state = m_pMode->mGetState();
 
-	// 特に何も変化ないなら何もしない
+	// 特にないなら何もしない
 	if (state == Mode::eState::eNull)return true;
 
 	switch (state)
@@ -141,6 +144,7 @@ bool SceneGame::Updater(){
 		m_gameState = eState::eResult;
 		break;
 	case Mode::eState::eGameOver:
+	//	m_gameState = eState::eGameOver;
 		break;
 	case Mode::eState::eNextDay:
 		m_gameState = eState::eResult;
@@ -163,7 +167,7 @@ void SceneGame::UIRender(){
 
 	m_pMode->mMainUIRender(shaderHash);
 
-	mShowResult(m_day, shaderHash["color"].get(), shaderHash["color"].get());
+	mShowResult(m_day, shaderHash["texture"].get(), shaderHash["color"].get());
 
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		m_pFadeObject->mRedner(shaderHash["color"].get());

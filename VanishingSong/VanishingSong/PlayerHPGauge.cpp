@@ -42,7 +42,7 @@ bool PlayerHPGauge::mInitialize(){
 	if (!result)return false;
 
 	m_maskTexture = std::make_shared<Texture>();
-	result = m_maskTexture->Load("Texture/hpGauge.png");
+	result = m_maskTexture->Load("Texture\\Game\\hpGauge.png");
 	if (!result)return false;
 
 	WorldReader reader;

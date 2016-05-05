@@ -119,7 +119,7 @@ bool ResourceManager::InitializeActionSound(){
 	テクスチャの初期化
 */
 bool ResourceManager::InitializeTexture(){
-	RegisterTexture("skybox", "Texture\\GameBack.jpg");
+	RegisterTexture("skybox", "Texture\\Game\\GameBack.jpg");
 	return true;
 }
 

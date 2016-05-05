@@ -49,9 +49,9 @@ void CollideManager::mCheckHitWall(const int number){
 	// ’e—p
 	// •Ç‚É‚Ô‚Â‚©‚Á‚½‚çÁ‚¦‚é
 	for (auto& bullet : m_player->mGetBullet()){
+		if (!bullet._isRun)continue;
 		for (auto wall : m_filed->mGetPartitionWall(bullet._number))
 			if (CollideBoxOBB(*wall, *bullet._bullet->mGetCollider())){
-			Debug::mPrint("‚©‚×‚É‚Ô‚Â‚©‚Á‚½");
 			bullet._isRun = false;
 			break;
 		}

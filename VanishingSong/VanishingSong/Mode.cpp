@@ -143,7 +143,7 @@ void Mode::mMainUIRender(ShaderHash shader){
 	}
 	
 	m_pActionBoard->mRender(shader["color"].get());
-	m_pOrderList->mRender(shader["color"].get());
+	m_pOrderList->mRender(shader["texture"].get(), shader["color"].get());
 	m_pPlayerGaugeManager->mRender();
 	mUIRender(shader);
 	return;

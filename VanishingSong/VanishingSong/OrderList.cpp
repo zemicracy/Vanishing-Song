@@ -55,7 +55,7 @@ std::shared_ptr<Texture> gLoadTexture(std::string key, std::string path){
 
 void OrderList::mInitialize(){
 	WorldReader reader;
-	std::string dir = "Texture\\";
+	std::string dir = "Texture\\Game\\";
 
 
 	reader.Load("data/orderList.aether");
@@ -183,15 +183,14 @@ void OrderList::mUpdate(float){
 			}
 		}
 }
-void OrderList::mRender(aetherClass::ShaderBase* shader){
-	m_pBackImage->Render(shader);
+void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
+	m_pBackImage->Render(debug);
 	for (int i = 0; i < m_orderList.size(); ++i){
 		m_pSpriteList[i]->property._color = m_orderList[i]->mGetProperty()._color;
-		m_pSpriteList[i]->Render(shader);
+		m_pSpriteList[i]->Render(debug);
 	}
-//	static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eTexture;
 	m_pVolumeImage->Render(shader);
-//	static_cast<FragmentShader*>(shader)->_property = FragmentShader::Mode::eColor;
+
 }
 
 std::shared_ptr<ActionCommand> OrderList::mGetActionCommand(){
