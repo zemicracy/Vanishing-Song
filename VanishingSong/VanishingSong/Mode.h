@@ -34,14 +34,15 @@ public:
 	void mMainRender(ShaderHash shader);
 	void mMainUIRender(ShaderHash shader);
 	// Ÿ‚Ì“ú‚Éi‚Ş‚Æ‚«‚Ì‰Šú‰»ˆ—
-	virtual void mNextDayInitialize(GameManager::eDay nextDay) = 0;
+	virtual void mNextDayInitialize(GameManager::eDay nextDay);
 
 	// ‘O‚Ì“ú‚Ì‰ğ•úˆ—
-	virtual void mPrevDayFinalize(GameManager::eDay prevDay) = 0;
+	virtual void mPrevDayFinalize(GameManager::eDay prevDay);
 
 	virtual void mFinalize();
 
 	eState mGetState();
+	ResultData mGetResultData();
 protected:
 	std::shared_ptr<Player> mGetPlayer();
 	std::shared_ptr<FieldArea> mGetFieldArea();

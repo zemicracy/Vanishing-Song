@@ -24,15 +24,23 @@ ResultBord::~ResultBord()
 void ResultBord::mInitialize(GameManager::eGameMode mode){
 
 	// 倒した数の数字表示オブジェクト用
+	int count = 0;
 	for (auto& killObject : m_pKill){
 		killObject = std::make_shared<Rectangle2D>();
 		killObject->Initialize();
+		killObject->property._transform._scale = Vector3(50, 80, 0);
+		killObject->property._transform._translation = Vector3(500 + 50 * count, 100, 0);
+		count += 1;
 	}
 
+	count = 0;
 	// 最大コンボ数表示用
-	for (auto& comboObject : m_pKill){
+	for (auto& comboObject : m_pCombo){
 		comboObject = std::make_shared<Rectangle2D>();
 		comboObject->Initialize();
+		comboObject->property._transform._scale = Vector3(50, 80, 0);
+		comboObject->property._transform._translation = Vector3(500 + 50 * count, 300, 0);
+		count += 1;
 	}
 
 	// 取得した音符の数表示用
@@ -40,9 +48,13 @@ void ResultBord::mInitialize(GameManager::eGameMode mode){
 		noteObject = std::make_unique<Rectangle2D>();
 		noteObject->Initialize();
 	}
+	m_pMainBordTexture = std::make_unique<Texture>();
+	m_pMainBordTexture->Load("Texture\\Result\\ResultBord.png");
 
 	m_pMainBord = std::make_unique<Rectangle2D>();
 	m_pMainBord->Initialize();
+	m_pMainBord->property._transform._scale = Vector3(1280, 720, 0);
+	m_pMainBord->SetTexture(m_pMainBordTexture.get());
 
 	// 次へとか終了とかのオブジェクト
 	m_pClickObject= std::make_unique<Rectangle2D>();
@@ -103,6 +115,11 @@ void ResultBord::mFinalize(){
 	if (m_pBlurObject){
 		m_pBlurObject->Finalize();
 
+	}
+
+	if (m_pMainBordTexture){
+		m_pMainBordTexture.release();
+		m_pMainBordTexture = nullptr;
 	}
 	
 	m_pClickTexture.clear();
@@ -166,20 +183,20 @@ void ResultBord::mAttachTexture(std::array<std::shared_ptr<aetherClass::SpriteBa
 	numberString = std::to_string(count);
 	int stringSize = numberString.size();
 	if (stringSize == 1){
-	//	bord[0]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("0").get());
-	//	bord[1]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture(numberString).get());
+		bord[0]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("0").get());
+		bord[1]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture(numberString).get());
 	}
 	else if (stringSize == 2){
 		for (int id = 0; id < kMaxNumber; ++id){
 			std::string oneString;
 			oneString = numberString[id];
-		//	bord[id]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture(oneString).get());
+			bord[id]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture(oneString).get());
 		}
 	}
 	else{
 		// １００以上の場合は99でカンスト
 		for (auto& index : bord){
-		//	index->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("9").get());
+			index->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("9").get());
 		}
 	}
 	return;
@@ -197,7 +214,7 @@ void ResultBord::mRender(ShaderBase* defaultShader, ShaderBase* bluar ){
 	}
 
 	// 最大コンボ数表示用
-	for (auto& comboObject : m_pKill){
+	for (auto& comboObject : m_pCombo){
 		comboObject->Render(defaultShader);
 	}
 

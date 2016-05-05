@@ -220,7 +220,7 @@ std::shared_ptr<Mode> SceneGame::mReturnMode(GameManager::eGameMode mode){
 void SceneGame::mShowResult(GameManager::eDay nowDay, ShaderBase* defaultShader,ShaderBase* bularShader){
 	if (m_gameState != eState::eResult)return;
 
-	m_pResultBord->mSetupData(m_resultData, nowDay); // “à•”“I‚É‚Íˆê‰ñ‚µ‚©ŒÄ‚Î‚ê‚È‚¢
+	m_pResultBord->mSetupData(m_pMode->mGetResultData(), nowDay); // “à•”“I‚É‚Íˆê‰ñ‚µ‚©ŒÄ‚Î‚ê‚È‚¢
 
 	auto mouse = GameController::GetMouse().GetMousePosition();
 	bool click = GameController::GetMouse().IsLeftButtonTrigger();
