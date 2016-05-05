@@ -97,12 +97,6 @@ bool EnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	return true;
 }
 
-void EnemyManager::mEnemyOnHit()
-{
-	for (auto itr: m_pEnemy)
-	itr->mEnemyOnHit();
-}
-
 
 void EnemyManager::mStatusInit(){
 

@@ -54,6 +54,7 @@ private:
 
 	//std::shared_ptr<EnemyManager> m_penemyGround;
 	std::shared_ptr<Player> m_pPlayer;
+	std::shared_ptr<EnemyManager> m_pEnemyManager;
 	std::shared_ptr<FieldArea> m_pFieldArea;
 	std::unique_ptr<GaugeManager> m_pPlayerGaugeManager;
 	std::unique_ptr<CollideManager> m_pCollideManager;
