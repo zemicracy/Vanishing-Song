@@ -32,7 +32,7 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 	m_pFieldArea->mSetCamera(view);
 
 	m_pCollideManager = std::make_unique<CollideManager>();
-	m_pCollideManager->mInitialize(m_pPlayer, nullptr, m_pFieldArea);
+	m_pCollideManager->mInitialize(m_pPlayer, m_pEnemyManager, m_pFieldArea);
 
 	m_pPlayerGaugeManager = std::make_unique<GaugeManager>();
 	m_pPlayerGaugeManager->mInitialize();	
