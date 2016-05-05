@@ -23,8 +23,8 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 	m_pPlayer->mInitialize();
 
 	auto view = m_pPlayer->mGetView();
-	/*m_penemyGround = std::make_shared<EnemyGround>();
-	m_penemyGround->mInitialize(view);*/
+	m_pEnemyManager = std::make_shared<EnemyManager>();
+	m_pEnemyManager->mInitilize(view);
 
 	// ステージオブジェクト
 	m_pFieldArea = std::make_shared<FieldArea>();
@@ -81,11 +81,11 @@ void Mode::mFinalize(){
 		m_pCollideManager = nullptr;
 	}
 
-	/*if (m_penemyGround){
-		m_penemyGround->mFinalize();
-		m_penemyGround.reset();
-		m_penemyGround = nullptr;
-	}*/
+	if (m_pEnemyManager){
+		m_pEnemyManager->mFinalize();
+		m_pEnemyManager.reset();
+		m_pEnemyManager = nullptr;
+	}
 }
 
 void Mode::mMainUpdate(const float timeScale, const float nowTime){
@@ -112,6 +112,8 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 	m_pPlayerGaugeManager->mSetuseMp(m_pOrderList->mGetIfUseMp());
 	m_pPlayerGaugeManager->mUpdate(timeScale);
 
+	m_pEnemyManager->mUpdater();
+
 	// 当たり判定の更新
 	m_pCollideManager->mUpdate();
 
@@ -133,6 +135,7 @@ void Mode::mMainRender(ShaderHash shaderHash){
 	mRender(shaderHash);
 	mGetPlayer()->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	mGetFieldArea()->mRender(shaderHash["color"].get(), shaderHash["texture"].get());
+	m_pEnemyManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	return;
 }
 
