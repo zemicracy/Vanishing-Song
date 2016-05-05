@@ -134,7 +134,7 @@ public:
 
 	std::array<BulletPool, kMaxBullet>& mGetBullet();
 
-	ResultData mGetResultData();
+	ResultData& mGetResultData();
 	CharaStatus& mGetStatus();
 	// “ú‚ª•Ï‚í‚é‚Æ‚«‚Ìˆ—
 	void mDayReset();

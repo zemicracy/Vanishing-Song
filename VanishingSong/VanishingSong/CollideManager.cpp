@@ -21,7 +21,7 @@ void CollideManager::mInitialize(std::shared_ptr<Player> player, std::shared_ptr
 	m_player = player;
 	m_enemyManager = enemy;
 	m_filed = field;
-	m_filedNumber = NULL;
+	m_playerNumber = NULL;
 }
 
 //
@@ -54,22 +54,22 @@ void CollideManager::mCheckHitWall(const int number){
 int CollideManager::mCheckPlayerFieldArea(){
 	
 	// ‘O‰ñ‚Ì”Ô†‚©‚çƒvƒ‰ƒX‚µ‚Ä‚¢‚­
-	for (int id = m_filedNumber; id < kPartitionSize; ++id){
+	for (int id = m_playerNumber; id < kPartitionSize; ++id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
-			m_filedNumber = id;
-			return m_filedNumber;
+			m_playerNumber = id;
+			return m_playerNumber;
 		}
 	}
 
 	// ‘O‰ñ‚Ì”Ô†‚©‚çƒ}ƒCƒiƒX‚µ‚Ä‚¢‚­
-	for (int id = m_filedNumber; id >= 0; --id){
+	for (int id = m_playerNumber; id >= 0; --id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
-			m_filedNumber = id;
-			return m_filedNumber;
+			m_playerNumber = id;
+			return m_playerNumber;
 		}
 	}
 
-	return m_filedNumber;
+	return m_playerNumber;
 }
 
 // ƒvƒŒƒCƒ„[‚ÌUŒ‚‚ª“G‚É“–‚½‚Á‚Ä‚¢‚é‚©‚ÌŠm”F
@@ -77,13 +77,16 @@ void CollideManager::mCheckHitPlayerAttack(const int playerNumber){
 	// ’e‚ª“–‚½‚Á‚Ä‚¢‚é‚©‚ÌŠm”F
 	for (auto& bullet : m_player->mGetBullet()){
 		if (!bullet._isRun)continue;
-		//for (auto& enemy : m_enemyManager->mEnemyGet(bullet._number)){
-		//	if (CollideBoxOBB(*enemy->mGetProperty()._pcolider, *bullet._bullet->mGetCollider())){
-		//		// “G‚Æ’e‚ª“–‚½‚Á‚Ä‚¢‚½‚ç
-		//		bullet._isRun = false;
-		//		enemy->mEnemyOnHit();
-		//	}
-		//}
+		for (auto& enemy : m_enemyManager->mEnemyGet(bullet._number)){
+			if (CollideBoxOBB(*enemy->mGetProperty()._pcolider, *bullet._bullet->mGetCollider())){
+				// “G‚Æ’e‚ª“–‚½‚Á‚Ä‚¢‚½‚ç
+				bullet._isRun = false;
+				enemy->mEnemyOnHit();
+
+				// “G‚ğ“|‚µ‚½”‚ğ’Ç‰Á
+				m_player->mGetResultData()._killEnemy += 1;
+			}
+		}
 	}
 
 	if (m_player->mGetCommandType() != eCommandType::eShortDistanceAttack)return;
@@ -134,7 +137,8 @@ void CollideManager::mCheckFieldAreaBullet(){
 			}
 		}
 
+		// ‰½‚É‚à‚ ‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚çÁ‚·
 		bullet._isRun = false;
-		bullet._number = m_filedNumber;
+		bullet._number = m_playerNumber;
 	}
 }

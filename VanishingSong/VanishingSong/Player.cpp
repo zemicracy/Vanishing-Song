@@ -829,7 +829,7 @@ eCommandType Player::mGetCommandType(){
 	return m_status._command;
 }
 
-ResultData Player::mGetResultData(){
+ResultData& Player::mGetResultData(){
 	return m_resultData;
 }
 
