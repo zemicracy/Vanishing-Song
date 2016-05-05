@@ -15,6 +15,7 @@ private:
 		ePause,
 		eExit,
 		eResult,
+		eGameOver,
 		eFadeIn,
 		eShowDay,
 		eFadeOut,

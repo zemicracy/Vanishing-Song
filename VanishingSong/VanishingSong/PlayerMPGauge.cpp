@@ -43,7 +43,7 @@ bool PlayerMPGauge::mInitialize(){
 	if (!result)return false;
 
 	m_maskTexture = std::make_shared<Texture>();
-	result = m_maskTexture->Load("Texture/mpGauge.png");
+	result = m_maskTexture->Load("Texture\\Game\\mpGauge.png");
 	if (!result)return false;
 
 	WorldReader reader;

@@ -17,9 +17,9 @@ bool ModeSurvival::mInitialize(GameManager::eSkillType skill,GameManager::eDay f
 	return true;
 }
 
-void ModeSurvival::mUpdate(std::shared_ptr<ActionCommand> command, const float timeScale, const float nowTime){
+void ModeSurvival::mUpdate(const float timeScale, const float nowTime){
 
-	mGetPlayer()->mUpdate(timeScale, command);
+	
 	
 	return;
 }

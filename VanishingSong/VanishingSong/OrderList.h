@@ -8,7 +8,7 @@ public:
 	~OrderList();
 
 	void mUpdate(float);
-	void mRender(aetherClass::ShaderBase*);
+	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mAddOrder(std::shared_ptr<ActionCommand>);
 	void mInitialize();
 

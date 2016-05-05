@@ -16,14 +16,22 @@ class SceneTitle :
 	enum eNextMode{
 		eNull = 0,
 		eSurvival,
-		eBattle,
 		ePractice,
 		eTutorial,
+		eBattle,
 		eExit
 	};
 
 	// カーソル用
 	struct ModeSelect{
+		ModeSelect(){
+
+		}
+
+		ModeSelect(const int null){
+			_cursorY = 0.0f;
+			_modeNumber = null;
+		}
 		float _cursorY;
 		int _modeNumber;
 	};
@@ -64,13 +72,11 @@ private:
 	bool mMenuSelectState();
 private:
 	std::unique_ptr<aetherClass::SpriteBase> m_pLogo;
-	std::shared_ptr<aetherClass::ShaderBase> m_pTextureShader;
-	std::shared_ptr<aetherClass::ShaderBase> m_pColorShader;
+	std::unique_ptr<aetherClass::SpriteBase> m_pMenu;
+	std::unique_ptr<aetherClass::SpriteBase> m_pCursor;
 	std::shared_ptr<aetherClass::Texture> m_pLogoTexture;
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
-	std::unique_ptr<aetherClass::SpriteBase> m_pMenu;
-	std::unique_ptr<aetherClass::SpriteBase> m_pCursor;
 	std::array<ModeSelect, 5> m_cursorArray;
 	bool m_pushState;
 	int m_nowSelectMode;

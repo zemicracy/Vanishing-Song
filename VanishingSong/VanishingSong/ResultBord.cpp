@@ -62,8 +62,8 @@ void ResultBord::mInitialize(GameManager::eGameMode mode){
 
 	// テクスチャの登録
 	m_pClickTexture.clear();
-	RegisterTexture(eClickState::eNextDay, "Texture\\Exit.png");
-	RegisterTexture(eClickState::eExit, "Texture\\Next.png");
+	RegisterTexture(eClickState::eNextDay, "Texture\\Result\\Next.png");
+	RegisterTexture(eClickState::eExit, "Texture\\Result\\Exit.png");
 
 	m_mode = mode;
 	m_day = GameManager::eDay::eNull;
