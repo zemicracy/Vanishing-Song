@@ -43,7 +43,7 @@ bool PlayerMPGauge::mInitialize(){
 	if (!result)return false;
 
 	m_maskTexture = std::make_shared<Texture>();
-	result = m_maskTexture->Load("Texture/mpGauge.png");
+	result = m_maskTexture->Load("Texture\\Game\\mpGauge.png");
 	if (!result)return false;
 
 	WorldReader reader;
@@ -64,6 +64,9 @@ bool PlayerMPGauge::mInitialize(){
 	m_pIfuseSprite = std::make_shared<Rectangle2D>();
 	*m_pIfuseSprite.get() = *m_pMainSprite.get();
 	m_pIfuseSprite->property._color = Color(0.5, 1, 0.6, 1);
+	
+	m_useColor = m_pIfuseSprite->property._color;
+	m_deadColor = Color(1, 0, 0, 1);
 
 	m_pMaskSprite = std::make_shared<Rectangle2D>();
 	*m_pMaskSprite.get() = *m_pMainSprite.get();
@@ -80,7 +83,11 @@ bool PlayerMPGauge::mInitialize(){
 }
 
 void PlayerMPGauge::mUpdate(float timeScale){
-	
+	if (m_CharaStatus->_mp < m_useValue._nextMp){
+		m_pIfuseSprite->property._color = m_deadColor;
+	}else
+		m_pIfuseSprite->property._color = m_useColor;
+
 
 	//XVˆ—
 	if (m_useValue._nextMp == 0 && m_useValue._prevNextMp != m_useValue._nextMp){

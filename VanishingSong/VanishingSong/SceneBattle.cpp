@@ -4,7 +4,6 @@
 #include<PixelShader.h>
 #include <GameController.h>
 
-#include "SceneGameover.h"
 using namespace aetherClass;
 const std::string SceneBattle::Name = "Battle";
 SceneBattle::SceneBattle():
@@ -39,7 +38,6 @@ bool SceneBattle::Initialize(){
 	m_pModelBase->property._color = Color(0, 0, 0, 1);
 	m_pModelBase->SetTexture(m_pTexture.get());
 
-	RegisterScene(new SceneGameover());
 	return true;
 }
 
@@ -49,9 +47,7 @@ void SceneBattle::Finalize(){
 }
 
 bool SceneBattle::Updater(){
-	if (GameController::GetMouse().IsLeftButtonTrigger()){
-		ChangeScene("Gameover", LoadState::eUnuse, LoadWaitState::eUnuse);
-	}
+	
 	return true;
 }
 

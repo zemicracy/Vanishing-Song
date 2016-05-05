@@ -16,7 +16,7 @@ bool ModePractice::mInitialize(GameManager::eSkillType skill,GameManager::eDay f
 	return true;
 }
 
-void ModePractice::mUpdate(std::shared_ptr<ActionCommand> command, const float timeScale, const float nowTime){
+void ModePractice::mUpdate(const float timeScale, const float nowTime){
 
 	return;
 }

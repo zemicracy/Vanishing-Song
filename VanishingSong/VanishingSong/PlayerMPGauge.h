@@ -34,5 +34,9 @@ private:
 		}
 	}m_useValue;
 
+	aetherClass::Color m_useColor;
+	aetherClass::Color m_deadColor;
+
+
 };
 

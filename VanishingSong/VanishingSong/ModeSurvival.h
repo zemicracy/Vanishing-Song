@@ -18,7 +18,7 @@ public:
 	void mPrevDayFinalize(GameManager::eDay prevDay)override;
 
 private:
-	void mUpdate(std::shared_ptr<ActionCommand> command, const float timeScale, const float nowTime) override;
+	void mUpdate(const float timeScale, const float nowTime) override;
 	void mRender(ShaderHash shader)override;
 	void mUIRender(ShaderHash shader)override;
 };

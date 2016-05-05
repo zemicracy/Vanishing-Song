@@ -30,7 +30,7 @@ bool SceneSkill::Initialize(){
 	desc._vertex._entryName = "vs_main";
 	desc._vertex._srcFile = L"Shader\\VertexShaderBase.hlsl";
 	desc._pixel._entryName = "ps_main";
-	desc._pixel._srcFile = L"Shader\\ColorTexture.hlsl";
+	desc._pixel._srcFile = L"Shader\\Texture.hlsl";
 
 	m_pShaderBase = std::make_unique<PixelShader>();
 	m_pShaderBase->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
@@ -56,7 +56,7 @@ bool SceneSkill::Updater(){
 	if (GameController::GetMouse().IsLeftButtonTrigger()){
 		// ƒXƒLƒ‹‚Ì‘I‘ð
 		Singleton<GameManager>::GetInstance().mSkillType(GameManager::eSkillType::eNull);
-		ChangeScene(SceneGame::Name, LoadState::eUnuse, LoadWaitState::eUnuse);
+		ChangeScene(SceneGame::Name, LoadState::eUse);
 	}
 	return true;
 }

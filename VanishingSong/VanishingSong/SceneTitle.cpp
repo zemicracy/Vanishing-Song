@@ -8,7 +8,7 @@
 #include "Debug.h"
 #include "SceneSkill.h"
 #include "Const.h"
-
+#include "ResourceManager.h"
 #include "SceneBattle.h"
 #include "SceneTutorial.h"
 #include "SceneSkill.h"
@@ -19,14 +19,13 @@ namespace{
 	const bool kMenuSelect = true;
 	const std::string kExit = "Exit";
 	const bool kShutdown = false;
+	const int kSkipNumber = 3;
 }
 const std::string SceneTitle::Name = "Title";
 SceneTitle::SceneTitle() :
 GameScene(Name, GetManager())
 {
 	m_pLogo = nullptr;
-	m_pTextureShader = nullptr;
-	m_pColorShader = nullptr;
 	m_pLogoTexture = nullptr;
 	m_pMenuTexture = nullptr;
 	m_pPushTexture = nullptr;
@@ -38,8 +37,6 @@ GameScene(Name, GetManager())
 SceneTitle::~SceneTitle()
 {
 	m_pLogo = nullptr;
-	m_pTextureShader = nullptr;
-	m_pColorShader = nullptr;
 	m_pLogoTexture = nullptr;
 	m_pMenuTexture = nullptr;
 	m_pPushTexture = nullptr;
@@ -50,29 +47,15 @@ SceneTitle::~SceneTitle()
 
 bool SceneTitle::Initialize(){
 
-	// シェーダーの初期化
-	ShaderDesc desc;
-	desc._vertex._entryName = "vs_main";
-	desc._vertex._srcFile = L"Shader\\VertexShaderBase.hlsl";
-	desc._pixel._entryName = "ps_main";
-	desc._pixel._srcFile = L"Shader\\Transparent.hlsl";
-	
-	m_pTextureShader = std::make_shared<PixelShader>();
-	m_pTextureShader->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
-
-	desc._pixel._srcFile = L"Shader\\BasicColor.hlsl";
-
-	m_pColorShader = std::make_shared<PixelShader>();
-	m_pColorShader->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
-	m_pLogoTexture->Load("Texture\\TitleImage.png");
+	m_pLogoTexture->Load("Texture\\Title\\TitleImage.png");
 
 	m_pMenuTexture = std::make_shared<Texture>();
-	m_pMenuTexture->Load("Texture\\space.jpg");
+	m_pMenuTexture->Load("Texture\\Title\\SelectMode.png");
 
 	m_pPushTexture = std::make_shared<Texture>();
-	m_pPushTexture->Load("Texture\\TitleImage.png");
+	m_pPushTexture->Load("Texture\\Title\\TitleImage.png");
 	
 	// ロゴの初期化
 	m_pLogo = std::make_unique<Rectangle2D>();
@@ -139,23 +122,28 @@ void SceneTitle::Finalize(){
 		m_pMenu = nullptr;
 	}
 
-	if (m_pTextureShader)
-	{
-		m_pTextureShader->Finalize();
-		m_pTextureShader = nullptr;
+	if (m_pLogoTexture){
+		m_pLogoTexture.reset();
+		m_pLogoTexture = nullptr;
 	}
 
-	if (m_pColorShader)
-	{
-		m_pColorShader->Finalize();
-		m_pColorShader = nullptr;
+	if (m_pMenuTexture){
+		m_pMenuTexture.reset();
+		m_pMenuTexture = nullptr;
+	}
 
+	if (m_pPushTexture){
+		m_pPushTexture.reset();
+		m_pPushTexture = nullptr;
 	}
 
 	m_pushState = false;
 
 	m_alphaState = false;
 	m_nowSelectMode = NULL;
+
+	// NULLで初期化
+	m_cursorArray.fill(ModeSelect(NULL));
 	return;
 }
 
@@ -178,11 +166,13 @@ void SceneTitle::Render(){
 }
 
 void SceneTitle::UIRender(){
-	m_pLogo->Render(m_pTextureShader.get());
-	m_pMenu->Render(m_pTextureShader.get());
+	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	m_pLogo->Render(shaderHash["transparent"].get());
+	m_pMenu->Render(shaderHash["transparent"].get());
 
 	if (m_pushState == kMenuSelect){
-		m_pCursor->Render(m_pColorShader.get());
+
+		m_pCursor->Render(shaderHash["color"].get());
 	}
 	return;
 }
@@ -198,10 +188,11 @@ bool SceneTitle::TransitionOut(){
 
 void SceneTitle::mChangeSelect(Vector2 mouse){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
-	for (auto index : m_cursorArray){
-		if (index._cursorY<mouse._y&&index._cursorY + cursorSize>mouse._y){
-			m_pCursor->property._transform._translation._y = index._cursorY;
-			m_nowSelectMode = index._modeNumber;
+	for (int i = 0; i < m_cursorArray.size();++i){
+		if (i == kSkipNumber)continue;
+		if (m_cursorArray[i]._cursorY<mouse._y&&m_cursorArray[i]._cursorY + cursorSize>mouse._y){
+			m_pCursor->property._transform._translation._y = m_cursorArray[i]._cursorY;
+			m_nowSelectMode = m_cursorArray[i]._modeNumber;
 		}
 	}
 }
@@ -237,7 +228,6 @@ void SceneTitle::mClickState(){
 bool SceneTitle::mMenuSelectState(){
 	if (m_pushState != kMenuSelect)return true;
 
-	m_pCursor->Render(m_pColorShader.get());
 	m_pMenu->property._color._alpha = 1;
 	// カーソルの移動処理
 	Vector2 mouse = GameController::GetMouse().GetMousePosition();
@@ -264,7 +254,7 @@ bool SceneTitle::mMenuSelectState(){
 				// ゲームモードの設定
 				Singleton<GameManager>::GetInstance().mGameMode(nextState._mode);
 				// シーンの遷移
-				ChangeScene(nextState._nextSceneName, LoadState::eUse, LoadWaitState::eNull);
+				ChangeScene(nextState._nextSceneName, LoadState::eUse);
 			}else{
 				// 終了
 				return kShutdown;
@@ -289,14 +279,15 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 		info._nextSceneName = SceneSkill::Name;
 		break;
 
-	case eNextMode::eBattle:
-		info._mode = GameManager::eGameMode::eBattle;
-		info._nextSceneName = SceneBattle::Name;
-		break;
-
 	case eNextMode::eTutorial:
 		info._mode = GameManager::eGameMode::eTutorial;
 		info._nextSceneName = SceneTutorial::Name;
+		break;
+
+
+	case eNextMode::eBattle:
+		info._mode = GameManager::eGameMode::eBattle;
+		info._nextSceneName = SceneBattle::Name;
 		break;
 
 		// ここはならすべて終了

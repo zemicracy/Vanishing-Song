@@ -18,10 +18,6 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 	m_pActionBoard = std::make_unique<ActionBoard>();
 	m_pActionBoard->mInitialize(skill);
 
-	// オーダーリストの初期化
-	m_pOrderList = std::make_unique<OrderList>();
-	m_pOrderList->mInitialize();
-
 	// プレイヤーの初期化
 	m_pPlayer = std::make_shared<Player>();
 	m_pPlayer->mInitialize();
@@ -42,6 +38,9 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 	m_pPlayerGaugeManager->mInitialize();	
 	m_pPlayerGaugeManager->mSetCharaStatus(&m_pPlayer->mGetStatus());
 
+	// オーダーリストの初期化
+	m_pOrderList = std::make_unique<OrderList>();
+	m_pOrderList->mInitialize();
 	m_pOrderList->mSetCharaMp(&m_pPlayer->mGetStatus()._mp);
 
 	m_state = eState::eNull;
@@ -78,6 +77,11 @@ void Mode::mFinalize(){
 		m_pFieldArea = nullptr;
 	}
 
+	if (m_pCollideManager){
+		m_pCollideManager.release();
+		m_pCollideManager = nullptr;
+	}
+
 	/*if (m_penemyGround){
 		m_penemyGround->mFinalize();
 		m_penemyGround.reset();
@@ -101,8 +105,10 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 	m_pActionBoard->mUpdate(timeScale);
 	m_pOrderList->mUpdate(timeScale);
 
+	mGetPlayer()->mUpdate(timeScale, m_pOrderList->mGetActionCommand());
+
 	// 更新処理
-	mUpdate(m_pOrderList->mGetActionCommand(),timeScale,nowTime);
+	mUpdate(timeScale,nowTime);
 
 	m_pPlayerGaugeManager->mSetuseMp(m_pOrderList->mGetIfUseMp());
 	m_pPlayerGaugeManager->mUpdate(timeScale);
@@ -137,7 +143,7 @@ void Mode::mMainUIRender(ShaderHash shader){
 	}
 	
 	m_pActionBoard->mRender(shader["color"].get());
-	m_pOrderList->mRender(shader["color"].get());
+	m_pOrderList->mRender(shader["texture"].get(), shader["color"].get());
 	m_pPlayerGaugeManager->mRender();
 	mUIRender(shader);
 	return;

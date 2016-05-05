@@ -7,6 +7,7 @@
 #include <GameSound.h>
 #include <Texture.h>
 #include <ShaderBase.h>
+#include <Singleton.h>
 namespace{
 	const int kMaxBGM = 8;
 }
