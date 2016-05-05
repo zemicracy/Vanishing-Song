@@ -205,7 +205,7 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 	}
 
 	// Œü‚«‚¾‚¯•Ï‚¦‚é
-	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
+	//m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 	
 	// ˆÚ“®ˆ—
 	m_charaEntity.mGearMove(m_topGear, m_playerTransform._translation);

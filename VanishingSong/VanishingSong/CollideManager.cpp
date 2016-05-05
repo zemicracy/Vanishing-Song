@@ -44,17 +44,6 @@ void CollideManager::mCheckHitWall(const int number){
 			break;
 		}
 	}
-
-	// ’e—p
-	// •Ç‚É‚Ô‚Â‚©‚Á‚½‚çÁ‚¦‚é
-	for (auto& bullet : m_player->mGetBullet()){
-		if (!bullet._isRun)continue;
-		for (auto wall : m_filed->mGetPartitionWall(bullet._number))
-			if (CollideBoxOBB(*wall, *bullet._bullet->mGetCollider())){
-			bullet._isRun = false;
-			break;
-		}
-	}
 	return;
 }
 
@@ -88,13 +77,13 @@ void CollideManager::mCheckHitPlayerAttack(const int playerNumber){
 	// ’e‚ª“–‚½‚Á‚Ä‚¢‚é‚©‚ÌŠm”F
 	for (auto& bullet : m_player->mGetBullet()){
 		if (!bullet._isRun)continue;
-		for (auto& enemy : m_enemyManager->mEnemyGet(bullet._number)){
-			if (CollideBoxOBB(*enemy->mGetProperty()._pcolider, *bullet._bullet->mGetCollider())){
-				// “G‚Æ’e‚ª“–‚½‚Á‚Ä‚¢‚½‚ç
-				bullet._isRun = false;
-				enemy->mEnemyOnHit();
-			}
-		}
+		//for (auto& enemy : m_enemyManager->mEnemyGet(bullet._number)){
+		//	if (CollideBoxOBB(*enemy->mGetProperty()._pcolider, *bullet._bullet->mGetCollider())){
+		//		// “G‚Æ’e‚ª“–‚½‚Á‚Ä‚¢‚½‚ç
+		//		bullet._isRun = false;
+		//		enemy->mEnemyOnHit();
+		//	}
+		//}
 	}
 
 	if (m_player->mGetCommandType() != eCommandType::eShortDistanceAttack)return;
@@ -144,5 +133,8 @@ void CollideManager::mCheckFieldAreaBullet(){
 				return;
 			}
 		}
+
+		bullet._isRun = false;
+		bullet._number = m_filedNumber;
 	}
 }
