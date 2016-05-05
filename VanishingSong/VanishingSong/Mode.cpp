@@ -168,3 +168,17 @@ Mode::eState Mode::mGetState(){
 void  Mode::mSetState(Mode::eState state){
 	m_state = state;
 }
+
+
+ResultData Mode::mGetResultData(){
+	return mGetPlayer()->mGetResultData();
+}
+
+void Mode::mNextDayInitialize(GameManager::eDay nextDay){
+	mGetPlayer()->mDayReset();
+}
+
+// ‘O‚Ì“ú‚Ì‰ğ•úˆ—
+void Mode::mPrevDayFinalize(GameManager::eDay prevDay){
+
+}
