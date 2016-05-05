@@ -23,8 +23,8 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 	m_pPlayer->mInitialize();
 
 	auto view = m_pPlayer->mGetView();
-	/*m_penemyGround = std::make_shared<EnemyGround>();
-	m_penemyGround->mInitialize(view);*/
+	m_pEnemyManager = std::make_shared<EnemyManager>();
+	m_pEnemyManager->mInitilize(view);
 
 	// ステージオブジェクト
 	m_pFieldArea = std::make_shared<FieldArea>();
@@ -32,7 +32,7 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 	m_pFieldArea->mSetCamera(view);
 
 	m_pCollideManager = std::make_unique<CollideManager>();
-	m_pCollideManager->mInitialize(m_pPlayer, nullptr, m_pFieldArea);
+	m_pCollideManager->mInitialize(m_pPlayer, m_pEnemyManager, m_pFieldArea);
 
 	m_pPlayerGaugeManager = std::make_unique<GaugeManager>();
 	m_pPlayerGaugeManager->mInitialize();	
@@ -51,7 +51,6 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 void Mode::mFinalize(){
 	
 	if (m_pPlayer){
-		m_pPlayer->mFinalize();
 		m_pPlayer.reset();
 		m_pPlayer = nullptr;
 	}
@@ -82,11 +81,11 @@ void Mode::mFinalize(){
 		m_pCollideManager = nullptr;
 	}
 
-	/*if (m_penemyGround){
-		m_penemyGround->mFinalize();
-		m_penemyGround.reset();
-		m_penemyGround = nullptr;
-	}*/
+	if (m_pEnemyManager){
+		m_pEnemyManager->mFinalize();
+		m_pEnemyManager.reset();
+		m_pEnemyManager = nullptr;
+	}
 }
 
 void Mode::mMainUpdate(const float timeScale, const float nowTime){
@@ -107,15 +106,18 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 
 	mGetPlayer()->mUpdate(timeScale, m_pOrderList->mGetActionCommand());
 
-	// 更新処理
+	// 派生先の更新処理
 	mUpdate(timeScale,nowTime);
 
 	m_pPlayerGaugeManager->mSetuseMp(m_pOrderList->mGetIfUseMp());
 	m_pPlayerGaugeManager->mUpdate(timeScale);
 
+	m_pEnemyManager->mUpdater();
+
 	// 当たり判定の更新
 	m_pCollideManager->mUpdate();
 
+	// プレイヤーの死亡判定
 	bool playerDead = mGetPlayer()->mIsDead();
 	if (playerDead){
 		mSetState(eState::eGameOver);
@@ -133,6 +135,7 @@ void Mode::mMainRender(ShaderHash shaderHash){
 	mRender(shaderHash);
 	mGetPlayer()->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	mGetFieldArea()->mRender(shaderHash["color"].get(), shaderHash["texture"].get());
+	m_pEnemyManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	return;
 }
 

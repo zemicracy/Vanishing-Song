@@ -19,9 +19,9 @@ CollideManager::~CollideManager()
 //
 void CollideManager::mInitialize(std::shared_ptr<Player> player, std::shared_ptr<EnemyManager> enemy, std::shared_ptr<FieldArea> field){
 	m_player = player;
-	m_enemys = enemy;
+	m_enemyManager = enemy;
 	m_filed = field;
-	m_filedNumber = NULL;
+	m_playerNumber = NULL;
 }
 
 //
@@ -41,18 +41,6 @@ void CollideManager::mCheckHitWall(const int number){
 	for (auto wall : m_filed->mGetPartitionWall(number)){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
 			m_player->mOnHitWall();
-		
-			break;
-		}
-	}
-
-	// 弾用
-	// 壁にぶつかったら消える
-	for (auto& bullet : m_player->mGetBullet()){
-		if (!bullet._isRun)continue;
-		for (auto wall : m_filed->mGetPartitionWall(bullet._number))
-			if (CollideBoxOBB(*wall, *bullet._bullet->mGetCollider())){
-			bullet._isRun = false;
 			break;
 		}
 	}
@@ -64,34 +52,41 @@ void CollideManager::mCheckHitWall(const int number){
 	格納場所 m_fieldNumber
 */
 int CollideManager::mCheckPlayerFieldArea(){
-	if (GameController::GetKey().KeyDownTrigger('M')){
-		Debug::mPrint(std::to_string(m_filedNumber));
-	}
-
+	
 	// 前回の番号からプラスしていく
-	for (int id = m_filedNumber; id < kPartitionSize; ++id){
+	for (int id = m_playerNumber; id < kPartitionSize; ++id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
-			m_filedNumber = id;
-			return m_filedNumber;
+			m_playerNumber = id;
+			return m_playerNumber;
 		}
 	}
 
 	// 前回の番号からマイナスしていく
-	for (int id = m_filedNumber; id >= 0; --id){
+	for (int id = m_playerNumber; id >= 0; --id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
-			m_filedNumber = id;
-			return m_filedNumber;
+			m_playerNumber = id;
+			return m_playerNumber;
 		}
 	}
 
-	return m_filedNumber;
+	return m_playerNumber;
 }
 
 // プレイヤーの攻撃が敵に当たっているかの確認
 void CollideManager::mCheckHitPlayerAttack(const int playerNumber){
 	// 弾が当たっているかの確認
 	for (auto& bullet : m_player->mGetBullet()){
-		
+		if (!bullet._isRun)continue;
+		for (auto& enemy : m_enemyManager->mEnemyGet(bullet._number)){
+			if (CollideBoxOBB(*enemy->mGetProperty()._pcolider, *bullet._bullet->mGetCollider())){
+				// 敵と弾が当たっていたら
+				bullet._isRun = false;
+				enemy->mEnemyOnHit();
+
+				// 敵を倒した数を追加
+				m_player->mGetResultData()._killEnemy += 1;
+			}
+		}
 	}
 
 	if (m_player->mGetCommandType() != eCommandType::eShortDistanceAttack)return;
@@ -102,7 +97,7 @@ void CollideManager::mCheckHitPlayerAttack(const int playerNumber){
 // 敵の攻撃がプレイヤーに当たっているかの確認
 void CollideManager::mCheckHitEnemyAttack(const int playerNumber){
 	bool isHit = false;
-	// 判定しようね
+	// TODO:判定しようね
 	if (!isHit)return;
 
 	// プレイヤーの状態に合わせてダメージ量の計算
@@ -141,5 +136,9 @@ void CollideManager::mCheckFieldAreaBullet(){
 				return;
 			}
 		}
+
+		// 何にもあたっていなかったら消す
+		bullet._isRun = false;
+		bullet._number = m_playerNumber;
 	}
 }

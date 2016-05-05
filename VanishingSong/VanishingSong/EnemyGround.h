@@ -20,6 +20,7 @@ public:
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*)override;
 	bool mSetUp() override;
 	void mFinalize() override;
+	void mEnemyOnHit() override;
 	std::shared_ptr<EnemyAI> GetAI();
 
 

@@ -32,6 +32,12 @@ public:
 		int enemy_min_z;
 	};
 
+	struct EnemyRandomMoveValue{
+		int randomValuex;
+		int randomValuez;
+	};
+
+
 	struct Property{
 		aetherClass::Transform _transform;	//ˆÊ’u
 		std::shared_ptr<GearFrame> _penemy;	//Enemy–{‘Ì
@@ -40,9 +46,10 @@ public:
 		aetherClass::Vector3 _nextDirection;
 		int _enemyAreaNo;
 		bool m_isRender;
-		bool _isMoveJudge;
 		EnemyMoveRange _enemyMoveRange;
-		bool flag;
+		EnemyRandomMoveValue _enemyRandomMoveValue;
+		bool _moveFlag;
+		bool _onHitFlag;
 	};
 
 
@@ -61,6 +68,7 @@ public:
 	virtual void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*) = 0;
 	virtual bool mSetUp() = 0;
 	virtual void mFinalize() = 0;
+	virtual void mEnemyOnHit()=0;
 
 private:
 	Property m_property;

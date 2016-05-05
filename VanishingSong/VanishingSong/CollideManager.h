@@ -19,10 +19,10 @@ private:
 	void mCheckHitEnemyAttack(const int);
 private:
 	std::shared_ptr<Player> m_player;
-	std::shared_ptr<EnemyManager> m_enemys;
+	std::shared_ptr<EnemyManager> m_enemyManager;
 	std::shared_ptr<FieldArea> m_filed;
 	
-	int m_filedNumber;
+	int m_playerNumber;
 };
 
 #endif

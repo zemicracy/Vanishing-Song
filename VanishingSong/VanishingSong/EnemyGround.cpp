@@ -65,7 +65,7 @@ void EnemyGround::mInitializeEnemyColider(ViewCamera* camera){
 	mGetProperty()._pcolider = std::make_shared<Cube>();
 	mGetProperty()._pcolider->Initialize();
 	mGetProperty()._pcolider->property._transform._translation = m_pTopGear->_pGear->property._transform._translation;
-	mGetProperty()._pcolider->property._transform._scale = Vector3(6, 3, 4);
+	mGetProperty()._pcolider->property._transform._scale = Vector3(30, 20, 4);
 	mGetProperty()._pcolider->property._color = Color(1, 1, 1, 0.5);
 	mGetProperty()._pcolider->SetCamera(camera);
 }
@@ -79,7 +79,7 @@ void EnemyGround::mUpdate(){
 	m_AI->mUpdateRun(&mGetProperty(), &m_pTopGear->_pGear->property._transform._translation);
 
 	mGetProperty()._pcolider->property._transform._translation = *mGetProperty()._colliderPosition;
-	mGetProperty()._pcolider->property._transform._translation._x = mGetProperty()._colliderPosition->_x -5;
+	mGetProperty()._pcolider->property._transform._translation._x = mGetProperty()._colliderPosition->_x +30;
 	
 }
 
@@ -111,6 +111,9 @@ void EnemyGround::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* inf
 	return;
 }
 
+void EnemyGround::mEnemyOnHit(){
+	mGetProperty()._onHitFlag = true;
+}
 
 //EnemyAI
 std::shared_ptr<EnemyAI> EnemyGround::GetAI(){
@@ -123,7 +126,6 @@ std::shared_ptr<EnemyAI> EnemyGround::GetAI(){
 		//ˆÚ“®
 	case eActionType::eMove:
 		return std::make_shared<EnemyMove>();
-
 
 	case eActionType::eNull:
 		
