@@ -22,7 +22,7 @@ private:
 	std::shared_ptr<EnemyManager> m_enemyManager;
 	std::shared_ptr<FieldArea> m_filed;
 	
-	int m_filedNumber;
+	int m_playerNumber;
 };
 
 #endif
