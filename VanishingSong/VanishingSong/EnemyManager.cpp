@@ -75,7 +75,7 @@ bool EnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	reader2.UnLoad();
 
 	//EnemyGround‚Ì¶¬
-	for (int i = 0; i < 2; i++){
+	for (int i = 0; i < 4; i++){
 		m_pEnemy.insert(m_pEnemy.begin(),std::make_shared<EnemyGround>());
 		m_pEnemy.begin()->get()->mInitialize(camera);
 		m_pEnemy.begin()->get()->mInitializeEnemyColider(camera);
@@ -113,7 +113,7 @@ void EnemyManager::mStatusUpdater(){
 //•`‰æˆ—
 void EnemyManager::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 
-	for (int i = 0; i < 2; i++){
+	for (int i = 0; i < m_pEnemy.size(); i++){
 		m_pEnemy[i]->mRender(model_shader, colider_shader);
 	}
 }
@@ -165,7 +165,7 @@ void EnemyManager::mSpawn(){
 
 	//•`‰æ
 	time += GameClock::GetDeltaTime();
-	if (m_Enemy_Max < 2){
+	if (m_Enemy_Max < 4){
 		if (time > 2){
 			m_pEnemy[m_Enemy_Max]->mGetProperty().m_isRender = false;
 			time = 0;
@@ -190,14 +190,14 @@ void EnemyManager::mChangeAction(){
 	for (auto itr : m_pEnemy){
 		if (itr->mGetCharaStatus()._action == eActionType::eWait){
 			actiontime += GameClock::GetDeltaTime();
-			if (actiontime > 2){
+			if (actiontime > 3){
 				itr->mGetCharaStatus()._action = eActionType::eMove;
 				actiontime = 0;
 			}
 		}
 			if (itr->mGetCharaStatus()._action == eActionType::eMove){
 				actiontime += GameClock::GetDeltaTime();
-				if (actiontime > 2){
+				if (actiontime > 3){
 					itr->mGetCharaStatus()._action = eActionType::eWait;
 					actiontime = 0;
 				}

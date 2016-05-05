@@ -112,7 +112,7 @@ void EnemyGround::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* inf
 }
 
 void EnemyGround::mEnemyOnHit(){
-	mGetCharaStatus()._action == eActionType::eDie;
+	mGetProperty()._onHitFlag = true;
 }
 
 //EnemyAI
