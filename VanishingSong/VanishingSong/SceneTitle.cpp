@@ -254,7 +254,7 @@ bool SceneTitle::mMenuSelectState(){
 				// ゲームモードの設定
 				Singleton<GameManager>::GetInstance().mGameMode(nextState._mode);
 				// シーンの遷移
-				ChangeScene(nextState._nextSceneName, LoadState::eUse, LoadWaitState::eNull);
+				ChangeScene(nextState._nextSceneName, LoadState::eUse);
 			}else{
 				// 終了
 				return kShutdown;

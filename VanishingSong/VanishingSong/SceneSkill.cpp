@@ -56,7 +56,7 @@ bool SceneSkill::Updater(){
 	if (GameController::GetMouse().IsLeftButtonTrigger()){
 		// ƒXƒLƒ‹‚Ì‘I‘ð
 		Singleton<GameManager>::GetInstance().mSkillType(GameManager::eSkillType::eNull);
-		ChangeScene(SceneGame::Name, LoadState::eUse, LoadWaitState::eUse);
+		ChangeScene(SceneGame::Name, LoadState::eUse);
 	}
 	return true;
 }

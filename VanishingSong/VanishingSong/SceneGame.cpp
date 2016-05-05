@@ -114,7 +114,7 @@ bool SceneGame::Updater(){
 
 	if (m_gameState == eState::eExit){
 		// 終了ならタイトルに戻る
-		ChangeScene(SceneTitle::Name, LoadState::eUse, LoadWaitState::eUnuse);
+		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return true;
 	}
 
