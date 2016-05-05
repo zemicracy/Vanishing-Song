@@ -31,6 +31,8 @@ public:
 	void mSetMap();
 	void mChangeAction();
 	void mSpawn();
+	void mEnemyOnHit();
+	std::vector<std::shared_ptr<EnemyGround>> mEnemyGet(int);
 
 private:
 	

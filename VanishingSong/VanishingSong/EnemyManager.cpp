@@ -19,8 +19,6 @@ EnemyManager::~EnemyManager()
 bool EnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	
 
-	
-
 	WorldReader reader;
 	reader.Load("data\\EnemySpawnDay1.aether");
 
@@ -76,16 +74,14 @@ bool EnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 
 	reader2.UnLoad();
 
-	
-
 	//EnemyGroundÇÃê∂ê¨
 	for (int i = 0; i < 2; i++){
 		m_pEnemy.insert(m_pEnemy.begin(),std::make_shared<EnemyGround>());
 		m_pEnemy.begin()->get()->mInitialize(camera);
 		m_pEnemy.begin()->get()->mInitializeEnemyColider(camera);
 		m_pEnemy.begin()->get()->mGetProperty().m_isRender = true;
-		m_pEnemy.begin()->get()->mGetProperty()._isMoveJudge = true;
-		m_pEnemy.begin()->get()->mGetProperty().flag = false;
+		m_pEnemy.begin()->get()->mGetProperty()._moveFlag = false;
+		m_pEnemy.begin()->get()->mGetProperty()._onHitFlag = false;
 	}
 	
 	//ìGÇÃç≈ëÂêî
@@ -99,6 +95,12 @@ bool EnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	mSetPosion();
 	
 	return true;
+}
+
+void EnemyManager::mEnemyOnHit()
+{
+	for (auto itr: m_pEnemy)
+	itr->mEnemyOnHit();
 }
 
 
@@ -160,7 +162,6 @@ void EnemyManager::mSetPosion(){
 		itr->mGetProperty()._enemyMoveRange.enemy_min_x = areaProperty[randomValue].area_min_x;
 		itr->mGetProperty()._enemyMoveRange.enemy_min_z = areaProperty[randomValue].area_min_z;
 		m_enemyArray[randomValue].push_back(itr);
-		
 	}
 }
 
@@ -179,39 +180,33 @@ void EnemyManager::mSpawn(){
 	}
 }
 
+std::vector<std::shared_ptr<EnemyGround>> EnemyManager::mEnemyGet(int enemy){
+	return  m_enemyArray[enemy];
+}
 
 //ìGÇÃçsìÆêÿë÷ïîï™
 void EnemyManager::mChangeAction(){
 
-	actiontime += GameClock::GetDeltaTime();
-
-	if (GameController::GetKey().IsKeyDown('R')){
-		for (auto itr : m_pEnemy){
+	for (auto itr : m_pEnemy){
+		if (itr->mGetProperty()._onHitFlag == true){
 			itr->mGetCharaStatus()._action = eActionType::eDie;
 		}
 	}
 
-
-	for (auto itr : m_enemyArray){
-		for (auto itr2 : itr){
-			if (itr2->mGetCharaStatus()._action == eActionType::eWait){
-				if (actiontime > 1){
-					itr2->mGetCharaStatus()._action = eActionType::eMove;
+	for (auto itr : m_pEnemy){
+		if (itr->mGetCharaStatus()._action == eActionType::eWait){
+			actiontime += GameClock::GetDeltaTime();
+			if (actiontime > 2){
+				itr->mGetCharaStatus()._action = eActionType::eMove;
+				actiontime = 0;
+			}
+		}
+			if (itr->mGetCharaStatus()._action == eActionType::eMove){
+				actiontime += GameClock::GetDeltaTime();
+				if (actiontime > 2){
+					itr->mGetCharaStatus()._action = eActionType::eWait;
 					actiontime = 0;
 				}
 			}
 		}
-	}
-
-	for (auto itr : m_enemyArray){
-		for (auto itr2 : itr){
-			if (itr2->mGetCharaStatus()._action == eActionType::eMove){
-				if (actiontime > 8){
-					itr2->mGetCharaStatus()._action = eActionType::eWait;
-					actiontime = 0;
-				}
-			}
-		}
-	}
-
 }
