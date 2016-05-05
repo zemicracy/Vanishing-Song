@@ -51,7 +51,6 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 void Mode::mFinalize(){
 	
 	if (m_pPlayer){
-		m_pPlayer->mFinalize();
 		m_pPlayer.reset();
 		m_pPlayer = nullptr;
 	}
@@ -107,7 +106,7 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 
 	mGetPlayer()->mUpdate(timeScale, m_pOrderList->mGetActionCommand());
 
-	// 更新処理
+	// 派生先の更新処理
 	mUpdate(timeScale,nowTime);
 
 	m_pPlayerGaugeManager->mSetuseMp(m_pOrderList->mGetIfUseMp());
@@ -116,6 +115,7 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 	// 当たり判定の更新
 	m_pCollideManager->mUpdate();
 
+	// プレイヤーの死亡判定
 	bool playerDead = mGetPlayer()->mIsDead();
 	if (playerDead){
 		mSetState(eState::eGameOver);

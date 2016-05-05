@@ -118,11 +118,6 @@ public:
 	void mResetPrevActionList();
 
 	/*
-	解放処理
-	*/
-	void mFinalize();
-
-	/*
 		カメラオブジェクトのアドレス取得用
 	*/
 	aetherClass::ViewCamera* mGetView();
@@ -145,9 +140,14 @@ public:
 	void mDayReset();
 
 	bool mIsDead();
-
-	float& mGetMP();
 private:
+
+
+	/*
+	解放処理
+	*/
+	void mFinalize();
+
 
 	/*
 	アクション実行用
@@ -209,7 +209,7 @@ private:
 	void mSetupBullet(aetherClass::ViewCamera*);
 	void mWeaponFirstRun(eCommandType,const int callFrame);
 	void mWeponRender(eCommandType, aetherClass::ShaderBase*);
-
+	void mWeponUpdate(eCommandType, const float);
 private:
 	std::shared_ptr<GearFrame> m_pGearFrame;   // パーツの管理
 

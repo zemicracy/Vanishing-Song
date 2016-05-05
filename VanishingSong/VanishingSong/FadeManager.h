@@ -22,7 +22,7 @@ public:
 			m_callIn = true;
 		}
 
-		m_pFadeObject->property._color._alpha += timeScale*aetherClass::GameClock::GetDeltaTime();
+		m_pFadeObject->property._color._alpha += timeScale*(float)aetherClass::GameClock::GetDeltaTime();
 		if (m_pFadeObject->property._color._alpha < 1.2) return false;
 
 		m_callIn = false;
@@ -42,7 +42,7 @@ public:
 			m_callOut = true;
 		}
 
-		m_pFadeObject->property._color._alpha -= timeScale*aetherClass::GameClock::GetDeltaTime();
+		m_pFadeObject->property._color._alpha -= timeScale*(float)aetherClass::GameClock::GetDeltaTime();
 		if (m_pFadeObject->property._color._alpha > -0.2) return false;
 
 		m_callOut = false;

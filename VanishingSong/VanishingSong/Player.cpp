@@ -24,7 +24,7 @@ namespace{
 	const Vector3 kPlayerInitialY = Vector3(0, 20, 0);
 	const Vector3 kBulletSpeed = Vector3(0, 0, 10);
 	const float kDefaultMove = 100.0f;
-	const float kDefaultMpHeal = 0.05;
+	const float kDefaultMpHeal = 0.05f;
 }
 
 Player::Player()
@@ -221,6 +221,7 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 		mWeaponFirstRun(m_status._command, m_actionCount._commandFrame);
 	}
 
+	mWeponUpdate(m_status._command, timeScale);
 	// ’e‚ÌXV
 	mUpdateBullet(timeScale, rotationMatrix, m_pBullets);
 
@@ -238,18 +239,18 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 
 	// ‰œs‚ÌˆÚ“®(ZŽ²)
 	if (GameController::GetKey().IsKeyDown('W')){
-		output._transform._translation._z = GameClock::GetDeltaTime()*timeScale*kDefaultMove;
+		output._transform._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
 	}
 	else if (GameController::GetKey().IsKeyDown('S')){
-		output._transform._translation._z = -(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output._transform._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
 	// ‰¡‚ÌˆÚ“®(XŽ²)
 	if (GameController::GetKey().IsKeyDown('D')){
-		output._transform._translation._x = GameClock::GetDeltaTime()*timeScale*kDefaultMove;
+		output._transform._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
 	}
 	else if (GameController::GetKey().IsKeyDown('A')){
-		output._transform._translation._x = -(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output._transform._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
 	/*	ƒJƒƒ‰‚Ì‰ñ“]	*/
@@ -260,7 +261,7 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 		if (GameController::GetMouse().IsRightButtonDown()){
 			gLockMouseCursor(m_directXEntity.GetWindowHandle(kWindowName), true);
 			Vector2 cameraRotation = GameController::GetMouse().GetMouseMovement();
-			cameraRotation /= kAetherPI;
+			cameraRotation /= (float)kAetherPI;
 			output._cameraRotation._x += cameraRotation._y;
 			output._cameraRotation._y += cameraRotation._x;
 
@@ -719,6 +720,35 @@ void Player::mSetupBullet(ViewCamera* view){
 	}
 }
 
+
+void Player::mWeponUpdate(eCommandType type, const float timeScale){
+	switch (type)
+	{
+	case eCommandType::eShortDistanceAttack:
+		m_wepons._sord->mGetTransform()._translation = m_pGearFrame->m_pRightHand->_pGear->property._transform._translation;
+		m_wepons._sord->mUpdate(timeScale);
+
+		break;
+	case eCommandType::eLongDistanceAttack:
+		m_wepons._gun->mGetTransform()._translation = m_pGearFrame->m_pRightHand->_pGear->property._transform._translation;
+		m_wepons._gun->mUpdate(timeScale);
+		break;
+
+	case eCommandType::eStrongShield:
+	case eCommandType::eShield:
+		m_wepons._shield->mGetTransform()._translation = m_pGearFrame->m_pLeftHand->_pGear->property._transform._translation;
+		m_wepons._shield->mUpdate(timeScale);
+		break;
+	case eCommandType::eSkill:
+		break;
+	case eCommandType::eNull:
+		break;
+	default:
+		break;
+	}
+}
+
+
 void Player::mWeponRender(eCommandType type, aetherClass::ShaderBase* shader){
 	switch (type)
 	{
@@ -727,11 +757,10 @@ void Player::mWeponRender(eCommandType type, aetherClass::ShaderBase* shader){
 		break;
 	case eCommandType::eLongDistanceAttack:
 		m_wepons._gun->mRender(shader);
-		break;
-	case eCommandType::eShield:
-		m_wepons._shield->mRender(shader);
+		
 		break;
 	case eCommandType::eStrongShield:
+	case eCommandType::eShield:
 		m_wepons._shield->mRender(shader);
 		break;
 	case eCommandType::eSkill:
@@ -748,8 +777,10 @@ void Player::mWeaponFirstRun(eCommandType type, const int callFrame){
 	switch (type)
 	{
 	case eCommandType::eShortDistanceAttack:
+		m_wepons._sord->mGetTransform()._translation = m_pGearFrame->m_pRightHand->_pGear->property._transform._translation;
 		break;
 	case eCommandType::eLongDistanceAttack:{
+		m_wepons._gun->mGetTransform()._translation = m_pGearFrame->m_pRightHand->_pGear->property._transform._translation;
 		for (auto& index : m_pBullets){
 			if (index._isRun)continue;
 			Matrix4x4 rotationMatrix;
@@ -757,20 +788,21 @@ void Player::mWeaponFirstRun(eCommandType type, const int callFrame){
 			rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 			Vector3 value = kBulletSpeed;
 			const Vector3 vector = value.TransformCoordNormal(rotationMatrix);
-			index._bullet->mGetTransform()._translation = m_prevTransform._translation;
+			index._bullet->mGetTransform()._translation = m_wepons._gun->mGetTransform()._translation;
 			index._moveValue = vector;
 			index._isRun = true;
 			break;
 		}
 	}
 		break;
+	case eCommandType::eShield:
+	case eCommandType::eStrongShield:
+		m_wepons._shield->mGetTransform()._translation = m_pGearFrame->m_pLeftHand->_pGear->property._transform._translation;	
+		break;
+
 	case eCommandType::eRightStep:
 		break;
 	case eCommandType::eLeftStep:
-		break;
-	case eCommandType::eShield:
-		break;
-	case eCommandType::eStrongShield:
 		break;
 	case eCommandType::eSkill:
 		break;
@@ -840,8 +872,4 @@ void Player::mCheckDead(){
 */
 bool Player::mIsDead(){
 	return m_isDead;
-}
-
-float& Player::mGetMP(){
-	return m_status._mp;
 }
