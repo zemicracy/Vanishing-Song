@@ -279,14 +279,15 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 		info._nextSceneName = SceneSkill::Name;
 		break;
 
-	case eNextMode::eBattle:
-		info._mode = GameManager::eGameMode::eBattle;
-		info._nextSceneName = SceneBattle::Name;
-		break;
-
 	case eNextMode::eTutorial:
 		info._mode = GameManager::eGameMode::eTutorial;
 		info._nextSceneName = SceneTutorial::Name;
+		break;
+
+
+	case eNextMode::eBattle:
+		info._mode = GameManager::eGameMode::eBattle;
+		info._nextSceneName = SceneBattle::Name;
 		break;
 
 		// Ç±Ç±ÇÕÇ»ÇÁÇ∑Ç◊ÇƒèIóπ
