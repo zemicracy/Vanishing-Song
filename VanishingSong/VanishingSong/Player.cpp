@@ -75,10 +75,7 @@ bool Player::mInitialize(){
 	mRegisterAnimation(Player::eState::eMove, kMoveAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Move.aether");
 	mRegisterAnimation(Player::eState::eWait, kWaitAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
 	mRegisterAnimation(Player::eState::eHitDamage, kWaitAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
-	if (kCharaDebug)
-	{
-		Debug::mPrint("プレイヤー 初期化終了しました");
-	}
+	
 
 	// 武器系の初期化用
 	mSetupWeapon<Sord>(m_wepons._sord, "Model\\Weapon\\bullet.fbx");
@@ -94,8 +91,13 @@ bool Player::mInitialize(){
 	m_status._maxmp = 100;
 	m_status._hp = 100;
 	m_status._mp = 100;
-
+	m_initalTransform = m_playerTransform;
 	m_command = std::make_shared<ActionNull>();
+	
+	if (kCharaDebug)
+	{
+		Debug::mPrint("プレイヤー 初期化終了しました");
+	}
 	return true;
 }
 
@@ -221,7 +223,9 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 		mWeaponFirstRun(m_status._command, m_actionCount._commandFrame);
 	}
 
+	// それぞれの状況に合わせた武器の更新処理
 	mWeponUpdate(m_status._command, timeScale);
+
 	// 弾の更新
 	mUpdateBullet(timeScale, rotationMatrix, m_pBullets);
 
@@ -297,6 +301,7 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 
 //
 void Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeScale){
+	if (!command)return;
 
 	// 今から行うアクションを取得
 	m_commandType = command->mGetType();
@@ -360,7 +365,6 @@ NULLで埋め尽くす
 */
 void Player::mResetPrevActionList(){
 	m_status._prevCommandList.fill(eCommandType::eNull);
-
 	return;
 }
 
@@ -539,11 +543,9 @@ void Player::mInitialPlayerView(CameraValue input){
 	// カメラの初期化
 	m_playerView.property._translation = input._position;
 	m_playerView.property._rotation = input._rotation;
-	
-	// デバッグ用
+
 	// 初期位置の設定
 	m_playerTransform._translation = kPlayerInitialY;
-
 
 	// カメラのオフセットの設定
 	m_cameraOffset._translation = m_playerView.property._translation + m_playerTransform._translation+Vector3(0,0,-50);
@@ -833,17 +835,26 @@ ResultData& Player::mGetResultData(){
 	return m_resultData;
 }
 
+/*
+	日の終了ごとに呼ぶ
+*/
 void Player::mDayReset(){
 
 	// 弾の初期化
 	for (auto&bullet : m_pBullets){
 		bullet._isRun = false;
 	}
-
 	// リザルトに使うデータの初期化
 	m_resultData.mReset();
 
 	// 位置を初期位置にする
+	m_charaEntity.mGearMove(m_topGear, Vector3(-m_playerTransform._translation._x, 0.0f, -m_playerTransform._translation._z));
+	m_playerTransform= m_initalTransform;
+	m_cameraRotation = kVector3Zero;
+	mUpdateView(m_playerView, m_cameraRotation, m_playerTransform._translation);
+	mUpdate(NULL, nullptr);
+
+	return;
 }
 
 CharaStatus& Player::mGetStatus(){

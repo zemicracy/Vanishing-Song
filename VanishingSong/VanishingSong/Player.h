@@ -245,6 +245,8 @@ private:
 
 	std::shared_ptr<ActionCommand> m_command;
 	eCommandType m_commandType;
+
+	aetherClass::Transform m_initalTransform;
 };
 
 #endif
