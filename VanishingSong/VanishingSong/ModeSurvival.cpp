@@ -37,12 +37,12 @@ void ModeSurvival::mUIRender(ShaderHash shaderHash){
 
 // Ÿ‚Ì“ú‚Éi‚Ş‚Æ‚«‚Ì‰Šú‰»ˆ—
 void ModeSurvival::mNextDayInitialize(GameManager::eDay nextDay){
-
+	Mode::mNextDayInitialize(nextDay);
 }
 
 // ‘O‚Ì“ú‚Ì‰ğ•úˆ—
 void ModeSurvival::mPrevDayFinalize(GameManager::eDay prevDay){
-
+	Mode::mPrevDayFinalize(prevDay);
 }
 
 
