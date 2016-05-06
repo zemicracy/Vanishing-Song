@@ -21,9 +21,6 @@ namespace{
 
 // エントリーポイントを作成
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
-	
-	//コンソールウィンドウの作成
-	ConsoleWindow::Create();
 
 	//スマートポインタ宣言
 	std::unique_ptr<GameFrame>frame;
@@ -66,7 +63,5 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	//フレームオブジェクトの解放
 	frame->Finalize();
 
-	//コンソールウィンドウの破棄
-	ConsoleWindow::Close();
 	return kEnd;
 }
