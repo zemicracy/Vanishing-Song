@@ -7,7 +7,7 @@
 #include "Const.h"
 #include "ActionCommand.h"
 #include "Animation.h"
-
+#include "EnemyBase.h"
 #include <Cube.h>
 #include <ShaderBase.h>
 #include <Transform.h>
@@ -75,6 +75,7 @@ private:
 
 		aetherClass::Transform _transform;
 		aetherClass::Vector3 _cameraRotation;
+		float _targetRotation;
 	};
 
 
@@ -92,7 +93,7 @@ public:
 	/*
 	‰Šú‰»
 	*/
-	bool mInitialize();
+	bool mInitialize(GameManager::eSkillType);
 
 	/*
 	XVˆ—
@@ -140,6 +141,8 @@ public:
 	void mDayReset();
 
 	bool mIsDead();
+
+	void mSetTarget(std::shared_ptr<EnemyBase>);
 private:
 
 
@@ -247,6 +250,10 @@ private:
 	eCommandType m_commandType;
 
 	aetherClass::Transform m_initalTransform;
+	std::shared_ptr<EnemyBase> m_targetEnemy;
+	GameManager::eSkillType m_skillType;
+
+	bool m_isNoDamage;
 };
 
 #endif

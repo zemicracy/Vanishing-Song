@@ -25,21 +25,40 @@ void CollideManager::mInitialize(std::shared_ptr<Player> player, std::shared_ptr
 }
 
 //
+bool key = false;
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	const int playerNumber = mCheckPlayerFieldArea();
-	mCheckHitWall(playerNumber);
+	mCheckHitObject(playerNumber);
 	mCheckFieldAreaBullet();
 	mCheckHitPlayerAttack(playerNumber);
 	mCheckHitEnemyAttack(playerNumber);
+
+	if (GameController::GetKey().KeyDownTrigger(VK_TAB)){
+		key = !key;
+		if (!key){
+			m_player->mSetTarget(nullptr);
+		}
+		else{
+			m_player->mSetTarget(m_enemyManager->mEnemyGet(m_playerNumber)[0]);
+		}
+	}
 }
 
+// 障害物と当たったら止まる処理
+void CollideManager::mCheckHitObject(const int number){
 
-void CollideManager::mCheckHitWall(const int number){
-
-	// プレイヤー用
+	// プレイヤーと壁
 	for (auto wall : m_filed->mGetPartitionWall(number)){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
+			m_player->mOnHitWall();
+			break;
+		}
+	}
+
+	// プレイヤーと敵
+	for (auto enemy : m_enemyManager->mEnemyGet(number)){
+		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *enemy->mGetProperty()._pcolider)){
 			m_player->mOnHitWall();
 			break;
 		}
@@ -96,19 +115,16 @@ void CollideManager::mCheckHitPlayerAttack(const int playerNumber){
 
 // 敵の攻撃がプレイヤーに当たっているかの確認
 void CollideManager::mCheckHitEnemyAttack(const int playerNumber){
-	bool isHit = false;
-	// TODO:判定しようね
-	if (!isHit)return;
-
-	// プレイヤーの状態に合わせてダメージ量の計算
-	switch (m_player->mGetCommandType())
-	{
-	case eCommandType::eShield:
-		break;
-	case eCommandType::eStrongShield:
-		break;
-	default:
-		break;
+	// 同じエリア内の敵のみ判定をする
+	for (auto enemy : m_enemyManager->mEnemyGet(playerNumber)){
+		// もし敵が攻撃状態じゃないなら何もしない
+		//if (enemy->mGetCharaStatus()._action != eActionType::eAttack)continue;
+		
+		// ヒットした時点で終わらせる
+		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *enemy->mGetProperty()._pcolider)){
+			m_player->mOnHitEnemyAttack(CharaStatus());
+			break;
+		}
 	}
 }
 

@@ -64,7 +64,7 @@ bool SceneGame::Initialize(){
 
 	// ƒXƒLƒ‹‚ÌŽæ“¾
 	auto skill = Singleton<GameManager>::GetInstance().mSkillType();
-	skill = GameManager::eSkillType::eExAttack;
+	skill = GameManager::eSkillType::eExHeel;
 
 	result = m_pMode->mInitialize(skill,m_day);
 	if (!result){
