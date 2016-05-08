@@ -8,16 +8,14 @@ namespace{
 class ActionLongAttack :
 	public ActionCommand
 {
-private:
-	
-private:
 
 public:
 	ActionLongAttack():ActionCommand(eCommandType::eLongDistanceAttack){}
 	~ActionLongAttack(){}
 
 	void mOnCreate()override{
-		this->mRegisterAnimation("aaa",5, "data\\Player\\GunStanby.aether", "data\\Player\\GunGo.aether");
+		this->mRegisterAnimation("start",10, "data\\Player\\LongAttack\\Stanby.aether", "data\\Player\\LongAttack\\Shot.aether");
+		this->mRegisterAnimation("end", 10, "data\\Player\\LongAttack\\Stanby.aether", "data\\Player\\LongAttack\\Shot.aether");
 
 		m_baseUseMP = 5;
 	}
@@ -25,8 +23,8 @@ public:
 	// ÀÛ‚ÌÀsˆ—
 	void mOnAction(std::unordered_map<Gear::eType, std::shared_ptr<Gear>>& hash, float timeScale, int count)override{
 		aetherClass::Transform animationTransform;
-		const int allFrame = this->mGetAnimation("aaa")._animationFrame;
-		for (auto index : this->mGetAnimation("aaa")._animation)
+		const int allFrame = this->mGetAnimation("start")._animationFrame;
+		for (auto index : this->mGetAnimation("start")._animation)
 		{
 			// •âŠÔ‚Ì’l‚ğæ“¾
 			animationTransform = this->mGetCharaEntity().mGetTransformInterpolation(index._start, index._end, 5,count);
