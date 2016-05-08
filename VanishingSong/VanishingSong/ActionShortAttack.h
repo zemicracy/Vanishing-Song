@@ -12,10 +12,10 @@ public:
 	ActionShortAttack():ActionCommand(eCommandType::eShortDistanceAttack){}
 	~ActionShortAttack(){}
 	void mOnCreate()override{
-		this->mRegisterAnimation("one", 3, "data\\Player\\ShortAttack\\Attack_Stay.aether", "data\\Player\\ShortAttack\\Attack_Break1.aether");
-		this->mRegisterAnimation("two", 3, "data\\Player\\ShortAttack\\Attack_Break1.aether", "data\\Player\\ShortAttack\\Attack_Break2.aether");
-		this->mRegisterAnimation("three", 3, "data\\Player\\ShortAttack\\Attack_Break2.aether", "data\\Player\\ShortAttack\\Attack_Break3.aether");
-		this->mRegisterAnimation("four", 3, "data\\Player\\ShortAttack\\Attack_Break3.aether", "data\\Player\\ShortAttack\\Attack_Break4.aether");
+		this->mRegisterAnimation("one", 3, "data\\Player\\ShortAttack\\Stay.aether", "data\\Player\\ShortAttack\\Break1.aether");
+		this->mRegisterAnimation("two", 3, "data\\Player\\ShortAttack\\Break1.aether", "data\\Player\\ShortAttack\\Break2.aether");
+		this->mRegisterAnimation("three", 3, "data\\Player\\ShortAttack\\Break2.aether", "data\\Player\\ShortAttack\\Break3.aether");
+		this->mRegisterAnimation("four", 3, "data\\Player\\ShortAttack\\Break3.aether", "data\\Player\\ShortAttack\\Break4.aether");
 
 		m_animationName[0] = "one";
 		m_animationName[1] = "two";

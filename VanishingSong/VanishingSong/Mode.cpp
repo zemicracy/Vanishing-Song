@@ -20,7 +20,7 @@ bool Mode::mInitialize(GameManager::eSkillType skill, GameManager::eDay firstDay
 
 	// プレイヤーの初期化
 	m_pPlayer = std::make_shared<Player>();
-	m_pPlayer->mInitialize();
+	m_pPlayer->mInitialize(skill);
 
 	auto view = m_pPlayer->mGetView();
 	m_pEnemyManager = std::make_shared<EnemyManager>();
@@ -94,6 +94,14 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 		return;
 	}
 	
+	mGetPlayer()->mUpdate(timeScale, m_pOrderList->mGetActionCommand());
+
+	// プレイヤーの死亡判定
+	bool playerDead = mGetPlayer()->mIsDead();
+	if (playerDead){
+		mSetState(eState::eGameOver);
+	}
+
 	m_pActionBoard->mUpdate(timeScale);
 
 	auto actionCommand = m_pActionBoard->mSelectType();
@@ -103,8 +111,6 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 
 	m_pActionBoard->mUpdate(timeScale);
 	m_pOrderList->mUpdate(timeScale);
-
-	mGetPlayer()->mUpdate(timeScale, m_pOrderList->mGetActionCommand());
 
 	// 派生先の更新処理
 	mUpdate(timeScale,nowTime);
@@ -116,13 +122,6 @@ void Mode::mMainUpdate(const float timeScale, const float nowTime){
 
 	// 当たり判定の更新
 	m_pCollideManager->mUpdate();
-
-	// プレイヤーの死亡判定
-	bool playerDead = mGetPlayer()->mIsDead();
-	if (playerDead){
-		mSetState(eState::eGameOver);
-	}
-
 	return;
 }
 

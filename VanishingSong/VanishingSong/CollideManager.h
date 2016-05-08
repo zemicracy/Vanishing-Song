@@ -14,7 +14,7 @@ public:
 private:
 	int mCheckPlayerFieldArea();
 	void mCheckFieldAreaBullet();
-	void mCheckHitWall(const int number);
+	void mCheckHitObject(const int number);
 	void mCheckHitPlayerAttack(const int);
 	void mCheckHitEnemyAttack(const int);
 private:
