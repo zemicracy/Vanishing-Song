@@ -7,7 +7,7 @@ public:
 	// 選択されたモード用
 	enum class eGameMode{
 		eBattle,
-		eSurvaival,
+		eGame,
 		ePractice,
 		eTutorial,
 		eNull
@@ -16,10 +16,12 @@ public:
 	// 現在の状態
 	enum class eGameState{
 		e1PWin,
-		e2PWin,
 		eClear,
 		eGameOver,
-		eNull
+		eListen,    // 敵の演奏を聴く状態
+		ePerform,   // プレイヤーの演奏開始状態 
+		eBattle,    // 戦闘の実行状態
+		eNull,
 	};
 
 	// スキルのタイプ
