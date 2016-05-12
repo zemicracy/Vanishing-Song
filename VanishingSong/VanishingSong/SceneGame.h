@@ -1,10 +1,11 @@
 #pragma once
 #include<GameScene.h>
+#include <DirectXEntity.h>
+
 #include "ShaderBase.h"
 #include "ResultBord.h"
 #include "FadeManager.h"
-#include "Mode.h"
-#include <DirectXEntity.h>
+
 class SceneGame :
 	public aetherClass::GameScene
 {
@@ -14,10 +15,7 @@ private:
 		eRun,
 		ePause,
 		eExit,
-		eResult,
-		eGameOver,
 		eFadeIn,
-		eShowDay,
 		eFadeOut,
 		eNull
 	};
@@ -48,27 +46,13 @@ public:
 	static const std::string Name;
 
 private:
-	
-	std::shared_ptr<Mode> mReturnMode(GameManager::eGameMode);
-
-	void mShowResult(GameManager::eDay, aetherClass::ShaderBase* defaultShader, aetherClass::ShaderBase* bularShader);
-
 	bool mFadeState(eState);
 	void mResetProperty(); // 変数の初期化等々
 
-	void mRegisterDayHash(GameManager::eDay key, GameManager::eDay value);
-	void mRegisterDay();
 private:
-
-	std::unique_ptr<ResultBord> m_pResultBord;
+	aetherClass::DirectXEntity m_directX;
 	std::unique_ptr<FadeManager> m_pFadeObject;
 
-	std::shared_ptr<Mode> m_pMode;
-	aetherClass::DirectXEntity m_directX;
-
-	GameManager::eDay m_day;
-	std::unordered_map<GameManager::eDay, GameManager::eDay> m_dayHash;
-	ResultData m_resultData; // リザルト表示時に使用
 	eState m_gameState;
 	// 経過時間保持用
 	float m_dayTime;

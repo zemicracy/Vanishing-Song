@@ -6,12 +6,9 @@
 #include <Singleton.h>
 #include <ModelUtility.h>
 #include "Debug.h"
-#include "SceneSkill.h"
 #include "Const.h"
 #include "ResourceManager.h"
-#include "SceneBattle.h"
-#include "SceneTutorial.h"
-#include "SceneSkill.h"
+#include "SceneGame.h"
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
@@ -94,7 +91,7 @@ bool SceneTitle::Initialize(){
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
 	//éüÇÃÉVÅ[Éì
-	RegisterScene(new SceneSkill());
+	RegisterScene(new SceneGame());
 
 	m_pushState = false;
 	m_alphaState = false;
@@ -266,33 +263,17 @@ bool SceneTitle::mMenuSelectState(){
 
 SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	SceneInfo info;
-	info._mode = GameManager::eGameMode::eNull;
-	info._nextSceneName = kExit;
 	switch (index){
 	case eNextMode::eSurvival:
-		info._mode = GameManager::eGameMode::eSurvaival;
-		info._nextSceneName = SceneSkill::Name;
-		break;
-
-	case eNextMode::ePractice:
-		info._mode = GameManager::eGameMode::ePractice;
-		info._nextSceneName = SceneSkill::Name;
-		break;
-
-	case eNextMode::eTutorial:
-		info._mode = GameManager::eGameMode::eTutorial;
-		info._nextSceneName = SceneTutorial::Name;
-		break;
-
-
-	case eNextMode::eBattle:
-		info._mode = GameManager::eGameMode::eBattle;
-		info._nextSceneName = SceneBattle::Name;
+		info._mode = GameManager::eGameMode::eGame;
+		info._nextSceneName = SceneGame::Name;
 		break;
 
 		// Ç±Ç±ÇÕÇ»ÇÁÇ∑Ç◊ÇƒèIóπ
 	case eNextMode::eNull:
 	case eNextMode::eExit:
+		info._mode = GameManager::eGameMode::eNull;
+		info._nextSceneName = kExit;
 		break;
 	}
 	return info;

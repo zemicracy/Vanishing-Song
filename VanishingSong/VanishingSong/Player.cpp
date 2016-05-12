@@ -316,7 +316,7 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 
 	if (kCharaDebug)
 	{
-		m_pBodyCollider->Render(colliderShader);
+		//m_pBodyCollider->Render(colliderShader);
 	}
 
 	return;
@@ -410,7 +410,7 @@ bool Player::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherC
 	gearFrame = std::make_shared<GearFrame>();
 
 	// 体のパーツ
-	gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Player\\body.fbx", Gear::eType::eBody, camera,"Model\\Player\\tex");
+	gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\Air_Body.fbx", Gear::eType::eBody, camera,"Model\\Enemy\\Air\\tex");
 
 	// 腰のパーツ
 	gearFrame->m_pWaist = m_charaEntity.mSetUpGear("Model\\Player\\waist.fbx", Gear::eType::eWaist, camera, "Model\\Player\\tex");
