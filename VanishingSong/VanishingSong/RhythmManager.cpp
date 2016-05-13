@@ -26,7 +26,15 @@ bool RhythmManager::mIsWholeBeat(){
 	return m_IsWholeBeat;
 }
 
-
+int RhythmManager::mQuarterBeatTime(){
+	return int(m_playTime);
+}
+int RhythmManager::mEighterBeatTime(){
+	return int(m_playTime * 2);
+}
+int RhythmManager::mWholeBeatTime(){
+	return int(m_playTime / 4);
+}
 
 
 float RhythmManager::mGetPlayTime(){
