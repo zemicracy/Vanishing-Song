@@ -181,26 +181,4 @@ std::vector<std::shared_ptr<EnemyGround>> EnemyManager::mEnemyGet(int enemy){
 //“G‚Ìs“®Ø‘Ö•”•ª
 void EnemyManager::mChangeAction(){
 
-	for (auto itr : m_pEnemy){
-		if (itr->mGetProperty()._onHitFlag == true){
-			itr->mGetCharaStatus()._action = eActionType::eDie;
-		}
-	}
-
-	for (auto itr : m_pEnemy){
-		if (itr->mGetCharaStatus()._action == eActionType::eWait){
-			actiontime += GameClock::GetDeltaTime();
-			if (actiontime > 3){
-				itr->mGetCharaStatus()._action = eActionType::eMove;
-				actiontime = 0;
-			}
-		}
-			if (itr->mGetCharaStatus()._action == eActionType::eMove){
-				actiontime += GameClock::GetDeltaTime();
-				if (actiontime > 3){
-					itr->mGetCharaStatus()._action = eActionType::eWait;
-					actiontime = 0;
-				}
-			}
-		}
 }

@@ -1,12 +1,6 @@
 #include "Player.h"
 #include "Debug.h"
 #include "Utility.h"
-#include "Bullet.h"
-#include "Sord.h"
-#include "Shield.h"
-#include "Gun.h"
-#include "ActionNull.h"
-
 #include <MathUtility.h>
 #include <GameController.h>
 #include <WorldReader.h>
@@ -40,7 +34,7 @@ Player::~Player()
 }
 
 //
-bool Player::mInitialize(GameManager::eSkillType skillType){
+bool Player::mInitialize(){
 	bool result;
 	if (kCharaDebug)
 	{
@@ -50,9 +44,6 @@ bool Player::mInitialize(GameManager::eSkillType skillType){
 
 	mFinalize();
 
-	// スキルの設定
-	m_skillType = skillType;
-	
 	// ギア系の初期化用
 	result = mInitializeGearFrame(m_pGearFrame, &m_playerView);
 	if (!result)
@@ -76,29 +67,12 @@ bool Player::mInitialize(GameManager::eSkillType skillType){
 	/*	基本的なアニメーションの登録	*/
 	mRegisterAnimation(Player::eState::eMove, kMoveAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Move.aether");
 	mRegisterAnimation(Player::eState::eWait, kWaitAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
-	mRegisterAnimation(Player::eState::eHitDamage, kWaitAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Damage4.aether");
-	
 
-	// 武器系の初期化用
-	mSetupWeapon<Sord>(m_wepons._sord, "Model\\Weapon\\bullet.fbx");
-	mSetupWeapon<Shield>(m_wepons._shield, "Model\\Weapon\\bullet.fbx");
-	mSetupWeapon<Gun>(m_wepons._gun, "Model\\Weapon\\bullet.fbx");
-
-	mSetupBullet(mGetView());
-	
-	// とりあえず
-	m_status._maxhp = 100;
-	m_status._maxmp = 100;
-	m_status._hp = m_status._maxhp;
-	m_status._mp = m_status._maxmp;
-
-	m_initalTransform = m_playerTransform;
-	m_command = std::make_shared<ActionNull>();
+	m_initialTransform = m_playerTransform;
 	
 	m_isHitWall = false;
-	m_isCall = true;
-	m_isNoDamage = false;
 
+	
 	if (kCharaDebug)
 	{
 		Debug::mPrint("プレイヤー 初期化終了しました");
@@ -131,27 +105,8 @@ void Player::mFinalize(){
 		m_pBodyCollider.reset();
 		m_pBodyCollider = nullptr;
 	}
-
-	if (!m_pBullets.empty()){
-		for (auto index : m_pBullets){
-			if (!index._bullet)continue;
-			index._bullet->mDestroy();
-			index._bullet.reset();
-			index._bullet = nullptr;
-
-			index._isRun = false;
-			index._number = NULL;
-		}
-	}
-
-	// ステータスのリセット
-	m_status.Reset();
-
-	m_prevCommand = eCommandType::eNull;
 	m_prevState = eState::eNull;
 	m_cameraRotation = kVector3Zero;
-	
-	
 	return;
 }
 
@@ -159,71 +114,47 @@ void Player::mFinalize(){
 /*
 プレイヤーの更新処理
 */
-float angle = NULL;
-void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> command){
+void Player::mUpdate(const float timeScale){
 
-	mCheckDead();
-	if (m_isDead)return;
-	
 	// キーの処理を取得
 	KeyValues getKeyValues = mReadKey(timeScale);
-	angle += getKeyValues._targetRotation;
+	
 	// カメラの処理
 	m_cameraRotation += getKeyValues._cameraRotation;
 
 	mUpdateView(m_playerView, m_cameraRotation, m_topGear->_pGear->property._transform._translation);
-	
+
 	// 向きだけ変える
 	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
-	
+
 	// 移動があれば
 	Player::eState state;
-	// ダメージをくらっている状態じゃなかったら
-	if (m_status._action != eActionType::eHitDamage){
-		if (getKeyValues._transform._translation == kVector3Zero){
-			state = eState::eWait;
-		}
-		else{
-			state = eState::eMove;
-		}
+	if (getKeyValues._transform._translation == kVector3Zero){
+		state = eState::eWait;
 	}
 	else{
-		state = eState::eHitDamage;
+		state = eState::eMove;
 	}
 
-	// コマンドの処理
-	mCommand(command, timeScale);
-	
 	// 基本的なアニメーションの再生
 	mDefaultAnimation(state);
 
 	// 移動に使う値のを取得
 	Matrix4x4 rotationMatrix;
-	Vector3 rotationY = Vector3(0,m_cameraRotation._y,0);
+	Vector3 rotationY = Vector3(0, m_cameraRotation._y, 0);
 	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
-	
+
 	// 壁に当たっているかの判定
-	if (m_isHitWall || m_status._command != eCommandType::eNull){
-		Vector3 revision = m_prevTransform._translation.Normalize(); // がたがたなる原因
-		m_playerTransform._translation = m_prevTransform._translation - Vector3(revision._x, 0, revision._z);
+	if (m_isHitWall){
+		Vector3 revision = m_prevPosition;
+		m_playerTransform._translation = m_playerTransform._translation - Vector3(revision._x, 0, revision._z);
 		m_isHitWall = false; //フラグをオフにする
+
 	}
 	else{
-
-		if (m_targetEnemy){
-			Vector3 target = m_targetEnemy->mGetProperty()._pcolider->property._transform._translation;
-
-			float radius = ((target._x - m_topGear->_pGear->property._transform._translation._x) * (target._x - m_topGear->_pGear->property._transform._translation._x)) + ((target._z - m_topGear->_pGear->property._transform._translation._z) * (target._z - m_topGear->_pGear->property._transform._translation._z));
-
-			radius = sqrtf(radius);
-
-			m_playerTransform._translation = Vector3(cos(angle) * radius, 0,  sin(angle) * radius);
-		}
-		else{
-			// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
-			Vector3 translation = getKeyValues._transform._translation.TransformCoordNormal(rotationMatrix);
-			m_playerTransform._translation += translation;
-		}
+		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
+		Vector3 translation = getKeyValues._transform._translation.TransformCoordNormal(rotationMatrix);
+		m_playerTransform._translation += translation;
 	}
 
 	// 移動処理
@@ -235,18 +166,6 @@ void Player::mUpdate(const float timeScale, std::shared_ptr<ActionCommand> comma
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_topGear->_pGear->property._transform);
 
-	// 初めて呼ばれたならそれぞれの武器処理を開始
-	if (!m_isCall){
-		mWeaponFirstRun(m_status._command, m_actionCount._commandFrame);
-	}
-
-	// それぞれの状況に合わせた武器の更新処理
-	mWeponUpdate(m_status._command, timeScale);
-
-	// 弾の更新
-	mUpdateBullet(timeScale, rotationMatrix, m_pBullets);
-
-	mCheckDead();
 	return;
 }
 
@@ -269,15 +188,9 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 	/* 横の移動(X軸)	*/
 	if (GameController::GetKey().IsKeyDown('D')){
 		output._transform._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		if (m_targetEnemy){
-			output._targetRotation = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		}
 	}
 	else if (GameController::GetKey().IsKeyDown('A')){
 		output._transform._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		if (m_targetEnemy){
-			output._targetRotation = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		}
 	}
 
 	/*	カメラの回転	*/
@@ -286,7 +199,8 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 	/*	コマンドやオーダーリストの箇所以外のみに反応する*/
 	if (mousePosition._y < kCameraY){
 		if (GameController::GetMouse().IsRightButtonDown()){
-			gLockMouseCursor(m_directXEntity.GetWindowHandle(kWindowName), true);
+			DirectXEntity directXEntity;
+			gLockMouseCursor(directXEntity.GetWindowHandle(kWindowName), true);
 			Vector2 cameraRotation = GameController::GetMouse().GetMouseMovement();
 			cameraRotation /= (float)kAetherPI;
 			output._cameraRotation._x += cameraRotation._y;
@@ -306,89 +220,11 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_topGear, modelShader, colliderShader);
 
-	// 武器の描画
-	mWeponRender(m_status._command, colliderShader);
-
-	for (auto index : m_pBullets){
-		if (!index._isRun)continue;
-		index._bullet->mRender(modelShader);
-	}
-
 	if (kCharaDebug)
 	{
 		//m_pBodyCollider->Render(colliderShader);
 	}
 
-	return;
-}
-
-//
-void Player::mCommand(std::shared_ptr<ActionCommand> command, const float timeScale){
-	if (!command)return;
-
-	// 今から行うアクションを取得
-	m_commandType = command->mGetType();
-
-	// 回復
-	if (m_status._command == eCommandType::eNull&&m_status._mp<m_status._maxmp){
-		m_status._mp += kDefaultMpHeal;
-	}
-
-
-	// Null以外の時にコマンドを変える
-	if (m_commandType != eCommandType::eNull)
-	{
-		m_command = command;
-		m_status._command = m_commandType;
-	}
-
-	// 前回と違えば実行数を0にする
-	if (m_status._command != m_prevCommand){
-		
-		m_actionCount._commandFrame = kZeroPoint;
-		m_prevTransform = m_playerTransform;
-		m_command->mCallCount(0);
-
-		if (m_status._command != eCommandType::eNull){
-			m_status._mp -= m_command->mGetExUseMP();
-		}
-	}
-
-	m_isCall = m_command->mIsCall();
-
-	// アクションの実行
-	m_command->mAction(m_pGearHash, timeScale, m_actionCount._commandFrame);
-
-	m_actionCount._commandFrame += 1;
-
-	const int callCount = m_command->mCallCount();
-	m_command->mCallCount(callCount + 1);
-
-	// 状態を上書き
-	m_prevCommand = m_status._command;
-
-	if (m_command->mIsEnd()){
-
-		m_status._command = eCommandType::eNull;
-	}
-	return;
-}
-
-/*
-行動したアクションを登録
-第一引数：アクションのタイプ
-第二引数：何番目のアクションか
-*/
-void Player::mAddPrevActionCmmand(eCommandType action, const int id){
-	m_status._prevCommandList[id] = action;
-	return;
-}
-
-/*
-NULLで埋め尽くす
-*/
-void Player::mResetPrevActionList(){
-	m_status._prevCommandList.fill(eCommandType::eNull);
 	return;
 }
 
@@ -410,7 +246,7 @@ bool Player::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherC
 	gearFrame = std::make_shared<GearFrame>();
 
 	// 体のパーツ
-	gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\Air_Body.fbx", Gear::eType::eBody, camera,"Model\\Enemy\\Air\\tex");
+	gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Player\\body.fbx", Gear::eType::eBody, camera,"Model\\Player\\tex");
 
 	// 腰のパーツ
 	gearFrame->m_pWaist = m_charaEntity.mSetUpGear("Model\\Player\\waist.fbx", Gear::eType::eWaist, camera, "Model\\Player\\tex");
@@ -629,8 +465,6 @@ void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::str
 */
 void Player::mDefaultAnimation(Player::eState& state){
 
-	if (m_status._command != eCommandType::eNull)return;
-
 	// 前回と違うときは更新
 	if (m_prevState != state){
 		m_actionCount._defaultFrame = NULL;
@@ -679,12 +513,6 @@ void Player::mDefaultAnimation(Player::eState& state){
 		case eState::eMove:
 			m_actionCount._defaultFrame += 1;
 			break;
-		case eState::eHitDamage:
-			m_actionCount._defaultFrame += 1;
-			if (m_actionCount._defaultFrame > allFrame){
-				m_status._action = eActionType::eNull;
-			}
-			break;
 	default:
 		break;
 	}
@@ -709,16 +537,6 @@ void Player::mUpdateView(ViewCamera& view,Vector3& rotation,Vector3 lookAtPositi
 	return;
 }
 
-//
-void Player::mUpdateBullet(const float timeScale, aetherClass::Matrix4x4& rotationMatrix, std::array<BulletPool, kMaxBullet>& bullets){
-	// 弾の発射
-	for (auto index : bullets){
-		if (!index._isRun)continue;
-		index._bullet->mGetTransform()._translation += index._moveValue;
-		index._bullet->mUpdate(timeScale);
-	}
-	return;
-}
 
 void Player::mCheckCameraRotation(Vector3& rotation){
 	// カメラ可動範囲の上限の確認
@@ -731,250 +549,10 @@ void Player::mCheckCameraRotation(Vector3& rotation){
 	return;
 }
 
-template<class type>
-void Player::mSetupWeapon(std::shared_ptr<Equipment>& weapon, std::string model){
-	weapon = std::make_shared<type>();
-	weapon->mCreate(mGetView(),model);
-	return;
-}
-
-//
-void Player::mSetupBullet(ViewCamera* view){
-	for (auto&index : m_pBullets){
-		index._bullet = std::make_shared<Bullet>();
-		index._bullet->mCreate(view,"Model\\Weapon\\bullet.fbx");
-		index._isRun = false;
-		index._number = 0;
-	}
-}
-
-
-void Player::mWeponUpdate(eCommandType type, const float timeScale){
-	switch (type)
-	{
-	case eCommandType::eShortDistanceAttack:
-		m_wepons._sord->mGetTransform()._translation = m_pGearFrame->m_pRightHand->_pGear->property._transform._translation;
-		m_wepons._sord->mUpdate(timeScale);
-
-		break;
-	case eCommandType::eLongDistanceAttack:
-		m_wepons._gun->mGetTransform()._translation = m_pGearFrame->m_pRightHand->_pGear->property._transform._translation;
-		m_wepons._gun->mUpdate(timeScale);
-		break;
-
-	case eCommandType::eStrongShield:
-	case eCommandType::eShield:
-		m_wepons._shield->mGetTransform()._translation = m_pGearFrame->m_pLeftHand->_pGear->property._transform._translation;
-		m_wepons._shield->mUpdate(timeScale);
-		break;
-	case eCommandType::eSkill:
-		
-		switch (m_skillType)
-		{
-		case GameManager::eSkillType::eExAttack:
-			// なんかすごい攻撃の追加
-			Debug::mPrint("きた");
-			break;
-		case GameManager::eSkillType::eExShield:
-			// 無敵化処理の追加
-			m_isNoDamage = true;
-			break;
-		case GameManager::eSkillType::eExHeel:{
-			
-			// 回復量の計算
-			const float hp = mGetStatus()._maxhp / 10.0f;
-			const float mp = mGetStatus()._maxmp / 10.0f;
-			// 回復
-			mGetStatus()._hp += hp;
-			mGetStatus()._mp += mp;
-
-			// 上限は越えさせない
-			if (mGetStatus()._hp >= mGetStatus()._maxhp){
-				mGetStatus()._hp = mGetStatus()._maxhp;
-			}
-			if (mGetStatus()._mp >= mGetStatus()._maxmp){
-				mGetStatus()._mp = mGetStatus()._maxmp;
-			}
-		}break;
-		case GameManager::eSkillType::eExBuff:
-			break;
-		}
-		break;
-
-	default:
-		break;
-	}
-}
-
-
-void Player::mWeponRender(eCommandType type, aetherClass::ShaderBase* shader){
-	switch (type)
-	{
-	case eCommandType::eShortDistanceAttack:
-		m_wepons._sord->mRender(shader);
-		break;
-	case eCommandType::eLongDistanceAttack:
-		m_wepons._gun->mRender(shader);
-		
-		break;
-	case eCommandType::eStrongShield:
-	case eCommandType::eShield:
-		m_wepons._shield->mRender(shader);
-		break;
-	case eCommandType::eSkill:
-		switch (m_skillType)
-		{
-		case GameManager::eSkillType::eExAttack:
-			// なんかすごい攻撃の追加
-			break;
-		case GameManager::eSkillType::eExShield:
-			// 無敵化処理の追加
-			break;
-		case GameManager::eSkillType::eExHeel:
-			break;
-		case GameManager::eSkillType::eExBuff:
-			break;
-		}
-		break;
-	default:
-		break;
-	}
-}
-
-//
-void Player::mWeaponFirstRun(eCommandType type, const int callFrame){
-	switch (type)
-	{
-	case eCommandType::eShortDistanceAttack:
-		m_wepons._sord->mGetTransform()._translation = m_pGearFrame->m_pRightHand->_pGear->property._transform._translation;
-		break;
-	case eCommandType::eLongDistanceAttack:{
-		m_wepons._gun->mGetTransform()._translation = m_pGearFrame->m_pRightHand->_pGear->property._transform._translation;
-		for (auto& index : m_pBullets){
-			if (index._isRun)continue;
-			Matrix4x4 rotationMatrix;
-			Vector3 rotationY = Vector3(0, m_cameraRotation._y,0);
-			rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
-			Vector3 value = kBulletSpeed;
-			const Vector3 vector = value.TransformCoordNormal(rotationMatrix);
-			index._bullet->mGetTransform()._translation = m_wepons._gun->mGetTransform()._translation;
-			index._moveValue = vector;
-			index._isRun = true;
-			break;
-		}
-	}
-		break;
-	case eCommandType::eShield:
-	case eCommandType::eStrongShield:
-		m_wepons._shield->mGetTransform()._translation = m_pGearFrame->m_pLeftHand->_pGear->property._transform._translation;	
-		break;
-
-	case eCommandType::eRightStep:
-		break;
-	case eCommandType::eLeftStep:
-		break;
-	case eCommandType::eSkill:
-		switch (m_skillType)
-		{
-		case GameManager::eSkillType::eExAttack:
-			// なんかすごい攻撃の追加
-			break;
-		case GameManager::eSkillType::eExShield:
-			// 無敵化処理の追加
-			break;
-		case GameManager::eSkillType::eExHeel:
-			break;
-		case GameManager::eSkillType::eExBuff:
-			break;
-		}
-		break;
-	}
-}
-
-std::array<Player::BulletPool, kMaxBullet>& Player::mGetBullet(){
-	return m_pBullets;
-}
-
 // 壁に当たった時の処理
 void Player::mOnHitWall(){
 
-	m_prevTransform = m_playerTransform;
+	m_prevPosition = m_playerTransform._translation.Normalize();
 	m_isHitWall = true;
 	return;
-}
-
-eCommandType Player::mGetCommandType(){
-	return m_status._command;
-}
-
-ResultData& Player::mGetResultData(){
-	return m_resultData;
-}
-
-/*
-	日の終了ごとに呼ぶ
-*/
-void Player::mDayReset(){
-
-	// 弾の初期化
-	for (auto&bullet : m_pBullets){
-		bullet._isRun = false;
-	}
-	// リザルトに使うデータの初期化
-	m_resultData.mReset();
-
-	// 位置を初期位置にする
-	m_charaEntity.mGearMove(m_topGear, Vector3(-m_playerTransform._translation._x, 0.0f, -m_playerTransform._translation._z));
-	m_playerTransform= m_initalTransform;
-	m_cameraRotation = kVector3Zero;
-	mUpdateView(m_playerView, m_cameraRotation, m_playerTransform._translation);
-	mUpdate(NULL, nullptr);
-	m_isNoDamage = false;
-	return;
-}
-
-CharaStatus& Player::mGetStatus(){
-	return m_status;
-}
-
-void Player::mOnHitEnemyAttack(const CharaStatus enemy){
-	if (m_status._action == eActionType::eHitDamage || m_isNoDamage)return; // 連続で当たるのを防止
-	float damage = enemy._attackPoint;
-	// プレイヤーの状態に合わせてダメージ量の計算
-	switch (mGetCommandType())
-	{
-	case eCommandType::eShield:
-		damage /= 1.5f;
-		break;
-	case eCommandType::eStrongShield:
-		damage /= 2.0f;
-		break;
-	default:
-		break;
-	}
-	m_status._hp -= damage;
-	m_status._action = eActionType::eHitDamage;
-	return;
-}
-
-void Player::mCheckDead(){
-	if (m_status._hp <= 0){
-		m_isDead = true;
-	}
-	else{
-		m_isDead = false;
-	}
-	return;
-}
-
-/*
-	プレイヤー死亡：true
-*/
-bool Player::mIsDead(){
-	return m_isDead;
-}
-
-//
-void Player::mSetTarget(std::shared_ptr<EnemyBase> enemy){
-	m_targetEnemy = enemy;
 }

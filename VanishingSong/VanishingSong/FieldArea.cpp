@@ -109,7 +109,7 @@ void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
 }
 
 
-void FieldArea::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* texture){
+void FieldArea::mRender(aetherClass::ShaderBase* texture, aetherClass::ShaderBase*shader){
 	for (auto itr : m_wall){
 		itr->Render(shader);
 	}
