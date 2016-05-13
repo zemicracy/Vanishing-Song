@@ -43,7 +43,7 @@ bool SceneGame::Initialize(){
 	// フェードイン・アウトを行う
 	m_pFadeObject = std::make_unique<FadeManager>();
 
-	m_pFieldPlayer = std::make_shared<Player>();
+	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize();
 
 	auto view = m_pFieldPlayer->mGetView();
@@ -78,6 +78,11 @@ void SceneGame::Finalize(){
 	if (m_pFieldPlayer){
 		m_pFieldPlayer.reset();
 		m_pFieldPlayer = nullptr;
+	}
+
+	if (m_pFadeObject){
+		m_pFadeObject.release();
+		m_pFadeObject = nullptr;
 	}
 	return;
 }

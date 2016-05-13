@@ -64,7 +64,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 
 	//フレームオブジェクトの解放
 	frame->Finalize();
-
+	frame.release();
 	//コンソールウィンドウの破棄
 	ConsoleWindow::Close();
 	return kEnd;

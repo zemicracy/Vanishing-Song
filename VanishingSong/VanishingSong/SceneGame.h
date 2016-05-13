@@ -4,7 +4,7 @@
 #include <memory>
 #include "ShaderBase.h"
 #include "FadeManager.h"
-#include "Player.h"
+#include "FieldPlayer.h"
 #include "CollideManager.h"
 class SceneGame :
 	public aetherClass::GameScene
@@ -55,7 +55,7 @@ private:
 	
 	std::unique_ptr<CollideManager> m_pCollideManager;
 	std::unique_ptr<FadeManager> m_pFadeObject;
-	std::shared_ptr<Player> m_pFieldPlayer;
+	std::shared_ptr<FieldPlayer> m_pFieldPlayer;
 	std::shared_ptr<FieldArea> m_pFieldArea;
 };
 
