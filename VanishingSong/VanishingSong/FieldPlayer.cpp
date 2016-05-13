@@ -178,18 +178,18 @@ FieldPlayer::KeyValues FieldPlayer::mReadKey(const float timeScale){
 	KeyValues output;
 
 	/* 奥行の移動(Z軸)	*/
-	if (GameController::GetKey().IsKeyDown('W')){
+	if (GameController::GetKey().IsKeyDown('W')||GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
 		output._transform._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
 	}
-	else if (GameController::GetKey().IsKeyDown('S')){
+	else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
 		output._transform._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
 	/* 横の移動(X軸)	*/
-	if (GameController::GetKey().IsKeyDown('D')){
+	if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
 		output._transform._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
 	}
-	else if (GameController::GetKey().IsKeyDown('A')){
+	else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
 		output._transform._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
@@ -197,18 +197,15 @@ FieldPlayer::KeyValues FieldPlayer::mReadKey(const float timeScale){
 	Vector2 mousePosition = GameController::GetMouse().GetMousePosition();
 
 	/*	コマンドやオーダーリストの箇所以外のみに反応する*/
-	if (mousePosition._y < kCameraY){
-		if (GameController::GetMouse().IsRightButtonDown()){
-			DirectXEntity directXEntity;
-			gLockMouseCursor(directXEntity.GetWindowHandle(kWindowName), true);
-			Vector2 cameraRotation = GameController::GetMouse().GetMouseMovement();
-			cameraRotation /= (float)kAetherPI;
-			output._cameraRotation._x += cameraRotation._y;
-			output._cameraRotation._y += cameraRotation._x;
+	
+	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRB1)){
 
-		}
+		//		output._cameraRotation._x += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output._cameraRotation._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
-
+	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
+		output._cameraRotation._y -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+	}
 	return output;
 }
 
