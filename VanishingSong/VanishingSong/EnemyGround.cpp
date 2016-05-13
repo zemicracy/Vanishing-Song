@@ -27,7 +27,7 @@ bool EnemyGround::mInitialize(ViewCamera* camera){
 	mGetProperty()._penemy = std::make_shared<GearFrame>();
 
 	//最初の行動パターン
-	mGetCharaStatus()._action = eActionType::eWait;
+	//mGetCharaStatus()._action = eActionType::eWait;
 
 	// 体のパーツ
 	mGetProperty()._penemy->m_pBody = mGetCharaEntity().mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eBody, camera, "Model\\Player\\tex");
@@ -118,26 +118,8 @@ void EnemyGround::mEnemyOnHit(){
 //EnemyAI
 std::shared_ptr<EnemyAI> EnemyGround::GetAI(){
 
-	switch (mGetCharaStatus()._action)
-	{
-		//待機
-	case eActionType::eWait:
-		return std::make_shared<EnemyWait>();
-		//移動
-	case eActionType::eMove:
-		return std::make_shared<EnemyMove>();
 
-	case eActionType::eNull:
-		
-	case eActionType::eAttack:
-		//死亡
-	case eActionType::eDie:
-		return std::make_shared<EnemyDie>();
-		
-	default:
-		break;
-	}
-
+	return nullptr;
 }
 
 void EnemyGround::mFinalize(){

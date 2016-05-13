@@ -247,9 +247,6 @@ bool SceneTitle::mMenuSelectState(){
 			SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 			// Exit以外が来たらシーンの遷移を開始
 			if (nextState._nextSceneName != kExit){
-
-				// ゲームモードの設定
-				Singleton<GameManager>::GetInstance().mGameMode(nextState._mode);
 				// シーンの遷移
 				ChangeScene(nextState._nextSceneName, LoadState::eUse);
 			}else{
@@ -265,14 +262,12 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	SceneInfo info;
 	switch (index){
 	case eNextMode::eSurvival:
-		info._mode = GameManager::eGameMode::eGame;
 		info._nextSceneName = SceneGame::Name;
 		break;
 
 		// ここはならすべて終了
 	case eNextMode::eNull:
 	case eNextMode::eExit:
-		info._mode = GameManager::eGameMode::eNull;
 		info._nextSceneName = kExit;
 		break;
 	}

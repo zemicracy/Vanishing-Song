@@ -8,8 +8,6 @@
 #include"GameClock.h"
 #include"FragmentShader.h"
 
-#include "ActionNull.h"
-#include "ActionShortAttack.h"
 using namespace aetherClass;
 OrderList::OrderList()
 {
@@ -36,7 +34,6 @@ void OrderList::mFinalize(){
 	}
 	m_orderList.clear();
 
-	m_listFirst = std::make_shared<ActionNull>();
 	m_pTexture.clear();
 }
 
@@ -92,7 +89,7 @@ void OrderList::mInitialize(){
 	reader.UnLoad();
 
 	m_timeRadian = 0;
-	m_listFirst = std::make_shared<ActionNull>();
+	
 }
 
 void OrderList::mUpdate(float){
@@ -134,7 +131,7 @@ void OrderList::mUpdate(float){
 	//リストが空なら
 	if (m_orderList.size() == 0){
 		m_listFirst->mReset();
-		m_listFirst = std::make_shared<ActionNull>();
+
 		return;
 	}
 	if (GameController::GetKey().KeyDownTrigger(VK_SPACE)){
@@ -161,7 +158,7 @@ void OrderList::mUpdate(float){
 	if (!m_isStart || !m_isJustTiming || m_isPlayCommand){ 
 		//再生済み or タイミングじゃない or 再生中じゃないと戻る
 		m_listFirst->mReset();
-		m_listFirst = std::make_shared<ActionNull>();
+
 		return;
 	}
 

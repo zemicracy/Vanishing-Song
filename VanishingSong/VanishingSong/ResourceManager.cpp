@@ -104,13 +104,6 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-	RegisterActionSound(eCommandType::eShortDistanceAttack, "Sound/do.wav");
-	RegisterActionSound(eCommandType::eLongDistanceAttack, "Sound/damage03.wav");
-	RegisterActionSound(eCommandType::eLeftStep, "Sound/mi.wav");
-	RegisterActionSound(eCommandType::eRightStep, "Sound/damage03.wav");
-	RegisterActionSound(eCommandType::eShield, "Sound/re.wav");
-	RegisterActionSound(eCommandType::eStrongShield, "Sound/damage03.wav");
-	RegisterActionSound(eCommandType::eSkill, "Sound/damage03.wav");
 	return true;
 }
 

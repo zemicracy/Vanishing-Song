@@ -41,8 +41,8 @@ public:
 public:
 	ResultBord();
 	~ResultBord();
-	void mInitialize(GameManager::eGameMode);
-	void mSetupData(ResultData,GameManager::eDay);
+	void mInitialize();
+	void mSetupData(ResultData);
 	eClickState mUpdate(aetherClass::Vector2 mouse, bool isClick);
 	void mRender(aetherClass::ShaderBase*,aetherClass::ShaderBase*);
 	void mReset();
@@ -52,7 +52,6 @@ public:
 private:
 
 	void mAttachTexture(std::array<std::shared_ptr<aetherClass::SpriteBase>, kMaxNumber>&,const int count);
-	eClickState mGetClickState(GameManager::eGameMode, GameManager::eDay);
 	void RegisterTexture(eClickState, std::string texturePath);
 private:
 	float m_updateTime; // çXêVâÒêîï€ë∂óp
@@ -65,11 +64,8 @@ private:
 	std::unique_ptr<aetherClass::SpriteBase> m_pBlurObject;
 
 	std::unordered_map<eClickState, std::shared_ptr<aetherClass::Texture>> m_pClickTexture;
-
-	GameManager::eGameMode m_mode;
-	GameManager::eDay m_day;
 	ResultData m_data;
-	eClickState m_clickState;
+
 	bool m_isSetup;
 	bool m_callFadeIn;
 	bool m_callFadeOut;

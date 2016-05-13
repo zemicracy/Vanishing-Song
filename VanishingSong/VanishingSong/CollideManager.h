@@ -6,20 +6,15 @@
 class CollideManager
 {
 public:
-	CollideManager();
+	CollideManager(std::shared_ptr<Player> player, std::shared_ptr<FieldArea> field);
 	~CollideManager();
-	void mInitialize(std::shared_ptr<Player> player, std::shared_ptr<EnemyManager> enemy, std::shared_ptr<FieldArea> field);
 	void mUpdate();
 
 private:
 	int mCheckPlayerFieldArea();
-	void mCheckFieldAreaBullet();
 	void mCheckHitObject(const int number);
-	void mCheckHitPlayerAttack(const int);
-	void mCheckHitEnemyAttack(const int);
 private:
 	std::shared_ptr<Player> m_player;
-	std::shared_ptr<EnemyManager> m_enemyManager;
 	std::shared_ptr<FieldArea> m_filed;
 	
 	int m_playerNumber;

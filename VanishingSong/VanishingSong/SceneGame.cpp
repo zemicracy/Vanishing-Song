@@ -21,7 +21,6 @@ SceneGame::SceneGame():
 GameScene(Name, GetManager()) //Sceneごとの名前を設定
 {
 	m_gameState = eState::eNull;
-	m_dayTime = NULL;
 
 }
 
@@ -30,7 +29,6 @@ SceneGame::~SceneGame()
 {
 
 	m_gameState = eState::eNull;
-	m_dayTime = NULL;
 
 }
 
@@ -45,13 +43,15 @@ bool SceneGame::Initialize(){
 	// フェードイン・アウトを行う
 	m_pFadeObject = std::make_unique<FadeManager>();
 
-	// ゲームモードの取得
-	// このシーンに来ている時点で、サバイバルか、プラクティスが選択されている
-	auto mode = Singleton<GameManager>::GetInstance().mGameMode(); 
+	m_pFieldPlayer = std::make_shared<Player>();
+	m_pFieldPlayer->mInitialize();
+
+	auto view = m_pFieldPlayer->mGetView();
+	m_pFieldArea = std::make_shared<FieldArea>();
+	m_pFieldArea->mInitialize();
+	m_pFieldArea->mSetCamera(view);
 	
-	// スキルの取得
-	auto skill = Singleton<GameManager>::GetInstance().mSkillType();
-	skill = GameManager::eSkillType::eExHeel;
+	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea);
 
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
@@ -65,7 +65,20 @@ bool SceneGame::Initialize(){
 void SceneGame::Finalize(){
 
 	m_gameState = eState::eNull;
-	m_dayTime = NULL;
+	if (m_pCollideManager){
+		m_pCollideManager.release();
+		m_pCollideManager = nullptr;
+	}
+
+	if (m_pFieldArea){
+		m_pFieldArea.reset();
+		m_pFieldArea = nullptr;
+	}
+
+	if (m_pFieldPlayer){
+		m_pFieldPlayer.reset();
+		m_pFieldPlayer = nullptr;
+	}
 	return;
 }
 
@@ -84,18 +97,25 @@ bool SceneGame::Updater(){
 
 
 	if (m_gameState == eState::eExit){
-		// 終了ならタイトルに戻る
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return true;
 	}
 
-	// 時刻の取得
-	m_dayTime += (float)GameClock::GetDeltaTime();
+	m_pFieldArea->mUpdate(kScaleTime);
+	m_pFieldPlayer->mUpdate(kScaleTime);
+
+	// この処理は最後
+	m_pCollideManager->mUpdate();
 	return true;
 }
 
 void SceneGame::Render(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+
+	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+
+
 	return;
 }
 

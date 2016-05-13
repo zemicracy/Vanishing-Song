@@ -1,11 +1,11 @@
 #pragma once
 #include<GameScene.h>
 #include <DirectXEntity.h>
-
+#include <memory>
 #include "ShaderBase.h"
-#include "ResultBord.h"
 #include "FadeManager.h"
-
+#include "Player.h"
+#include "CollideManager.h"
 class SceneGame :
 	public aetherClass::GameScene
 {
@@ -50,13 +50,12 @@ private:
 	void mResetProperty(); // •Ï”‚Ì‰Šú‰»“™X
 
 private:
-	aetherClass::DirectXEntity m_directX;
-	std::unique_ptr<FadeManager> m_pFadeObject;
-
+	aetherClass::DirectXEntity m_directX;	
 	eState m_gameState;
-	// Œo‰ßŠÔ•Û—p
-	float m_dayTime;
-
-
+	
+	std::unique_ptr<CollideManager> m_pCollideManager;
+	std::unique_ptr<FadeManager> m_pFadeObject;
+	std::shared_ptr<Player> m_pFieldPlayer;
+	std::shared_ptr<FieldArea> m_pFieldArea;
 };
 

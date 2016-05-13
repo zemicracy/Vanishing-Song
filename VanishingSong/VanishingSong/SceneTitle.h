@@ -38,7 +38,6 @@ class SceneTitle :
 
 	// ƒV[ƒ“‘JˆÚ—p
 	struct SceneInfo{
-		GameManager::eGameMode _mode;
 		std::string _nextSceneName;
 	};
 public:

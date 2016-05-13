@@ -1,18 +1,5 @@
 #include "ActionBoard.h"
 
-#include"ActionShortAttack.h"
-#include "ActionLongAttack.h"
-#include "ActionRightStep.h"
-#include "ActionLeftStep.h"
-#include "ActionShield.h"
-#include "ActionStrongShield.h"
-#include"ActionExAttack.h"
-#include"ActionExBuff.h"
-#include"ActionExShield.h"
-#include"ActionExHeel.h"
-#include"ActionNull.h"
-
-
 #include"Debug.h"
 #include"Const.h"
 
@@ -51,64 +38,13 @@ void gInitalizer(std::shared_ptr<ActionCommand> &command,Transform transform,Col
 	command->mGetProperty()._color = color;
 }
 
-void ActionBoard::mInitialize(GameManager::eSkillType type){
+void ActionBoard::mInitialize(){
 	WorldReader reader;
 	bool result = false;
 	SecureZeroMemory(&m_movingAnimation, sizeof(m_movingAnimation[0])*3);
 	SecureZeroMemory(&m_frameCnt, sizeof(m_frameCnt[0])*3);
 	SecureZeroMemory(&m_changedSuccess, sizeof(m_changedSuccess[0]) * 3);
 
-
-	reader.Load("data/actionBoard.aether");
-	for ( auto itr : reader.GetInputWorldInfo()._object ){
-		if (itr->_name == "fore1"){
-			gInitalizer<ActionLeftStep>(m_actionCommand[0], itr->_transform, itr->_color,m_kForeground);
-			
-			continue;
-		}
-		if (itr->_name == "fore2"){
-			gInitalizer<ActionShortAttack>(m_actionCommand[2], itr->_transform, itr->_color, m_kForeground);
-			continue;
-		}
-		if (itr->_name == "fore3"){
-			gInitalizer<ActionShield>(m_actionCommand[4], itr->_transform, itr->_color, m_kForeground);
-			continue;
-		}
-		if (itr->_name == "fore4"){
-			switch (type)
-			{
-			case GameManager::eSkillType::eExAttack:
-				gInitalizer<ActionExAttack>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
-				break;
-			case GameManager::eSkillType::eExShield:
-				gInitalizer<ActionExShield>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
-				break;
-			case GameManager::eSkillType::eExHeel:
-				gInitalizer<ActionExHeel>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
-				break;
-			case GameManager::eSkillType::eExBuff:
-				gInitalizer<ActionExBuff>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
-				break;
-			case GameManager::eSkillType::eNull:
-				gInitalizer<ActionNull>(m_actionCommand[6], itr->_transform, itr->_color, m_kForeground);
-				break;
-			}
-			continue;
-		}
-
-		if (itr->_name == "back1"){
-			gInitalizer<ActionRightStep>(m_actionCommand[1], itr->_transform, itr->_color, m_kBackground);
-			continue;
-		}
-		if (itr->_name == "back2"){
-			gInitalizer<ActionLongAttack>(m_actionCommand[3], itr->_transform, itr->_color, m_kBackground);
-			continue;
-		}
-		if (itr->_name == "back3"){
-			gInitalizer<ActionStrongShield>(m_actionCommand[5], itr->_transform, itr->_color, m_kBackground);
-			continue;
-		}
-	}
 
 	reader.UnLoad();
 }

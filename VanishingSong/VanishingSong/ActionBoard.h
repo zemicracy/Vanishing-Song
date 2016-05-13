@@ -10,7 +10,7 @@ public:
 	ActionBoard();
 	~ActionBoard();
 
-	void mInitialize(GameManager::eSkillType);
+	void mInitialize();
 	void mRender(aetherClass::ShaderBase*);
 	void mUpdate(float);
 	std::shared_ptr<ActionCommand> mSelectType();

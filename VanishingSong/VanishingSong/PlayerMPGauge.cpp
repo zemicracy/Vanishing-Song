@@ -83,10 +83,10 @@ bool PlayerMPGauge::mInitialize(){
 }
 
 void PlayerMPGauge::mUpdate(float timeScale){
-	if (m_CharaStatus->_mp < m_useValue._nextMp){
+	/*if (m_CharaStatus->_mp < m_useValue._nextMp){
 		m_pIfuseSprite->property._color = m_deadColor;
 	}else
-		m_pIfuseSprite->property._color = m_useColor;
+		m_pIfuseSprite->property._color = m_useColor;*/
 
 
 	//更新処理
@@ -95,21 +95,21 @@ void PlayerMPGauge::mUpdate(float timeScale){
 		m_useValue._intervalTime = 2;
 	}
 	//徐々に削る処理
-	if (m_useValue._intervalTime > 0){
-		m_useValue._morePrevMp += (m_CharaStatus->_mp - m_useValue._morePrevMp) / 10;
-		m_useValue._intervalTime -= GameClock::GetDeltaTime();
-		m_direcType._interpolation = (float)m_useValue._morePrevMp / (float)m_CharaStatus->_maxmp * m_maxInterPolate;
-	}
-	else{
-		//現在のキャラのMP
-		m_direcType._interpolation = (float)m_CharaStatus->_mp / (float)m_CharaStatus->_maxmp * m_maxInterPolate;
-	}
+	//if (m_useValue._intervalTime > 0){
+	//	m_useValue._morePrevMp += (m_CharaStatus->_mp - m_useValue._morePrevMp) / 10;
+	//	m_useValue._intervalTime -= GameClock::GetDeltaTime();
+	//	m_direcType._interpolation = (float)m_useValue._morePrevMp / (float)m_CharaStatus->_maxmp * m_maxInterPolate;
+	//}
+	//else{
+	//	//現在のキャラのMP
+	//	m_direcType._interpolation = (float)m_CharaStatus->_mp / (float)m_CharaStatus->_maxmp * m_maxInterPolate;
+	//}
 
-	//使用後のキャラのMP
-	m_useValue._interpolation = (m_CharaStatus->_mp - m_useValue._nextMp) / (float)m_CharaStatus->_maxmp * m_maxInterPolate;
-	//前の状態
-	m_useValue._prevMp = m_CharaStatus->_mp;
-	m_useValue._prevNextMp = m_useValue._nextMp;
+	////使用後のキャラのMP
+	//m_useValue._interpolation = (m_CharaStatus->_mp - m_useValue._nextMp) / (float)m_CharaStatus->_maxmp * m_maxInterPolate;
+	////前の状態
+	//m_useValue._prevMp = m_CharaStatus->_mp;
+	//m_useValue._prevNextMp = m_useValue._nextMp;
 }
 
 void PlayerMPGauge::mRender(std::shared_ptr<HalfFillShader> shader){
