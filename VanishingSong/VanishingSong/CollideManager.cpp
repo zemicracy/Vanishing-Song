@@ -7,7 +7,7 @@ using namespace aetherClass;
 namespace{
 	const int kWallCount = 2;
 }
-CollideManager::CollideManager(std::shared_ptr<Player> player, std::shared_ptr<FieldArea> field)
+CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field)
 { 
 	m_player = player;
 	m_filed = field;

@@ -1,4 +1,4 @@
-#include "Player.h"
+#include "FieldPlayer.h"
 #include "Debug.h"
 #include "Utility.h"
 #include <MathUtility.h>
@@ -21,20 +21,20 @@ namespace{
 	const float kDefaultMpHeal = 0.05f;
 }
 
-Player::Player()
+FieldPlayer::FieldPlayer()
 {
 	m_pGearFrame = nullptr;
 	m_topGear = nullptr;
 }
 
 
-Player::~Player()
+FieldPlayer::~FieldPlayer()
 {
 	mFinalize();
 }
 
 //
-bool Player::mInitialize(){
+bool FieldPlayer::mInitialize(){
 	bool result;
 	if (kCharaDebug)
 	{
@@ -65,8 +65,8 @@ bool Player::mInitialize(){
 	mSetUpBodyCollider(m_pBodyCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
 
 	/*	基本的なアニメーションの登録	*/
-	mRegisterAnimation(Player::eState::eMove, kMoveAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Move.aether");
-	mRegisterAnimation(Player::eState::eWait, kWaitAnimationFrame,"data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
+	mRegisterAnimation(FieldPlayer::eState::eMove, kMoveAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Move.aether");
+	mRegisterAnimation(FieldPlayer::eState::eWait, kWaitAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
 
 	m_initialTransform = m_playerTransform;
 	
@@ -83,7 +83,7 @@ bool Player::mInitialize(){
 /*
 解放処理
 */
-void Player::mFinalize(){
+void FieldPlayer::mFinalize(){
 	
 	if (!m_defaultAnimation.empty()){
 		for (auto index : m_defaultAnimation){
@@ -114,7 +114,7 @@ void Player::mFinalize(){
 /*
 プレイヤーの更新処理
 */
-void Player::mUpdate(const float timeScale){
+void FieldPlayer::mUpdate(const float timeScale){
 
 	// キーの処理を取得
 	KeyValues getKeyValues = mReadKey(timeScale);
@@ -128,7 +128,7 @@ void Player::mUpdate(const float timeScale){
 	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
 
 	// 移動があれば
-	Player::eState state;
+	FieldPlayer::eState state;
 	if (getKeyValues._transform._translation == kVector3Zero){
 		state = eState::eWait;
 	}
@@ -173,7 +173,7 @@ void Player::mUpdate(const float timeScale){
 キーを読み込む
 返りは今のところtransform
 */
-Player::KeyValues Player::mReadKey(const float timeScale){
+FieldPlayer::KeyValues FieldPlayer::mReadKey(const float timeScale){
 
 	KeyValues output;
 
@@ -213,7 +213,7 @@ Player::KeyValues Player::mReadKey(const float timeScale){
 }
 
 //
-void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
+void FieldPlayer::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
 
 	if (!m_topGear)return;
 	m_playerView.Render();
@@ -229,11 +229,11 @@ void Player::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBa
 }
 
 //
-aetherClass::ViewCamera *Player::mGetView(){
+aetherClass::ViewCamera *FieldPlayer::mGetView(){
 	return &m_playerView;
 }
 
-std::shared_ptr<Cube> Player::mGetBodyColldier(){
+std::shared_ptr<Cube> FieldPlayer::mGetBodyColldier(){
 	return m_pBodyCollider;
 }
 
@@ -241,7 +241,7 @@ std::shared_ptr<Cube> Player::mGetBodyColldier(){
 ギア系の初期化をまとめたもの
 
 */
-bool Player::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherClass::ViewCamera* camera){
+bool FieldPlayer::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherClass::ViewCamera* camera){
 	
 	gearFrame = std::make_shared<GearFrame>();
 
@@ -316,7 +316,7 @@ bool Player::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherC
 /*
 	エディターから読み取り
 */
-bool Player::mLoadProperty(std::shared_ptr<GearFrame>& gearFrame, std::string modelDataFile){
+bool FieldPlayer::mLoadProperty(std::shared_ptr<GearFrame>& gearFrame, std::string modelDataFile){
 	WorldReader read;
 	bool result = read.Load(modelDataFile.c_str());
 	if (!result)
@@ -399,7 +399,7 @@ bool Player::mLoadProperty(std::shared_ptr<GearFrame>& gearFrame, std::string mo
 /*
 	カメラの初期化
 */
-void Player::mInitialPlayerView(CameraValue input){
+void FieldPlayer::mInitialPlayerView(CameraValue input){
 	// カメラの初期化
 	m_playerView.property._translation = input._position;
 	m_playerView.property._rotation = input._rotation;
@@ -417,7 +417,7 @@ void Player::mInitialPlayerView(CameraValue input){
 /*
 	コライダーの初期化用
 */
-void Player::mSetUpBodyCollider(std::shared_ptr<aetherClass::Cube>& collider, Vector3 original, Vector3 offset){
+void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<aetherClass::Cube>& collider, Vector3 original, Vector3 offset){
 	collider = std::make_shared<Cube>();
 	collider->Initialize();
 	collider->property._transform._translation = original + offset;
@@ -430,7 +430,7 @@ void Player::mSetUpBodyCollider(std::shared_ptr<aetherClass::Cube>& collider, Ve
 /*
 	コライダーの更新用
 */
-void Player::mUpdateBodyCollider(Transform& transform){
+void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 	m_pBodyCollider->property._transform._translation = transform._translation + kColliderOffset;
 	m_pBodyCollider->property._transform._rotation = transform._rotation;
 
@@ -439,7 +439,7 @@ void Player::mUpdateBodyCollider(Transform& transform){
 
 /*
 */
-void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::string first, std::string last){
+void FieldPlayer::mRegisterAnimation(FieldPlayer::eState key, const int allFrame, std::string first, std::string last){
 	AnimationFrame animation;
 	bool result = false;
 
@@ -463,7 +463,7 @@ void Player::mRegisterAnimation(Player::eState key, const int allFrame, std::str
 /*
 	基本的なアニメーションの再生
 */
-void Player::mDefaultAnimation(Player::eState& state){
+void FieldPlayer::mDefaultAnimation(FieldPlayer::eState& state){
 
 	// 前回と違うときは更新
 	if (m_prevState != state){
@@ -522,7 +522,7 @@ void Player::mDefaultAnimation(Player::eState& state){
 }
 
 //
-void Player::mUpdateView(ViewCamera& view,Vector3& rotation,Vector3 lookAtPosition){
+void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookAtPosition){
 
 	// カメラのリセット一応階といた
 	mCheckCameraRotation(rotation);
@@ -538,7 +538,7 @@ void Player::mUpdateView(ViewCamera& view,Vector3& rotation,Vector3 lookAtPositi
 }
 
 
-void Player::mCheckCameraRotation(Vector3& rotation){
+void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
 	// カメラ可動範囲の上限の確認
 	if (rotation._x > kCameraRotationMaxX){
 		rotation._x = kCameraRotationMaxX;
@@ -550,7 +550,7 @@ void Player::mCheckCameraRotation(Vector3& rotation){
 }
 
 // 壁に当たった時の処理
-void Player::mOnHitWall(){
+void FieldPlayer::mOnHitWall(){
 
 	m_prevPosition = m_playerTransform._translation.Normalize();
 	m_isHitWall = true;

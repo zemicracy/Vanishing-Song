@@ -1,5 +1,5 @@
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#ifndef _FIELDPLAYER_H
+#define _FIELDPLAYER_H
 
 #include <Cube.h>
 #include <ShaderBase.h>
@@ -12,11 +12,11 @@
 #include "CharaEntity.h"
 #include "Const.h"
 #include "Animation.h"
-class Player
+class FieldPlayer
 {
 private:
 
-	/*	Playerの状態		*/
+	/*	FieldPlayerの状態		*/
 	enum class eState{
 		eMove,
 		eWait,
@@ -54,8 +54,8 @@ private:
 	};
 
 public:
-	Player();
-	~Player();
+	FieldPlayer();
+	~FieldPlayer();
 	/*
 	初期化
 	*/
@@ -118,12 +118,12 @@ private:
 	/*
 		アニメーションの登録
 	*/
-	void mRegisterAnimation(Player::eState key,const int allFrame, std::string first, std::string last);
+	void mRegisterAnimation(FieldPlayer::eState key,const int allFrame, std::string first, std::string last);
 
 	/*
 		アニメーション再生用
 	*/
-	void mDefaultAnimation(Player::eState& state);
+	void mDefaultAnimation(FieldPlayer::eState& state);
 
 	/*
 		カメラオブジェクトの更新

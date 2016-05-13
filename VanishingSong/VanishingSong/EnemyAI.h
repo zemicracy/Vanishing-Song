@@ -1,7 +1,7 @@
 #ifndef _ENEMYAI_H
 #define _ENEMYAI_H
 #include"EnemyBase.h"
-#include"Player.h"
+
 class EnemyAI
 {
 public:
