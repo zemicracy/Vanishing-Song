@@ -40,9 +40,9 @@ private:
 	void OnListen();    // 敵の演奏
 	void OnPerform();   // プレイヤーの演奏
 	void OnBattle();    // 戦闘開始
-
+	void CheckBattle();
 private:
-	GameManager::eGameState m_battleState;
+	GameManager::eBattleState m_battleState;
 	std::unique_ptr<aetherClass::ModelBase> m_pModelBase;
 	std::unique_ptr<aetherClass::Texture>m_pTexture;
 
