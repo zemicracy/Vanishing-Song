@@ -5,24 +5,21 @@ class GameManager
 {
 public:
 	// 現在の状態
-	enum class eGameState{
-		e1PWin,
-		eClear,
-		eGameOver,
+	enum class eBattleState{
+		eWin,
+		eLose,
 		eListen,    // 敵の演奏を聴く状態
 		ePerform,   // プレイヤーの演奏開始状態 
 		eBattle,    // 戦闘の実行状態
+		eCheck,     // 今の状態を判定する
 		eNull,
 	};
 public:
 	GameManager();
 	~GameManager();
 	void mInitialize();
-	void mGameState(eGameState);
-	eGameState mGameState();
 	bool mIsPause();	
 private:
-	eGameState m_gameState;
 	bool m_isPause;
 	
 };
