@@ -13,6 +13,11 @@ public:
 	bool mIsEighterBeat();	//‚W•ª
 	bool mIsWholeBeat();	//‘S‰¹•„
 
+	int mQuarterBeatTime();	//‚S•ª
+	int mEighterBeatTime();	//‚W•ª
+	int mWholeBeatTime();	//‘S‰¹•„
+
+
 	float mGetPlayTime();
 	
 	
