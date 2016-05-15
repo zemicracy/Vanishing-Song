@@ -137,7 +137,6 @@ private:
 	
 	void mCheckCameraRotation(aetherClass::Vector3&);
 private:
-	std::shared_ptr<GearFrame> m_pGearFrame;   // パーツの管理
 	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearHash;   // それぞれのギアのポインタを扱いやすいようにまとめた連想配列
 
 	std::shared_ptr<Gear> m_topGear;            // 最上位パーツのポインタを入れておく

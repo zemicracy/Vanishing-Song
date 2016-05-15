@@ -17,7 +17,7 @@ CharaEntity::~CharaEntity()
 
 /*
 */
-std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType, aetherClass::ViewCamera* view, std::string directry){
+std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType,  std::string directry){
 	std::shared_ptr<Gear> pGear;
 	bool success;
 
@@ -39,11 +39,21 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 		return pGear;
 	}
 
-	pGear->_pGear->SetCamera(view);
 	// テクスチャの読み込み
 	pGear->_pGear->SetTextureDirectoryName(directry);
 	
 	return pGear;
+}
+
+// カメラセット用
+void CharaEntity::SetCamera(std::shared_ptr<Gear> gear, aetherClass::ViewCamera* camera){
+	if (!gear)return;
+
+	gear->_pGear->SetCamera(camera);
+
+	for (auto child : gear->_pChildren){
+		SetCamera(child, camera);
+	}
 }
 
 /*

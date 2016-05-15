@@ -181,3 +181,4 @@ void GearFrame::SetTransformValue(Gear::eType type, aetherClass::Transform value
 		break;
 	}
 }
+

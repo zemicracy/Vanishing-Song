@@ -6,6 +6,8 @@
 #include <WorldReader.h>
 #include <GameClock.h>
 #include <Windows.h>
+#include <Singleton.h>
+#include "ResourceManager.h"
 using namespace aetherClass;
 
 namespace{
@@ -13,17 +15,15 @@ namespace{
 	const int kMoveAnimationFrame = 5;
 	const float kCameraRotationMaxX = 15.0f;
 	const float kCameraRotationMinX = -15.0f;
-	const float kCameraY = 500.0f;
 	const Vector3 kColliderOffset = Vector3(0, -5, 0); 
 	const Vector3 kPlayerInitialY = Vector3(0, 20, 0);
-	const Vector3 kBulletSpeed = Vector3(0, 0, 10);
 	const float kDefaultMove = 100.0f;
-	const float kDefaultMpHeal = 0.05f;
+
 }
 
 FieldPlayer::FieldPlayer()
 {
-	m_pGearFrame = nullptr;
+
 	m_topGear = nullptr;
 }
 
@@ -36,28 +36,18 @@ FieldPlayer::~FieldPlayer()
 //
 bool FieldPlayer::mInitialize(){
 	bool result;
-	if (kCharaDebug)
-	{
-		Debug::mPrint("プレイヤー デバッグモードです");
-		Debug::mPrint("プレイヤー 初期化を開始します");
-	}
-
 	mFinalize();
-
+	auto gearFrame = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(ResourceManager::eMusical::eDefault);
 	// ギア系の初期化用
-	result = mInitializeGearFrame(m_pGearFrame, &m_playerView);
-	if (!result)
-	{
-		Debug::mErrorPrint("ギアの初期化に失敗", __FILE__, __LINE__);
+	result = mInitializeGearFrame(gearFrame, &m_playerView);
+	if (!result){
 		return false;
 	}
 
 	// パーツの初期位置
-	result = mLoadProperty(m_pGearFrame, "data\\Player\\Stay.aether");
+	result = mLoadProperty(gearFrame, "data\\Player\\Stay.aether");
 
-	if (!result)
-	{
-		Debug::mErrorPrint("Editorからの位置反映に失敗", __FILE__, __LINE__);
+	if (!result){
 		return false;
 	}
 
@@ -69,14 +59,9 @@ bool FieldPlayer::mInitialize(){
 	mRegisterAnimation(FieldPlayer::eState::eWait, kWaitAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
 
 	m_initialTransform = m_playerTransform;
-	
 	m_isHitWall = false;
-
 	
-	if (kCharaDebug)
-	{
-		Debug::mPrint("プレイヤー 初期化終了しました");
-	}
+	m_charaEntity.SetCamera(m_topGear, &m_playerView);
 	return true;
 }
 
@@ -91,13 +76,7 @@ void FieldPlayer::mFinalize(){
 		}
 		m_defaultAnimation.clear();
 	}
-	
-	if (m_pGearFrame)
-	{
-		m_pGearFrame->Release();
-		m_pGearFrame.reset();
-		m_pGearFrame = nullptr;
-	}
+
 
 	if (m_pBodyCollider)
 	{
@@ -193,19 +172,14 @@ FieldPlayer::KeyValues FieldPlayer::mReadKey(const float timeScale){
 		output._transform._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
-	/*	カメラの回転	*/
-	Vector2 mousePosition = GameController::GetMouse().GetMousePosition();
-
-	/*	コマンドやオーダーリストの箇所以外のみに反応する*/
-	
+	/*	カメラの回転	*/	
 	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRB1)){
-
-		//		output._cameraRotation._x += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 		output._cameraRotation._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
 		output._cameraRotation._y -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
+
 	return output;
 }
 
@@ -216,12 +190,6 @@ void FieldPlayer::mRender(aetherClass::ShaderBase* modelShader, aetherClass::Sha
 	m_playerView.Render();
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_topGear, modelShader, colliderShader);
-
-	if (kCharaDebug)
-	{
-		//m_pBodyCollider->Render(colliderShader);
-	}
-
 	return;
 }
 
@@ -239,74 +207,27 @@ std::shared_ptr<Cube> FieldPlayer::mGetBodyColldier(){
 
 */
 bool FieldPlayer::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, aetherClass::ViewCamera* camera){
-	
-	gearFrame = std::make_shared<GearFrame>();
 
-	// 体のパーツ
-	gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Player\\body.fbx", Gear::eType::eBody, camera,"Model\\Player\\tex");
-
-	// 腰のパーツ
-	gearFrame->m_pWaist = m_charaEntity.mSetUpGear("Model\\Player\\waist.fbx", Gear::eType::eWaist, camera, "Model\\Player\\tex");
-
-	// 腕のパーツ
-	gearFrame->m_pLeftUpperArm = m_charaEntity.mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eLeftUpperArm, camera, "Model\\Player\\tex");
-	gearFrame->m_pRightUpperArm = m_charaEntity.mSetUpGear("Model\\Player\\arm1.fbx", Gear::eType::eRightUpperArm, camera, "Model\\Player\\tex");
-	gearFrame->m_pLeftLowerArm = m_charaEntity.mSetUpGear("Model\\Player\\arm2.fbx", Gear::eType::eLeftLowerArm, camera, "Model\\Player\\tex");
-	gearFrame->m_pRightLowerArm = m_charaEntity.mSetUpGear("Model\\Player\\arm2.fbx", Gear::eType::eRightLowerArm, camera, "Model\\Player\\tex");
-
-	// 手のパーツ
-	gearFrame->m_pLeftHand = m_charaEntity.mSetUpGear("Model\\Player\\hand.fbx", Gear::eType::eLeftHand, camera, "Model\\Player\\tex");
-	gearFrame->m_pRightHand = m_charaEntity.mSetUpGear("Model\\Player\\hand.fbx", Gear::eType::eRightHand, camera, "Model\\Player\\tex");
-
-	// 足のパーツ
-	gearFrame->m_pLeftUpperLeg = m_charaEntity.mSetUpGear("Model\\Player\\leg1.fbx", Gear::eType::eLeftUpperLeg, camera, "Model\\Player\\tex");
-	gearFrame->m_pRightUpperLeg = m_charaEntity.mSetUpGear("Model\\Player\\leg1.fbx", Gear::eType::eRightUpperLeg, camera, "Model\\Player\\tex");
-	gearFrame->m_pLeftLowerLeg = m_charaEntity.mSetUpGear("Model\\Player\\leg2.fbx", Gear::eType::eLeftLowerLeg, camera, "Model\\Player\\tex");
-	gearFrame->m_pRightLowerLeg = m_charaEntity.mSetUpGear("Model\\Player\\leg2.fbx", Gear::eType::eRightLowerLeg, camera, "Model\\Player\\tex");
-
-	gearFrame->m_pLeftFoot= m_charaEntity.mSetUpGear("Model\\Player\\foot.fbx", Gear::eType::eLeftFoot, camera, "Model\\Player\\tex");
-	gearFrame->m_pRightFoot= m_charaEntity.mSetUpGear("Model\\Player\\foot.fbx", Gear::eType::eRightFoot, camera, "Model\\Player\\tex");
-	// 最上位に当たるパーツの設定
-	m_topGear = gearFrame->m_pBody;
-
-	// それぞれのパーツとの親子関係構築
-	m_charaEntity.mCreateRelationship(gearFrame->m_pBody, gearFrame->m_pWaist);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pBody, gearFrame->m_pRightUpperArm);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pBody, gearFrame->m_pLeftUpperArm);
-
-	// 右
-	m_charaEntity.mCreateRelationship(gearFrame->m_pRightUpperArm, gearFrame->m_pRightLowerArm);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pRightLowerArm, gearFrame->m_pRightHand);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pWaist, gearFrame->m_pRightUpperLeg);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pRightUpperLeg, gearFrame->m_pRightLowerLeg);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pRightLowerLeg, gearFrame->m_pRightFoot);
-
-	// 左
-	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftUpperArm, gearFrame->m_pLeftLowerArm);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftLowerArm, gearFrame->m_pLeftHand);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pWaist, gearFrame->m_pLeftUpperLeg);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftUpperLeg, gearFrame->m_pLeftLowerLeg);
-	m_charaEntity.mCreateRelationship(gearFrame->m_pLeftLowerLeg, gearFrame->m_pLeftFoot);
 
 	//
 	// 連想配列に登録
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eBody, m_pGearFrame->m_pBody);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eWaist, m_pGearFrame->m_pWaist);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eBody, gearFrame->m_pBody);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eWaist, gearFrame->m_pWaist);
 
 	// 左
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftHand, m_pGearFrame->m_pLeftHand);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftLowerArm, m_pGearFrame->m_pLeftLowerArm);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftLowerLeg, m_pGearFrame->m_pLeftLowerLeg);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftUpperArm, m_pGearFrame->m_pLeftUpperArm);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftUpperLeg, m_pGearFrame->m_pLeftUpperLeg);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftFoot, m_pGearFrame->m_pLeftFoot);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftHand, gearFrame->m_pLeftHand);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftLowerArm, gearFrame->m_pLeftLowerArm);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftLowerLeg, gearFrame->m_pLeftLowerLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftUpperArm, gearFrame->m_pLeftUpperArm);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftUpperLeg, gearFrame->m_pLeftUpperLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftFoot, gearFrame->m_pLeftFoot);
 	// 右
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightHand, m_pGearFrame->m_pRightHand);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightLowerArm, m_pGearFrame->m_pRightLowerArm);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightLowerLeg, m_pGearFrame->m_pRightLowerLeg);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightUpperArm, m_pGearFrame->m_pRightUpperArm);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightUpperLeg, m_pGearFrame->m_pRightUpperLeg);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightFoot, m_pGearFrame->m_pRightFoot);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightHand, gearFrame->m_pRightHand);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightLowerArm, gearFrame->m_pRightLowerArm);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightLowerLeg, gearFrame->m_pRightLowerLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightUpperArm, gearFrame->m_pRightUpperArm);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightUpperLeg, gearFrame->m_pRightUpperLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightFoot, gearFrame->m_pRightFoot);
 	return true;
 }
 
@@ -321,7 +242,7 @@ bool FieldPlayer::mLoadProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 		Debug::mErrorPrint("ファイルの読み込みに失敗しました", __FILE__, __LINE__);
 		return false;
 	}
-
+	m_topGear = gearFrame->m_pBody;
 	for (auto index : read.GetInputWorldInfo()._object){
 
 		/*	体	*/
@@ -548,7 +469,6 @@ void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
 
 // 壁に当たった時の処理
 void FieldPlayer::mOnHitWall(){
-
 	m_prevPosition = m_playerTransform._translation.Normalize();
 	m_isHitWall = true;
 	return;

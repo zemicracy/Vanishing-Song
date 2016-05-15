@@ -22,6 +22,7 @@ VanishingSongFrame::~VanishingSongFrame()
 bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
 	result = Singleton<ResourceManager>::GetInstance().Initialize();
+	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(ResourceManager::eMusical::eDefault, "Model\\Player");
 	return true;
 }
 
