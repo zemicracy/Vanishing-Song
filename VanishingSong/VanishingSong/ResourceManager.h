@@ -48,6 +48,8 @@ public:
 	void mPlayerInitialize(eMusical,std::string directy);
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
+	void mEnemyInitialize(eMusical, std::string directy);
+	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical);
 private:
 
 	/*
@@ -91,6 +93,7 @@ private:
 	*/
 	void FinalizeSahder();
 
+	void FinalizePlayer();
 	/*
 		アクションコマンドに対応した音の登録用
 	*/
