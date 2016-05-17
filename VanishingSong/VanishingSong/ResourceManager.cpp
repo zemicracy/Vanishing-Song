@@ -104,6 +104,10 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
+	RegisterActionSound(eCommandType::eBlue, "Sound/do.wav");
+	RegisterActionSound(eCommandType::eGreen, "Sound/re.wav");
+	RegisterActionSound(eCommandType::eRed, "Sound/mi.wav");
+	RegisterActionSound(eCommandType::eYellow, "Sound/damage.wav");
 	return true;
 }
 
@@ -363,4 +367,8 @@ void ResourceManager::mEnemyInitialize(eEnemyType type, std::string directy){
 //
 std::vector<std::shared_ptr<GearFrame>>& ResourceManager::mGetEnemyHash(eEnemyType type){
 	return m_pEnemyHashes[type];
+}
+
+std::shared_ptr<GameSound> ResourceManager::mGetBGM(int index){
+	return m_pBaseBgmArray[index];
 }
