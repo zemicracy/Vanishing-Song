@@ -34,6 +34,13 @@ namespace{
 	// ƒQ[ƒ€‚É‚©‚©‚í‚é’è”
 	const signed char kFirstDay = 1;
 	const signed char kLastDay = 1;
-
 }
+
+enum class eMusical{
+	eNull,
+	eRed,
+	eBlue,
+	eYellow,
+	eGreen
+};
 #endif
