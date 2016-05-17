@@ -1,6 +1,9 @@
 #ifndef _GAMEMANAGER_H
 #define _GAMEMANAGER_H
 #include <Singleton.h>
+struct BattlePlayerDesc{
+	//std::array<>
+};
 class GameManager
 {
 public:

@@ -17,7 +17,6 @@ private:
 	std::shared_ptr<FieldPlayer> m_player;
 	std::shared_ptr<FieldArea> m_filed;
 	
-	int m_playerNumber;
 };
 
 #endif

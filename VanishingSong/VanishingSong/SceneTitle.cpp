@@ -186,7 +186,8 @@ bool SceneTitle::TransitionOut(){
 void SceneTitle::mChangeSelect(Vector2 mouse){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
 	for (int i = 0; i < m_cursorArray.size();++i){
-		if (i == kSkipNumber)continue;
+		if (i == kSkipNumber || i == kSkipNumber - 1 || i == kSkipNumber - 2)continue;
+		
 		if (m_cursorArray[i]._cursorY<mouse._y&&m_cursorArray[i]._cursorY + cursorSize>mouse._y){
 			m_pCursor->property._transform._translation._y = m_cursorArray[i]._cursorY;
 			m_nowSelectMode = m_cursorArray[i]._modeNumber;

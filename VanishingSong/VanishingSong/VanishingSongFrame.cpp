@@ -4,7 +4,7 @@
 #include "ResourceManager.h"
 #include "GameManager.h"
 #include "GameController.h"
-
+#include "Const.h"
 using namespace aetherClass;
 VanishingSongFrame::VanishingSongFrame()
 {
@@ -22,7 +22,7 @@ VanishingSongFrame::~VanishingSongFrame()
 bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
 	result = Singleton<ResourceManager>::GetInstance().Initialize();
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(ResourceManager::eMusical::eDefault, "Model\\Player");
+	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player");
 	return true;
 }
 
