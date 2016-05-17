@@ -20,11 +20,7 @@ class ResourceManager
 {
 
 public:
-	enum class eEnemyType{
-		eNull, eAir, eGround
-	};
-	typedef std::unordered_map<eMusical, std::shared_ptr<GearFrame>> PlayerHash;
-	typedef std::unordered_map<ResourceManager::eEnemyType, std::vector<std::shared_ptr<GearFrame>>> EnemyHash;
+	typedef std::unordered_map<eMusical, std::shared_ptr<GearFrame>> CharaHash;
 public:
 	ResourceManager();
 	~ResourceManager();
@@ -49,8 +45,8 @@ public:
 	void mPlayerInitialize(eMusical,std::string directy);
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
-	void mEnemyInitialize(eEnemyType, std::string directy);
-	std::vector<std::shared_ptr<GearFrame>>& mGetEnemyHash(eEnemyType);
+	void mEnemyInitialize(eMusical, std::string directy);
+	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical);
 private:
 
 	/*
@@ -122,8 +118,8 @@ private:
 
 	CharaEntity m_charaEntity;
 
-	PlayerHash m_pPlayerHashes;
-	EnemyHash m_pEnemyHashes;
+	CharaHash m_pPlayerHashes;
+	CharaHash m_pEnemyHashes;
 };
 
 #endif
