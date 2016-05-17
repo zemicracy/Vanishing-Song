@@ -46,6 +46,7 @@ bool ResourceManager::Initialize(){
 */
 void ResourceManager::Finalize(){
 	FinalizePlayer();
+	FinalizeEnemy();
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
@@ -363,4 +364,15 @@ void ResourceManager::mEnemyInitialize(eEnemyType type, std::string directy){
 //
 std::vector<std::shared_ptr<GearFrame>>& ResourceManager::mGetEnemyHash(eEnemyType type){
 	return m_pEnemyHashes[type];
+}
+
+// ‰ð•úˆ—
+void ResourceManager::FinalizeEnemy(){
+	for (auto& index : m_pEnemyHashes){
+		for (auto second : index.second){
+			if (!second)continue;
+			second->Release();
+			second.reset();
+		}
+	}
 }

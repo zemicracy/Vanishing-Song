@@ -95,6 +95,8 @@ private:
 	void FinalizeSahder();
 
 	void FinalizePlayer();
+
+	void FinalizeEnemy();
 	/*
 		アクションコマンドに対応した音の登録用
 	*/
