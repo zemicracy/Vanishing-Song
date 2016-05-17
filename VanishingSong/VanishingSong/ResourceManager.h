@@ -1,6 +1,5 @@
 #ifndef _RESOURCEMANAGER_H
 #define _RESOURCEMANAGER_H
-#include "CharaStatus.h"
 #include <unordered_map>
 #include <memory>
 #include <array>
@@ -8,12 +7,23 @@
 #include <Texture.h>
 #include <ShaderBase.h>
 #include <Singleton.h>
+#include "CharaEntity.h"
+#include "GearFrame.h"
+#include "CharaStatus.h"
 namespace{
 	const int kMaxBGM = 8;
 }
 class ActionSound;
+
 class ResourceManager
 {
+
+public:
+	enum class eMusical{
+		eNull,
+		eDefault,
+	};
+	typedef std::unordered_map<ResourceManager::eMusical, std::shared_ptr<GearFrame>> CharaType;
 public:
 	ResourceManager();
 	~ResourceManager();
@@ -34,6 +44,12 @@ public:
 
 	// 基本的に使うシェーダーの取得用
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& mGetShaderHash();
+
+	void mPlayerInitialize(eMusical,std::string directy);
+	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
+
+	void mEnemyInitialize(eMusical, std::string directy);
+	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical);
 private:
 
 	/*
@@ -77,6 +93,7 @@ private:
 	*/
 	void FinalizeSahder();
 
+	void FinalizePlayer();
 	/*
 		アクションコマンドに対応した音の登録用
 	*/
@@ -99,6 +116,11 @@ private:
 	std::unordered_map<eCommandType, std::shared_ptr<ActionSound>> m_pActionSoundHash;
 	std::array<std::shared_ptr<aetherClass::GameSound>,kMaxBGM> m_pBaseBgmArray;
 	static std::string m_BgmPath[kMaxBGM];
+
+	CharaEntity m_charaEntity;
+
+	CharaType m_pPlayerHashes;
+	CharaType m_pEnemyHashes;
 };
 
 #endif

@@ -14,6 +14,12 @@ public:
 		eCheck,     // ¡‚Ìó‘Ô‚ğ”»’è‚·‚é
 		eNull,
 	};
+
+	enum class eGameMode{
+		eNull,
+		eQuarter,  // l•ª
+		eEighth,   // ”ª•ª
+	};
 public:
 	GameManager();
 	~GameManager();
