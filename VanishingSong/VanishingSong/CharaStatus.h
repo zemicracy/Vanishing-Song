@@ -7,7 +7,7 @@ namespace{
 enum class eCommandType
 {
 	eNull,
-	eRed,eGreen,eBlue,eYellow
+	eRed,eBlue,eGreen,eYellow
 };
 
 enum class eActionType
