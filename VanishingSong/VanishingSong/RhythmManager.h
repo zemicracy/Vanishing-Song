@@ -9,29 +9,33 @@ public:
 	~RhythmManager();
 
 	//AccesserMethod
+	bool mIsWholeBeat();	//‘S‰¹•„
 	bool mIsQuarterBeat();	//‚S•ª
 	bool mIsEighterBeat();	//‚W•ª
-	bool mIsWholeBeat();	//‘S‰¹•„
+	bool mIsSixteenthBeat();	//16•ª
 
-	int mQuarterBeatTime();	//‚S•ª
-	int mEighterBeatTime();	//‚W•ª
-	int mWholeBeatTime();	//‘S‰¹•„
+	float mWholeBeatTime();	//‘S‰¹•„
+	float mQuarterBeatTime();	//‚S•ª
+	float mEighterBeatTime();	//‚W•ª
+	float mSixteenthBeatTime();	//16•ª
 
 
 	float mGetPlayTime();
 	
 	
-	void mInitializeRhythm(std::shared_ptr<aetherClass::GameSound>,int bpm);
+	void mInitializeRhythm(int BGMindex,int bpm);
 	void mAcquire();
 private:
 	std::shared_ptr<aetherClass::GameSound>m_sound;
 	float m_playTime;
 	
 	int m_bpm;
+	int m_prevSixteenthBeat;
 	int m_prevQuarterBeat;
 	int m_prevEighterBeat;
 	int m_prevWholeBeat;
 
+	bool m_IsSixteenthBeat;
 	bool m_IsQuarterBeat;
 	bool m_IsEighterBeat;
 	bool m_IsWholeBeat;

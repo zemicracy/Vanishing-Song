@@ -1,56 +1,93 @@
 #pragma once
-#include"ActionCommand.h"
+#include"ActionBoard.h"
+#include"GameSound.h"
+#include"GameManager.h"
+#include"ActionSound.h"
+#include"RhythmManager.h"
+
 #include<array>
 class OrderList
 {
 public:
+
+	enum class eBeatMode{
+		eQuarter, eEighter
+	};
+
 	OrderList();
 	~OrderList();
 
-	void mUpdate(float);
-	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
-	void mAddOrder(std::shared_ptr<ActionCommand>);
-	void mInitialize();
+	void mSetFaze(GameManager::eBattleState faze);
+	//再生
+	void mPlay();
 
+
+	//EnemyFaze
+	void mAddEnemyOrder(std::vector<std::shared_ptr<ActionCommand>>&);	//敵からリストを受け取る
+
+
+	//PlayerFaze
+	void mAddPlayerOrder(std::vector<std::shared_ptr<ActionCommand>>);
 	std::shared_ptr<ActionCommand> mGetActionCommand();
 
+	//JudgeFaze
+	
+
+	
+	void mInitialize();
+	void mUpdate(float);
+	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
+
 	//AccesserMethod
-	void mSetBPM(float);
-	int mGetVolume();
-	bool mIsJustTiming();
-	float mGetIfUseMp();
-	void mSetCharaMp(float *mp);
+	void mChangeFaze(int);
+
 private:
+	void mPlaySound(std::shared_ptr<ActionSound>);
 	void mFinalize();
 
-	void mListPlay();
+	//停止
 	void mListStop();
-	void mException();
 
+	void mRhythmicMotion();
 
 private:
-	std::vector<std::shared_ptr<ActionCommand>>m_orderList;
-	std::shared_ptr<ActionCommand>m_listFirst;
 
-	std::array<std::shared_ptr<aetherClass::SpriteBase>,5>m_pSpriteList;
+	std::vector<std::shared_ptr<ActionCommand>>m_PlayerOrderList;
+	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
+
+	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;
+
+
+
+	std::shared_ptr<ActionBoard>m_ActionCommand;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
 	std::shared_ptr<aetherClass::SpriteBase>m_pBackImage;
 	aetherClass::Vector3 m_volumeOrigin;
+
+
+	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_helperSprite;
+
+
+	RhythmManager *m_rhythm;
+	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
+
+
+	bool m_isStart;			//判定中か
+	bool m_isAlPlay;		//既に再生後か？
+
+	bool m_isKeyDown;		//その拍ににキーが押されたか
+	bool m_isPlaySound;		//コマンド再生dできるか
+
+	int m_processId;		//処理中のID
+	int m_MaxOrderSize;
 	
-	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTexture;
-
-	bool m_isStart;
-	bool m_isPlayCommand;
-	bool m_isJustTiming;
-	float m_volume;	//仮想数値
-	float m_bpm;
-	float m_timeRadian;
-	float m_IfUseMp;
-	float *m_charaMp;
-
+	//
+	GameManager::eBattleState m_faze;
+	eBeatMode m_mode;
 	//定数
-	const char m_kMaxOrderSize = 5;
-	const float m_kMaxVolume = 100;
-	
+
+	const float m_kMissLevel = 0.5f;
+	const float m_kGreat = 0.3f;
+
 };
 
