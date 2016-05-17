@@ -11,7 +11,6 @@ CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_
 { 
 	m_player = player;
 	m_filed = field;
-	m_playerNumber = NULL;
 }
 
 
@@ -49,20 +48,20 @@ void CollideManager::mCheckHitObject(const int number){
 int CollideManager::mCheckPlayerFieldArea(){
 	
 	// 前回の番号からプラスしていく
-	for (int id = m_playerNumber; id < kPartitionSize; ++id){
+	for (int id = m_player->mGetFieldNumber(); id < kPartitionSize; ++id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
-			m_playerNumber = id;
-			return m_playerNumber;
+			m_player->mSetFieldNumber(id);
+			return id;
 		}
 	}
 
 	// 前回の番号からマイナスしていく
-	for (int id = m_playerNumber; id >= 0; --id){
+	for (int id = m_player->mGetFieldNumber(); id >= 0; --id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
-			m_playerNumber = id;
-			return m_playerNumber;
+			m_player->mSetFieldNumber(id);
+			return id;
 		}
 	}
 
-	return m_playerNumber;
+	return m_player->mGetFieldNumber();
 }

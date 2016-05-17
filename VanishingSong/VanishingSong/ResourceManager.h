@@ -10,6 +10,7 @@
 #include "CharaEntity.h"
 #include "GearFrame.h"
 #include "CharaStatus.h"
+#include "Const.h"
 namespace{
 	const int kMaxBGM = 8;
 }
@@ -19,11 +20,11 @@ class ResourceManager
 {
 
 public:
-	enum class eMusical{
-		eNull,
-		eDefault,
+	enum class eEnemyType{
+		eNull, eAir, eGround
 	};
-	typedef std::unordered_map<ResourceManager::eMusical, std::shared_ptr<GearFrame>> CharaType;
+	typedef std::unordered_map<eMusical, std::shared_ptr<GearFrame>> PlayerHash;
+	typedef std::unordered_map<ResourceManager::eEnemyType, std::vector<std::shared_ptr<GearFrame>>> EnemyHash;
 public:
 	ResourceManager();
 	~ResourceManager();
@@ -48,8 +49,8 @@ public:
 	void mPlayerInitialize(eMusical,std::string directy);
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
-	void mEnemyInitialize(eMusical, std::string directy);
-	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical);
+	void mEnemyInitialize(eEnemyType, std::string directy);
+	std::vector<std::shared_ptr<GearFrame>>& mGetEnemyHash(eEnemyType);
 private:
 
 	/*
@@ -119,8 +120,8 @@ private:
 
 	CharaEntity m_charaEntity;
 
-	CharaType m_pPlayerHashes;
-	CharaType m_pEnemyHashes;
+	PlayerHash m_pPlayerHashes;
+	EnemyHash m_pEnemyHashes;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "FieldPlayer.h"
 #include "Debug.h"
 #include "Utility.h"
+#include "Const.h"
 #include <MathUtility.h>
 #include <GameController.h>
 #include <WorldReader.h>
@@ -21,13 +22,6 @@ namespace{
 
 }
 
-FieldPlayer::FieldPlayer()
-{
-
-	m_topGear = nullptr;
-}
-
-
 FieldPlayer::~FieldPlayer()
 {
 	mFinalize();
@@ -37,7 +31,7 @@ FieldPlayer::~FieldPlayer()
 bool FieldPlayer::mInitialize(){
 	bool result;
 	mFinalize();
-	auto gearFrame = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(ResourceManager::eMusical::eDefault);
+	auto gearFrame = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(eMusical::eBlue);
 	// ÉMÉAånÇÃèâä˙âªóp
 	result = mInitializeGearFrame(gearFrame, &m_playerView);
 	if (!result){
@@ -86,6 +80,8 @@ void FieldPlayer::mFinalize(){
 	}
 	m_prevState = eState::eNull;
 	m_cameraRotation = kVector3Zero;
+
+	m_fieldNumber = NULL;
 	return;
 }
 
@@ -472,4 +468,11 @@ void FieldPlayer::mOnHitWall(){
 	m_prevPosition = m_playerTransform._translation.Normalize();
 	m_isHitWall = true;
 	return;
+}
+
+void FieldPlayer::mSetFieldNumber(const int number){
+	m_fieldNumber = number;
+}
+int FieldPlayer::mGetFieldNumber()const{
+	return m_fieldNumber;
 }

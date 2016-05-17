@@ -54,7 +54,7 @@ private:
 	};
 
 public:
-	FieldPlayer();
+	FieldPlayer() = default;
 	~FieldPlayer();
 	/*
 	初期化
@@ -83,6 +83,8 @@ public:
 	// 壁に当たった時の処理
 	void mOnHitWall();
 	
+	void mSetFieldNumber(const int);
+	int mGetFieldNumber()const;
 private:
 
 
@@ -158,6 +160,8 @@ private:
 
 	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
 	eActionType m_action;
+
+	int m_fieldNumber;
 	
 };
 
