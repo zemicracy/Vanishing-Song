@@ -1,14 +1,13 @@
 #pragma once
 #include <array>
 namespace{
-	const int kMaxOrderList = 5;
 	const int kZeroPoint = 0;
 }
 
 enum class eCommandType
 {
-	
-	eNull
+	eNull,
+	eRed,eGreen,eBlue,eYellow
 };
 
 enum class eActionType
