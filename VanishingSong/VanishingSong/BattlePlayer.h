@@ -1,16 +1,16 @@
 #ifndef _BATTLEPLAYER_H
 #define _BATTLEPLAYER_H
-#include "ResourceManager.h"
+#include "Const.h"
 class BattlePlayer
 {
 public:
-	BattlePlayer(ResourceManager::eMusical);
+	BattlePlayer();
 	~BattlePlayer();
-	
-private:
-	void Initialize(ResourceManager::eMusical);
-	
 
+	void Initialize(eMusical);
+	eMusical mGetType();
+private:
+	eMusical m_type;
 };
 
 #endif
