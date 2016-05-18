@@ -64,7 +64,7 @@ public:
 	/*
 	XVˆ—
 	*/
-	void mUpdate(const float timeScale);
+	void mUpdate(const float timeScale, const bool isWait);
 
 	/*
 	•`‰æˆ—

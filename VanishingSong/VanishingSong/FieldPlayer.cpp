@@ -44,7 +44,7 @@ bool FieldPlayer::mInitialize(){
 	if (!result){
 		return false;
 	}
-
+	
 	// コライダーの初期化
 	mSetUpBodyCollider(m_pBodyCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
 
@@ -89,11 +89,14 @@ void FieldPlayer::mFinalize(){
 /*
 プレイヤーの更新処理
 */
-void FieldPlayer::mUpdate(const float timeScale){
+void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// キーの処理を取得
-	KeyValues getKeyValues = mReadKey(timeScale);
-	
+	KeyValues getKeyValues;
+		if (!isWait){
+		
+			getKeyValues = mReadKey(timeScale);
+		}
 	// カメラの処理
 	m_cameraRotation += getKeyValues._cameraRotation;
 
@@ -470,9 +473,12 @@ void FieldPlayer::mOnHitWall(){
 	return;
 }
 
+//
 void FieldPlayer::mSetFieldNumber(const int number){
 	m_fieldNumber = number;
 }
+
+//
 int FieldPlayer::mGetFieldNumber()const{
 	return m_fieldNumber;
 }
