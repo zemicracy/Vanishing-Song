@@ -105,7 +105,7 @@ bool SceneGame::Updater(){
 	}
 
 	if (GameController::GetKey().KeyDownTrigger('B')){
-		m_gameState = eState::eExit;
+		m_gameState = eState::eBattle;
 	}
 
 	if (m_gameState == eState::eExit){
