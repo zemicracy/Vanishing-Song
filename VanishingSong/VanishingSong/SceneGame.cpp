@@ -6,6 +6,7 @@
 #include "GameManager.h"
 #include <Singleton.h>
 #include "SceneTitle.h"
+#include "SceneBattle.h"
 #include "ResourceManager.h"
 using namespace aetherClass;
 
@@ -39,6 +40,7 @@ bool SceneGame::Initialize(){
 
 	// シーンの登録
 	RegisterScene(new SceneTitle());
+	RegisterScene(new SceneBattle());
 
 	// フェードイン・アウトを行う
 	m_pFadeObject = std::make_unique<FadeManager>();
@@ -53,6 +55,8 @@ bool SceneGame::Initialize(){
 	
 	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea);
 
+
+	
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
 
@@ -100,9 +104,16 @@ bool SceneGame::Updater(){
 		m_gameState = eState::eExit;
 	}
 
+	if (GameController::GetKey().KeyDownTrigger('B')){
+		m_gameState = eState::eBattle;
+	}
 
 	if (m_gameState == eState::eExit){
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
+		return true;
+	}
+	else if (m_gameState == eState::eBattle){
+		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return true;
 	}
 

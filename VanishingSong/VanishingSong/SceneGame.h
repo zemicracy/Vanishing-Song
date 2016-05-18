@@ -13,6 +13,7 @@ private:
 
 	enum class eState{
 		eRun,
+		eBattle,
 		ePause,
 		eExit,
 		eFadeIn,
