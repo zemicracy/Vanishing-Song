@@ -1,0 +1,10 @@
+[Object]
+0.516038,-1.46932,-0.848256,0,0,0,1,1,1,0,FbxModel,0,0,0,0,0,body,C:\Users\shana\Documents\Visual Studio 2013\Projects\Vanishing\Vanishing\Model\Enemy\Air\Air_Body.fbx
+0.30963,2.03783,1.17655,0,0,0,1,1,1,0,FbxModel,0,0,0,0,0,West,C:\Users\shana\Documents\Visual Studio 2013\Projects\Vanishing\Vanishing\Model\Enemy\Air\Air_Head.fbx
+[Material]
+[Texture]
+none
+[Camera]
+0,0,-10,0,0,0
+[Light]
+0,10,0
