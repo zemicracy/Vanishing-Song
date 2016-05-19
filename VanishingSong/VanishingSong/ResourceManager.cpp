@@ -46,6 +46,7 @@ bool ResourceManager::Initialize(){
 */
 void ResourceManager::Finalize(){
 	FinalizePlayer();
+	FinalizeEnemy();
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
@@ -65,6 +66,7 @@ std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eMusical type){
 */
 void ResourceManager::PlayBaseBGM(const int id){
 	m_pBaseBgmArray[id]->PlayToLoop();
+
 	return;
 }
 
@@ -344,30 +346,32 @@ void ResourceManager::FinalizePlayer(){
 }
 
 // 雑魚敵用
-void ResourceManager::mEnemyInitialize(eEnemyType type, std::string directy){
+void ResourceManager::mEnemyInitialize(eMusical type, std::string directy){
 	std::shared_ptr<Gear> gear;
-	if (m_pEnemyHashes.find(type) != m_pEnemyHashes.end() || type == eEnemyType::eNull)return;
-	m_pEnemyHashes[type].resize(5);
-	for (auto& index : m_pEnemyHashes[type]){
-		index = std::make_shared<GearFrame>();
+	if (m_pEnemyHashes.find(type) != m_pEnemyHashes.end() || type == eMusical::eNull)return;
+	
+	m_pEnemyHashes[type] = std::make_shared<GearFrame>();
 
 		// 体のパーツ
-		index->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + "\\tex");
+	m_pEnemyHashes[type]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + "\\tex");
 
 		// 腰のパーツ
-		index->m_pWaist = m_charaEntity.mSetUpGear(directy + "\\waist.fbx", Gear::eType::eWaist, directy + "\\tex");
+	m_pEnemyHashes[type]->m_pWaist = m_charaEntity.mSetUpGear(directy + "\\waist.fbx", Gear::eType::eWaist, directy + "\\tex");
 
 
 		// それぞれのパーツとの親子関係構築
-		m_charaEntity.mCreateRelationship(index->m_pBody, index->m_pWaist);
-	}
+	m_charaEntity.mCreateRelationship(m_pEnemyHashes[type]->m_pBody, m_pEnemyHashes[type]->m_pWaist);
 }
 
 //
-std::vector<std::shared_ptr<GearFrame>>& ResourceManager::mGetEnemyHash(eEnemyType type){
+std::shared_ptr<GearFrame> ResourceManager::mGetEnemyHash(eMusical type){
 	return m_pEnemyHashes[type];
 }
 
-std::shared_ptr<GameSound> ResourceManager::mGetBGM(int index){
-	return m_pBaseBgmArray[index];
+// 解放処理
+void ResourceManager::FinalizeEnemy(){
+	for (auto& index : m_pEnemyHashes){
+		if (!index.second)continue;
+		index.second->Release();
+	}
 }
