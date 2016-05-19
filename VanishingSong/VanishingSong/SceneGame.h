@@ -14,6 +14,7 @@ private:
 	enum class eState{
 		eRun,
 		ePause,
+		eBattle,
 		eExit,
 		eFadeIn,
 		eFadeOut,
