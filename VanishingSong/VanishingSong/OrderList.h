@@ -10,10 +10,6 @@ class OrderList
 {
 public:
 
-	enum class eBeatMode{
-		eQuarter, eEighter
-	};
-
 	OrderList();
 	~OrderList();
 
@@ -34,12 +30,11 @@ public:
 	
 
 	
-	void mInitialize();
+	void mInitialize(GameManager::eGameMode);
 	void mUpdate(float);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 
 	//AccesserMethod
-	void mChangeFaze(int);
 
 private:
 	void mPlaySound(std::shared_ptr<ActionSound>);
@@ -56,16 +51,16 @@ private:
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;
+	std::vector<aetherClass::Vector3>m_pSpriteOrigin;
 
 
 
 	std::shared_ptr<ActionBoard>m_ActionCommand;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
+	aetherClass::Vector3 m_VolumeOrigin;
 	std::shared_ptr<aetherClass::SpriteBase>m_pBackImage;
-	aetherClass::Vector3 m_volumeOrigin;
-
-
-	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_helperSprite;
+	aetherClass::Vector3 m_BackImageOrigin;
+	aetherClass::Vector3 m_BackImageScaleOrigin;
 
 
 	RhythmManager *m_rhythm;
@@ -81,9 +76,13 @@ private:
 	int m_processId;		//èàóùíÜÇÃID
 	int m_MaxOrderSize;
 	
+	int m_enemyDamageCounter;
+	int m_playerDamageCounter;
+
+
 	//
 	GameManager::eBattleState m_faze;
-	eBeatMode m_mode;
+	GameManager::eGameMode m_mode;
 	//íËêî
 
 	const float m_kMissLevel = 0.5f;

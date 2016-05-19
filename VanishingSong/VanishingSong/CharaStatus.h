@@ -4,12 +4,6 @@ namespace{
 	const int kZeroPoint = 0;
 }
 
-enum class eCommandType
-{
-	eNull,
-	eRed,eBlue,eGreen,eYellow
-};
-
 enum class eActionType
 {
 	eMove,

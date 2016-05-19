@@ -29,15 +29,23 @@ bool SceneBattle::Initialize(){
 
 	m_battleState = GameManager::eBattleState::eListen;
 
+	m_pOrderList = std::make_unique<OrderList>();
+	m_pOrderList->mInitialize(GameManager::eGameMode::eQuarter);
+	m_pOrderList->mSetFaze(m_battleState);
+
+
 	return true;
 }
 
 void SceneBattle::Finalize(){
 	m_pModelBase->Finalize();
+	m_pOrderList.release();
 	return;
 }
 
 bool SceneBattle::Updater(){
+	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
+
 	OnListen();
 	OnPerform();
 	OnBattle();
@@ -49,10 +57,14 @@ void SceneBattle::Render(){
 	m_view.Render();
 	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 	m_pModelBase->Render(shaderHash["texture"].get());
+	
+
 	return;
 }
 
 void SceneBattle::UIRender(){
+	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	m_pOrderList->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	return;
 }
 
@@ -69,6 +81,7 @@ void SceneBattle::OnListen(){
 	if (m_battleState != GameManager::eBattleState::eListen)return;
 
 	// TODO: 敵の演奏をする処理＆スタックされる処理＆敵によってはオーダーリストに細工をする
+	
 	return;
 }
 

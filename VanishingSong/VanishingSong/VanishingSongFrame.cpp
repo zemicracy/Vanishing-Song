@@ -28,7 +28,6 @@ bool VanishingSongFrame::InitializeBuffer(){
 
 //　１フレームごとに実行される
 bool VanishingSongFrame::FrameRunningBuffer(){
-	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 
 	
 	return true;

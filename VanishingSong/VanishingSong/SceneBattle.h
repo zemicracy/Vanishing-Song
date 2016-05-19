@@ -9,6 +9,7 @@
 #include <ViewCamera.h>
 #include <Texture.h>
 #include "GameManager.h"
+#include"OrderList.h"
 class SceneBattle :
 	public aetherClass::GameScene
 {
@@ -45,6 +46,9 @@ private:
 	GameManager::eBattleState m_battleState;
 	std::unique_ptr<aetherClass::ModelBase> m_pModelBase;
 	std::unique_ptr<aetherClass::Texture>m_pTexture;
+
+	std::unique_ptr<OrderList> m_pOrderList;
+
 
 	aetherClass::ViewCamera m_view;
 };
