@@ -4,6 +4,8 @@
 #include "PixelShader.h"
 #include <chrono>
 #include "WorldReader.h"
+#include "Singleton.h"
+#include "ResourceManager.h"
 
 using namespace aetherClass;
 FieldEnemyManager::FieldEnemyManager()
@@ -16,27 +18,24 @@ FieldEnemyManager::~FieldEnemyManager()
 
 bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	
-	EnemyGroundSize = 2;
-	EnemyAirSize = 2;
-
-	EnemySize = EnemyGroundSize + EnemyAirSize;
+	EnemySize = 1;
 
 	WorldReader reader;
-	reader.Load("data\\EnemySpawnDay1.aether");
+	reader.Load("data\\stage.aether");
 
 	//Spawn場所
 	for (auto index : reader.GetInputWorldInfo()._object){
 
-		if (index->_name == "area1Spawn"){
+		if (index->_name == "area1"){
 			m_pEnemySpawner[0] = index->_transform._translation;
 		}
-		if (index->_name == "area2Spawn"){
+		if (index->_name == "area2"){
 			m_pEnemySpawner[1] = index->_transform._translation;
 		}
-		if (index->_name == "area3Spawn"){
+		if (index->_name == "area3"){
 			m_pEnemySpawner[2] = index->_transform._translation;
 		}
-		if (index->_name == "area4Spawn"){
+		if (index->_name == "area4"){
 			m_pEnemySpawner[3] = index->_transform._translation;
 		}
 	}
@@ -45,22 +44,37 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 
 
 	//EnemyGroundの生成
-	for (int i = 0; i < EnemyGroundSize; i++){
+	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(),std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitializeGround(camera);
-		m_pEnemy.begin()->get()->mInitializeEnemyColider(camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Ground,camera);
+		
 	}
 
-	//EnemyGroundの生成
-	for (int i = 0; i < EnemyAirSize; i++){
+	//EnemyAirの生成
+	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitializeAir(camera);
-		m_pEnemy.begin()->get()->mInitializeEnemyColider(camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Air, camera);
 	}
+
+	//Enemy(仮)
+	for (int i = 0; i < EnemySize; i++){
+		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Blue, camera);
+	}
+
+	//Enemy(仮)
+	for (int i = 0; i < EnemySize; i++){
+		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Yellow, camera);
+	}
+
 	
 	//敵の初期位置
 	mSetPosion();
-	
+
+	mInitilizeMessage();
+	m_isRender = false;
+	m_isJudge = false;
 	return true;
 }
 
@@ -73,13 +87,44 @@ void FieldEnemyManager::mRender(aetherClass::ShaderBase* model_shader, aetherCla
 		}
 }
 
+
+void FieldEnemyManager::mRenderMessage(bool isRender){
+
+	if (isRender){
+		m_isRender = !m_isRender;
+	}
+	if (!m_isRender){
+		return;
+	}
+	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	m_pEnemyMessage->mRender(shaderHash["texture"].get());
+}
+
+bool FieldEnemyManager::mGetIsJudge(){
+
+	return m_isJudge;
+}
+
 //更新処理
 void FieldEnemyManager::mUpdater(){
 
 	for (auto itr : m_pEnemy){
 	itr->mUpdate();
 	}
+
 }
+
+bool FieldEnemyManager::mInitilizeMessage(){
+	m_pEnemyMessage = std::make_shared<MessageWindow>();
+	m_pMessageTexture = std::make_shared<Texture>();
+
+	m_pEnemyMessage->mInitialize();
+	m_pMessageTexture->Load("Texture\\Message\\YesOrNo.png");
+	m_pEnemyMessage->mSetText(m_pMessageTexture.get());
+
+	return true;
+}
+
 
 //解放処理(コライダーはしなくていい)
 void FieldEnemyManager::mFinalize(){
@@ -93,17 +138,20 @@ void FieldEnemyManager::mFinalize(){
 void FieldEnemyManager::mSetPosion(){
 
 	//敵の出現位置
-	for (int i = 0; i < EnemySize; i++){
+	for (int i = 0; i <m_pEnemy.size(); i++){
 		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation = m_pEnemySpawner[i];
 		m_pEnemy[i]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation = m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
 		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y = +20;
 		m_pEnemy[i]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y - 2;
 		m_pEnemy[i]->mGetProperty()._enemyAreaNo = i;
-		m_enemyArray[i].push_back(m_pEnemy[i]);
+		m_enemyArray[i]=m_pEnemy[i];
 	}
+
+	m_pEnemy[1]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[1]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y+10;
+	m_pEnemy[2]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[1]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y + 10;
 
 }
 
-std::vector<std::shared_ptr<FieldEnemy>> FieldEnemyManager::mEnemyGet(int enemy){
+std::shared_ptr<FieldEnemy> FieldEnemyManager::mEnemyGet(int enemy){
 	return  m_enemyArray[enemy];
 }

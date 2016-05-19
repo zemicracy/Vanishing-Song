@@ -1,5 +1,7 @@
 #include "FieldEnemy.h"
 #include <WorldReader.h>
+#include "ResourceManager.h"
+#include <Singleton.h>
 #include "Debug.h"
 
 using namespace aetherClass;
@@ -13,15 +15,43 @@ FieldEnemy::~FieldEnemy()
 	
 }
 
+bool FieldEnemy::mInitialize(eType type,ViewCamera* camera){
+
+	switch (type)
+	{
+	case eType::Ground:
+		mInitializeGround(camera);
+		mInitializeEnemyColider(camera);
+		break;
+	case eType::Air:
+		mInitializeAir(camera);
+		mInitializeEnemyColider(camera);
+		break;
+	case eType::Blue:
+		mInitializeBlue(camera);
+		mInitializeEnemyColider(camera);
+		break;
+	case eType::Yellow:
+		mInitializeYellow(camera);
+		mInitializeEnemyColider(camera);
+		break;
+	case eType::Null:
+
+	default:
+		break;
+	}
+
+	return true;
+}
+
 //Enemy地上
 bool FieldEnemy::mInitializeGround(ViewCamera* camera){
 
 		m_property._penemy = std::make_shared<GearFrame>();
+	
+		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eRed);
 
-		// 体のパーツ
-		m_property._penemy->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\Ground_Body.fbx", Gear::eType::eBody, camera, "Model\\Enemy\\Ground\\tex");
-		// 腰のパーツ
-		m_property._penemy->m_pWaist = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\Ground_Head.fbx", Gear::eType::eWaist, camera, "Model\\Enemy\\Ground\\tex");
+		m_property._penemy = gearframe;
 
 		WorldReader read;
 		read.Load("data\\Enemy.aether");
@@ -29,12 +59,12 @@ bool FieldEnemy::mInitializeGround(ViewCamera* camera){
 
 			if (index->_name == "body"){
 				SetLoadModelValue(m_property._penemy->m_pBody, index);
-				m_property._penemy->m_pBody->_pGear->property._transform._scale = 4;
+				m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
 			}
 
-			if (index->_name == "West"){
-				SetLoadModelValue(m_property._penemy->m_pWaist, index);
-				m_property._penemy->m_pWaist->_pGear->property._transform._scale = 4;
+			if (index->_name == "waist"){
+				//SetLoadModelValue(m_property._penemy->m_pWaist, index);
+				m_property._penemy->m_pWaist->_pGear->property._transform._scale = 2;
 			}
 		}
 		read.UnLoad();
@@ -44,8 +74,9 @@ bool FieldEnemy::mInitializeGround(ViewCamera* camera){
 
 		// 体にパーツとの親子関係
 		m_charaEntity.mCreateRelationship(m_pTopGear, m_property._penemy->m_pWaist);
-		return true;
+		m_charaEntity.SetCamera(m_pTopGear,camera);
 
+		return true;
 }
 
 //Enemy空中
@@ -53,23 +84,20 @@ bool FieldEnemy::mInitializeAir(ViewCamera* camera){
 
 	m_property._penemy = std::make_shared<GearFrame>();
 
-	// 体のパーツ
-	m_property._penemy->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\Air_Body.fbx", Gear::eType::eBody, camera, "Model\\Enemy\\Air\\tex");
-	// 腰のパーツ
-	m_property._penemy->m_pWaist = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\Air_Head.fbx", Gear::eType::eWaist, camera, "Model\\Enemy\\Air\\tex");
-
+	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eGreen);
+	m_property._penemy = gearframe;
 	WorldReader read;
-	read.Load("data\\Enemy.aether");
+	read.Load("data\\EnemyAir.aether");
 	for (auto index : read.GetInputWorldInfo()._object){
 
 		if (index->_name == "body"){
 			SetLoadModelValue(m_property._penemy->m_pBody, index);
-			m_property._penemy->m_pBody->_pGear->property._transform._scale = 4;
+			m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
 		}
 
-		if (index->_name == "West"){
-			SetLoadModelValue(m_property._penemy->m_pWaist, index);
-			m_property._penemy->m_pWaist->_pGear->property._transform._scale = 4;
+		if (index->_name == "waist"){
+			//SetLoadModelValue(m_property._penemy->m_pWaist, index);
+			m_property._penemy->m_pWaist->_pGear->property._transform._scale = 2;
 		}
 	}
 	read.UnLoad();
@@ -79,8 +107,80 @@ bool FieldEnemy::mInitializeAir(ViewCamera* camera){
 
 	// 体にパーツとの親子関係
 	m_charaEntity.mCreateRelationship(m_pTopGear, m_property._penemy->m_pWaist);
+	m_charaEntity.SetCamera(m_pTopGear, camera);
+
 	return true;
 
+}
+
+//仮用敵
+bool FieldEnemy::mInitializeBlue(ViewCamera* camera){
+
+	m_property._penemy = std::make_shared<GearFrame>();
+
+	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eBlue);
+
+	m_property._penemy = gearframe;
+
+	WorldReader read;
+	read.Load("data\\Enemy.aether");
+	for (auto index : read.GetInputWorldInfo()._object){
+
+		if (index->_name == "body"){
+			SetLoadModelValue(m_property._penemy->m_pBody, index);
+			m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
+		}
+
+		if (index->_name == "waist"){
+			//SetLoadModelValue(m_property._penemy->m_pWaist, index);
+			m_property._penemy->m_pWaist->_pGear->property._transform._scale = 2;
+		}
+	}
+	read.UnLoad();
+
+	// 最上位に当たるパーツの設定
+	m_pTopGear = m_property._penemy->m_pBody;
+
+	// 体にパーツとの親子関係
+	m_charaEntity.mCreateRelationship(m_pTopGear, m_property._penemy->m_pWaist);
+	m_charaEntity.SetCamera(m_pTopGear, camera);
+
+	return true;
+}
+
+//仮用敵
+bool FieldEnemy::mInitializeYellow(ViewCamera* camera){
+
+	m_property._penemy = std::make_shared<GearFrame>();
+
+	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eYellow);
+
+	m_property._penemy = gearframe;
+
+	WorldReader read;
+	read.Load("data\\Enemy.aether");
+	for (auto index : read.GetInputWorldInfo()._object){
+
+		if (index->_name == "body"){
+			SetLoadModelValue(m_property._penemy->m_pBody, index);
+			m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
+		}
+
+		if (index->_name == "waist"){
+			//SetLoadModelValue(m_property._penemy->m_pWaist, index);
+			m_property._penemy->m_pWaist->_pGear->property._transform._scale = 2;
+		}
+	}
+	read.UnLoad();
+
+	// 最上位に当たるパーツの設定
+	m_pTopGear = m_property._penemy->m_pBody;
+
+	// 体にパーツとの親子関係
+	m_charaEntity.mCreateRelationship(m_pTopGear, m_property._penemy->m_pWaist);
+	m_charaEntity.SetCamera(m_pTopGear, camera);
+
+	return true;
 }
 
 
@@ -102,10 +202,10 @@ void FieldEnemy::mUpdate(){
 
 void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	
-	m_property._pCollider->Render(colider_shader);
-
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_pTopGear, model_shader, colider_shader);
+
+	m_property._pCollider->Render(colider_shader);
 }
 
 void FieldEnemy::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
