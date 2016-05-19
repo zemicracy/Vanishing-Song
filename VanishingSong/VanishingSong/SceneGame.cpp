@@ -8,9 +8,11 @@
 #include "SceneTitle.h"
 #include "SceneBattle.h"
 #include "ResourceManager.h"
+#include "Debug.h"
 using namespace aetherClass;
 
 const std::string SceneGame::Name = "Game";
+
 
 namespace{
 	const float kScaleTime = 1.0f; 
@@ -31,6 +33,7 @@ SceneGame::~SceneGame()
 
 	m_gameState = eState::eNull;
 
+
 }
 
 bool SceneGame::Initialize(){
@@ -42,21 +45,26 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
 
+
 	// フェードイン・アウトを行う
 	m_pFadeObject = std::make_unique<FadeManager>();
 
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize();
 
+	
+
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
 	m_pFieldArea->mInitialize();
 	m_pFieldArea->mSetCamera(view);
 	
-	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea);
 
+	m_pFieldEnemy = std::make_shared<FieldEnemyManager>();
+	m_pFieldEnemy->mInitilize(view);
 
-	
+	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea,m_pFieldEnemy);
+
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
 
@@ -88,6 +96,11 @@ void SceneGame::Finalize(){
 		m_pFadeObject.release();
 		m_pFadeObject = nullptr;
 	}
+	if (m_pFieldEnemy){
+		m_pFieldEnemy->mFinalize();
+		m_pFieldEnemy = nullptr;
+	}
+
 	return;
 }
 
@@ -100,6 +113,13 @@ bool SceneGame::Updater(){
 		}
 	}
 
+	if (m_pCollideManager->GetMassageFlag()){
+		bool isRender = GameController::GetKey().KeyDownTrigger(VK_SPACE);
+		m_pFieldEnemy->mRenderMessage(isRender);
+	
+		return true;
+	}
+
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
 		m_gameState = eState::eExit;
 	}
@@ -107,6 +127,8 @@ bool SceneGame::Updater(){
 	if (GameController::GetKey().KeyDownTrigger('B')){
 		m_gameState = eState::eBattle;
 	}
+
+
 
 	if (m_gameState == eState::eExit){
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
@@ -116,6 +138,11 @@ bool SceneGame::Updater(){
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return true;
 	}
+
+
+
+
+	m_pFieldEnemy->mUpdater();
 
 	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime);
@@ -131,7 +158,7 @@ void SceneGame::Render(){
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
-
+	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	return;
 }
 

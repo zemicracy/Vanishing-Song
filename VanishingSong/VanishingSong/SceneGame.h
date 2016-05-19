@@ -13,7 +13,6 @@ private:
 
 	enum class eState{
 		eRun,
-		eBattle,
 		ePause,
 		eExit,
 		eFadeIn,
@@ -58,5 +57,6 @@ private:
 	std::unique_ptr<FadeManager> m_pFadeObject;
 	std::shared_ptr<FieldPlayer> m_pFieldPlayer;
 	std::shared_ptr<FieldArea> m_pFieldArea;
+	std::shared_ptr<FieldEnemyManager> m_pFieldEnemy;
 };
 
