@@ -6,6 +6,7 @@ MessageWindow::MessageWindow()
 {
 	m_text = nullptr;
 	m_window = nullptr;
+	m_visible = true;
 }
 
 

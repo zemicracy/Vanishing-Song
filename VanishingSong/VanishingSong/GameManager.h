@@ -21,7 +21,7 @@ public:
 	enum class eGameMode{
 		eNull,
 		eQuarter,  // Žl•ª
-		eEighth,   // ”ª•ª
+		eEighter,   // ”ª•ª
 	};
 public:
 	GameManager();

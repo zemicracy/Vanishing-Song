@@ -1,5 +1,6 @@
 #include "RhythmManager.h"
-
+#include"ResourceManager.h"
+#include"Singleton.h"
 
 RhythmManager::RhythmManager()
 {
@@ -8,6 +9,7 @@ RhythmManager::RhythmManager()
 	m_prevEighterBeat = 0;
 	m_prevQuarterBeat= 0;
 	m_prevWholeBeat = 0;
+	m_prevSixteenthBeat = 0;
 }
 
 
@@ -25,15 +27,22 @@ bool RhythmManager::mIsEighterBeat(){
 bool RhythmManager::mIsWholeBeat(){
 	return m_IsWholeBeat;
 }
+bool RhythmManager::mIsSixteenthBeat(){
+	return m_IsSixteenthBeat;
+}
 
-int RhythmManager::mQuarterBeatTime(){
-	return int(m_playTime);
+
+float RhythmManager::mQuarterBeatTime(){
+	return m_playTime;
 }
-int RhythmManager::mEighterBeatTime(){
-	return int(m_playTime * 2);
+float RhythmManager::mEighterBeatTime(){
+	return m_playTime * 2;
 }
-int RhythmManager::mWholeBeatTime(){
-	return int(m_playTime / 4);
+float RhythmManager::mWholeBeatTime(){
+	return m_playTime / 4;
+}
+float RhythmManager::mSixteenthBeatTime(){
+	return m_playTime * 4;
 }
 
 
@@ -42,8 +51,8 @@ float RhythmManager::mGetPlayTime(){
 }
 
 
-void RhythmManager::mInitializeRhythm(std::shared_ptr<aetherClass::GameSound> sound, int bpm){
-	m_sound = sound;
+void RhythmManager::mInitializeRhythm(int index, int bpm){
+	m_sound = Singleton<ResourceManager>::GetInstance().mGetBGM(index);
 	m_bpm = bpm;
 	m_playTime = 0;
 }
@@ -51,10 +60,11 @@ void RhythmManager::mInitializeRhythm(std::shared_ptr<aetherClass::GameSound> so
 void RhythmManager::mAcquire(){
 	DWORD currentTempWav, nextTempWav;
 	m_sound->GetPlayPosition(&currentTempWav, &nextTempWav);
-	m_playTime = ((((float)currentTempWav * 8 / 44100 / 2 / 16) / (60 / m_bpm) + FLT_EPSILON));
+	m_playTime = (( float(currentTempWav) * 8 / 44100 / 2 / 16) / (60 / float(m_bpm)) + FLT_EPSILON);
 
 	int QuarterbeatNo = int(m_playTime);
 	int EighterbeatNo = int(m_playTime * 2);
+	int SixteenthbeatNo = int(m_playTime * 4);
 	int WholebeatNo = int(m_playTime / 4);
 
 	if (m_prevQuarterBeat != QuarterbeatNo){
@@ -72,6 +82,15 @@ void RhythmManager::mAcquire(){
 	else {
 		m_IsEighterBeat = false;
 	}
+
+	if (m_prevSixteenthBeat != SixteenthbeatNo){
+		m_prevSixteenthBeat = SixteenthbeatNo;
+		m_IsSixteenthBeat = true;
+	}
+	else {
+		m_IsSixteenthBeat = false;
+	}
+
 
 	if (m_prevWholeBeat != WholebeatNo){
 		m_prevWholeBeat = WholebeatNo;

@@ -46,7 +46,6 @@ bool ResourceManager::Initialize(){
 */
 void ResourceManager::Finalize(){
 	FinalizePlayer();
-	FinalizeEnemy();
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
@@ -105,6 +104,10 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
+	RegisterActionSound(eCommandType::eBlue, "Sound/do.wav");
+	RegisterActionSound(eCommandType::eGreen, "Sound/re.wav");
+	RegisterActionSound(eCommandType::eRed, "Sound/mi.wav");
+	RegisterActionSound(eCommandType::eYellow, "Sound/damage.wav");
 	return true;
 }
 
@@ -342,32 +345,30 @@ void ResourceManager::FinalizePlayer(){
 }
 
 // 雑魚敵用
-void ResourceManager::mEnemyInitialize(eMusical type, std::string directy){
+void ResourceManager::mEnemyInitialize(eEnemyType type, std::string directy){
 	std::shared_ptr<Gear> gear;
-	if (m_pEnemyHashes.find(type) != m_pEnemyHashes.end() || type == eMusical::eNull)return;
-	
-	m_pEnemyHashes[type] = std::make_shared<GearFrame>();
+	if (m_pEnemyHashes.find(type) != m_pEnemyHashes.end() || type == eEnemyType::eNull)return;
+	m_pEnemyHashes[type].resize(5);
+	for (auto& index : m_pEnemyHashes[type]){
+		index = std::make_shared<GearFrame>();
 
 		// 体のパーツ
-	m_pEnemyHashes[type]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + "\\tex");
+		index->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + "\\tex");
 
 		// 腰のパーツ
-	m_pEnemyHashes[type]->m_pWaist = m_charaEntity.mSetUpGear(directy + "\\waist.fbx", Gear::eType::eWaist, directy + "\\tex");
+		index->m_pWaist = m_charaEntity.mSetUpGear(directy + "\\waist.fbx", Gear::eType::eWaist, directy + "\\tex");
 
 
 		// それぞれのパーツとの親子関係構築
-	m_charaEntity.mCreateRelationship(m_pEnemyHashes[type]->m_pBody, m_pEnemyHashes[type]->m_pWaist);
+		m_charaEntity.mCreateRelationship(index->m_pBody, index->m_pWaist);
+	}
 }
 
 //
-std::shared_ptr<GearFrame> ResourceManager::mGetEnemyHash(eMusical type){
+std::vector<std::shared_ptr<GearFrame>>& ResourceManager::mGetEnemyHash(eEnemyType type){
 	return m_pEnemyHashes[type];
 }
 
-// 解放処理
-void ResourceManager::FinalizeEnemy(){
-	for (auto& index : m_pEnemyHashes){
-		if (!index.second)continue;
-		index.second->Release();
-	}
+std::shared_ptr<GameSound> ResourceManager::mGetBGM(int index){
+	return m_pBaseBgmArray[index];
 }

@@ -38,6 +38,7 @@ public:
 	std::shared_ptr<aetherClass::Texture> GetTexture(std::string);
 
 	std::shared_ptr<ActionSound> GetActionSound(eCommandType);
+	std::shared_ptr<aetherClass::GameSound> mGetBGM(int);
 
 	// 基本的に使うシェーダーの取得用
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& mGetShaderHash();
