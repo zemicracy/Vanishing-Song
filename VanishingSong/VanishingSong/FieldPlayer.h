@@ -59,7 +59,7 @@ public:
 	/*
 	‰Šú‰»
 	*/
-	bool mInitialize();
+	bool mInitialize(std::shared_ptr<GearFrame> gearFrame,aetherClass::Vector3 position);
 
 	/*
 	XVˆ—

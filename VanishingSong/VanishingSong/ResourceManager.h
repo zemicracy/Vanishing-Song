@@ -42,7 +42,7 @@ public:
 	// 基本的に使うシェーダーの取得用
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& mGetShaderHash();
 
-	void mPlayerInitialize(eMusical,std::string directy);
+	void mPlayerInitialize(eMusical, std::string directy, std::string tex);
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
 	void mEnemyInitialize(eMusical, std::string directy);

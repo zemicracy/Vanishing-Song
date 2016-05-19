@@ -22,7 +22,10 @@ VanishingSongFrame::~VanishingSongFrame()
 bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
 	result = Singleton<ResourceManager>::GetInstance().Initialize();
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player");
+
+	// 操作キャラクターのリソースを初期化
+	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","\\blue");
+	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "\\red");
 	return true;
 }
 
