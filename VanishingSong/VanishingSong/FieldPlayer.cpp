@@ -17,7 +17,6 @@ namespace{
 	const float kCameraRotationMaxX = 15.0f;
 	const float kCameraRotationMinX = -15.0f;
 	const Vector3 kColliderOffset = Vector3(0, -5, 0); 
-	const Vector3 kPlayerInitialY = Vector3(0, 20, 0);
 	const float kDefaultMove = 100.0f;
 
 }
@@ -28,10 +27,14 @@ FieldPlayer::~FieldPlayer()
 }
 
 //
-bool FieldPlayer::mInitialize(){
+bool FieldPlayer::mInitialize(std::shared_ptr<GearFrame> gear, Vector3 position){
 	bool result;
 	mFinalize();
-	auto gearFrame = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(eMusical::eBlue);
+
+	// 初期位置の設定
+	m_playerTransform._translation = position;
+	
+	auto gearFrame = gear;
 	// ギア系の初期化用
 	result = mInitializeGearFrame(gearFrame, &m_playerView);
 	if (!result){
@@ -189,6 +192,10 @@ void FieldPlayer::mRender(aetherClass::ShaderBase* modelShader, aetherClass::Sha
 	m_playerView.Render();
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_topGear, modelShader, colliderShader);
+
+	if (m_pBodyCollider){
+		m_pBodyCollider->Render(colliderShader);
+	}
 	return;
 }
 
@@ -320,9 +327,6 @@ void FieldPlayer::mInitialPlayerView(CameraValue input){
 	// カメラの初期化
 	m_playerView.property._translation = input._position;
 	m_playerView.property._rotation = input._rotation;
-
-	// 初期位置の設定
-	m_playerTransform._translation = kPlayerInitialY;
 
 	// カメラのオフセットの設定
 	m_cameraOffset._translation = m_playerView.property._translation + m_playerTransform._translation+Vector3(0,0,-50);
