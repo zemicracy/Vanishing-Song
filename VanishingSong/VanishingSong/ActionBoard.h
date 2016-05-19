@@ -16,10 +16,10 @@ public:
 	std::shared_ptr<ActionCommand> mSelectType();
 
 	//AccessorMethod
-	std::shared_ptr<ActionCommand> mGetCommand(eCommandType type);
-	std::shared_ptr<ActionCommand> mGetCommandTexture(eCommandType type);
+	std::shared_ptr<ActionCommand> mGetCommand(eMusical type);
+	std::shared_ptr<aetherClass::Texture> mGetCommandTexture(eMusical type);
 
-	private:
+	public:
 
 	struct ActionCommandType{
 		std::shared_ptr<ActionCommand> _command;
@@ -35,14 +35,13 @@ public:
 			_texture = nullptr;
 		}
 	};
+
 private:
-	template<class T>
-	void mInitializer(Color color, std::string path);
 
 	void mFinalize();
 private:
 
-	std::unordered_map<eCommandType, ActionCommandType>m_actionList;
+	std::unordered_map<eMusical, ActionCommandType>m_actionList;
 
 };
 

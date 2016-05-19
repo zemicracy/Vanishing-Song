@@ -4,7 +4,7 @@ class ActionYellow :public ActionCommand
 {
 public:
 	ActionYellow() :
-		ActionCommand(eCommandType::eYellow){}
+		ActionCommand(eMusical::eYellow){}
 	~ActionYellow() = default;
 	void mOnCreate()override{
 	}

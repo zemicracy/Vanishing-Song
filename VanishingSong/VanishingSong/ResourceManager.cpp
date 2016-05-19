@@ -54,7 +54,7 @@ void ResourceManager::Finalize(){
 }
 
 
-std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eCommandType type){
+std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eMusical type){
 	return m_pActionSoundHash[type];
 }
 
@@ -65,7 +65,6 @@ std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eCommandType type){
 */
 void ResourceManager::PlayBaseBGM(const int id){
 	m_pBaseBgmArray[id]->PlayToLoop();
-
 	return;
 }
 
@@ -104,10 +103,10 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-	RegisterActionSound(eCommandType::eBlue, "Sound/do.wav");
-	RegisterActionSound(eCommandType::eGreen, "Sound/re.wav");
-	RegisterActionSound(eCommandType::eRed, "Sound/mi.wav");
-	RegisterActionSound(eCommandType::eYellow, "Sound/damage.wav");
+	RegisterActionSound(eMusical::eBlue, "Sound/do.wav");
+	RegisterActionSound(eMusical::eGreen, "Sound/re.wav");
+	RegisterActionSound(eMusical::eRed, "Sound/mi.wav");
+	RegisterActionSound(eMusical::eYellow, "Sound/damage03.wav");
 	return true;
 }
 
@@ -211,7 +210,7 @@ void ResourceManager::FinalizeSahder(){
 /*
 	アクションコマンドに対応したサウンドの登録	
 */
-bool ResourceManager::RegisterActionSound(eCommandType type, std::string path){
+bool ResourceManager::RegisterActionSound(eMusical type, std::string path){
 	auto findMap = m_pActionSoundHash.find(type);
 
 	// すでにその名前で登録しているのであれば何もしない

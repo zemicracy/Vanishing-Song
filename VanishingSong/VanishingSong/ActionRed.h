@@ -4,7 +4,7 @@ class ActionRed :public ActionCommand
 {
 public:
 	ActionRed() :
-		ActionCommand(eCommandType::eRed){}
+		ActionCommand(eMusical::eRed){}
 	~ActionRed() = default;
 	void mOnCreate()override{
 	}

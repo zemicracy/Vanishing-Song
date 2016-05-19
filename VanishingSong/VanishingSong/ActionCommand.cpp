@@ -1,7 +1,7 @@
 #include "ActionCommand.h"
 #include <WorldReader.h>
 using namespace aetherClass;
-ActionCommand::ActionCommand(eCommandType type){
+ActionCommand::ActionCommand(eMusical type){
 	m_type = type;
 }
 ActionCommand::~ActionCommand(){
@@ -10,10 +10,10 @@ ActionCommand::~ActionCommand(){
 		m_pSprite->Finalize();
 		m_pSprite.reset();
 	}
-	m_type = eCommandType::eNull;
+	m_type = eMusical::eNull;
 }
 
-eCommandType ActionCommand::mGetType(){
+eMusical ActionCommand::mGetType(){
 	return m_type;
 }
 

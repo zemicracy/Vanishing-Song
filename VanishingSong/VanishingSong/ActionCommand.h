@@ -11,10 +11,10 @@ class ActionCommand
 {
 
 public:
-	ActionCommand(eCommandType);
+	ActionCommand(eMusical);
 	virtual ~ActionCommand();
 
-	eCommandType mGetType();
+	eMusical mGetType();
 	aetherClass::SpriteBase::Property& mGetProperty();
 	void mCreate();
 	bool mIsCall();
@@ -50,7 +50,7 @@ private:
 	
 
 private:
-	eCommandType m_type;
+	eMusical m_type;
 	std::shared_ptr<aetherClass::Rectangle2D>m_pSprite;
 	CharaEntity m_entity;
 
