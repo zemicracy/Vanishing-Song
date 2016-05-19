@@ -7,10 +7,12 @@ using namespace aetherClass;
 namespace{
 	const int kWallCount = 2;
 }
-CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field)
+CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field, std::shared_ptr<FieldEnemyManager> enemy)
 { 
 	m_player = player;
 	m_filed = field;
+	m_enemy = enemy;
+	m_messageFlag = false;
 }
 
 
@@ -23,6 +25,7 @@ void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	const int playerNumber = mCheckPlayerFieldArea();
 	mCheckHitObject(playerNumber);
+	mCheckHitEnemy(playerNumber);
 
 	return;
 }
@@ -39,6 +42,27 @@ void CollideManager::mCheckHitObject(const int number){
 	}
 
 	return;
+}
+
+void CollideManager::mCheckHitEnemy(const int number){
+
+	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
+		m_player->mOnHitWall();
+		
+	}
+
+	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
+	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
+	if ((x*x) + (z*z) < 25 * 25){
+		m_messageFlag = true;
+	}else{
+		m_messageFlag = false;
+	}
+}
+
+bool CollideManager::GetMassageFlag(){
+
+	return m_messageFlag;
 }
 
 /*
