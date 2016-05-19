@@ -375,3 +375,7 @@ void ResourceManager::FinalizeEnemy(){
 		index.second->Release();
 	}
 }
+
+std::shared_ptr<aetherClass::GameSound> ResourceManager::mGetBGM(int index){
+	return m_pBaseBgmArray.at(index);
+}

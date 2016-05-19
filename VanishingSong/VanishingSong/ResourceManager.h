@@ -37,7 +37,7 @@ public:
 	// テクスチャ取得用
 	std::shared_ptr<aetherClass::Texture> GetTexture(std::string);
 
-	std::shared_ptr<ActionSound> GetActionSound(eCommandType);
+	std::shared_ptr<ActionSound> GetActionSound(eMusical);
 	std::shared_ptr<aetherClass::GameSound> mGetBGM(int);
 
 	// 基本的に使うシェーダーの取得用
@@ -97,7 +97,7 @@ private:
 	/*
 		アクションコマンドに対応した音の登録用
 	*/
-	bool RegisterActionSound(eCommandType, std::string path);
+	bool RegisterActionSound(eMusical, std::string path);
 
 	/*
 		テクスチャの登録用
@@ -113,7 +113,7 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>> m_pTextureHash;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>> m_pShaderHash;
 
-	std::unordered_map<eCommandType, std::shared_ptr<ActionSound>> m_pActionSoundHash;
+	std::unordered_map<eMusical, std::shared_ptr<ActionSound>> m_pActionSoundHash;
 	std::array<std::shared_ptr<aetherClass::GameSound>,kMaxBGM> m_pBaseBgmArray;
 	static std::string m_BgmPath[kMaxBGM];
 
