@@ -50,7 +50,7 @@ bool SceneGame::Initialize(){
 	m_pFadeObject = std::make_unique<FadeManager>();
 
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
-	m_pFieldPlayer->mInitialize();
+	m_pFieldPlayer->mInitialize(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,22.2,0));
 
 	
 
@@ -145,7 +145,7 @@ bool SceneGame::Updater(){
 	m_pFieldEnemy->mUpdater();
 
 	m_pFieldArea->mUpdate(kScaleTime);
-	m_pFieldPlayer->mUpdate(kScaleTime);
+	m_pFieldPlayer->mUpdate(kScaleTime,false);
 
 	// ‚±‚Ìˆ—‚ÍÅŒã
 	m_pCollideManager->mUpdate();
