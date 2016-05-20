@@ -8,19 +8,25 @@
 #include"GameClock.h"
 #include"FragmentShader.h"
 #include"RhythmManager.h"
-
-
-#include "ActionNull.h"
-
 #include<iostream>
+
+
+
 using namespace aetherClass;
 OrderList::OrderList()
 {
-	m_isStart = false;
-	m_isKeyDown = false;
-	m_isPlaySound = false;
+	m_isAlPlay = 0;
+	m_isStart = 0;
+	m_isEnd = 0;
+
+	m_isKeyDown = 0;
+	m_isPlaySound = 0;
 
 	m_processId = 0;
+	m_MaxOrderSize = 0;
+
+	m_enemyDamageCounter = 0;
+	m_playerDamageCounter = 0;
 }
 
 
@@ -38,7 +44,7 @@ void OrderList::mFinalize(){
 	}
 	m_EnemyOrderList.clear();
 	m_PlayerOrderList.clear();
-	m_ActionCommand.reset();
+	m_ActionBoard.reset();
 
 	m_pTextureList.clear();
 	GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
@@ -57,18 +63,24 @@ std::shared_ptr<Texture> gLoadTexture(std::string key, std::string path){
 	return tex;
 }
 
-void OrderList::mInitialize(GameManager::eGameMode mode){
+//初期化
+void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state){
 	WorldReader reader;
 	std::string dir = "Texture\\OrderList\\";
 
+	m_faze = &state;
 	m_mode = mode;
+	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 4 : 8;
 
 	reader.Load("data/orderList.aether");
-	m_pSpriteList.resize(4);
-	m_pSpriteOrigin.resize(4);
+
+	
+	m_pSpriteList.resize(8);
+	m_pSpriteOrigin.resize(8);
 
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
+		itr->_color = Color(0, 0, 0, 1);
 		if (itr->_name == "base"){
 			gInitializer(m_pBackImage, itr->_transform, itr->_color);
 			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "base.png");
@@ -82,23 +94,47 @@ void OrderList::mInitialize(GameManager::eGameMode mode){
 			gInitializer(m_pSpriteList[0], itr->_transform, itr->_color);
 			m_pSpriteOrigin[0]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
 			m_pSpriteOrigin[0]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
-
-		}
-		if (itr->_name == "list2"){
-			gInitializer(m_pSpriteList[1], itr->_transform, itr->_color);
-			m_pSpriteOrigin[1]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
-			m_pSpriteOrigin[1]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
 		}
 		if (itr->_name == "list3"){
 			gInitializer(m_pSpriteList[2], itr->_transform, itr->_color);
 			m_pSpriteOrigin[2]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
 			m_pSpriteOrigin[2]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
 		}
-		if (itr->_name == "list4"){
-			gInitializer(m_pSpriteList[3], itr->_transform, itr->_color);
-			m_pSpriteOrigin[3]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
-			m_pSpriteOrigin[3]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
+		if (itr->_name == "list5"){
+
+			gInitializer(m_pSpriteList[4], itr->_transform, itr->_color);
+			m_pSpriteOrigin[4]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
+			m_pSpriteOrigin[4]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
 		}
+		if (itr->_name == "list7"){
+			gInitializer(m_pSpriteList[6], itr->_transform, itr->_color);
+			m_pSpriteOrigin[6]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
+			m_pSpriteOrigin[6]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
+		}
+		if (m_mode == GameManager::eGameMode::eEighter){
+			//8の時使うよ
+			if (itr->_name == "list2"){
+				gInitializer(m_pSpriteList[1], itr->_transform, itr->_color);
+				m_pSpriteOrigin[1]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
+				m_pSpriteOrigin[1]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
+			}
+			if (itr->_name == "list4"){
+				gInitializer(m_pSpriteList[3], itr->_transform, itr->_color);
+				m_pSpriteOrigin[3]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
+				m_pSpriteOrigin[3]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
+			}
+			if (itr->_name == "list6"){
+				gInitializer(m_pSpriteList[5], itr->_transform, itr->_color);
+				m_pSpriteOrigin[5]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
+				m_pSpriteOrigin[5]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
+			}
+			if (itr->_name == "list8"){
+				gInitializer(m_pSpriteList[7], itr->_transform, itr->_color);
+				m_pSpriteOrigin[7]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
+				m_pSpriteOrigin[7]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
+			}
+		}
+
 		if (itr->_name == "volume"){
 			gInitializer(m_pVolumeImage, itr->_transform, itr->_color);
 			m_VolumeOrigin = itr->_transform._translation + itr->_transform._scale / 2;
@@ -110,103 +146,105 @@ void OrderList::mInitialize(GameManager::eGameMode mode){
 
 
 	reader.UnLoad();
-	m_MaxOrderSize = 4;
+	m_MaxOrderSize = requestVal;
 
-	m_ActionCommand = std::make_shared<ActionBoard>();
-	m_ActionCommand->mInitialize();
+	m_ActionBoard = std::make_shared<ActionBoard>();
+	m_ActionBoard->mInitialize();
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 //	m_rhythm->mInitializeRhythm(0, 110);
 }
 
-void OrderList::mUpdate(float timeScale){
-	m_rhythm->mAcquire();
-	mRhythmicMotion();
-
-
-	//フェーズ開始されてなければ戻る
+//敵行動フェイズ
+void OrderList::mListenUpdate(){
+	if (*m_faze != GameManager::eBattleState::eListen) return;
 	if (!m_isStart) return;
 
 
-	if (m_faze == GameManager::eBattleState::eListen){
+	if (m_processId > m_EnemyOrderList.size()){
+		mListStop();
+		m_isAlPlay = true;
+		Debug::mPrint("END");
+	}
 
-		if ( (m_rhythm->mIsQuarterBeat() && m_mode == GameManager::eGameMode::eQuarter) || 
-			(m_rhythm->mIsEighterBeat() && m_mode == GameManager::eGameMode::eEighter) ){
-			if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull){
-				auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
-				mPlaySound(sound);
-			}
+	//タイミング	４分と８分
+	bool timing = m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat();
+
+	if (timing){
+		if (m_processId >= m_EnemyOrderList.size()){
 			m_processId++;
-			if (m_processId >= m_EnemyOrderList.size()-1){
-				mListStop();
-				m_isAlPlay = false;
-			}
+			return;
+		};
+
+		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull){
+			auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
+			mPlaySound(sound);
+		}
+		m_processId++;
+	}
+}
+
+//プレイヤー入力フェイズ
+void OrderList::mPerformUpdate(){
+	if (*m_faze != GameManager::eBattleState::ePerform)return;
+
+	float playtime = m_rhythm->mGetPlayTime();
+
+	if (!m_isAlPlay){
+		//一回しか処理させたくないもの	
+		m_PlayerOrderList.clear();
+	}
+
+	if (m_mode == GameManager::eGameMode::eQuarter){
+	}
+	else if (m_mode == GameManager::eGameMode::eEighter){
+		playtime * 2;
+	}
+
+	double magen;
+	double exFrame = modf(playtime, &magen);
+	auto command = m_ActionBoard->mGetCommand(eMusical::eNull);
+	bool onCommand = false;
+
+
+	{	//キー入力
+		auto com = m_ActionBoard->mSelectType();
+		if (com){
+			command = com;
+			onCommand = true;
 		}
 	}
-	else if (m_faze == GameManager::eBattleState::ePerform){
-		float playtime = m_rhythm->mGetPlayTime();
-		//int reducationCoefficient = 1;
+	//タイミング判定
+	if (onCommand){
+		if (m_isKeyDown) return;
+		/*printf("exFrame %.2f\n", exFrame);
+		printf("id: %d\n\n", m_processId);*/
 
-		if (!m_isAlPlay){
-			//一回しか処理させたくないもの	
-			m_isAlPlay = true;
-			m_PlayerOrderList.clear();
+		if (m_kGreat >= exFrame || exFrame >= 1 - m_kGreat){
+				//Debug::mPrint("Great");
+			m_isKeyDown = true;
+			m_isPlaySound = true;
+			m_PlayerOrderList.push_back(command);
 		}
-
-		//再生時間 bpm/sec の仮数部 
-		if (m_mode == GameManager::eGameMode::eQuarter){
-			//reducationCoefficient = 1;
+		else if (m_kGreat < exFrame && exFrame < 1 - m_kGreat){
+				//Debug::mPrint("MISS");
+			m_isKeyDown = true;
+			m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eNull));
+			return;
 		}
-		else if (m_mode == GameManager::eGameMode::eEighter){
-			playtime * 2;
-			//reducationCoefficient = 2;
-		}
+	}
 
-		double magen;
-		double exFrame = modf(playtime, &magen);
-		auto command = m_ActionCommand->mGetCommand(eMusical::eNull);
-		bool onCommand = false;
+	bool backBeat = m_mode == GameManager::eGameMode::eQuarter ?
+		(!m_rhythm->mIsQuarterBeat() && m_rhythm->mIsEighterBeat()) :
+		(!m_rhythm->mIsEighterBeat() && m_rhythm->mIsSixteenthBeat()) ;
 
-
-		{	//キー入力
-			auto com = m_ActionCommand->mSelectType();
-			if (com){
-				command = com;
-				onCommand = true;
-			}
-		}
-
-		//もしコマンドがあれば判断
-		if (onCommand){
-			if (m_isKeyDown) return;
-			printf("exFrame %.2f\n", exFrame);
-			printf("id: %d\n\n",m_processId);
-
-			if (m_kGreat >= exFrame || exFrame >= 1 - m_kGreat){
-				Debug::mPrint("Great");
-				m_isKeyDown = true;
-				m_isPlaySound = true;
-				m_PlayerOrderList.push_back(command);
-			}
-			else if (m_kGreat < exFrame && exFrame < 1 - m_kGreat){
-				Debug::mPrint("MISS");
-				m_isKeyDown = true;
-				m_PlayerOrderList.push_back(m_ActionCommand->mGetCommand(eMusical::eNull));
-				return;
-			}
-		}
-
-
-
-	if (!m_rhythm->mIsQuarterBeat() && m_rhythm->mIsEighterBeat()){
-		//裏打ちのタイミングで毎回フラグをリセットし次を判定
-		std::cout << "Reset " << m_processId << std::endl;
-
+	if (backBeat){
+		//裏打ちのタイミングで毎回フラグをリセットし次を判定	
+			//std::cout << "Reset " << m_processId << std::endl;
 		if (m_isKeyDown){
-			m_isKeyDown = false;
-			m_isPlaySound = false;
+			m_isKeyDown = m_isPlaySound = false;
 		}
 		else{
-			Debug::mPrint("MISS");
+			//Debug::mPrint("MISS");
 			m_PlayerOrderList.push_back(command);
 		}
 		m_processId++;
@@ -214,75 +252,88 @@ void OrderList::mUpdate(float timeScale){
 	}
 
 
-	if (m_processId > m_MaxOrderSize-1){
-		//停止場所
-		Debug::mPrint("Stop List");
+	if (m_processId > m_MaxOrderSize - 1){
+		//停止場所	Debug::mPrint("Stop List");
 		mListStop();
 		return;
 	}
 
-
 	if (!m_isKeyDown || !m_isPlaySound || command->mGetType() == eMusical::eNull){
-		//例外ハジキ
-		//std::cout << "Failed Keydown\n";
+		//例外	std::cout << "Failed Keydown\n";
 		return;
 	}
 
 	//音があるやつは流す
-
-	std::cout << "Play List\t" << m_isKeyDown <<"\tid:"<< m_processId << std::endl;
-
-
 	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
 	sound->mStop();
 	sound->mPlaySoundAction(0);
 	m_isPlaySound = false;
 
-	//次に進める
-	//	m_processId++;
+}
 
-	}
-	else if (m_faze == GameManager::eBattleState::eCheck){
+//正当判定
+void OrderList::mCheckUpdate(){
+	if (*m_faze != GameManager::eBattleState::eCheck)return;
+	if (!m_isStart)return;
+
 		if (!m_isAlPlay){
 			//一回しか処理させたくないもの	
 			m_isAlPlay = true;
 			m_enemyDamageCounter = 0;
 			m_playerDamageCounter = 0;
 		}
-
-			
-//			if (m_EnemyOrderList[m_processId]->mGetType())
-
-
-		//アドリブ投入場所
-			if (m_PlayerOrderList[m_processId]->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
-				m_enemyDamageCounter++;
-			}
-			else{
-				m_playerDamageCounter++;
-			}
-
-			m_processId++;
-			if (m_processId >= m_PlayerOrderList.size()){
-				std::cout << "敵" << m_enemyDamageCounter << std::endl;
-				std::cout << "プレイや" << m_playerDamageCounter << std::endl;
-				mListStop();
-				m_isAlPlay = false;
-				if (m_playerDamageCounter != 0){
-					//GameController::GetJoypad().SetVibration(std::make_pair(65535, 65535));
-				}
-		}
-		else if (m_faze == GameManager::eBattleState::eBattle){
-			//GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
-			
-		}
 		
 
+			//if (m_EnemyOrderList[m_processId]->mGetType())
 
+		//アドリブhantei投入場所
+		if (m_PlayerOrderList[m_processId]->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
+			m_enemyDamageCounter++;
+		}
+		else{
+			m_playerDamageCounter++;
+		}
 
+		m_processId++;
+		if (m_processId >= m_PlayerOrderList.size()){
+			std::cout << "敵" << m_enemyDamageCounter << std::endl;
+			std::cout << "プレイや" << m_playerDamageCounter << std::endl;
+			mListStop();
+			m_isAlPlay = false;
+			if (m_playerDamageCounter != 0){
+				//GameController::GetJoypad().SetVibration(std::make_pair(65535, 65535));
+			}
+		}
+}
+
+//バトル
+void OrderList::mBattleUpdate(){
+	if (*m_faze != GameManager::eBattleState::eBattle);
+	if (!m_isStart)return;
+
+		//GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
+}
+
+void OrderList::mUpdate(){
+	mRhythmicMotion();
+
+	switch (*m_faze)
+	{
+	case GameManager::eBattleState::eListen:
+		mListenUpdate();
+		break;
+	case GameManager::eBattleState::ePerform:
+		mPerformUpdate();
+		break;
+	case GameManager::eBattleState::eCheck:
+		mCheckUpdate();
+		break;
+	case GameManager::eBattleState::eBattle:
+		mBattleUpdate();
+		break;
+	default:
+		break;
 	}
-
-
 
 }
 
@@ -290,77 +341,80 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 	m_pBackImage->Render(shader);
 	m_pVolumeImage->Render(shader);
 
-	if (m_faze == GameManager::eBattleState::eListen){
+	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
+
+	if (*m_faze == GameManager::eBattleState::eListen){
 		if (m_EnemyOrderList.empty())return;
 
 		int ifill = 0;
-		if (m_isAlPlay){
-			ifill = m_EnemyOrderList.size()-1;
+		if (m_processId >= m_EnemyOrderList.size()){
+			ifill = m_EnemyOrderList.size();
 		}
 		else{
 			ifill = m_processId;
 		}
 
 		for (int i = 0; i < ifill; ++i){
-			m_pSpriteList[i]->SetTexture(m_ActionCommand->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
-			
+			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+			m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
+
+
 			//再生済み透明処理
-			if (m_processId > i && !m_isAlPlay){
-				m_pSpriteList[i]->property._color._alpha = 0.2f;
+			if (m_isEnd){
+				m_pSpriteList[i*requestVal]->property._color._alpha = 0.2f;
 			}
-			else if (m_isAlPlay){
-				m_pSpriteList[i]->property._color._alpha = 0.2f;
+			else if (m_processId > i+1 && !m_isAlPlay){
+				m_pSpriteList[i*requestVal]->property._color._alpha = 0.2f;
 			}
 
-			m_pSpriteList[i]->Render(shader);
+			m_pSpriteList[i*requestVal]->Render(shader);
 		}
 	}
-	else if (m_faze == GameManager::eBattleState::ePerform){
+	else if (*m_faze == GameManager::eBattleState::ePerform){
 		if (m_PlayerOrderList.empty())return;
 
 		for (int i = 0; i < m_PlayerOrderList.size(); ++i){
 			if (i > m_MaxOrderSize) break;
-			m_pSpriteList[i]->SetTexture(m_ActionCommand->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
-			m_pSpriteList[i]->Render(shader);
+			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
+			m_pSpriteList[i*requestVal]->Render(shader);
 		}
 
 	}
-	else if (m_faze == GameManager::eBattleState::eBattle){
+	else if (*m_faze == GameManager::eBattleState::eBattle){
 
 	}
 }
 
 std::shared_ptr<ActionCommand> OrderList::mGetActionCommand(){
-	return std::make_shared<ActionNull>();
+	return m_PlayerOrderList.at(m_PlayerOrderList.size()-1);
 }
-
 
 void OrderList::mAddEnemyOrder(std::vector<std::shared_ptr<ActionCommand>>& input){
 	if (m_isStart)return;
 	m_EnemyOrderList.clear();
-	m_EnemyOrderList.reserve(input.size());
-	for (int i = 0; i < input.size(); ++i){
+
+	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 4 : 8;
+
+	m_EnemyOrderList.reserve(requestVal);
+	for (int i = 0; i < requestVal; ++i){
 		m_EnemyOrderList.push_back(input[i]);
 	}
 }
 
 void OrderList::mPlay(){
 	m_pBackImage->property._color._red = 1;
-	m_isStart = true;
 	m_isAlPlay = false;
+	m_isStart = true;
+	m_isEnd = false;
 }
 
 void OrderList::mListStop(){
 	m_pBackImage->property._color._red = 0.5;
 	m_isStart = false;
 	m_isKeyDown = false;
+	m_isEnd = true;
 	m_processId = 0;
 }
-
-void OrderList::mSetFaze(GameManager::eBattleState state){
-	m_faze = state;
-}
-
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
 	sound->mStop();
@@ -369,7 +423,9 @@ void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
 
 void OrderList::mRhythmicMotion(){
 	//BPMから1フレームの変化量を計算
-	float nowFrameWave = cos((360 * (m_rhythm->mGetPlayTime()))*kAetherRadian);
+	//float note = m_mode == GameManager::eGameMode::eQuarter ? 360 * m_rhythm->mQuarterBeatTime() : 360 * m_rhythm->mEighterBeatTime();
+	float note = 360 * m_rhythm->mQuarterBeatTime();
+	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
 	//拡大縮小をするために
@@ -381,8 +437,9 @@ void OrderList::mRhythmicMotion(){
 		m_pVolumeImage->property._transform._translation._z = 0;
 	}
 	
-	if (scale != 0){
-		m_pBackImage->property._transform._scale = m_BackImageScaleOrigin * scale;
+	{
+		m_pBackImage->property._transform._scale._x = m_BackImageScaleOrigin._x + (scale*10);
+		m_pBackImage->property._transform._scale._y = m_BackImageScaleOrigin._y + (scale*10);
 		auto size = (m_pBackImage->property._transform._scale);
 		m_pBackImage->property._transform._translation._x = m_BackImageOrigin._x - (size._x / 2);
 		m_pBackImage->property._transform._translation._y = m_BackImageOrigin._y - (size._y / 2);
@@ -390,6 +447,7 @@ void OrderList::mRhythmicMotion(){
 	}
 	
 		for (int i = 0; i < m_pSpriteList.size(); ++i){
+			if (!m_pSpriteList.at(i))continue;
 			m_pSpriteList[i]->property._transform._scale = 50 + (scale*10);
 			auto size = (m_pSpriteList[i]->property._transform._scale);
 			m_pSpriteList[i]->property._transform._translation._x = m_pSpriteOrigin[i]._x - (size._x / 2);
@@ -407,6 +465,7 @@ void OrderList::mRhythmicMotion(){
 		maxFrame = 2;
 		power = 4;
 	}
+//	else if (m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat()){
 	else if (m_rhythm->mIsQuarterBeat()){
 		framecnt = 0;
 		maxFrame = 1;
@@ -419,4 +478,8 @@ void OrderList::mRhythmicMotion(){
 		GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
 	}
 	framecnt++;
+}
+
+bool OrderList::mIsEnd(){
+	return m_isEnd;
 }
