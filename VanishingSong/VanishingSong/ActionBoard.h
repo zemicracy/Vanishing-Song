@@ -11,8 +11,10 @@ public:
 	~ActionBoard();
 
 	bool mInitialize();
-	void mRender(aetherClass::ShaderBase*);
-	void mUpdate(float);
+
+	/*void mRender(aetherClass::ShaderBase*);
+	void mUpdate(float);*/
+
 	std::shared_ptr<ActionCommand> mSelectType();
 
 	//AccessorMethod

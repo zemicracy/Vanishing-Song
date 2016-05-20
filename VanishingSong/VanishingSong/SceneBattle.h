@@ -8,8 +8,12 @@
 #include <memory>
 #include <ViewCamera.h>
 #include <Texture.h>
+#include"Skybox.h"
+
 #include "GameManager.h"
 #include"OrderList.h"
+#include"ActionBoard.h"
+
 class SceneBattle :
 	public aetherClass::GameScene
 {
@@ -17,6 +21,10 @@ class SceneBattle :
 public:
 	static const std::string Name;
 public:
+	enum class eGameState{
+		ePreCountIn,eCountIn,eUpdate,eFin
+	};
+
 	SceneBattle();
 	~SceneBattle();
 
@@ -38,19 +46,28 @@ public:
 	bool TransitionOut()override;
 
 private:
-	void OnListen();    // 敵の演奏
-	void OnPerform();   // プレイヤーの演奏
-	void OnBattle();    // 戦闘開始
-	void CheckBattle();
+	void mCountIn();
+
+	void mOnListen();    // 敵の演奏
+	void mOnPerform();   // プレイヤーの演奏
+	void mOnBattle();    // 戦闘開始
+	void mCheckBattle();
 private:
 	GameManager::eBattleState m_battleState;
-	std::unique_ptr<aetherClass::ModelBase> m_pModelBase;
+	std::unique_ptr<aetherClass::Skybox> m_pModelBase;
 	std::unique_ptr<aetherClass::Texture>m_pTexture;
 
+	std::unique_ptr<ActionBoard>m_pActionBoard;
 	std::unique_ptr<OrderList> m_pOrderList;
-
-
 	aetherClass::ViewCamera m_view;
+
+	int m_prevWholeBeatNo;
+	bool m_InitUpdateProcess;
+
+	eGameState m_processState;
+
+	//ptr
+	RhythmManager *m_rhythm;
 };
 
 

@@ -59,12 +59,12 @@ bool ActionBoard::mInitialize(){
 }
 
 
-void ActionBoard::mRender(ShaderBase* shader){
-	return;
-}
-void ActionBoard::mUpdate(float timeScale){
-	return;
-}
+//void ActionBoard::mRender(ShaderBase* shader){
+//	return;
+//}
+//void ActionBoard::mUpdate(float timeScale){
+//	return;
+//}
 
 
 std::shared_ptr<ActionCommand> ActionBoard::mSelectType(){

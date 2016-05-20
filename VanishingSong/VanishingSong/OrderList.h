@@ -12,37 +12,44 @@ public:
 
 	OrderList();
 	~OrderList();
-
-	void mSetFaze(GameManager::eBattleState faze);
 	//再生
 	void mPlay();
 
-
-	//EnemyFaze
+	//Listen
 	void mAddEnemyOrder(std::vector<std::shared_ptr<ActionCommand>>&);	//敵からリストを受け取る
 
-
-	//PlayerFaze
+	//Perform
 	void mAddPlayerOrder(std::vector<std::shared_ptr<ActionCommand>>);
 	std::shared_ptr<ActionCommand> mGetActionCommand();
 
-	//JudgeFaze
-	
+	//Check
 
-	
-	void mInitialize(GameManager::eGameMode);
-	void mUpdate(float);
+	//Battle
+
+	//End
+	void mEndReset();
+
+	//Indispensable Method
+	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
-
+	void mUpdate();
 	//AccesserMethod
 
-private:
-	void mPlaySound(std::shared_ptr<ActionSound>);
-	void mFinalize();
+	bool mIsEnd();
 
+private:
+	void mBattleUpdate();
+	void mCheckUpdate();
+	void mListenUpdate();
+	void mPerformUpdate();
+
+	void mFinalize();
+	
+	//音再生
+	void mPlaySound(std::shared_ptr<ActionSound>);
 	//停止
 	void mListStop();
-
+	//リズムに合わせたモーションはここで
 	void mRhythmicMotion();
 
 private:
@@ -54,8 +61,9 @@ private:
 	std::vector<aetherClass::Vector3>m_pSpriteOrigin;
 
 
+	std::shared_ptr<ActionCommand>m_playedAction;
 
-	std::shared_ptr<ActionBoard>m_ActionCommand;
+	std::shared_ptr<ActionBoard>m_ActionBoard;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
 	aetherClass::Vector3 m_VolumeOrigin;
 	std::shared_ptr<aetherClass::SpriteBase>m_pBackImage;
@@ -67,8 +75,9 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 
 
-	bool m_isStart;			//判定中か
 	bool m_isAlPlay;		//既に再生後か？
+	bool m_isStart;			//判定中か
+	bool m_isEnd;			//終了したか
 
 	bool m_isKeyDown;		//その拍ににキーが押されたか
 	bool m_isPlaySound;		//コマンド再生dできるか
@@ -80,8 +89,9 @@ private:
 	int m_playerDamageCounter;
 
 
+
 	//
-	GameManager::eBattleState m_faze;
+	GameManager::eBattleState* m_faze;
 	GameManager::eGameMode m_mode;
 	//定数
 
