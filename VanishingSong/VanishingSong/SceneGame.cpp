@@ -13,6 +13,7 @@ using namespace aetherClass;
 
 const std::string SceneGame::Name = "Game";
 
+std::unique_ptr<FbxModel> fbx;
 
 namespace{
 	const float kScaleTime = 1.0f; 
@@ -52,8 +53,6 @@ bool SceneGame::Initialize(){
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,22.2,0));
 
-	
-
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
 	m_pFieldArea->mInitialize();
@@ -65,9 +64,22 @@ bool SceneGame::Initialize(){
 
 	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea,m_pFieldEnemy);
 
+	m_pMessageManager = std::make_shared<MessageManager>();
+
+	int i = 0;
+	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
+	for (auto& index : m_pCage){
+		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[2]),Vector3(0,22.2f,0),view);
+		i += 1;
+	}
+
+	m_pPaticle = std::make_shared<AttackParticle>(view);
 	// ÉQÅ[ÉÄÇÃèÛë‘Çìoò^
 	m_gameState = eState::eRun;
 
+	fbx = std::make_unique<FbxModel>();
+	fbx->LoadFBX("Model\\Stage_Base.fbx", eAxisSystem::eAxisOpenGL);
+	fbx->SetCamera(view);
 	std::cout << "èIóπ" << std::endl;
 	return true;
 }
@@ -77,6 +89,15 @@ bool SceneGame::Initialize(){
 void SceneGame::Finalize(){
 
 	m_gameState = eState::eNull;
+	if (fbx){
+		fbx->Finalize();
+		fbx.release();
+		fbx = nullptr;
+	}
+	if (m_pMessageManager){
+		m_pMessageManager.reset();
+		m_pMessageManager = nullptr;
+	}
 	if (m_pCollideManager){
 		m_pCollideManager.release();
 		m_pCollideManager = nullptr;
@@ -105,19 +126,13 @@ void SceneGame::Finalize(){
 }
 
 // çXêVèàóù
+bool fuga = false;
 bool SceneGame::Updater(){
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		bool result = mFadeState(m_gameState);
 		if (!result){
 			return true;
 		}
-	}
-
-	if (m_pCollideManager->GetMassageFlag()){
-		bool isRender = GameController::GetKey().KeyDownTrigger(VK_SPACE);
-		m_pFieldEnemy->mRenderMessage(isRender);
-	
-		return true;
 	}
 
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
@@ -128,8 +143,6 @@ bool SceneGame::Updater(){
 		m_gameState = eState::eBattle;
 	}
 
-
-
 	if (m_gameState == eState::eExit){
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return true;
@@ -138,17 +151,27 @@ bool SceneGame::Updater(){
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return true;
 	}
-
-
-
+	m_pCollideManager->mUpdate();
+	auto collideInfo = m_pCollideManager->GetMassageFlag();
+	const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB);
+	m_pMessageManager->mUpdate(collideInfo,isPress);
 
 	m_pFieldEnemy->mUpdater();
 
 	m_pFieldArea->mUpdate(kScaleTime);
-	m_pFieldPlayer->mUpdate(kScaleTime,false);
+	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView());
 
-	// Ç±ÇÃèàóùÇÕç≈å„
-	m_pCollideManager->mUpdate();
+	if (GameController::GetJoypad().ButtonPress(eJoyButton::eX)){
+		fuga = !fuga;
+	}
+
+	if (fuga){
+		m_pPaticle->mUpdate(kScaleTime);
+	}
+
+	for (auto& index : m_pCage){
+		index->mUpdate(kScaleTime);
+	}
 	return true;
 }
 
@@ -156,15 +179,22 @@ void SceneGame::Render(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+//	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+
+	for (auto& index : m_pCage){
+		index->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	}
+	m_pPaticle->mRender(shaderHash["texture"].get());
+
+	fbx->Render(shaderHash["color"].get());
 	return;
 }
 
 void SceneGame::UIRender(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-
+	m_pMessageManager->mRender(shaderHash["color"].get());
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		m_pFadeObject->mRedner(shaderHash["color"].get());
 	}
