@@ -19,7 +19,7 @@ ResourceManager::~ResourceManager()
 	BGMを変えたい場合はここをいじってね
 */
 std::string ResourceManager::m_BgmPath[kMaxBGM] = {
-	"Sound/BGM.wav",
+	"Sound/ドラムパート.wav",
 	"null",
 	"null",
 	"null",
@@ -94,7 +94,7 @@ bool ResourceManager::InitializeBGM(){
 		{
 			Debug::mErrorPrint("BGMの読み込みに失敗しました", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
 		}else
-		index->SetValume(-2000);
+		index->SetValume(0);
 	}
 
 	return true;
@@ -109,6 +109,8 @@ bool ResourceManager::InitializeActionSound(){
 	RegisterActionSound(eMusical::eGreen, "Sound/re.wav");
 	RegisterActionSound(eMusical::eRed, "Sound/mi.wav");
 	RegisterActionSound(eMusical::eYellow, "Sound/damage03.wav");
+	RegisterActionSound(eMusical::eMiss, "Sound/miss.wav");
+
 	return true;
 }
 

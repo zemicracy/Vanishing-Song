@@ -150,6 +150,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	m_ActionBoard = std::make_shared<ActionBoard>();
 	m_ActionBoard->mInitialize();
+
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 //	m_rhythm->mInitializeRhythm(0, 110);
 }
@@ -160,17 +161,18 @@ void OrderList::mListenUpdate(){
 	if (!m_isStart) return;
 
 
-	if (m_processId > m_EnemyOrderList.size()){
+	if (m_processId > m_MaxOrderSize){
 		mListStop();
 		m_isAlPlay = true;
 		Debug::mPrint("END");
+		return;
 	}
 
 	//タイミング	４分と８分
 	bool timing = m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat();
 
 	if (timing){
-		if (m_processId >= m_EnemyOrderList.size()){
+		if (m_processId >= m_MaxOrderSize){
 			m_processId++;
 			return;
 		};
@@ -186,25 +188,60 @@ void OrderList::mListenUpdate(){
 //プレイヤー入力フェイズ
 void OrderList::mPerformUpdate(){
 	if (*m_faze != GameManager::eBattleState::ePerform)return;
-
-	float playtime = m_rhythm->mGetPlayTime();
+	if (!m_isStart)return;
 
 	if (!m_isAlPlay){
 		//一回しか処理させたくないもの	
 		m_PlayerOrderList.clear();
+		m_isAlPlay = true;
 	}
-
+	float reducation = 0;
+	float playtime = m_rhythm->mGetPlayTime();
 	if (m_mode == GameManager::eGameMode::eQuarter){
+		reducation = 1;
 	}
 	else if (m_mode == GameManager::eGameMode::eEighter){
-		playtime * 2;
+		playtime *= 2;
+		reducation = 1.2f;
 	}
+
+//	printf("time%.2f\n", playtime);
 
 	double magen;
 	double exFrame = modf(playtime, &magen);
 	auto command = m_ActionBoard->mGetCommand(eMusical::eNull);
 	bool onCommand = false;
 
+
+	//タイミング判定
+	bool backBeat = m_mode == GameManager::eGameMode::eQuarter ?
+		(!m_rhythm->mIsQuarterBeat() && m_rhythm->mIsEighterBeat()) :
+		(!m_rhythm->mIsEighterBeat() && m_rhythm->mIsSixteenthBeat()) ;
+
+	
+	printf("%.3f wholeBeat", m_rhythm->mWholeBeatTime());
+	printf("exFrame %.3f\t", exFrame);
+	if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
+		printf("now! ");
+	}
+	else {
+		printf("false ");
+	}
+
+	printf("id: %d\n", m_processId);
+		//裏打ちのタイミングで毎回フラグをリセットし次を判定	
+	if (backBeat){
+			std::cout << "Reset " << m_processId << std::endl;
+		if (m_isKeyDown){
+			m_isKeyDown = m_isPlaySound = false;
+		}
+		else{
+			Debug::mPrint("MISS");
+			m_PlayerOrderList.push_back(command);
+		}
+		m_processId++;
+		return;
+	}
 
 	{	//キー入力
 		auto com = m_ActionBoard->mSelectType();
@@ -213,55 +250,41 @@ void OrderList::mPerformUpdate(){
 			onCommand = true;
 		}
 	}
-	//タイミング判定
 	if (onCommand){
 		if (m_isKeyDown) return;
-		/*printf("exFrame %.2f\n", exFrame);
-		printf("id: %d\n\n", m_processId);*/
 
-		if (m_kGreat >= exFrame || exFrame >= 1 - m_kGreat){
-				//Debug::mPrint("Great");
+		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
+				Debug::mPrint("Great");
 			m_isKeyDown = true;
 			m_isPlaySound = true;
 			m_PlayerOrderList.push_back(command);
 		}
-		else if (m_kGreat < exFrame && exFrame < 1 - m_kGreat){
-				//Debug::mPrint("MISS");
+//		else if (m_kGreat*reducation < exFrame && exFrame < 1 - m_kGreat*reducation){
+		else {
+				Debug::mPrint("DownMISS");
 			m_isKeyDown = true;
 			m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eNull));
 			return;
 		}
 	}
 
-	bool backBeat = m_mode == GameManager::eGameMode::eQuarter ?
-		(!m_rhythm->mIsQuarterBeat() && m_rhythm->mIsEighterBeat()) :
-		(!m_rhythm->mIsEighterBeat() && m_rhythm->mIsSixteenthBeat()) ;
-
-	if (backBeat){
-		//裏打ちのタイミングで毎回フラグをリセットし次を判定	
-			//std::cout << "Reset " << m_processId << std::endl;
-		if (m_isKeyDown){
-			m_isKeyDown = m_isPlaySound = false;
-		}
-		else{
-			//Debug::mPrint("MISS");
-			m_PlayerOrderList.push_back(command);
-		}
-		m_processId++;
-		return;
-	}
 
 
-	if (m_processId > m_MaxOrderSize - 1){
+	if (m_processId > m_MaxOrderSize){
 		//停止場所	Debug::mPrint("Stop List");
 		mListStop();
 		return;
 	}
 
+	//１つ多く処理して時間調整
+	if (m_processId > m_MaxOrderSize - 1)return;
+
+
 	if (!m_isKeyDown || !m_isPlaySound || command->mGetType() == eMusical::eNull){
 		//例外	std::cout << "Failed Keydown\n";
 		return;
 	}
+
 
 	//音があるやつは流す
 	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
@@ -271,51 +294,58 @@ void OrderList::mPerformUpdate(){
 
 }
 
-//正当判定
-void OrderList::mCheckUpdate(){
-	if (*m_faze != GameManager::eBattleState::eCheck)return;
-	if (!m_isStart)return;
-
-		if (!m_isAlPlay){
-			//一回しか処理させたくないもの	
-			m_isAlPlay = true;
-			m_enemyDamageCounter = 0;
-			m_playerDamageCounter = 0;
-		}
-		
-
-			//if (m_EnemyOrderList[m_processId]->mGetType())
-
-		//アドリブhantei投入場所
-		if (m_PlayerOrderList[m_processId]->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
-			m_enemyDamageCounter++;
-		}
-		else{
-			m_playerDamageCounter++;
-		}
-
-		m_processId++;
-		if (m_processId >= m_PlayerOrderList.size()){
-			std::cout << "敵" << m_enemyDamageCounter << std::endl;
-			std::cout << "プレイや" << m_playerDamageCounter << std::endl;
-			mListStop();
-			m_isAlPlay = false;
-			if (m_playerDamageCounter != 0){
-				//GameController::GetJoypad().SetVibration(std::make_pair(65535, 65535));
-			}
-		}
-}
-
 //バトル
 void OrderList::mBattleUpdate(){
 	if (*m_faze != GameManager::eBattleState::eBattle);
 	if (!m_isStart)return;
 
-		//GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
+
+	if (!m_isAlPlay){
+		//一回しか処理させたくないもの	
+		m_isAlPlay = true;
+		m_enemyDamageCounter = 0;
+		m_playerDamageCounter = 0;
+		for (int i = 0; i < m_MaxOrderSize; ++i){
+			if (m_PlayerOrderList[i]->mGetType() == m_EnemyOrderList[i]->mGetType()){
+				m_enemyDamageCounter++;
+			}
+			else{
+				m_PlayerOrderList[i] = m_ActionBoard->mGetCommand(eMusical::eMiss);
+				m_playerDamageCounter++;
+			}
+		}
+	}
+
+	if (m_processId > m_MaxOrderSize){
+		mListStop();
+		m_isAlPlay = false;
+		Debug::mPrint("END");
+		return;
+	}
+
+	//タイミング	４分と８分
+	bool timing = m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat();
+
+	if (timing){
+		//終了準備
+		if (m_processId >= m_MaxOrderSize){
+			std::cout << "敵" << m_enemyDamageCounter << std::endl;
+			std::cout << "プレイや" << m_playerDamageCounter << std::endl;
+			m_processId++;
+			return;
+		}
+
+		//アドリブhantei投入場所
+		if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
+			auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
+			mPlaySound(sound);
+		}
+		m_processId++;
+	}
+
 }
 
 void OrderList::mUpdate(){
-	mRhythmicMotion();
 
 	switch (*m_faze)
 	{
@@ -325,9 +355,6 @@ void OrderList::mUpdate(){
 	case GameManager::eBattleState::ePerform:
 		mPerformUpdate();
 		break;
-	case GameManager::eBattleState::eCheck:
-		mCheckUpdate();
-		break;
 	case GameManager::eBattleState::eBattle:
 		mBattleUpdate();
 		break;
@@ -335,11 +362,13 @@ void OrderList::mUpdate(){
 		break;
 	}
 
+	mRhythmicMotion();
 }
 
 void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
 	m_pBackImage->Render(shader);
 	m_pVolumeImage->Render(shader);
+	const float l_kalpha = 0.5f;
 
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
 
@@ -361,27 +390,40 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 
 			//再生済み透明処理
 			if (m_isEnd){
-				m_pSpriteList[i*requestVal]->property._color._alpha = 0.2f;
+				m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
 			}
 			else if (m_processId > i+1 && !m_isAlPlay){
-				m_pSpriteList[i*requestVal]->property._color._alpha = 0.2f;
+				m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
 			}
 
 			m_pSpriteList[i*requestVal]->Render(shader);
 		}
 	}
 	else if (*m_faze == GameManager::eBattleState::ePerform){
-		if (m_PlayerOrderList.empty())return;
+		//enemyOrderRender
+		for (int i = 0; i < m_EnemyOrderList.size(); ++i){
+			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+			m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+			m_pSpriteList[i*requestVal]->Render(shader);
+		}
+		
 
+		if (m_PlayerOrderList.empty())return;
 		for (int i = 0; i < m_PlayerOrderList.size(); ++i){
-			if (i > m_MaxOrderSize) break;
+			if (i >= m_MaxOrderSize) break;
 			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
+			m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
 			m_pSpriteList[i*requestVal]->Render(shader);
 		}
 
 	}
 	else if (*m_faze == GameManager::eBattleState::eBattle){
-
+		for (int i = m_processId; i < m_PlayerOrderList.size(); ++i){
+			if (i >= m_MaxOrderSize) break;
+			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
+			m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
+			m_pSpriteList[i*requestVal]->Render(shader);
+		}
 	}
 }
 
@@ -406,6 +448,7 @@ void OrderList::mPlay(){
 	m_isAlPlay = false;
 	m_isStart = true;
 	m_isEnd = false;
+	m_processId = 0;
 }
 
 void OrderList::mListStop(){
