@@ -73,7 +73,14 @@ bool SceneGame::Initialize(){
 		i += 1;
 	}
 
-	m_pPaticle = std::make_shared<AttackParticle>(view);
+	AttackParticle::ParticleDesc particle;
+	particle._size = 300;
+	particle._endPoint = Vector3(0, 100, 0);
+	particle._rangeMin = Vector3(-10, 0, 0);
+	particle._rangeMax = Vector3(10, 0, 0);
+	particle._scale = Vector3(2,2, 0);
+	particle._texturePath = "Texture\\Battle\\note.png";
+	m_pPaticle = std::make_shared<AttackParticle>(particle,view);
 	// ÉQÅ[ÉÄÇÃèÛë‘Çìoò^
 	m_gameState = eState::eRun;
 
@@ -179,16 +186,16 @@ void SceneGame::Render(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-//	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
-	for (auto& index : m_pCage){
+	/*for (auto& index : m_pCage){
 		index->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	}
+	}*/
 	m_pPaticle->mRender(shaderHash["texture"].get());
 
-	fbx->Render(shaderHash["color"].get());
+	//fbx->Render(shaderHash["color"].get());
 	return;
 }
 
