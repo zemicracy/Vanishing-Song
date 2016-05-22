@@ -13,6 +13,7 @@
 #include "GameManager.h"
 #include"OrderList.h"
 #include"ActionBoard.h"
+#include"BattleField.h"
 
 class SceneBattle :
 	public aetherClass::GameScene
@@ -54,11 +55,10 @@ private:
 	void mCheckBattle();
 private:
 	GameManager::eBattleState m_battleState;
-	std::unique_ptr<aetherClass::Skybox> m_pModelBase;
-	std::unique_ptr<aetherClass::Texture>m_pTexture;
 
-	std::unique_ptr<ActionBoard>m_pActionBoard;
+	std::shared_ptr<ActionBoard>m_pActionBoard;
 	std::unique_ptr<OrderList> m_pOrderList;
+	std::unique_ptr<BattleField>m_pField;
 	aetherClass::ViewCamera m_view;
 
 	int m_prevWholeBeatNo;

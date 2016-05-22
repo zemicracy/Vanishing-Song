@@ -6,6 +6,7 @@
 #include"ActionYellow.h"
 #include"ActionRed.h"
 
+#include"ResourceManager.h"
 
 #include"Debug.h"
 #include"Const.h"
@@ -29,13 +30,13 @@ void ActionBoard::mFinalize(){
 }
 
 template <class T>
-void mInitializer(std::unordered_map<eMusical,ActionBoard::ActionCommandType>& tree,Color color, std::string path){
+void gInitializer(std::unordered_map<eMusical,ActionBoard::ActionCommandType>& tree,Color color,std::string str){
 	
 	std::shared_ptr<ActionCommand> command = std::make_shared<T>();
 	command->mCreate();                                                                                                                                                                                                                                                                                                          
+	
+	auto tex = Singleton<ResourceManager>::GetInstance().GetTexture(str);
 
-	auto tex = std::make_shared<Texture>();
-	tex->Load(path);
 	command->mSetTexture(tex.get());
 
 	ActionBoard::ActionCommandType act;
@@ -48,14 +49,13 @@ void mInitializer(std::unordered_map<eMusical,ActionBoard::ActionCommandType>& t
 bool ActionBoard::mInitialize(){
 	bool result = false;
 	
-	std::string folder = "Texture\\ActionCommand\\";
 
-	mInitializer<ActionGreen>(m_actionList,Color(0, 1, 0, 1), folder + "Green.png");
-	mInitializer<ActionBlue>(m_actionList, Color(0, 0, 1, 1), folder + "Blue.png");
-	mInitializer<ActionRed>(m_actionList,Color(1, 0, 0, 1), folder + "Red.png");
-	mInitializer<ActionYellow>(m_actionList,Color(1, 1, 0, 1), folder + "Yellow.png");
-	mInitializer<ActionNull>(m_actionList, Color(1, 0, 1, 1), folder + "null.png");
-	mInitializer<ActionMiss>(m_actionList, Color(1, 0, 1, 1), folder + "miss.png");
+	gInitializer<ActionGreen>(m_actionList, Color(0, 1, 0, 1),"ActionGreen");
+	gInitializer<ActionBlue>(m_actionList, Color(0, 0, 1, 1), "ActionBlue");
+	gInitializer<ActionRed>(m_actionList, Color(1, 0, 0, 1), "ActionRed");
+	gInitializer<ActionYellow>(m_actionList, Color(1, 1, 0, 1), "ActionYellow");
+	gInitializer<ActionNull>(m_actionList, Color(1, 0, 1, 1), "ActionNull");
+	gInitializer<ActionMiss>(m_actionList, Color(1, 0, 1, 1), "ActionMiss");
 
 	return true;
 }

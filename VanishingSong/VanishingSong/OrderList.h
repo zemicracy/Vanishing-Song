@@ -30,7 +30,7 @@ public:
 	void mEndReset();
 
 	//Indispensable Method
-	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&);
+	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,std::shared_ptr<ActionBoard>);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUpdate();
 	//AccesserMethod
@@ -53,15 +53,18 @@ private:
 
 private:
 
+	//敵とプレイヤーのリスト
 	std::vector<std::shared_ptr<ActionCommand>>m_PlayerOrderList;
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
+	//描画先
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;
 	std::vector<aetherClass::Vector3>m_pSpriteOrigin;
 
-
+	//一時補間場所（外に出す用）
 	std::shared_ptr<ActionCommand>m_playedAction;
 
+	//そのたモーション目的
 	std::shared_ptr<ActionBoard>m_ActionBoard;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
 	aetherClass::Vector3 m_VolumeOrigin;
@@ -69,7 +72,7 @@ private:
 	aetherClass::Vector3 m_BackImageOrigin;
 	aetherClass::Vector3 m_BackImageScaleOrigin;
 
-
+	//リズム
 	RhythmManager *m_rhythm;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 
