@@ -12,8 +12,9 @@ class BattlePlayerManager
 public:
 	BattlePlayerManager();
 	~BattlePlayerManager();
-	void Initialize();
-
+	void mSetPlayer(eMusical,std::shared_ptr<GearFrame>);
+	void mRender(aetherClass::ShaderBase*);
+	void mUpdate(const float,eMusical);
 private:
 	std::unordered_map<eMusical, BattlePlayer> m_pBattlePlayers;
 };

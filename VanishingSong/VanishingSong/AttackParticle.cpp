@@ -84,7 +84,7 @@ void AttackParticle::mUpdate(float timeScale){
 
 //
 void AttackParticle::mRender(aetherClass::ShaderBase* shader){
-	
+
 	for (auto& index : m_particle){
 		if (!index._active||index._deth)continue;
 		index._object->Render(shader);

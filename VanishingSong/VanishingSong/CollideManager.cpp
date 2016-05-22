@@ -54,7 +54,7 @@ void CollideManager::mCheckHitEnemy(const int number){
 
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
-	if ((x*x) + (z*z) < 25 * 25){
+	if ((x*x) + (z*z) > 30 * 30){
 		m_messageInfo.first = number;
 		m_messageInfo.second = true;
 	}else{
