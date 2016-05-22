@@ -12,7 +12,8 @@ CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_
 	m_player = player;
 	m_filed = field;
 	m_enemy = enemy;
-	m_messageFlag = false;
+	m_messageInfo.first = NULL;
+	m_messageInfo.second = false;
 }
 
 
@@ -54,15 +55,16 @@ void CollideManager::mCheckHitEnemy(const int number){
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
 	if ((x*x) + (z*z) < 25 * 25){
-		m_messageFlag = true;
+		m_messageInfo.first = number;
+		m_messageInfo.second = true;
 	}else{
-		m_messageFlag = false;
+		m_messageInfo.second = false;
 	}
 }
 
-bool CollideManager::GetMassageFlag(){
+std::pair<int,bool> CollideManager::GetMassageInfo(){
 
-	return m_messageFlag;
+	return m_messageInfo;
 }
 
 /*

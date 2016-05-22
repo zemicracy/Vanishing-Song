@@ -35,10 +35,11 @@ void AttackParticle::mInitialize(ParticleDesc desc, ViewCamera* camera){
 
 		// 進むベクトルの算出
 		index._vector = (desc._endPoint - index._object->property._transform._translation).Normalize();
+		index._endPoint = desc._endPoint;
 		index._active = false;
 		index._deth = false;
 	}
-	m_endPoint = desc._endPoint;
+	m_endPointLength = desc._endPoint.GetVectorLength();
 	m_callCount = 0;
 	m_minRange = desc._rangeMin;
 	m_maxRange = desc._rangeMax;
@@ -56,7 +57,7 @@ void AttackParticle::mUpdate(float timeScale){
 			if (index._active)continue;
 			index._active = true;
 			index._object->property._transform._translation += mRandam(m_minRange, m_maxRange);
-			index._vector = (m_endPoint - index._object->property._transform._translation).Normalize();
+			index._vector = (index._endPoint - index._object->property._transform._translation).Normalize();
 			counter += 1;
 			if (counter > kActiveNum){
 				break;
@@ -72,8 +73,9 @@ void AttackParticle::mUpdate(float timeScale){
 		index._object->property._transform._translation += index._vector*timeScale;
 
 		// 
-		if (index._object->property._transform._translation._x > m_endPoint._x||
-			index._object->property._transform._translation._y > m_endPoint._y){
+		
+		const float length = index._object->property._transform._translation.GetVectorLength();
+		if (length>m_endPointLength){
 			index._deth = true;
 		}
 	}
@@ -82,11 +84,11 @@ void AttackParticle::mUpdate(float timeScale){
 
 //
 void AttackParticle::mRender(aetherClass::ShaderBase* shader){
+	
 	for (auto& index : m_particle){
 		if (!index._active||index._deth)continue;
 		index._object->Render(shader);
 	}
-
 	return;
 }
 
@@ -121,10 +123,11 @@ void AttackParticle::mReset(ParticleDesc desc){
 		// 初期位置決め
 		index._object->property._transform._translation = desc._startPoint;
 		index._object->property._transform._scale = desc._scale;
+		index._endPoint = desc._endPoint;
 		index._active = false;
 		index._deth = false;
 	}
-	m_endPoint = desc._endPoint;
+	m_endPointLength = desc._endPoint.GetVectorLength();
 	m_callCount = 0;
 	m_minRange = desc._rangeMin;
 	m_maxRange = desc._rangeMax;
