@@ -13,8 +13,6 @@ using namespace aetherClass;
 
 const std::string SceneGame::Name = "Game";
 
-std::unique_ptr<FbxModel> fbx;
-
 namespace{
 	const float kScaleTime = 1.0f; 
 	const bool kError = false;
@@ -69,13 +67,14 @@ bool SceneGame::Initialize(){
 	int i = 0;
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
 	for (auto& index : m_pCage){
-		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[2]),Vector3(0,22.2f,0),view);
+		const auto hoge = m_pFieldEnemy->mEnemyGet(i)->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
+		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[i]), Vector3(hoge._x+20, 22.2f, hoge._z), view);
 		i += 1;
 	}
 
 	AttackParticle::ParticleDesc particle;
-	particle._size = 300;
-	particle._endPoint = Vector3(0, 100, 0);
+	particle._size = 100;
+	particle._endPoint = Vector3(0, 10, 0);
 	particle._rangeMin = Vector3(-10, 0, 0);
 	particle._rangeMax = Vector3(10, 0, 0);
 	particle._scale = Vector3(2,2, 0);
@@ -83,24 +82,12 @@ bool SceneGame::Initialize(){
 	m_pPaticle = std::make_shared<AttackParticle>(particle,view);
 	// ÉQÅ[ÉÄÇÃèÛë‘Çìoò^
 	m_gameState = eState::eRun;
-
-	fbx = std::make_unique<FbxModel>();
-	fbx->LoadFBX("Model\\Stage_Base.fbx", eAxisSystem::eAxisOpenGL);
-	fbx->SetCamera(view);
-	std::cout << "èIóπ" << std::endl;
 	return true;
 }
 
 // âï˙èàóù
 // ëSÇƒÇÃâï˙
 void SceneGame::Finalize(){
-
-	m_gameState = eState::eNull;
-	if (fbx){
-		fbx->Finalize();
-		fbx.release();
-		fbx = nullptr;
-	}
 	if (m_pMessageManager){
 		m_pMessageManager.reset();
 		m_pMessageManager = nullptr;
@@ -128,7 +115,8 @@ void SceneGame::Finalize(){
 		m_pFieldEnemy->mFinalize();
 		m_pFieldEnemy = nullptr;
 	}
-
+	
+	m_gameState = eState::eNull;
 	return;
 }
 
@@ -159,7 +147,7 @@ bool SceneGame::Updater(){
 		return true;
 	}
 	m_pCollideManager->mUpdate();
-	auto collideInfo = m_pCollideManager->GetMassageFlag();
+	auto collideInfo = m_pCollideManager->GetMassageInfo();
 	const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	m_pMessageManager->mUpdate(collideInfo,isPress);
 
@@ -190,12 +178,11 @@ void SceneGame::Render(){
 
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
-	/*for (auto& index : m_pCage){
+	for (auto& index : m_pCage){
 		index->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	}*/
+	}
 	m_pPaticle->mRender(shaderHash["texture"].get());
 
-	//fbx->Render(shaderHash["color"].get());
 	return;
 }
 
