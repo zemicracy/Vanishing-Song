@@ -20,6 +20,9 @@ SceneBattle::~SceneBattle()
 }
 
 
+//interim
+std::vector<std::shared_ptr<ActionCommand>>EnemyVector;
+bool askey[8] = { 1, 1, 0, 1, 0, 0, 1, 1 };
 
 bool SceneBattle::Initialize(){
 	Singleton<RhythmManager>::GetInstance().mInitializeRhythm(0, 110);
@@ -48,6 +51,15 @@ bool SceneBattle::Initialize(){
 	m_InitUpdateProcess = false;
 	m_prevWholeBeatNo = 0;
 
+	for (int i = 0; i < 8; i++){
+		if (askey[i]){
+			EnemyVector.push_back(m_pActionBoard->mGetCommand(eMusical::eBlue));
+		}
+		else{
+			EnemyVector.push_back(m_pActionBoard->mGetCommand(eMusical::eNull));
+		}
+	}
+
 	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 	return true;
 }
@@ -69,10 +81,29 @@ bool SceneBattle::Updater(){
 		mCountIn();
 	}
 	else if (m_processState == eGameState::eUpdate){
-		mOnListen();
-		mOnPerform();
-		mOnBattle();
-		mCheckBattle();
+		switch (m_battleState)
+		{
+		case GameManager::eBattleState::eWin:
+			break;
+		case GameManager::eBattleState::eLose:
+			break;
+		case GameManager::eBattleState::eListen:
+			mOnListen();
+			break;
+		case GameManager::eBattleState::ePerform:
+			mOnPerform();
+			break;
+		case GameManager::eBattleState::eBattle:
+			mOnBattle();
+			break;
+		case GameManager::eBattleState::eCheck:
+			mCheckBattle();
+			break;
+		case GameManager::eBattleState::eNull:
+			break;
+		default:
+			break;
+		}
 
 	}
 	else if (m_processState == eGameState::eFin){
@@ -104,9 +135,7 @@ bool SceneBattle::TransitionOut(){
 	return kTransitionEnd;
 }
 
-//interim
-	std::vector<std::shared_ptr<ActionCommand>>EnemyVector;
-	bool askey[8] = { 1, 1, 0, 1, 0, 0, 1, 1 };
+
 
 // 敵の演奏
 void SceneBattle::mOnListen(){
@@ -114,23 +143,15 @@ void SceneBattle::mOnListen(){
 	// TODO: 敵の演奏をする処理＆スタックされる処理＆敵によってはオーダーリストに細工をする
 
 	if (!m_InitUpdateProcess){
-		EnemyVector.reserve(8);
-		for (int i = 0; i < 8; i++){
-			if (askey[i]){
-				EnemyVector.push_back(m_pActionBoard->mGetCommand(eMusical::eBlue));
-			}
-			else{
-				EnemyVector.push_back(m_pActionBoard->mGetCommand(eMusical::eNull));
-			}
-		}
+		
 		m_pOrderList->mAddEnemyOrder(EnemyVector);
-		EnemyVector.clear();
 		m_pOrderList->mPlay();
 		m_InitUpdateProcess = true;
 	}
 	if (m_pOrderList->mIsEnd()){
 		m_InitUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
+		m_battleState = GameManager::eBattleState::ePerform;
 	}
 
 	return;
@@ -140,6 +161,17 @@ void SceneBattle::mOnListen(){
 void SceneBattle::mOnPerform(){
 	if (m_battleState != GameManager::eBattleState::ePerform)return;
 	// TODO: プレイヤーの演奏する処理
+
+	if (!m_InitUpdateProcess){
+		m_pOrderList->mPlay();
+		m_InitUpdateProcess = true;
+	}
+	if (m_pOrderList->mIsEnd()){
+		m_InitUpdateProcess = false;
+		m_processState = eGameState::ePreCountIn;
+		m_battleState = GameManager::eBattleState::eBattle;
+	}
+
 	return;
 }
 
@@ -147,7 +179,15 @@ void SceneBattle::mOnPerform(){
 void SceneBattle::mOnBattle(){
 	if (m_battleState != GameManager::eBattleState::eBattle)return;
 	// TODO: OnListenとOnPerformの結果を反映する処理
-
+	if (!m_InitUpdateProcess){
+		m_pOrderList->mPlay();
+		m_InitUpdateProcess = true;
+	}
+	if (m_pOrderList->mIsEnd()){
+		m_InitUpdateProcess = false;
+		m_processState = eGameState::ePreCountIn;
+		m_battleState = GameManager::eBattleState::eListen;
+	}
 	return;
 }
 
@@ -162,11 +202,23 @@ void SceneBattle::mCountIn(){
 	double Padding;
 	float exFrame = modf(m_rhythm->mWholeBeatTime(), &Padding);
 
-	if (int(m_rhythm->mWholeBeatTime() + 0.1f) != m_prevWholeBeatNo){
-//		std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
-		cnt = 0;
-		m_processState = eGameState::eUpdate;
-		Debug::mPrint("Play!!");
+	//特殊仕様　Prefromの時だけ
+	if (m_battleState == GameManager::eBattleState::ePerform){
+		if (int(m_rhythm->mWholeBeatTime() + 0.03f) != m_prevWholeBeatNo){
+			cnt = 0;
+			m_processState = eGameState::eUpdate;
+			Debug::mPrint("Play!!");
+			return;
+		}
+	}
+	else {		//普段はこっち
+		if (int(m_rhythm->mWholeBeatTime() + 0.1f) != m_prevWholeBeatNo){
+			//		std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
+			cnt = 0;
+			m_processState = eGameState::eUpdate;
+			Debug::mPrint("Play!!");
+			return;
+		}
 	}
 	if (m_rhythm->mIsQuarterBeat()){
 		cnt++;
@@ -174,7 +226,15 @@ void SceneBattle::mCountIn(){
 	}
 
 	if (cnt >= 2){
-		Debug::mPrint("Listen");
+		if (m_battleState == GameManager::eBattleState::eListen){
+			Debug::mPrint("Listen");
+		}
+		else if (m_battleState == GameManager::eBattleState::ePerform){
+			Debug::mPrint("Perform");
+		}
+		else if (m_battleState == GameManager::eBattleState::eBattle){
+			Debug::mPrint("Battle");
+		}
 	}
 
 }

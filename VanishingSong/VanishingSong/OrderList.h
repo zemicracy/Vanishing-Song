@@ -39,7 +39,6 @@ public:
 
 private:
 	void mBattleUpdate();
-	void mCheckUpdate();
 	void mListenUpdate();
 	void mPerformUpdate();
 

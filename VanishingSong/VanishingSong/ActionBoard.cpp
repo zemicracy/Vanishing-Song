@@ -12,6 +12,7 @@
 
 #include<ModelUtility.h>
 #include<GameController.h>
+#include"ActionMiss.h"
 
 using namespace aetherClass;
 ActionBoard::ActionBoard()
@@ -53,7 +54,8 @@ bool ActionBoard::mInitialize(){
 	mInitializer<ActionBlue>(m_actionList, Color(0, 0, 1, 1), folder + "Blue.png");
 	mInitializer<ActionRed>(m_actionList,Color(1, 0, 0, 1), folder + "Red.png");
 	mInitializer<ActionYellow>(m_actionList,Color(1, 1, 0, 1), folder + "Yellow.png");
-	mInitializer<ActionNull>(m_actionList,Color(1, 0, 1, 1), folder + "null.png");
+	mInitializer<ActionNull>(m_actionList, Color(1, 0, 1, 1), folder + "null.png");
+	mInitializer<ActionMiss>(m_actionList, Color(1, 0, 1, 1), folder + "miss.png");
 
 	return true;
 }
