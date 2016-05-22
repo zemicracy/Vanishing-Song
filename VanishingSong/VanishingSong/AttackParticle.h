@@ -38,7 +38,7 @@ private:
 	struct Particle{
 		std::shared_ptr<aetherClass::ModelBase> _object;
 		aetherClass::Vector3 _vector;
-		
+		aetherClass::Vector3 _endPoint;
 		bool _active;
 		bool _deth;
 
@@ -58,10 +58,11 @@ private:
 	aetherClass::Vector3 mRandam(aetherClass::Vector3 min, aetherClass::Vector3 max);
 private:
 	std::vector<Particle> m_particle;
-	aetherClass::Vector3 m_endPoint;
+	float m_endPointLength;
 	std::shared_ptr<aetherClass::Texture> m_texture;
 	int m_callCount;
 	aetherClass::Vector3 m_minRange,m_maxRange;
+	aetherClass::DirectXEntity m_entity;
 };
 
 #endif

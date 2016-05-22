@@ -9,7 +9,7 @@ public:
 	CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field, std::shared_ptr<FieldEnemyManager> enemy);
 	~CollideManager();
 	void mUpdate();
-	bool GetMassageFlag();
+	std::pair<int,bool> GetMassageInfo();
 
 private:
 	int mCheckPlayerFieldArea();
@@ -20,7 +20,7 @@ private:
 	std::shared_ptr<FieldPlayer> m_player;
 	std::shared_ptr<FieldArea> m_filed;
 	std::shared_ptr<FieldEnemyManager> m_enemy;
-	bool m_messageFlag;
+	std::pair<int, bool> m_messageInfo;
 	
 };
 
