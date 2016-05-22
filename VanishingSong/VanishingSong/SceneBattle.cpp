@@ -22,29 +22,25 @@ SceneBattle::~SceneBattle()
 
 //interim
 std::vector<std::shared_ptr<ActionCommand>>EnemyVector;
-bool askey[8] = { 1, 1, 0, 1, 0, 0, 1, 1 };
+eMusical askey[8] = {	eMusical::eBlue, eMusical::eGreen, eMusical::eNull, eMusical::eGreen,
+						eMusical::eBlue, eMusical::eYellow, eMusical::eNull, eMusical::eBlue	};
 
 bool SceneBattle::Initialize(){
 	Singleton<RhythmManager>::GetInstance().mInitializeRhythm(0, 110);
 
-	m_pTexture = std::make_unique<Texture>();
-	m_pTexture->Load("Texture\\GameBack.jpg");
-
-	m_pModelBase = std::make_unique<Skybox>();
-	m_pModelBase->Initialize();
-	m_pModelBase->SetCamera(&m_view);
-	m_pModelBase->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("skybox").get());
 
 	m_battleState = GameManager::eBattleState::eListen;
 
-	m_pOrderList = std::make_unique<OrderList>();
-	m_pOrderList->mInitialize(GameManager::eGameMode::eEighter,m_battleState);
-
-	m_pActionBoard = std::make_unique<ActionBoard>();
+	m_pActionBoard = std::make_shared<ActionBoard>();
 	m_pActionBoard->mInitialize();
+
+	m_pOrderList = std::make_unique<OrderList>();
+	m_pOrderList->mInitialize(GameManager::eGameMode::eEighter,m_battleState,m_pActionBoard);
+
 
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 	m_rhythm->mAcquire();
+
 
 
 	m_processState = eGameState::ePreCountIn;
@@ -52,26 +48,25 @@ bool SceneBattle::Initialize(){
 	m_prevWholeBeatNo = 0;
 
 	for (int i = 0; i < 8; i++){
-		if (askey[i]){
-			EnemyVector.push_back(m_pActionBoard->mGetCommand(eMusical::eBlue));
-		}
-		else{
-			EnemyVector.push_back(m_pActionBoard->mGetCommand(eMusical::eNull));
-		}
+			EnemyVector.push_back(m_pActionBoard->mGetCommand(askey[i]));
 	}
+
+	m_pField = std::make_unique<BattleField>();
+	m_pField->mInitialize(&m_view);
 
 	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 	return true;
 }
 
 void SceneBattle::Finalize(){
-	m_pModelBase->Finalize();
 	m_pOrderList.release();
 	return;
 }
 
 bool SceneBattle::Updater(){
 	m_rhythm->mAcquire();
+	m_view.Controller();
+
 
 	if (m_processState == eGameState::ePreCountIn){
 		m_processState = eGameState::eCountIn;
@@ -116,8 +111,8 @@ bool SceneBattle::Updater(){
 void SceneBattle::Render(){
 	m_view.Render();
 	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-	m_pModelBase->Render(shaderHash["transparent"].get());
-	
+	m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+
 	return;
 }
 
@@ -148,6 +143,10 @@ void SceneBattle::mOnListen(){
 		m_pOrderList->mPlay();
 		m_InitUpdateProcess = true;
 	}
+
+	//Œõ‚é“z
+	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+
 	if (m_pOrderList->mIsEnd()){
 		m_InitUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;

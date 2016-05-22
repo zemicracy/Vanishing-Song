@@ -64,7 +64,7 @@ std::shared_ptr<Texture> gLoadTexture(std::string key, std::string path){
 }
 
 //初期化
-void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state){
+void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,std::shared_ptr<ActionBoard> board){
 	WorldReader reader;
 	std::string dir = "Texture\\OrderList\\";
 
@@ -148,8 +148,9 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	reader.UnLoad();
 	m_MaxOrderSize = requestVal;
 
-	m_ActionBoard = std::make_shared<ActionBoard>();
-	m_ActionBoard->mInitialize();
+	m_ActionBoard = board;
+
+	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 //	m_rhythm->mInitializeRhythm(0, 110);
@@ -168,15 +169,18 @@ void OrderList::mListenUpdate(){
 		return;
 	}
 
+	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 	//タイミング	４分と８分
 	bool timing = m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat();
+
+
 
 	if (timing){
 		if (m_processId >= m_MaxOrderSize){
 			m_processId++;
 			return;
 		};
-
+		m_playedAction = m_EnemyOrderList[m_processId];
 		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull){
 			auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
 			mPlaySound(sound);
@@ -219,24 +223,24 @@ void OrderList::mPerformUpdate(){
 		(!m_rhythm->mIsEighterBeat() && m_rhythm->mIsSixteenthBeat()) ;
 
 	
-	printf("%.3f wholeBeat", m_rhythm->mWholeBeatTime());
+	/*printf("%.3f wholeBeat", m_rhythm->mWholeBeatTime());
 	printf("exFrame %.3f\t", exFrame);
 	if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
 		printf("now! ");
 	}
 	else {
 		printf("false ");
-	}
+	}*/
 
-	printf("id: %d\n", m_processId);
+	//	printf("id: %d\n", m_processId);
 		//裏打ちのタイミングで毎回フラグをリセットし次を判定	
 	if (backBeat){
-			std::cout << "Reset " << m_processId << std::endl;
+			//std::cout << "Reset " << m_processId << std::endl;
 		if (m_isKeyDown){
 			m_isKeyDown = m_isPlaySound = false;
 		}
 		else{
-			Debug::mPrint("MISS");
+			//Debug::mPrint("MISS");
 			m_PlayerOrderList.push_back(command);
 		}
 		m_processId++;
@@ -254,14 +258,14 @@ void OrderList::mPerformUpdate(){
 		if (m_isKeyDown) return;
 
 		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
-				Debug::mPrint("Great");
+				//Debug::mPrint("Great");
 			m_isKeyDown = true;
 			m_isPlaySound = true;
 			m_PlayerOrderList.push_back(command);
 		}
 //		else if (m_kGreat*reducation < exFrame && exFrame < 1 - m_kGreat*reducation){
 		else {
-				Debug::mPrint("DownMISS");
+				//Debug::mPrint("DownMISS");
 			m_isKeyDown = true;
 			m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eNull));
 			return;
@@ -428,7 +432,7 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 }
 
 std::shared_ptr<ActionCommand> OrderList::mGetActionCommand(){
-	return m_PlayerOrderList.at(m_PlayerOrderList.size()-1);
+	return m_playedAction;
 }
 
 void OrderList::mAddEnemyOrder(std::vector<std::shared_ptr<ActionCommand>>& input){
@@ -452,7 +456,7 @@ void OrderList::mPlay(){
 }
 
 void OrderList::mListStop(){
-	m_pBackImage->property._color._red = 0.5;
+	m_pBackImage->property._color._red = 0.0;
 	m_isStart = false;
 	m_isKeyDown = false;
 	m_isEnd = true;
@@ -461,7 +465,7 @@ void OrderList::mListStop(){
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
 	sound->mStop();
-	sound->mPlaySoundAction(0);
+	sound->mPlaySoundAction(-100);
 }
 
 void OrderList::mRhythmicMotion(){

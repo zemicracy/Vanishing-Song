@@ -105,10 +105,10 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-	RegisterActionSound(eMusical::eBlue, "Sound/do.wav");
-	RegisterActionSound(eMusical::eGreen, "Sound/re.wav");
-	RegisterActionSound(eMusical::eRed, "Sound/mi.wav");
-	RegisterActionSound(eMusical::eYellow, "Sound/damage03.wav");
+	RegisterActionSound(eMusical::eBlue, "Sound/Bm7_1.wav");
+	RegisterActionSound(eMusical::eGreen, "Sound/Bm7_2.wav");
+	RegisterActionSound(eMusical::eRed, "Sound/Bm7_3.wav");
+	RegisterActionSound(eMusical::eYellow, "Sound/Bm7_4.wav");
 	RegisterActionSound(eMusical::eMiss, "Sound/miss.wav");
 
 	return true;
@@ -130,6 +130,14 @@ bool ResourceManager::InitializeTexture(){
 	RegisterTexture("7", "Texture\\Number\\7.png");
 	RegisterTexture("8", "Texture\\Number\\8.png");
 	RegisterTexture("9", "Texture\\Number\\9.png");
+	
+	std::string comPath = "Texture\\ActionCommand\\";
+	RegisterTexture("ActionBlue", comPath + "Blue.png");
+	RegisterTexture("ActionGreen", comPath + "Green.png");
+	RegisterTexture("ActionRed", comPath + "Red.png");
+	RegisterTexture("ActionYellow", comPath + "Yellow.png");
+	RegisterTexture("ActionMiss",comPath + "miss.png");
+	RegisterTexture("ActionNull",comPath + "null.png");
 	return true;
 }
 
