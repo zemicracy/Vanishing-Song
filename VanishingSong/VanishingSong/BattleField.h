@@ -11,7 +11,7 @@ public:
 	void mInitialize(aetherClass::ViewCamera* view);
 	void mUpdate(std::shared_ptr<ActionCommand>command);
 	void mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug);
-	
+	std::shared_ptr<aetherClass::ModelBase> mGetLane(eMusical type);
 
 	BattleField();
 	~BattleField();

@@ -150,3 +150,8 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 	}
 
 }
+
+
+std::shared_ptr<aetherClass::ModelBase> BattleField::mGetLane(eMusical type){
+	return m_pLane.at(type);
+}
