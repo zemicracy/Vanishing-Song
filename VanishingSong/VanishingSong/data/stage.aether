@@ -4,10 +4,10 @@
 -300,0,300,0,0,0,300,300,300,0,Cube,1,1,0,0.5,0,area2,null_path
 300,0,-300,0,0,0,300,300,300,0,Cube,1,1,0,0.5,0,area3,null_path
 -300,0,-300,0,0,0,300,300,300,0,Cube,1,1,0,0.5,0,area4,null_path
-0,0,600,0,0,0,600,10,1,0,Rectangle3D,1,0,0,0.5,0,wall1,null_path
-0,0,-600,0,0,0,600,10,1,0,Rectangle3D,1,0,0,0.5,0,wall2,null_path
-600,0,0,0,90,0,600,10,1,0,Rectangle3D,1,0,0,0.5,0,wall3,null_path
--600,0,0,0,90,0,600,10,1,0,Rectangle3D,1,0,0,0.5,0,wall4,null_path
+0,0,500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall1,null_path
+0,0,-500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall2,null_path
+500,0,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall3,null_path
+-500,0,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall4,null_path
 [Material]
 [Texture]
 none

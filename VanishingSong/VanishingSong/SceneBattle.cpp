@@ -56,7 +56,9 @@ bool SceneBattle::Initialize(){
 
 	// ƒvƒŒƒCƒ„[‚Ì‰Šú‰»
 	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
-		m_players.mSetPlayer(index.second, m_pField->mGetLane(index.second)->property._transform._translation,Singleton<ResourceManager>::GetInstance().mGetPlayerHash(index.second));
+		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(index.second);
+		m_charaEntity.SetCamera(gearframe->m_pBody, &m_view);
+		m_players.mSetPlayer(index.second, m_pField->mGetLane(index.second)->property._transform._translation,gearframe);
 	}
 	return true;
 }
