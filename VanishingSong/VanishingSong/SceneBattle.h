@@ -15,6 +15,7 @@
 #include"ActionBoard.h"
 #include"BattleField.h"
 #include "BattlePlayerManager.h"
+#include"BattleMessage.h"
 class SceneBattle :
 	public aetherClass::GameScene
 {
@@ -61,6 +62,7 @@ private:
 	std::shared_ptr<ActionBoard>m_pActionBoard;
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<BattleField>m_pField;
+	std::unique_ptr<BattleMessage>m_pMessage;
 	aetherClass::ViewCamera m_view;
 
 	int m_prevWholeBeatNo;
