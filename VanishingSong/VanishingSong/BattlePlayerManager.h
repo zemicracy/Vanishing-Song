@@ -12,7 +12,7 @@ class BattlePlayerManager
 public:
 	BattlePlayerManager();
 	~BattlePlayerManager();
-	void mSetPlayer(eMusical,std::shared_ptr<GearFrame>);
+	void mSetPlayer(eMusical,aetherClass::Vector3,std::shared_ptr<GearFrame>);
 	void mRender(aetherClass::ShaderBase*);
 	void mUpdate(const float,eMusical);
 private:

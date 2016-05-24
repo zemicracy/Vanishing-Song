@@ -4,13 +4,14 @@
 #include "CharaEntity.h"
 #include "GearFrame.h"
 #include <ShaderBase.h>
+
 class BattlePlayer
 {
 public:
 	BattlePlayer();
 	~BattlePlayer();
 
-	void mInitialize(eMusical,std::shared_ptr<GearFrame> gearframe);
+	void mInitialize(eMusical,aetherClass::Vector3 position,std::shared_ptr<GearFrame> gearframe);
 	eMusical mGetType();
 	void mRender(aetherClass::ShaderBase*);
 	void mUpdate(const float);
