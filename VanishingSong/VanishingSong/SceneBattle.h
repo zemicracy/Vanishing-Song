@@ -58,7 +58,7 @@ private:
 	GameManager::eBattleState m_battleState;
 
 	BattlePlayerManager m_players;
-
+	CharaEntity m_charaEntity;
 	std::shared_ptr<ActionBoard>m_pActionBoard;
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<BattleField>m_pField;

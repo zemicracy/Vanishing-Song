@@ -16,25 +16,21 @@ const std::string SceneGame::Name = "Game";
 namespace{
 	const float kScaleTime = 1.0f; 
 	const bool kError = false;
-	const float kDayTime = 180.0f; // ˆê“ú‚ÌŠÔ
 }
 
 SceneGame::SceneGame():
 GameScene(Name, GetManager()) //Scene‚²‚Æ‚Ì–¼‘O‚ğİ’è
 {
 	m_gameState = eState::eNull;
-
 }
 
 
 SceneGame::~SceneGame()
 {
-
 	m_gameState = eState::eNull;
-
-
 }
 
+std::unique_ptr<FbxModel> fbx;
 bool SceneGame::Initialize(){
 	bool result = true;
 
@@ -80,6 +76,11 @@ bool SceneGame::Initialize(){
 	particle._scale = Vector3(2,2, 0);
 	particle._texturePath = "Texture\\Battle\\note.png";
 	m_pPaticle = std::make_shared<AttackParticle>(particle,view);
+	fbx = std::make_unique<FbxModel>();
+	bool fbxResult =fbx->LoadFBX("Model\\BattleStageBase.fbx", eAxisSystem::eAxisOpenGL);
+	fbx->SetCamera(view);
+	fbx->property._transform._translation = Vector3(0, 1, 0);
+
 	// ƒQ[ƒ€‚Ìó‘Ô‚ğ“o˜^
 	m_gameState = eState::eRun;
 	return true;
@@ -88,6 +89,10 @@ bool SceneGame::Initialize(){
 // ‰ğ•úˆ—
 // ‘S‚Ä‚Ì‰ğ•ú
 void SceneGame::Finalize(){
+	if (fbx){
+		fbx->Finalize();
+		fbx.release();
+	}
 	if (m_pMessageManager){
 		m_pMessageManager.reset();
 		m_pMessageManager = nullptr;
@@ -174,6 +179,9 @@ void SceneGame::Render(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+
+	fbx->Render(shaderHash["color"].get());
+
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
