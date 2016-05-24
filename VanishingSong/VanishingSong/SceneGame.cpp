@@ -170,7 +170,7 @@ bool SceneGame::Updater(){
 	}
 
 	for (auto& index : m_pCage){
-		index->mUpdate(kScaleTime);
+		index->mUpdate(kScaleTime,m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
 	}
 	return true;
 }

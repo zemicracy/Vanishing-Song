@@ -36,8 +36,11 @@ void Cage::mInitialize(std::shared_ptr<GearFrame> gearframe, Vector3 position, V
 }
 
 //
-void Cage::mUpdate(const float timeScale){
+void Cage::mUpdate(const float timeScale, Vector3 position){
 	mPrisonerAnimation();
+	float rad = atan2(position._x - m_topGear->_pGear->property._transform._translation._x, position._z - m_topGear->_pGear->property._transform._translation._z);
+	float rotationY = rad / kAetherPI * 180;
+	m_charaEntity.mGearRotation(m_topGear, m_topGear, Vector3(0,rotationY,0));
 }
 
 //
