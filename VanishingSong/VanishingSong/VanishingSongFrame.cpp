@@ -23,6 +23,8 @@ bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
 	result = Singleton<ResourceManager>::GetInstance().Initialize();
 	// 操作キャラクターのリソースを初期化
+	Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eBlue);
+	
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","\\blue");
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "\\red");
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "\\green");

@@ -17,10 +17,11 @@ bool GameManager::mIsPause(){
 }
 
 void GameManager::mPushUsePlayer(eMusical type){
-	m_players.push_back(type);
+	if (m_players.find(type) != m_players.end())return;
+	m_players.insert(std::make_pair(type, type));
 }
 
 
-std::vector<eMusical>& GameManager::mGetUsePlayer(){
+std::unordered_map<eMusical, eMusical>& GameManager::mGetUsePlayer(){
 	return m_players;
 }

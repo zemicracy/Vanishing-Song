@@ -41,8 +41,6 @@ bool SceneBattle::Initialize(){
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 	m_rhythm->mAcquire();
 
-
-
 	m_processState = eGameState::ePreCountIn;
 	m_InitUpdateProcess = false;
 	m_prevWholeBeatNo = 0;
@@ -55,6 +53,11 @@ bool SceneBattle::Initialize(){
 	m_pField->mInitialize(&m_view);
 
 	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
+
+	// ƒvƒŒƒCƒ„[‚Ì‰Šú‰»
+	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
+		m_players.mSetPlayer(index.second, m_pField->mGetLane(index.second)->property._transform._translation,Singleton<ResourceManager>::GetInstance().mGetPlayerHash(index.second));
+	}
 	return true;
 }
 
@@ -105,6 +108,7 @@ bool SceneBattle::Updater(){
 		m_battleState = GameManager::eBattleState::eNull;
 	}
 	m_pOrderList->mUpdate();
+	m_players.mUpdate(0, eMusical::eNull);
 	return true;
 }
 
@@ -112,7 +116,7 @@ void SceneBattle::Render(){
 	m_view.Render();
 	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 	m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-
+	m_players.mRender(shaderHash["texture"].get());
 	return;
 }
 

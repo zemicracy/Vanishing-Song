@@ -15,6 +15,7 @@ void BattlePlayer::mInitialize(eMusical type, aetherClass::Vector3 position, std
 	m_type = type;
 	m_playerGear = gearframe;
 	m_transform._translation = position;
+
 	return;
 }
 

@@ -24,7 +24,7 @@ void BattlePlayerManager::mRender(aetherClass::ShaderBase* shader){
 }
 
 //
-void BattlePlayerManager::mUpdate(const float update, eMusical){
+void BattlePlayerManager::mUpdate(const float update, eMusical type){
 	for (auto& player : m_pBattlePlayers){
 		player.second.mUpdate(update);
 	}
