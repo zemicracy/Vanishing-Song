@@ -31,6 +31,8 @@ bool SceneBattle::Initialize(){
 
 	m_battleState = GameManager::eBattleState::eListen;
 
+	m_pMessage = std::make_unique<BattleMessage>();
+
 	m_pActionBoard = std::make_shared<ActionBoard>();
 	m_pActionBoard->mInitialize();
 
@@ -41,10 +43,7 @@ bool SceneBattle::Initialize(){
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 	m_rhythm->mAcquire();
 
-	m_processState = eGameState::ePreCountIn;
-	m_InitUpdateProcess = false;
-	m_prevWholeBeatNo = 0;
-
+	//仮
 	for (int i = 0; i < 8; i++){
 			EnemyVector.push_back(m_pActionBoard->mGetCommand(askey[i]));
 	}
@@ -52,12 +51,16 @@ bool SceneBattle::Initialize(){
 	m_pField = std::make_unique<BattleField>();
 	m_pField->mInitialize(&m_view);
 
-	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
-
 	// プレイヤーの初期化
 	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
 		m_players.mSetPlayer(index.second, m_pField->mGetLane(index.second)->property._transform._translation,Singleton<ResourceManager>::GetInstance().mGetPlayerHash(index.second));
 	}
+
+	m_processState = eGameState::ePreCountIn;
+	m_InitUpdateProcess = false;
+	m_prevWholeBeatNo = 0;
+	//最後に行う
+	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 	return true;
 }
 
@@ -123,6 +126,7 @@ void SceneBattle::Render(){
 void SceneBattle::UIRender(){
 	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 	m_pOrderList->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+	m_pMessage->mRender(shaderHash["transparent"].get());
 	return;
 }
 
@@ -210,7 +214,7 @@ void SceneBattle::mCountIn(){
 		if (int(m_rhythm->mWholeBeatTime() + 0.03f) != m_prevWholeBeatNo){
 			cnt = 0;
 			m_processState = eGameState::eUpdate;
-			Debug::mPrint("Play!!");
+			m_pMessage->mSetActive(false);
 			return;
 		}
 	}
@@ -218,8 +222,8 @@ void SceneBattle::mCountIn(){
 		if (int(m_rhythm->mWholeBeatTime() + 0.1f) != m_prevWholeBeatNo){
 			//		std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
 			cnt = 0;
+			m_pMessage->mSetActive(false);
 			m_processState = eGameState::eUpdate;
-			Debug::mPrint("Play!!");
 			return;
 		}
 	}
@@ -229,15 +233,8 @@ void SceneBattle::mCountIn(){
 	}
 
 	if (cnt >= 2){
-		if (m_battleState == GameManager::eBattleState::eListen){
-			Debug::mPrint("Listen");
-		}
-		else if (m_battleState == GameManager::eBattleState::ePerform){
-			Debug::mPrint("Perform");
-		}
-		else if (m_battleState == GameManager::eBattleState::eBattle){
-			Debug::mPrint("Battle");
-		}
+		m_pMessage->mChangeTexture(m_battleState);
+		m_pMessage->mSetActive(true);
 	}
 
 }
