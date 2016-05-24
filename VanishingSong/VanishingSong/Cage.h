@@ -12,7 +12,7 @@ public:
 	~Cage();
 
 	void mInitialize(std::shared_ptr<GearFrame>, aetherClass::Vector3 position, aetherClass::ViewCamera*);
-	void mUpdate(const float timeScale);
+	void mUpdate(const float timeScale,aetherClass::Vector3);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mFinalize();
 
