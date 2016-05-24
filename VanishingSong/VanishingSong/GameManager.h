@@ -1,9 +1,11 @@
 #ifndef _GAMEMANAGER_H
 #define _GAMEMANAGER_H
 #include <Singleton.h>
-struct BattlePlayerDesc{
-	//std::array<>
-};
+#include "Const.h"
+#include <array>
+namespace{
+	const int kPlayerNum = 4;
+}
 class GameManager
 {
 public:
@@ -28,9 +30,12 @@ public:
 	~GameManager();
 	void mInitialize();
 	bool mIsPause();	
+
+	void mPushUsePlayer(eMusical);
+	std::vector<eMusical>& mGetUsePlayer();
 private:
 	bool m_isPause;
-	
+	std::vector<eMusical> m_players;
 };
 
 #endif
