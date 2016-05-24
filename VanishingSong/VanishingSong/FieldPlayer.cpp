@@ -253,7 +253,9 @@ bool FieldPlayer::mLoadProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 
 		/*	体	*/
 		if (index->_name == "Body"){
+			
 			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pBody, index);
+			
 		}
 
 		if (index->_name == "Waist"){
@@ -396,7 +398,6 @@ void FieldPlayer::mDefaultAnimation(FieldPlayer::eState& state){
 	if (m_defaultAnimation.find(state) == m_defaultAnimation.end()) return;
 
 	Transform animationTransform;
-
 	/*	アニメーション実行処理	*/
 	const int allFrame = m_defaultAnimation[state]._animationFrame;
 
@@ -404,7 +405,10 @@ void FieldPlayer::mDefaultAnimation(FieldPlayer::eState& state){
 	{
 		// 補間の値を取得
 		animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end,allFrame , m_actionCount._defaultFrame);
-
+		// 反転用、体だけ反転させる
+		if (index._name == Gear::eType::eBody){
+			animationTransform._scale._x = -1;
+		}
 		// アニメーションの適用
 		if (m_pGearHash.find(index._name) != m_pGearHash.end()){
 			m_pGearHash[index._name]->_pGear->property._transform = animationTransform;

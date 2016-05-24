@@ -168,7 +168,10 @@ void Cage::mPrisonerAnimation(){
 	{
 		// 補間の値を取得
 		animationTransform = m_charaEntity.mGetTransformInterpolation(index._start, index._end, allFrame, m_animationCounter);
-
+		// 反転用、体だけ反転させる
+		if (index._name == Gear::eType::eBody){
+			animationTransform._scale._x = -1;
+		}
 		// アニメーションの適用
 		if (m_gearHash.find(index._name) != m_gearHash.end()){
 			m_gearHash[index._name]->_pGear->property._transform = animationTransform;
