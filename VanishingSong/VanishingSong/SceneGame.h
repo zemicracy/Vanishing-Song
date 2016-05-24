@@ -51,8 +51,7 @@ public:
 
 private:
 	bool mFadeState(eState);
-	void mResetProperty(); // •Ï”‚Ì‰Šú‰»“™X
-
+	bool mMessageUpdate();
 private:
 	aetherClass::DirectXEntity m_directX;	
 	eState m_gameState;

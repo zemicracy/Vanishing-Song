@@ -43,7 +43,7 @@ public:
 	/*
 		最初に渡されたパーツを中心に公転する
 	*/
-	void mGearRotation(std::shared_ptr<Gear> top,std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation);
+	void mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, const aetherClass::Vector3 rotation, std::string type = "+=");
 
 	/*
 		指定パーツのみ回転
@@ -71,6 +71,8 @@ public:
 
 	aetherClass::Transform mGetTransformInterpolation(aetherClass::Transform, aetherClass::Transform, const int allFrame, const int nowFrame);
 
+	// 第二引数のオブジェクトの方向を見る
+	void mFaceToObject(std::shared_ptr<Gear>& top, aetherClass::Vector3 facePosition, std::string type = "+=");
 private:
 	Gear::eType mSetPartsValue(std::string, aetherClass::Transform* input, aetherClass::Transform value);
 };

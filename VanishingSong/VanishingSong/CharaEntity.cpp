@@ -142,11 +142,15 @@ Transform CharaEntity::mGetTransformInterpolation(Transform first, Transform las
 /*
 	公転	
 */
-void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, aetherClass::Vector3 rotation){
+void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, aetherClass::Vector3 rotation, std::string type){
 	
 	if (!gear || !gear->_pGear)return;
-	gear->_pGear->property._transform._rotation += rotation;
-
+	if (type == "+="){
+		gear->_pGear->property._transform._rotation += rotation;
+	}
+	else if (type == "="){
+		gear->_pGear->property._transform._rotation = rotation;
+	}
 
 	if (gear->_pParent)
 	{
@@ -334,6 +338,15 @@ Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input,
 
 	return Gear::eType::eNull;
 }
+
+
+//
+void CharaEntity::mFaceToObject(std::shared_ptr<Gear>& top, aetherClass::Vector3 facePosition, std::string type){
+	float rad = atan2(facePosition._x - top->_pGear->property._transform._translation._x, facePosition._z - top->_pGear->property._transform._translation._z);
+	float rotationY = rad / kAetherPI * 180;
+	mGearRotation(top, top, Vector3(0, rotationY, 0),type);
+}
+
 
 /*
 キーフレームアニメーションを読み込むよう

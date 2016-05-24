@@ -232,7 +232,9 @@ FieldEnemy::Property& FieldEnemy::mGetProperty(){
 void FieldEnemy::mEnemyOnHit(){
 	
 }
-
+void FieldEnemy::mFaceToPlayer(aetherClass::Vector3 position){
+	m_charaEntity.mFaceToObject(m_pTopGear, position,"=");
+}
 void FieldEnemy::mFinalize(){
 
 	if (m_property._penemy)

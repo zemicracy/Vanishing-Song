@@ -40,7 +40,6 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
 
-
 	// フェードイン・アウトを行う
 	m_pFadeObject = std::make_unique<FadeManager>();
 
@@ -58,7 +57,7 @@ bool SceneGame::Initialize(){
 
 	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea,m_pFieldEnemy);
 
-	m_pMessageManager = std::make_shared<MessageManager>();
+	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy);
 
 	int i = 0;
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
@@ -77,7 +76,7 @@ bool SceneGame::Initialize(){
 	particle._texturePath = "Texture\\Battle\\note.png";
 	m_pPaticle = std::make_shared<AttackParticle>(particle,view);
 	fbx = std::make_unique<FbxModel>();
-	bool fbxResult =fbx->LoadFBX("Model\\BattleStageBase.fbx", eAxisSystem::eAxisOpenGL);
+	bool fbxResult =fbx->LoadFBX("Model\\BattleStageV2.fbx", eAxisSystem::eAxisOpenGL);
 	fbx->SetCamera(view);
 	fbx->property._transform._translation = Vector3(0, 1, 0);
 
@@ -126,7 +125,6 @@ void SceneGame::Finalize(){
 }
 
 // 更新処理
-bool fuga = false;
 bool SceneGame::Updater(){
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		bool result = mFadeState(m_gameState);
@@ -139,36 +137,26 @@ bool SceneGame::Updater(){
 		m_gameState = eState::eExit;
 	}
 
-	if (GameController::GetKey().KeyDownTrigger('B')){
-		m_gameState = eState::eBattle;
-	}
-
 	if (m_gameState == eState::eExit){
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return true;
 	}
-	else if (m_gameState == eState::eBattle){
+	m_pCollideManager->mUpdate();
+
+	// メッセージの更新処理
+	bool changeBattle = mMessageUpdate();
+	if (changeBattle){
+		m_gameState = eState::eBattle;
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return true;
 	}
-	m_pCollideManager->mUpdate();
-	auto collideInfo = m_pCollideManager->GetMassageInfo();
-	const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB);
-	m_pMessageManager->mUpdate(collideInfo,isPress);
-
+	
 	m_pFieldEnemy->mUpdater();
 
 	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView());
 
-	if (GameController::GetJoypad().ButtonPress(eJoyButton::eX)){
-		fuga = !fuga;
-	}
-
-	if (fuga){
-		m_pPaticle->mUpdate(kScaleTime);
-	}
-
+	// 捕虜を向かせる
 	for (auto& index : m_pCage){
 		index->mUpdate(kScaleTime,m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
 	}
@@ -186,9 +174,11 @@ void SceneGame::Render(){
 
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
+	// 捕虜の表示
 	for (auto& index : m_pCage){
 		index->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	}
+
 	m_pPaticle->mRender(shaderHash["texture"].get());
 
 	return;
@@ -196,7 +186,7 @@ void SceneGame::Render(){
 
 void SceneGame::UIRender(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-	m_pMessageManager->mRender(shaderHash["color"].get());
+	m_pMessageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		m_pFadeObject->mRedner(shaderHash["color"].get());
 	}
@@ -237,4 +227,18 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 		if (!isEnd) return false;
 	}
 	return true;
+}
+
+// メッセージの更新処理
+bool SceneGame::mMessageUpdate(){
+	auto collideInfo = m_pCollideManager->GetMassageInfo();
+	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB);
+	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
+	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton, m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
+	if (m_pMessageManager->mGetIsChangeScene()){
+		// 戦闘に行く処理
+		// 戦闘に行く前に設定する奴もここでする
+		return true;
+	}
+	return false;
 }
