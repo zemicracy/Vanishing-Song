@@ -1,6 +1,7 @@
 #ifndef _BATTLEENEMYMANAGER_H
 #define _BATTLEENEMYMANAGER_H
 #include "BattleEnemy.h"
+#include"BattleField.h"
 #include <ShaderBase.h>
 #include <array>
 namespace{
@@ -9,26 +10,15 @@ namespace{
 class BattleEnemyManager
 {
 public:
-	struct Enemy
-	{
-		std::shared_ptr<GearFrame> _gearFrame;
-		eMusical _type;
-	};
-public:
 	BattleEnemyManager();
 	~BattleEnemyManager();
 	/*
 		初期化時の引数でどの敵を配置するかを取得する
 		_typeがNullの場合は初期化の処理を飛ばす
 	*/
-	void Initialize(std::array<Enemy, kEnemyMaxNum> enemyList);
+	void Initialize(aetherClass::ViewCamera* camera,BattleField* );
 
-	/*
-		どの音を流すかを考えさせ
-		音をリストにスタックするときに対象の音のenumを返す
-		それ以外はeMusical::Nullを返す
-	*/
-	eMusical mUpadate(const float timeScale);
+	void mUpadate(const float timeScale);
 
 	/*
 		描画処理
@@ -41,8 +31,11 @@ public:
 	bool mIsEnd();
 
 private:
-	std::array<BattleEnemy, kEnemyMaxNum> m_enemyArray;
+	void EnemySet(eMusical type, std::shared_ptr<GearFrame> gearFrame);
 	bool m_isEnd;
+	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
+	BattleField* m_BattleField;
+
 };
 
 #endif
