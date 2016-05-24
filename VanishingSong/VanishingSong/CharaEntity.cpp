@@ -93,7 +93,7 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 	ギアの移動用関数
 	仕組みはmGearRenderと一緒
 */
-void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move, std::string type){
+void CharaEntity::mGearMove(std::shared_ptr<Gear> gear,Vector3 move, std::string type){
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
 
@@ -103,8 +103,13 @@ void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move, std:
 
 	}
 	else if (type == "="){
-		gear->_pGear->property._transform._translation = move;
+		if (!gear->_pParent){
+			gear->_pGear->property._transform._translation = move;
+		}
+		else{
+			gear->_pGear->property._transform._translation = gear->_pParent->_pGear->property._transform._translation +gear->_parentDifference._translation;
 
+		}
 	}
 	else{
 		gear->_pGear->property._transform._translation += move;

@@ -2,10 +2,7 @@
 #define _GAMEMANAGER_H
 #include <Singleton.h>
 #include "Const.h"
-#include <array>
-namespace{
-	const int kPlayerNum = 4;
-}
+#include <unordered_map>
 class GameManager
 {
 public:
@@ -32,10 +29,10 @@ public:
 	bool mIsPause();	
 
 	void mPushUsePlayer(eMusical);
-	std::vector<eMusical>& mGetUsePlayer();
+	std::unordered_map<eMusical, eMusical>& mGetUsePlayer();
 private:
 	bool m_isPause;
-	std::vector<eMusical> m_players;
+	std::unordered_map<eMusical,eMusical> m_players;
 };
 
 #endif

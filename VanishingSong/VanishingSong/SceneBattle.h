@@ -14,7 +14,7 @@
 #include"OrderList.h"
 #include"ActionBoard.h"
 #include"BattleField.h"
-
+#include "BattlePlayerManager.h"
 class SceneBattle :
 	public aetherClass::GameScene
 {
@@ -55,6 +55,8 @@ private:
 	void mCheckBattle();
 private:
 	GameManager::eBattleState m_battleState;
+
+	BattlePlayerManager m_players;
 
 	std::shared_ptr<ActionBoard>m_pActionBoard;
 	std::unique_ptr<OrderList> m_pOrderList;
