@@ -41,7 +41,6 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 
 	// テクスチャの読み込み
 	pGear->_pGear->SetTextureDirectoryName(directry);
-	
 	return pGear;
 }
 
