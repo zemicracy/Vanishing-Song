@@ -59,12 +59,12 @@ bool SceneGame::Initialize(){
 
 	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy);
 
-	int i = 0;
+	int count= 0;
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
 	for (auto& index : m_pCage){
-		const auto hoge = m_pFieldEnemy->mEnemyGet(i)->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
-		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[i]), Vector3(hoge._x+20, 22.2f, hoge._z), view);
-		i += 1;
+		const auto hoge = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
+		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, 22.2f, hoge._z), view);
+		count += 1;
 	}
 
 	AttackParticle::ParticleDesc particle;
@@ -76,7 +76,7 @@ bool SceneGame::Initialize(){
 	particle._texturePath = "Texture\\Battle\\note.png";
 	m_pPaticle = std::make_shared<AttackParticle>(particle,view);
 	fbx = std::make_unique<FbxModel>();
-	bool fbxResult =fbx->LoadFBX("Model\\BattleStageV2.fbx", eAxisSystem::eAxisOpenGL);
+	bool fbxResult =fbx->LoadFBX("Model\\StageBase.fbx", eAxisSystem::eAxisOpenGL);
 	fbx->SetCamera(view);
 	fbx->property._transform._translation = Vector3(0, 1, 0);
 
@@ -133,19 +133,20 @@ bool SceneGame::Updater(){
 		}
 	}
 
+	// タイトルに戻る
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
 		m_gameState = eState::eExit;
-	}
-
-	if (m_gameState == eState::eExit){
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return true;
 	}
+
 	m_pCollideManager->mUpdate();
 
 	// メッセージの更新処理
 	bool changeBattle = mMessageUpdate();
 	if (changeBattle){
+		// 戦闘に行く処理
+		// 戦闘に行く前に設定する奴もここでする
 		m_gameState = eState::eBattle;
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return true;
@@ -236,8 +237,6 @@ bool SceneGame::mMessageUpdate(){
 	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
 	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton, m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
 	if (m_pMessageManager->mGetIsChangeScene()){
-		// 戦闘に行く処理
-		// 戦闘に行く前に設定する奴もここでする
 		return true;
 	}
 	return false;

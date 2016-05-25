@@ -7,12 +7,12 @@
 using namespace aetherClass;
 
 FieldEnemy::FieldEnemy(){
-
+	m_message.clear();
 }
 
 FieldEnemy::~FieldEnemy()
 {
-	
+	m_message.clear();
 }
 
 bool FieldEnemy::mInitialize(eType type,ViewCamera* camera){
@@ -259,4 +259,17 @@ void FieldEnemy::mFinalize(){
 }
 
 
+//Å@ìoò^óp
+void FieldEnemy::mRegisterMessage(std::string path){
+	m_message.resize(m_message.size() + 1);
+	const int id = m_message.size() - 1;
+	m_message[id] = std::make_shared<Texture>();
+	m_message[id]->Load(path);
+}
+int FieldEnemy::mGetMessageNum()const{
+	return m_message.size();
+}
 
+std::shared_ptr<aetherClass::Texture> FieldEnemy::mGetMessage(const int id){
+	return m_message[id];
+}

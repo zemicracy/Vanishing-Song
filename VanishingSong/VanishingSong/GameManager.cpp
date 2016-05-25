@@ -17,7 +17,7 @@ bool GameManager::mIsPause(){
 }
 
 void GameManager::mPushUsePlayer(eMusical type){
-	if (m_players.find(type) != m_players.end())return;
+	if (m_players.find(type) != m_players.end() || type == eMusical::eNull)return;
 	m_players.insert(std::make_pair(type, type));
 }
 

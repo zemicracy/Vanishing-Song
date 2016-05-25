@@ -28,7 +28,6 @@ private:
 	void mSetState(const int);
 	void mCursorUpdate(const bool);
 private:
-	std::shared_ptr<aetherClass::Texture> m_texts;
 	std::shared_ptr<aetherClass::Rectangle2D> m_pCursor;
 	MessageWindow m_message;
 	bool m_isView;
