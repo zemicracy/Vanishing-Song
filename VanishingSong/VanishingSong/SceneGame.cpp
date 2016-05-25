@@ -234,7 +234,7 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 // メッセージの更新処理
 bool SceneGame::mMessageUpdate(){
 	auto collideInfo = m_pCollideManager->GetMassageInfo();
-	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB);
+	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
 	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton, m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
 	if (m_pMessageManager->mGetIsChangeScene()){
