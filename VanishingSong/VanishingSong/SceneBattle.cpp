@@ -5,7 +5,7 @@
 #include<PixelShader.h>
 #include <GameController.h>
 #include "ResourceManager.h"
-
+#include"SceneGame.h"
 //debug
 
 using namespace aetherClass;
@@ -21,8 +21,6 @@ SceneBattle::~SceneBattle()
 
 
 //interim
-int charaHp = 10;
-int enemyHp = 20;
 
 std::vector<std::shared_ptr<ActionCommand>>EnemyVector;
 eMusical askey[8] = {	eMusical::eBlue, eMusical::eGreen, eMusical::eNull, eMusical::eGreen,
@@ -30,7 +28,8 @@ eMusical askey[8] = {	eMusical::eBlue, eMusical::eGreen, eMusical::eNull, eMusic
 
 bool SceneBattle::Initialize(){
 	Singleton<RhythmManager>::GetInstance().mInitializeRhythm(0, 110);
-
+	
+	RegisterScene(new SceneGame());
 
 	m_battleState = GameManager::eBattleState::eListen;
 
@@ -66,6 +65,8 @@ bool SceneBattle::Initialize(){
 	m_PreInitProcess = false;
 	m_prevWholeBeatNo = 0;
 
+	charaHp = 10;
+	enemyHp = 20;
 	//最後に行う
 	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 	return true;
@@ -224,9 +225,18 @@ void SceneBattle::mCheckBattle(){
 	// TODO: 勝負判定処理＆場合によってはWaveを進める処理
 	m_pOrderList->mEndReset();
 
-
-	m_battleState = GameManager::eBattleState::eListen;
-	m_processState = eGameState::ePreCountIn;
+	if (charaHp < 0){
+		m_battleState = GameManager::eBattleState::eLose;
+		m_processState = eGameState::ePreCountIn;
+	}
+	else if (enemyHp < 0){
+		m_battleState = GameManager::eBattleState::eWin;
+		m_processState = eGameState::ePreCountIn;
+	}
+	else{
+		m_battleState = GameManager::eBattleState::eListen;
+		m_processState = eGameState::ePreCountIn;
+	}
 
 }
 
@@ -236,7 +246,18 @@ void SceneBattle::mCountIn(){
 	float exFrame = modf(m_rhythm->mWholeBeatTime(), &Padding);
 
 	//特殊仕様　Prefromの時だけ
-	if (m_battleState == GameManager::eBattleState::ePerform){
+	if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
+		if (int(m_rhythm->mWholeBeatTime()) != m_prevWholeBeatNo){
+			const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
+			if (isPress){
+				cnt = 0;
+				m_pMessage->mSetActive(false);
+				Singleton<ResourceManager>::GetInstance().mGetBGM(0)->Stop();
+				ChangeScene(SceneGame::Name, LoadState::eUse);
+			}
+		}
+	}
+	else if (m_battleState == GameManager::eBattleState::ePerform){
 		if (int(m_rhythm->mWholeBeatTime() + 0.03f) != m_prevWholeBeatNo){
 			cnt = 0;
 			m_processState = eGameState::eUpdate;
@@ -262,12 +283,15 @@ void SceneBattle::mCountIn(){
 	}
 
 	if (cnt >= 2){
-		if (!m_PreInitProcess){
-			m_pOrderList->mLinePlay();
-			m_PreInitProcess = true;
+		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
+			if (!m_PreInitProcess){
+				m_pOrderList->mLinePlay();
+				m_PreInitProcess = true;
+			}
 		}
 		m_pMessage->mChangeTexture(m_battleState);
 		m_pMessage->mSetActive(true);
+		
 	}
 
 }
