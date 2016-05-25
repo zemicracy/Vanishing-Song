@@ -96,10 +96,10 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// ƒL[‚Ìˆ—‚ğæ“¾
 	KeyValues getKeyValues;
-		if (!isWait){
-		
-			getKeyValues = mReadKey(timeScale);
-		}
+	if (!isWait){
+		getKeyValues = mReadKey(timeScale);
+	}
+
 	// ƒJƒƒ‰‚Ìˆ—
 	m_cameraRotation += getKeyValues._cameraRotation;
 

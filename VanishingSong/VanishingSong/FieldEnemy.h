@@ -35,7 +35,7 @@ public:
 	void mFinalize();	//ŠJ•úˆ—
 	void mEnemyOnHit();	//“–‚½‚Á‚½‚©‚Ç‚¤‚©
 	Property &mGetProperty();
-	
+	void mFaceToPlayer(aetherClass::Vector3);
 
 private:
 	bool mInitializeGround(aetherClass::ViewCamera*);				//“G‰Šú‰»(’nã)
