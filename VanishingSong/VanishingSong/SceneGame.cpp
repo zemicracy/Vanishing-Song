@@ -82,6 +82,7 @@ bool SceneGame::Initialize(){
 
 	// ƒQ[ƒ€‚Ìó‘Ô‚ð“o˜^
 	m_gameState = eState::eRun;
+	m_pFieldPlayer->mSetTransform(Singleton<GameManager>::GetInstance().mGetPlayerTransform());
 	return true;
 }
 
@@ -237,6 +238,7 @@ bool SceneGame::mMessageUpdate(){
 	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
 	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton, m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
 	if (m_pMessageManager->mGetIsChangeScene()){
+		Singleton<GameManager>::GetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
 		return true;
 	}
 	return false;

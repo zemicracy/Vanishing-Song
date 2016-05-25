@@ -3,6 +3,7 @@
 #include <Singleton.h>
 #include "Const.h"
 #include <unordered_map>
+#include <Transform.h>
 class GameManager
 {
 public:
@@ -30,9 +31,12 @@ public:
 
 	void mPushUsePlayer(eMusical);
 	std::unordered_map<eMusical, eMusical>& mGetUsePlayer();
+	aetherClass::Transform mGetPlayerTransform();
+	void mSetPlayerTransform(aetherClass::Transform);
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;
+	aetherClass::Transform m_prevPlayerTransform;
 };
 
 #endif

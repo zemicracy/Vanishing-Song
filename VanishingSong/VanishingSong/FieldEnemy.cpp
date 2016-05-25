@@ -237,24 +237,18 @@ void FieldEnemy::mFaceToPlayer(aetherClass::Vector3 position){
 }
 void FieldEnemy::mFinalize(){
 
-	if (m_property._penemy)
-	{
-		m_property._penemy->Release();
-		m_property._penemy.reset();
-		m_property._penemy = nullptr;
-	}
-
 	if (m_property._pCollider){
 		m_property._pCollider->Finalize();
 		m_property._pCollider.reset();
 		m_property._pCollider = nullptr;
 	}
-	if (m_pTopGear)
-	{
-		m_pTopGear->Release();
-		m_pTopGear.reset();
-		m_pTopGear = nullptr;
+
+	for (auto index : m_message){
+		index.reset();
+		index = nullptr;
 	}
+	m_message.clear();
+
 
 }
 

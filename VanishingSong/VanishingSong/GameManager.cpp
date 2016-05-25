@@ -5,6 +5,7 @@
 using namespace aetherClass;
 GameManager::GameManager()
 {
+	m_prevPlayerTransform._translation._y = 22.2f;
 }
 
 
@@ -24,4 +25,11 @@ void GameManager::mPushUsePlayer(eMusical type){
 
 std::unordered_map<eMusical, eMusical>& GameManager::mGetUsePlayer(){
 	return m_players;
+}
+
+aetherClass::Transform GameManager::mGetPlayerTransform(){
+	return m_prevPlayerTransform;
+}
+void GameManager::mSetPlayerTransform(aetherClass::Transform trans){
+	m_prevPlayerTransform = trans;
 }
