@@ -7,12 +7,12 @@
 using namespace aetherClass;
 
 FieldEnemy::FieldEnemy(){
-
+	m_message.clear();
 }
 
 FieldEnemy::~FieldEnemy()
 {
-	
+	m_message.clear();
 }
 
 bool FieldEnemy::mInitialize(eType type,ViewCamera* camera){
@@ -237,26 +237,33 @@ void FieldEnemy::mFaceToPlayer(aetherClass::Vector3 position){
 }
 void FieldEnemy::mFinalize(){
 
-	if (m_property._penemy)
-	{
-		m_property._penemy->Release();
-		m_property._penemy.reset();
-		m_property._penemy = nullptr;
-	}
-
 	if (m_property._pCollider){
 		m_property._pCollider->Finalize();
 		m_property._pCollider.reset();
 		m_property._pCollider = nullptr;
 	}
-	if (m_pTopGear)
-	{
-		m_pTopGear->Release();
-		m_pTopGear.reset();
-		m_pTopGear = nullptr;
+
+	for (auto index : m_message){
+		index.reset();
+		index = nullptr;
 	}
+	m_message.clear();
+
 
 }
 
 
+//@“o˜^—p
+void FieldEnemy::mRegisterMessage(std::string path){
+	m_message.resize(m_message.size() + 1);
+	const int id = m_message.size() - 1;
+	m_message[id] = std::make_shared<Texture>();
+	m_message[id]->Load(path);
+}
+int FieldEnemy::mGetMessageNum()const{
+	return m_message.size();
+}
 
+std::shared_ptr<aetherClass::Texture> FieldEnemy::mGetMessage(const int id){
+	return m_message[id];
+}

@@ -36,7 +36,9 @@ public:
 	void mEnemyOnHit();	//“–‚½‚Á‚½‚©‚Ç‚¤‚©
 	Property &mGetProperty();
 	void mFaceToPlayer(aetherClass::Vector3);
-
+	void mRegisterMessage(std::string);
+	int mGetMessageNum()const;
+	std::shared_ptr<aetherClass::Texture> mGetMessage(const int id);
 private:
 	bool mInitializeGround(aetherClass::ViewCamera*);				//“G‰Šú‰»(’nã)
 	bool mInitializeAir(aetherClass::ViewCamera*);				//“G‰Šú‰»(‹ó’†)
@@ -47,6 +49,6 @@ private:
 	CharaEntity m_charaEntity;
 	std::shared_ptr<Gear> m_pTopGear;
 	Property m_property;
-
+	std::vector<std::shared_ptr<aetherClass::Texture>> m_message;
 };
 #endif

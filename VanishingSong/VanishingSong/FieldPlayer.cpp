@@ -490,3 +490,13 @@ void FieldPlayer::mSetFieldNumber(const int number){
 int FieldPlayer::mGetFieldNumber()const{
 	return m_fieldNumber;
 }
+
+
+void FieldPlayer::mSetTransform(Transform trans){
+	m_playerTransform = trans;
+	m_cameraRotation = m_playerTransform._rotation;
+}
+
+Transform FieldPlayer::mGetTransform(){
+	return m_playerTransform;
+}

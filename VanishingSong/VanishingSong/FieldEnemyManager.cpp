@@ -47,32 +47,42 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(),std::make_shared<FieldEnemy>());
 		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Ground,camera);
-		
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+
 	}
 
 	//EnemyAir‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
 		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Air, camera);
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
 		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Blue, camera);
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
 		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Yellow, camera);
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
-	
 	//“G‚Ì‰ŠúˆÊ’u
 	mSetPosion();
 
-	mInitilizeMessage();
 	m_isRender = false;
 	m_isJudge = false;
 	return true;
@@ -87,19 +97,6 @@ void FieldEnemyManager::mRender(aetherClass::ShaderBase* model_shader, aetherCla
 		}
 }
 
-
-void FieldEnemyManager::mRenderMessage(bool isRender){
-
-	if (isRender){
-		m_isRender = !m_isRender;
-	}
-	if (!m_isRender){
-		return;
-	}
-	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-	m_pEnemyMessage->mRender(shaderHash["texture"].get());
-}
-
 bool FieldEnemyManager::mGetIsJudge(){
 
 	return m_isJudge;
@@ -112,17 +109,6 @@ void FieldEnemyManager::mUpdater(){
 	itr->mUpdate();
 	}
 
-}
-
-bool FieldEnemyManager::mInitilizeMessage(){
-	m_pEnemyMessage = std::make_shared<MessageWindow>();
-	m_pMessageTexture = std::make_shared<Texture>();
-
-	m_pEnemyMessage->mInitialize();
-	m_pMessageTexture->Load("Texture\\Message\\YesOrNo.png");
-	m_pEnemyMessage->mSetText(m_pMessageTexture.get());
-
-	return true;
 }
 
 

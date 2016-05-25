@@ -84,7 +84,9 @@ public:
 	void mOnHitWall();
 	
 	void mSetFieldNumber(const int);
-	int mGetFieldNumber()const;
+	int mGetFieldNumber()const; 
+	void mSetTransform(aetherClass::Transform);
+	aetherClass::Transform mGetTransform();
 private:
 
 
