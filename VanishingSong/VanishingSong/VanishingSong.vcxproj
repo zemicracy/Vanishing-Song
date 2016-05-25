@@ -16,8 +16,8 @@
     <ClCompile Include="ActionSound.cpp" />
     <ClCompile Include="AttackParticle.cpp" />
     <ClCompile Include="BattleEnemy.cpp" />
-    <ClCompile Include="BattleEnemyManager.cpp" />
     <ClCompile Include="BattleField.cpp" />
+    <ClCompile Include="BattleMessage.cpp" />
     <ClCompile Include="BattlePlayer.cpp" />
     <ClCompile Include="BattlePlayerManager.cpp" />
     <ClCompile Include="Cage.cpp" />
@@ -64,8 +64,8 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AttackParticle.h" />
     <ClInclude Include="BattleEnemy.h" />
-    <ClInclude Include="BattleEnemyManager.h" />
     <ClInclude Include="BattleField.h" />
+    <ClInclude Include="BattleMessage.h" />
     <ClInclude Include="BattlePlayer.h" />
     <ClInclude Include="BattlePlayerManager.h" />
     <ClInclude Include="Cage.h" />
