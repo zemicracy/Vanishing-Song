@@ -69,6 +69,11 @@ private:
 	bool m_InitUpdateProcess;
 	bool m_PreInitProcess;
 
+	//karikari
+	int charaHp;
+	int enemyHp;
+
+
 	eGameState m_processState;
 
 	//ptr

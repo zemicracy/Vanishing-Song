@@ -20,11 +20,15 @@ void BattleMessage::mInitialize(){
 	m_textureList.insert(std::make_pair(GameManager::eBattleState::eListen, std::make_shared<Texture>()));
 	m_textureList.insert(std::make_pair(GameManager::eBattleState::ePerform, std::make_shared<Texture>()));
 	m_textureList.insert(std::make_pair(GameManager::eBattleState::eBattle, std::make_shared<Texture>()));
-	
+	m_textureList.insert(std::make_pair(GameManager::eBattleState::eLose, std::make_shared<Texture>()));
+	m_textureList.insert(std::make_pair(GameManager::eBattleState::eWin, std::make_shared<Texture>()));
+
 	std::string folder = "Texture\\Battle\\";
 	m_textureList.at(GameManager::eBattleState::eListen)->Load(folder + "listen.png");
 	m_textureList.at(GameManager::eBattleState::eBattle)->Load(folder + "battle.png");
 	m_textureList.at(GameManager::eBattleState::ePerform)->Load(folder + "perform.png");
+	m_textureList.at(GameManager::eBattleState::eWin)->Load(folder + "Win.png");
+	m_textureList.at(GameManager::eBattleState::eLose)->Load(folder + "Lose.png");
 
 }
 void BattleMessage::mChangeTexture(GameManager::eBattleState state){

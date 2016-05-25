@@ -144,7 +144,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			gInitializer(m_pVolumeImage, itr->_transform, itr->_color);
 			m_VolumeOrigin = itr->_transform._translation + itr->_transform._scale / 2;
 			m_VolumeOrigin._z = 0;
-			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "heart.png");
+			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note.png");
 			m_pVolumeImage->SetTexture(m_pTextureList[itr->_name].get());
 		}
 	}
@@ -512,7 +512,7 @@ void OrderList::mEndReset(){
 	mListStop();
 	m_EnemyOrderList.clear();
 	m_PlayerOrderList.clear();
-	
+
 }
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
