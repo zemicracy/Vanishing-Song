@@ -6,7 +6,6 @@
 #include"ActionSound.h"
 #include"Const.h"
 #include"GameClock.h"
-#include"FragmentShader.h"
 #include"RhythmManager.h"
 #include<iostream>
 
@@ -25,8 +24,9 @@ OrderList::OrderList()
 	m_processId = 0;
 	m_MaxOrderSize = 0;
 
-	m_enemyDamageCounter = 0;
-	m_playerDamageCounter = 0;
+	m_isLineStart = 0;
+	m_eighterCount = 0;
+	m_damagedValue = 0;
 }
 
 
@@ -90,6 +90,11 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			m_BackImageOrigin._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
 			m_BackImageScaleOrigin = itr->_transform._scale;
 		}
+		if (itr->_name == "linepos"){
+			gInitializer(m_pReadLine, itr->_transform, Color(1,0,0,1));
+			m_ReadLineOrigin = itr->_transform._translation;
+		}
+
 		if (itr->_name == "list1"){
 			gInitializer(m_pSpriteList[0], itr->_transform, itr->_color);
 			m_pSpriteOrigin[0]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
@@ -144,7 +149,8 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 		}
 	}
 
-
+	//ちょうどいいから（
+	m_ReadLineOrigin._x = m_pSpriteOrigin[0]._x - (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x)*3;
 	reader.UnLoad();
 	m_MaxOrderSize = requestVal;
 
@@ -156,6 +162,21 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 //	m_rhythm->mInitializeRhythm(0, 110);
 }
 
+void OrderList::mLineUpdate(){
+	if (!m_isLineStart) return;
+	if(m_rhythm->mIsQuarterBeat()){
+		m_eighterCount++;
+	}
+	{
+		float oneWay = m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x;
+		float time;
+		time = modf(m_rhythm->mQuarterBeatTime(),&time);
+		m_pReadLine->property._transform._translation._x = m_ReadLineOrigin._x + (m_eighterCount * oneWay) + (time * oneWay);
+	}
+	
+
+}
+
 //敵行動フェイズ
 void OrderList::mListenUpdate(){
 	if (*m_faze != GameManager::eBattleState::eListen) return;
@@ -165,15 +186,13 @@ void OrderList::mListenUpdate(){
 	if (m_processId > m_MaxOrderSize){
 		mListStop();
 		m_isAlPlay = true;
-		Debug::mPrint("END");
 		return;
-	}
+	}	
 
 	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
+
 	//タイミング	４分と８分
 	bool timing = m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat();
-
-
 
 	if (timing){
 		if (m_processId >= m_MaxOrderSize){
@@ -215,7 +234,7 @@ void OrderList::mPerformUpdate(){
 	double exFrame = modf(playtime, &magen);
 	auto command = m_ActionBoard->mGetCommand(eMusical::eNull);
 	bool onCommand = false;
-
+	m_playedAction = command;
 
 	//タイミング判定
 	bool backBeat = m_mode == GameManager::eGameMode::eQuarter ?
@@ -234,6 +253,7 @@ void OrderList::mPerformUpdate(){
 
 	//	printf("id: %d\n", m_processId);
 		//裏打ちのタイミングで毎回フラグをリセットし次を判定	
+
 	if (backBeat){
 			//std::cout << "Reset " << m_processId << std::endl;
 		if (m_isKeyDown){
@@ -255,6 +275,7 @@ void OrderList::mPerformUpdate(){
 		}
 	}
 	if (onCommand){
+		m_playedAction = command;
 		if (m_isKeyDown) return;
 
 		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
@@ -263,7 +284,6 @@ void OrderList::mPerformUpdate(){
 			m_isPlaySound = true;
 			m_PlayerOrderList.push_back(command);
 		}
-//		else if (m_kGreat*reducation < exFrame && exFrame < 1 - m_kGreat*reducation){
 		else {
 				//Debug::mPrint("DownMISS");
 			m_isKeyDown = true;
@@ -303,19 +323,14 @@ void OrderList::mBattleUpdate(){
 	if (*m_faze != GameManager::eBattleState::eBattle);
 	if (!m_isStart)return;
 
-
 	if (!m_isAlPlay){
 		//一回しか処理させたくないもの	
 		m_isAlPlay = true;
-		m_enemyDamageCounter = 0;
-		m_playerDamageCounter = 0;
 		for (int i = 0; i < m_MaxOrderSize; ++i){
 			if (m_PlayerOrderList[i]->mGetType() == m_EnemyOrderList[i]->mGetType()){
-				m_enemyDamageCounter++;
 			}
 			else{
 				m_PlayerOrderList[i] = m_ActionBoard->mGetCommand(eMusical::eMiss);
-				m_playerDamageCounter++;
 			}
 		}
 	}
@@ -323,9 +338,9 @@ void OrderList::mBattleUpdate(){
 	if (m_processId > m_MaxOrderSize){
 		mListStop();
 		m_isAlPlay = false;
-		Debug::mPrint("END");
 		return;
 	}
+	m_damagedValue = 0;
 
 	//タイミング	４分と８分
 	bool timing = m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat();
@@ -333,11 +348,19 @@ void OrderList::mBattleUpdate(){
 	if (timing){
 		//終了準備
 		if (m_processId >= m_MaxOrderSize){
-			std::cout << "敵" << m_enemyDamageCounter << std::endl;
-			std::cout << "プレイや" << m_playerDamageCounter << std::endl;
 			m_processId++;
 			return;
 		}
+
+
+		if (m_PlayerOrderList[m_processId]->mGetType() == eMusical::eMiss){
+			m_damagedValue = -1;
+		}
+		else {
+			m_damagedValue = 1;
+		}
+
+
 
 		//アドリブhantei投入場所
 		if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
@@ -350,6 +373,8 @@ void OrderList::mBattleUpdate(){
 }
 
 void OrderList::mUpdate(){
+
+	mLineUpdate();
 
 	switch (*m_faze)
 	{
@@ -376,31 +401,33 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
 
+
 	if (*m_faze == GameManager::eBattleState::eListen){
-		if (m_EnemyOrderList.empty())return;
+		if (!m_EnemyOrderList.empty()){
 
-		int ifill = 0;
-		if (m_processId >= m_EnemyOrderList.size()){
-			ifill = m_EnemyOrderList.size();
-		}
-		else{
-			ifill = m_processId;
-		}
-
-		for (int i = 0; i < ifill; ++i){
-			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
-			m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
-
-
-			//再生済み透明処理
-			if (m_isEnd){
-				m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+			int ifill = 0;
+			if (m_processId >= m_EnemyOrderList.size()){
+				ifill = m_EnemyOrderList.size();
 			}
-			else if (m_processId > i+1 && !m_isAlPlay){
-				m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+			else{
+				ifill = m_processId;
 			}
 
-			m_pSpriteList[i*requestVal]->Render(shader);
+			for (int i = 0; i < ifill; ++i){
+				m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+				m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
+
+
+				//再生済み透明処理
+				if (m_isEnd){
+					m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+				}
+				else if (m_processId > i + 1 && !m_isAlPlay){
+					m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+				}
+
+				m_pSpriteList[i*requestVal]->Render(shader);
+			}
 		}
 	}
 	else if (*m_faze == GameManager::eBattleState::ePerform){
@@ -412,12 +439,13 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 		}
 		
 
-		if (m_PlayerOrderList.empty())return;
-		for (int i = 0; i < m_PlayerOrderList.size(); ++i){
-			if (i >= m_MaxOrderSize) break;
-			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
-			m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
-			m_pSpriteList[i*requestVal]->Render(shader);
+		if (!m_PlayerOrderList.empty()){
+			for (int i = 0; i < m_PlayerOrderList.size(); ++i){
+				if (i >= m_MaxOrderSize) break;
+				m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
+				m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
+				m_pSpriteList[i*requestVal]->Render(shader);
+			}
 		}
 
 	}
@@ -428,6 +456,10 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 			m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
 			m_pSpriteList[i*requestVal]->Render(shader);
 		}
+	}
+
+	if (m_isLineStart){
+		m_pReadLine->Render(debug);
 	}
 }
 
@@ -453,6 +485,9 @@ void OrderList::mPlay(){
 	m_isStart = true;
 	m_isEnd = false;
 	m_processId = 0;
+	m_damagedValue = 0;
+	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
+
 }
 
 void OrderList::mListStop(){
@@ -461,6 +496,23 @@ void OrderList::mListStop(){
 	m_isKeyDown = false;
 	m_isEnd = true;
 	m_processId = 0;
+	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
+	m_isLineStart = false;
+	m_pReadLine->property._transform._translation = m_ReadLineOrigin;
+	m_eighterCount = 0;
+	m_damagedValue = 0;
+}
+void OrderList::mLinePlay(){
+	m_isLineStart = true;
+	m_pReadLine->property._transform._translation = m_ReadLineOrigin;
+	m_eighterCount = 0;
+}
+
+void OrderList::mEndReset(){
+	mListStop();
+	m_EnemyOrderList.clear();
+	m_PlayerOrderList.clear();
+	
 }
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
@@ -502,7 +554,6 @@ void OrderList::mRhythmicMotion(){
 			m_pSpriteList[i]->property._transform._translation._z = 0;
 	}
 
-
 	static int framecnt;
 	static int maxFrame;
 	static int power = 0;
@@ -512,7 +563,6 @@ void OrderList::mRhythmicMotion(){
 		maxFrame = 2;
 		power = 4;
 	}
-//	else if (m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat()){
 	else if (m_rhythm->mIsQuarterBeat()){
 		framecnt = 0;
 		maxFrame = 1;
@@ -529,4 +579,8 @@ void OrderList::mRhythmicMotion(){
 
 bool OrderList::mIsEnd(){
 	return m_isEnd;
+}
+
+int OrderList::mGetDamage(){
+	return m_damagedValue;
 }
