@@ -67,6 +67,7 @@ private:
 
 	int m_prevWholeBeatNo;
 	bool m_InitUpdateProcess;
+	bool m_PreInitProcess;
 
 	eGameState m_processState;
 

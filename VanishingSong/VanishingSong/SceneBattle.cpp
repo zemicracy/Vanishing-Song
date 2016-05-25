@@ -21,6 +21,9 @@ SceneBattle::~SceneBattle()
 
 
 //interim
+int charaHp = 10;
+int enemyHp = 20;
+
 std::vector<std::shared_ptr<ActionCommand>>EnemyVector;
 eMusical askey[8] = {	eMusical::eBlue, eMusical::eGreen, eMusical::eNull, eMusical::eGreen,
 						eMusical::eBlue, eMusical::eYellow, eMusical::eNull, eMusical::eBlue	};
@@ -55,12 +58,14 @@ bool SceneBattle::Initialize(){
 	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
 		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(index.second);
 		m_charaEntity.SetCamera(gearframe->m_pBody, &m_view);
-		m_players.mSetPlayer(index.second, m_pField->mGetLane(index.second)->property._transform._translation,gearframe);
+		m_players.mSetPlayer(index.second, m_pField->mGetPlayerLane(index.second),gearframe);
 	}
 
 	m_processState = eGameState::ePreCountIn;
 	m_InitUpdateProcess = false;
+	m_PreInitProcess = false;
 	m_prevWholeBeatNo = 0;
+
 	//ç≈å„Ç…çsÇ§
 	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 	return true;
@@ -113,7 +118,7 @@ bool SceneBattle::Updater(){
 		m_battleState = GameManager::eBattleState::eNull;
 	}
 	m_pOrderList->mUpdate();
-	m_players.mUpdate(0, eMusical::eNull);
+	//m_players.mUpdate(0, eMusical::eNull);
 	return true;
 }
 
@@ -121,7 +126,7 @@ void SceneBattle::Render(){
 	m_view.Render();
 	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 	m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-	m_players.mRender(shaderHash["texture"].get());
+	//m_players.mRender(shaderHash["texture"].get());
 	return;
 }
 
@@ -175,6 +180,9 @@ void SceneBattle::mOnPerform(){
 		m_pOrderList->mPlay();
 		m_InitUpdateProcess = true;
 	}
+
+	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+
 	if (m_pOrderList->mIsEnd()){
 		m_InitUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
@@ -192,10 +200,20 @@ void SceneBattle::mOnBattle(){
 		m_pOrderList->mPlay();
 		m_InitUpdateProcess = true;
 	}
+
+	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+	auto i = m_pOrderList->mGetDamage();
+	if (i > 0){
+		enemyHp -= i;
+	}
+	else if (i < 0){
+		charaHp += i;
+	}
+	std::cout << "enemy " << enemyHp << "chara " << charaHp << "\n";
+
 	if (m_pOrderList->mIsEnd()){
 		m_InitUpdateProcess = false;
-		m_processState = eGameState::ePreCountIn;
-		m_battleState = GameManager::eBattleState::eListen;
+		m_battleState = GameManager::eBattleState::eCheck;
 	}
 	return;
 }
@@ -204,6 +222,12 @@ void SceneBattle::mOnBattle(){
 void SceneBattle::mCheckBattle(){
 	if (m_battleState != GameManager::eBattleState::eCheck)return;
 	// TODO: èüïâîªíËèàóùÅïèÍçáÇ…ÇÊÇ¡ÇƒÇÕWaveÇêiÇﬂÇÈèàóù
+	m_pOrderList->mEndReset();
+
+
+	m_battleState = GameManager::eBattleState::eListen;
+	m_processState = eGameState::ePreCountIn;
+
 }
 
 void SceneBattle::mCountIn(){
@@ -217,15 +241,18 @@ void SceneBattle::mCountIn(){
 			cnt = 0;
 			m_processState = eGameState::eUpdate;
 			m_pMessage->mSetActive(false);
+			m_PreInitProcess = false;
+
 			return;
 		}
 	}
 	else {		//ïÅíiÇÕÇ±Ç¡Çø
 		if (int(m_rhythm->mWholeBeatTime() + 0.1f) != m_prevWholeBeatNo){
-			//		std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
+			std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
 			cnt = 0;
 			m_pMessage->mSetActive(false);
 			m_processState = eGameState::eUpdate;
+			m_PreInitProcess = false;
 			return;
 		}
 	}
@@ -235,6 +262,10 @@ void SceneBattle::mCountIn(){
 	}
 
 	if (cnt >= 2){
+		if (!m_PreInitProcess){
+			m_pOrderList->mLinePlay();
+			m_PreInitProcess = true;
+		}
 		m_pMessage->mChangeTexture(m_battleState);
 		m_pMessage->mSetActive(true);
 	}

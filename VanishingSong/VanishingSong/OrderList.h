@@ -14,17 +14,17 @@ public:
 	~OrderList();
 	//再生
 	void mPlay();
+	void mLinePlay();
 
 	//Listen
 	void mAddEnemyOrder(std::vector<std::shared_ptr<ActionCommand>>&);	//敵からリストを受け取る
 
 	//Perform
-	void mAddPlayerOrder(std::vector<std::shared_ptr<ActionCommand>>);
 	std::shared_ptr<ActionCommand> mGetActionCommand();
 
 	//Check
-
 	//Battle
+	int mGetDamage();
 
 	//End
 	void mEndReset();
@@ -41,6 +41,7 @@ private:
 	void mBattleUpdate();
 	void mListenUpdate();
 	void mPerformUpdate();
+	void mLineUpdate();
 
 	void mFinalize();
 	
@@ -68,14 +69,22 @@ private:
 	std::shared_ptr<ActionBoard>m_ActionBoard;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
 	aetherClass::Vector3 m_VolumeOrigin;
+
 	std::shared_ptr<aetherClass::SpriteBase>m_pBackImage;
 	aetherClass::Vector3 m_BackImageOrigin;
 	aetherClass::Vector3 m_BackImageScaleOrigin;
+
+	std::shared_ptr<aetherClass::SpriteBase>m_pReadLine;
+	aetherClass::Vector3 m_ReadLineOrigin;
+
 
 	//リズム
 	RhythmManager *m_rhythm;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 
+
+	bool m_isLineStart;		//ライン再生
+	int m_eighterCount;		//カウント
 
 	bool m_isAlPlay;		//既に再生後か？
 	bool m_isStart;			//判定中か
@@ -87,10 +96,7 @@ private:
 	int m_processId;		//処理中のID
 	int m_MaxOrderSize;
 	
-	int m_enemyDamageCounter;
-	int m_playerDamageCounter;
-
-
+	int m_damagedValue;
 
 	//
 	GameManager::eBattleState* m_faze;
