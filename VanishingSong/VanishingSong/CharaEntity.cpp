@@ -17,7 +17,7 @@ CharaEntity::~CharaEntity()
 
 /*
 */
-std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType, aetherClass::ViewCamera* view, std::string directry){
+std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gearType,  std::string directry){
 	std::shared_ptr<Gear> pGear;
 	bool success;
 
@@ -39,11 +39,20 @@ std::shared_ptr<Gear> CharaEntity::mSetUpGear(std::string path, Gear::eType gear
 		return pGear;
 	}
 
-	pGear->_pGear->SetCamera(view);
 	// テクスチャの読み込み
 	pGear->_pGear->SetTextureDirectoryName(directry);
-	
 	return pGear;
+}
+
+// カメラセット用
+void CharaEntity::SetCamera(std::shared_ptr<Gear> gear, aetherClass::ViewCamera* camera){
+	if (!gear)return;
+
+	gear->_pGear->SetCamera(camera);
+
+	for (auto child : gear->_pChildren){
+		SetCamera(child, camera);
+	}
 }
 
 /*
@@ -83,7 +92,7 @@ void CharaEntity::mGearRender(std::shared_ptr<Gear> gear, aetherClass::ShaderBas
 	ギアの移動用関数
 	仕組みはmGearRenderと一緒
 */
-void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move, std::string type){
+void CharaEntity::mGearMove(std::shared_ptr<Gear> gear,Vector3 move, std::string type){
 	// 初期化が正常に終わっていないのなら何もしない
 	if (!gear || !gear->_pGear)return;
 
@@ -93,8 +102,13 @@ void CharaEntity::mGearMove(std::shared_ptr<Gear> gear, const Vector3 move, std:
 
 	}
 	else if (type == "="){
-		gear->_pGear->property._transform._translation = move;
+		if (!gear->_pParent){
+			gear->_pGear->property._transform._translation = move;
+		}
+		else{
+			gear->_pGear->property._transform._translation = gear->_pParent->_pGear->property._transform._translation +gear->_parentDifference._translation;
 
+		}
 	}
 	else{
 		gear->_pGear->property._transform._translation += move;
@@ -128,11 +142,15 @@ Transform CharaEntity::mGetTransformInterpolation(Transform first, Transform las
 /*
 	公転	
 */
-void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, aetherClass::Vector3 rotation){
+void CharaEntity::mGearRotation(std::shared_ptr<Gear> top, std::shared_ptr<Gear> gear, aetherClass::Vector3 rotation, std::string type){
 	
 	if (!gear || !gear->_pGear)return;
-	gear->_pGear->property._transform._rotation += rotation;
-
+	if (type == "+="){
+		gear->_pGear->property._transform._rotation += rotation;
+	}
+	else if (type == "="){
+		gear->_pGear->property._transform._rotation = rotation;
+	}
 
 	if (gear->_pParent)
 	{
@@ -320,6 +338,15 @@ Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input,
 
 	return Gear::eType::eNull;
 }
+
+
+//
+void CharaEntity::mFaceToObject(std::shared_ptr<Gear>& top, aetherClass::Vector3 facePosition, std::string type){
+	float rad = atan2(facePosition._x - top->_pGear->property._transform._translation._x, facePosition._z - top->_pGear->property._transform._translation._z);
+	float rotationY = rad / kAetherPI * 180;
+	mGearRotation(top, top, Vector3(0, rotationY, 0),type);
+}
+
 
 /*
 キーフレームアニメーションを読み込むよう

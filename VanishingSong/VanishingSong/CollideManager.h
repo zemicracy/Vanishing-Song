@@ -1,28 +1,27 @@
 #ifndef _COLLIDEMANAGER_H
 #define _COLLIDEMANAGER_H
-#include "Player.h"
-#include "EnemyManager.h"
+#include "FieldPlayer.h"
+#include "FieldEnemyManager.h"
 #include "FieldArea.h"
 class CollideManager
 {
 public:
-	CollideManager();
+	CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field, std::shared_ptr<FieldEnemyManager> enemy);
 	~CollideManager();
-	void mInitialize(std::shared_ptr<Player> player, std::shared_ptr<EnemyManager> enemy, std::shared_ptr<FieldArea> field);
 	void mUpdate();
+	std::pair<int,bool> GetMassageInfo();
 
 private:
 	int mCheckPlayerFieldArea();
-	void mCheckFieldAreaBullet();
 	void mCheckHitObject(const int number);
-	void mCheckHitPlayerAttack(const int);
-	void mCheckHitEnemyAttack(const int);
+	void mCheckHitEnemy(const int number);
+
 private:
-	std::shared_ptr<Player> m_player;
-	std::shared_ptr<EnemyManager> m_enemyManager;
+	std::shared_ptr<FieldPlayer> m_player;
 	std::shared_ptr<FieldArea> m_filed;
+	std::shared_ptr<FieldEnemyManager> m_enemy;
+	std::pair<int, bool> m_messageInfo;
 	
-	int m_playerNumber;
 };
 
 #endif

@@ -19,7 +19,7 @@ ResourceManager::~ResourceManager()
 	BGMを変えたい場合はここをいじってね
 */
 std::string ResourceManager::m_BgmPath[kMaxBGM] = {
-	"Sound/BGM.wav",
+	"Sound/ドラムパート.wav",
 	"null",
 	"null",
 	"null",
@@ -45,7 +45,8 @@ bool ResourceManager::Initialize(){
 	リソース系の解放処理
 */
 void ResourceManager::Finalize(){
-
+	FinalizePlayer();
+	FinalizeEnemy();
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
@@ -54,7 +55,7 @@ void ResourceManager::Finalize(){
 }
 
 
-std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eCommandType type){
+std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eMusical type){
 	return m_pActionSoundHash[type];
 }
 
@@ -93,7 +94,7 @@ bool ResourceManager::InitializeBGM(){
 		{
 			Debug::mErrorPrint("BGMの読み込みに失敗しました", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
 		}else
-		index->SetValume(-2000);
+		index->SetValume(0);
 	}
 
 	return true;
@@ -104,13 +105,12 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-	RegisterActionSound(eCommandType::eShortDistanceAttack, "Sound/do.wav");
-	RegisterActionSound(eCommandType::eLongDistanceAttack, "Sound/damage03.wav");
-	RegisterActionSound(eCommandType::eLeftStep, "Sound/mi.wav");
-	RegisterActionSound(eCommandType::eRightStep, "Sound/damage03.wav");
-	RegisterActionSound(eCommandType::eShield, "Sound/re.wav");
-	RegisterActionSound(eCommandType::eStrongShield, "Sound/damage03.wav");
-	RegisterActionSound(eCommandType::eSkill, "Sound/damage03.wav");
+	RegisterActionSound(eMusical::eBlue, "Sound/Bm7_1.wav");
+	RegisterActionSound(eMusical::eGreen, "Sound/Bm7_2.wav");
+	RegisterActionSound(eMusical::eRed, "Sound/Bm7_3.wav");
+	RegisterActionSound(eMusical::eYellow, "Sound/Bm7_4.wav");
+	RegisterActionSound(eMusical::eMiss, "Sound/miss.wav");
+
 	return true;
 }
 
@@ -130,6 +130,14 @@ bool ResourceManager::InitializeTexture(){
 	RegisterTexture("7", "Texture\\Number\\7.png");
 	RegisterTexture("8", "Texture\\Number\\8.png");
 	RegisterTexture("9", "Texture\\Number\\9.png");
+	
+	std::string comPath = "Texture\\ActionCommand\\";
+	RegisterTexture("ActionBlue", comPath + "Blue.png");
+	RegisterTexture("ActionGreen", comPath + "Green.png");
+	RegisterTexture("ActionRed", comPath + "Red.png");
+	RegisterTexture("ActionYellow", comPath + "Yellow.png");
+	RegisterTexture("ActionMiss",comPath + "miss.png");
+	RegisterTexture("ActionNull",comPath + "null.png");
 	return true;
 }
 
@@ -214,7 +222,7 @@ void ResourceManager::FinalizeSahder(){
 /*
 	アクションコマンドに対応したサウンドの登録	
 */
-bool ResourceManager::RegisterActionSound(eCommandType type, std::string path){
+bool ResourceManager::RegisterActionSound(eMusical type, std::string path){
 	auto findMap = m_pActionSoundHash.find(type);
 
 	// すでにその名前で登録しているのであれば何もしない
@@ -280,4 +288,104 @@ std::shared_ptr<Type> ResourceManager::RegisterShader(std::string registerName, 
 
 std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& ResourceManager::mGetShaderHash(){
 	return m_pShaderHash;
+}
+
+// プレイヤー系初期化用
+void ResourceManager::mPlayerInitialize(eMusical type, std::string directy, std::string tex){
+	std::shared_ptr<Gear> gear;
+	if (m_pPlayerHashes.find(type) != m_pPlayerHashes.end() || type == eMusical::eNull)return;
+	m_pPlayerHashes[type] = std::make_shared<GearFrame>();
+
+	// 体のパーツ
+	m_pPlayerHashes[type]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
+
+	// 腰のパーツ
+	m_pPlayerHashes[type]->m_pWaist = m_charaEntity.mSetUpGear(directy + "\\waist.fbx", Gear::eType::eWaist, directy + tex);
+
+	// 腕のパーツ
+	m_pPlayerHashes[type]->m_pLeftUpperArm = m_charaEntity.mSetUpGear(directy + "\\arm1.fbx", Gear::eType::eLeftUpperArm, directy + tex);
+	m_pPlayerHashes[type]->m_pRightUpperArm = m_charaEntity.mSetUpGear(directy + "\\arm1.fbx", Gear::eType::eRightUpperArm, directy + tex);
+	m_pPlayerHashes[type]->m_pLeftLowerArm = m_charaEntity.mSetUpGear(directy + "\\arm2.fbx", Gear::eType::eLeftLowerArm, directy + tex);
+	m_pPlayerHashes[type]->m_pRightLowerArm = m_charaEntity.mSetUpGear(directy + "\\arm2.fbx", Gear::eType::eRightLowerArm, directy + tex);
+
+	// 手のパーツ
+	m_pPlayerHashes[type]->m_pLeftHand = m_charaEntity.mSetUpGear(directy + "\\hand.fbx", Gear::eType::eLeftHand, directy + tex);
+	m_pPlayerHashes[type]->m_pRightHand = m_charaEntity.mSetUpGear(directy + "\\hand.fbx", Gear::eType::eRightHand, directy + tex);
+
+	// 足のパーツ
+	m_pPlayerHashes[type]->m_pLeftUpperLeg = m_charaEntity.mSetUpGear(directy + "\\leg1.fbx", Gear::eType::eLeftUpperLeg, directy + tex);
+	m_pPlayerHashes[type]->m_pRightUpperLeg = m_charaEntity.mSetUpGear(directy + "\\leg1.fbx", Gear::eType::eRightUpperLeg, directy + tex);
+	m_pPlayerHashes[type]->m_pLeftLowerLeg = m_charaEntity.mSetUpGear(directy + "\\leg2.fbx", Gear::eType::eLeftLowerLeg, directy + tex);
+	m_pPlayerHashes[type]->m_pRightLowerLeg = m_charaEntity.mSetUpGear(directy + "\\leg2.fbx", Gear::eType::eRightLowerLeg, directy + tex);
+
+	m_pPlayerHashes[type]->m_pLeftFoot = m_charaEntity.mSetUpGear(directy + "\\foot.fbx", Gear::eType::eLeftFoot, directy + tex);
+	m_pPlayerHashes[type]->m_pRightFoot = m_charaEntity.mSetUpGear(directy + "\\foot.fbx", Gear::eType::eRightFoot, directy + tex);
+
+	// それぞれのパーツとの親子関係構築
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pBody, m_pPlayerHashes[type]->m_pWaist);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pBody, m_pPlayerHashes[type]->m_pRightUpperArm);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pBody, m_pPlayerHashes[type]->m_pLeftUpperArm);
+
+	// 右
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pRightUpperArm, m_pPlayerHashes[type]->m_pRightLowerArm);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pRightLowerArm, m_pPlayerHashes[type]->m_pRightHand);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pWaist, m_pPlayerHashes[type]->m_pRightUpperLeg);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pRightUpperLeg, m_pPlayerHashes[type]->m_pRightLowerLeg);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pRightLowerLeg, m_pPlayerHashes[type]->m_pRightFoot);
+
+	// 左
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pLeftUpperArm, m_pPlayerHashes[type]->m_pLeftLowerArm);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pLeftLowerArm, m_pPlayerHashes[type]->m_pLeftHand);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pWaist, m_pPlayerHashes[type]->m_pLeftUpperLeg);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pLeftUpperLeg, m_pPlayerHashes[type]->m_pLeftLowerLeg);
+	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pLeftLowerLeg, m_pPlayerHashes[type]->m_pLeftFoot);
+
+	return;
+}
+
+// プレイヤー取得用
+std::shared_ptr<GearFrame> ResourceManager::mGetPlayerHash(eMusical type){
+	return m_pPlayerHashes[type];
+}
+
+// 解放処理
+void ResourceManager::FinalizePlayer(){
+	for (auto& index : m_pPlayerHashes){
+		index.second->Release();
+	}
+}
+
+// 雑魚敵用
+void ResourceManager::mEnemyInitialize(eMusical type, std::string directy){
+	std::shared_ptr<Gear> gear;
+	if (m_pEnemyHashes.find(type) != m_pEnemyHashes.end() || type == eMusical::eNull)return;
+	
+	m_pEnemyHashes[type] = std::make_shared<GearFrame>();
+
+		// 体のパーツ
+	m_pEnemyHashes[type]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + "\\tex");
+
+		// 腰のパーツ
+	m_pEnemyHashes[type]->m_pWaist = m_charaEntity.mSetUpGear(directy + "\\waist.fbx", Gear::eType::eWaist, directy + "\\tex");
+
+
+		// それぞれのパーツとの親子関係構築
+	m_charaEntity.mCreateRelationship(m_pEnemyHashes[type]->m_pBody, m_pEnemyHashes[type]->m_pWaist);
+}
+
+//
+std::shared_ptr<GearFrame> ResourceManager::mGetEnemyHash(eMusical type){
+	return m_pEnemyHashes[type];
+}
+
+// 解放処理
+void ResourceManager::FinalizeEnemy(){
+	for (auto& index : m_pEnemyHashes){
+		if (!index.second)continue;
+		index.second->Release();
+	}
+}
+
+std::shared_ptr<aetherClass::GameSound> ResourceManager::mGetBGM(int index){
+	return m_pBaseBgmArray.at(index);
 }

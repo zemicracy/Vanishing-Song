@@ -6,12 +6,9 @@
 #include <Singleton.h>
 #include <ModelUtility.h>
 #include "Debug.h"
-#include "SceneSkill.h"
 #include "Const.h"
 #include "ResourceManager.h"
-#include "SceneBattle.h"
-#include "SceneTutorial.h"
-#include "SceneSkill.h"
+#include "SceneGame.h"
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
@@ -94,7 +91,7 @@ bool SceneTitle::Initialize(){
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
 	//次のシーン
-	RegisterScene(new SceneSkill());
+	RegisterScene(new SceneGame());
 
 	m_pushState = false;
 	m_alphaState = false;
@@ -189,7 +186,8 @@ bool SceneTitle::TransitionOut(){
 void SceneTitle::mChangeSelect(Vector2 mouse){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
 	for (int i = 0; i < m_cursorArray.size();++i){
-		if (i == kSkipNumber)continue;
+		if (i == kSkipNumber || i == kSkipNumber - 1 || i == kSkipNumber - 2)continue;
+		
 		if (m_cursorArray[i]._cursorY<mouse._y&&m_cursorArray[i]._cursorY + cursorSize>mouse._y){
 			m_pCursor->property._transform._translation._y = m_cursorArray[i]._cursorY;
 			m_nowSelectMode = m_cursorArray[i]._modeNumber;
@@ -250,9 +248,6 @@ bool SceneTitle::mMenuSelectState(){
 			SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 			// Exit以外が来たらシーンの遷移を開始
 			if (nextState._nextSceneName != kExit){
-
-				// ゲームモードの設定
-				Singleton<GameManager>::GetInstance().mGameMode(nextState._mode);
 				// シーンの遷移
 				ChangeScene(nextState._nextSceneName, LoadState::eUse);
 			}else{
@@ -266,33 +261,15 @@ bool SceneTitle::mMenuSelectState(){
 
 SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	SceneInfo info;
-	info._mode = GameManager::eGameMode::eNull;
-	info._nextSceneName = kExit;
 	switch (index){
 	case eNextMode::eSurvival:
-		info._mode = GameManager::eGameMode::eSurvaival;
-		info._nextSceneName = SceneSkill::Name;
-		break;
-
-	case eNextMode::ePractice:
-		info._mode = GameManager::eGameMode::ePractice;
-		info._nextSceneName = SceneSkill::Name;
-		break;
-
-	case eNextMode::eTutorial:
-		info._mode = GameManager::eGameMode::eTutorial;
-		info._nextSceneName = SceneTutorial::Name;
-		break;
-
-
-	case eNextMode::eBattle:
-		info._mode = GameManager::eGameMode::eBattle;
-		info._nextSceneName = SceneBattle::Name;
+		info._nextSceneName = SceneGame::Name;
 		break;
 
 		// ここはならすべて終了
 	case eNextMode::eNull:
 	case eNextMode::eExit:
+		info._nextSceneName = kExit;
 		break;
 	}
 	return info;

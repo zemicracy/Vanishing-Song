@@ -5,6 +5,7 @@
 using namespace aetherClass;
 GameManager::GameManager()
 {
+	m_prevPlayerTransform._translation._y = 22.2f;
 }
 
 
@@ -12,58 +13,23 @@ GameManager::~GameManager()
 {
 }
 
-void GameManager::mInitialize(){
-	m_day = kFirstDay;
-	m_isPause = false;
-	m_gameState = eGameState::eNull;
-	m_gameMode = eGameMode::eNull;
-	m_skillType = eSkillType::eNull;
-	return;
-}
-
-//
-void GameManager::mGameState(GameManager::eGameState state){
-	m_gameState = state;
-}
-
-//
-GameManager::eGameState GameManager::mGameState(){
-	return m_gameState;
-}
-
-signed char GameManager::mGetToDay(){
-	return m_day;
-}
-
-
 bool GameManager::mIsPause(){
 	return m_isPause;
 }
 
-
-void GameManager::mNextDay(){
-	/*	“ú‚ªãŒÀ‚È‚ç‰½‚à‚µ‚È‚¢		*/
-	if (m_day > kLastDay)return;
-	m_day += 1;
-
-	return;
+void GameManager::mPushUsePlayer(eMusical type){
+	if (m_players.find(type) != m_players.end() || type == eMusical::eNull)return;
+	m_players.insert(std::make_pair(type, type));
 }
 
-//
-GameManager::eSkillType GameManager::mSkillType()const{
-	return m_skillType;
-}
-//
-void GameManager::mSkillType(const GameManager::eSkillType type){
-	m_skillType = type;
+
+std::unordered_map<eMusical, eMusical>& GameManager::mGetUsePlayer(){
+	return m_players;
 }
 
-//
-GameManager::eGameMode GameManager::mGameMode()const{
-	return m_gameMode;
+aetherClass::Transform GameManager::mGetPlayerTransform(){
+	return m_prevPlayerTransform;
 }
-
-//
-void GameManager::mGameMode(const GameManager::eGameMode mode){
-	m_gameMode = mode;
+void GameManager::mSetPlayerTransform(aetherClass::Transform trans){
+	m_prevPlayerTransform = trans;
 }

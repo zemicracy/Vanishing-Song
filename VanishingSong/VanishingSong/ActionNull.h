@@ -4,7 +4,7 @@ class ActionNull :public ActionCommand
 {
 public:
 	ActionNull() :
-		ActionCommand(eCommandType::eNull){}
+		ActionCommand(eMusical::eNull){}
 	~ActionNull() = default;
 	void mOnCreate()override{
 	}

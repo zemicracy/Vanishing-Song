@@ -2,22 +2,31 @@
 
 #ifndef _SCENEBATTLE_H
 #define _SCENEBATTLE_H
-#include<GameScene.h>
-#include<ModelBase.h>
-#include<ShaderBase.h>
-#include<memory>
-#include<ViewCamera.h>
-#include<Texture.h>
+#include <GameScene.h>
+#include <ModelBase.h>
+#include <ShaderBase.h>
+#include <memory>
+#include <ViewCamera.h>
+#include <Texture.h>
+#include"Skybox.h"
 
+#include "GameManager.h"
+#include"OrderList.h"
+#include"ActionBoard.h"
+#include"BattleField.h"
+#include "BattlePlayerManager.h"
+#include"BattleMessage.h"
 class SceneBattle :
 	public aetherClass::GameScene
 {
-private:
-	std::unique_ptr<aetherClass::ModelBase> m_pModelBase;
-	std::unique_ptr<aetherClass::ShaderBase> m_pShaderBase;
-	std::unique_ptr<aetherClass::ViewCamera> m_pTitleView;
-	std::unique_ptr<aetherClass::Texture>m_pTexture;
+
 public:
+	static const std::string Name;
+public:
+	enum class eGameState{
+		ePreCountIn,eCountIn,eUpdate,eFin
+	};
+
 	SceneBattle();
 	~SceneBattle();
 
@@ -38,8 +47,37 @@ public:
 	bool TransitionIn()override;
 	bool TransitionOut()override;
 
-public:
-	static const std::string Name;
+private:
+	void mCountIn();
+
+	void mOnListen();    // ìGÇÃââët
+	void mOnPerform();   // ÉvÉåÉCÉÑÅ[ÇÃââët
+	void mOnBattle();    // êÌì¨äJén
+	void mCheckBattle();
+private:
+	GameManager::eBattleState m_battleState;
+
+	BattlePlayerManager m_players;
+	CharaEntity m_charaEntity;
+	std::shared_ptr<ActionBoard>m_pActionBoard;
+	std::unique_ptr<OrderList> m_pOrderList;
+	std::unique_ptr<BattleField>m_pField;
+	std::unique_ptr<BattleMessage>m_pMessage;
+	aetherClass::ViewCamera m_view;
+
+	int m_prevWholeBeatNo;
+	bool m_InitUpdateProcess;
+	bool m_PreInitProcess;
+
+	//karikari
+	int charaHp;
+	int enemyHp;
+
+
+	eGameState m_processState;
+
+	//ptr
+	RhythmManager *m_rhythm;
 };
 
 

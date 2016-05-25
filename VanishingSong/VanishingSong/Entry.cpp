@@ -8,6 +8,7 @@
 #include <ConsoleWindow.h>
 #include <GameSceneManager.h>
 #include "Const.h"
+#include "SceneGame.h"
 #include "SceneTitle.h"
 #include "VanishingSongFrame.h"
 #include "Load.h"
@@ -21,6 +22,9 @@ namespace{
 
 // エントリーポイントを作成
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
+	
+	//コンソールウィンドウの作成
+	ConsoleWindow::Create();
 
 	//スマートポインタ宣言
 	std::unique_ptr<GameFrame>frame;
@@ -48,12 +52,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 		return kError;
 	}
 
-	GameSceneManager::SetCurrentScene(new SceneTitle());
+	//一番最初のシーンとロード画面の設定
+	GameSceneManager::SetCurrentScene(new SceneGame());
 	GameSceneManager::SetLoadScreen(new Load());
-	
-	// 背景色の設定
 	frame->BackgroundColor(Color(0, 0, 0, 0));
-	
 	//メインループの開始
 	frame->GameRun();
 
@@ -62,6 +64,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 
 	//フレームオブジェクトの解放
 	frame->Finalize();
-
+	frame.release();
+	//コンソールウィンドウの破棄
+	ConsoleWindow::Close();
 	return kEnd;
 }

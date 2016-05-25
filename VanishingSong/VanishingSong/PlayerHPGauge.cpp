@@ -101,17 +101,17 @@ void PlayerHPGauge::mUpdate(float timeScale){
 	//‰½‚à–³‚¯‚ê‚ÎŠÔ‚ğí‚é
 	else if (m_damageValue._intervalTime > 0){
 		m_damageValue._intervalTime -= GameClock::GetDeltaTime();
-		m_damageValue._interpolation = m_damageValue._morePrevHp / (float)m_CharaStatus->_maxhp * m_maxInterPolate;
+		m_damageValue._interpolation = m_damageValue._morePrevHp / (float)m_CharaStatus->_maxHp * m_maxInterPolate;
 		m_damageValue._isPlay = false;
 	}
 	//Àsˆ—
 	if (m_damageValue._intervalTime <= 0 && m_damageValue._morePrevHp != m_damageValue._prevHp){
 		m_damageValue._isPlay = true;
 		m_damageValue._morePrevHp -= (m_damageValue._morePrevHp - m_CharaStatus->_hp) / 10;
-		m_damageValue._interpolation = m_damageValue._morePrevHp / (float)m_CharaStatus->_maxhp * m_maxInterPolate;
+		m_damageValue._interpolation = m_damageValue._morePrevHp / (float)m_CharaStatus->_maxHp * m_maxInterPolate;
 	}
 
-	m_fillType._interpolation = m_CharaStatus->_hp / (float)m_CharaStatus->_maxhp * m_maxInterPolate;
+	m_fillType._interpolation = m_CharaStatus->_hp / (float)m_CharaStatus->_maxHp * m_maxInterPolate;
 	
 	m_damageValue._prevHp = m_CharaStatus->_hp;
 }

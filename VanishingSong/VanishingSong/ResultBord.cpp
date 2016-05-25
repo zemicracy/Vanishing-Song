@@ -21,7 +21,7 @@ ResultBord::~ResultBord()
 	
 }
 
-void ResultBord::mInitialize(GameManager::eGameMode mode){
+void ResultBord::mInitialize(){
 
 	// 倒した数の数字表示オブジェクト用
 	int count = 0;
@@ -77,8 +77,6 @@ void ResultBord::mInitialize(GameManager::eGameMode mode){
 	RegisterTexture(eClickState::eNextDay, "Texture\\Result\\Next.png");
 	RegisterTexture(eClickState::eExit, "Texture\\Result\\Exit.png");
 
-	m_mode = mode;
-	m_day = GameManager::eDay::eNull;
 	mReset();
 	
 	return;
@@ -123,9 +121,7 @@ void ResultBord::mFinalize(){
 	}
 	
 	m_pClickTexture.clear();
-	
-	m_mode = GameManager::eGameMode::eNull;
-	m_day = GameManager::eDay::eNull;
+
 	mReset();
 	return;
 }
@@ -149,7 +145,7 @@ ResultBord::eClickState ResultBord::mUpdate(Vector2 mouse, bool isClick){
 		if (isClick){
 			
 			mReset();
-			return m_clickState;
+			return eClickState();
 		}
 	}
 
@@ -159,19 +155,17 @@ ResultBord::eClickState ResultBord::mUpdate(Vector2 mouse, bool isClick){
 }
 
 // mUpdateを呼ぶ前にデータのセットを行う
-void ResultBord::mSetupData(ResultData data,GameManager::eDay day){
+void ResultBord::mSetupData(ResultData data){
 	if (m_isSetup)return;
 	//　データの取得
 	m_data = data;
-	m_day = day;
+
 
 	// それぞれの数に合わせたテクスチャの適用
 	mAttachTexture(m_pKill,data._killEnemy);
 	mAttachTexture(m_pCombo, data._maxCombo);
 
-	// クリックするオブジェクトのテクスチャを状況によって変える
-	m_clickState = mGetClickState(m_mode, m_day);
-	m_pClickObject->SetTexture(m_pClickTexture[m_clickState].get());
+	//m_pClickObject->SetTexture(m_pClickTexture[m_clickState].get());
 
 	m_isSetup = true;
 	return;
@@ -233,18 +227,6 @@ void ResultBord::mReset(){
 	m_data.mReset();
 }
 
-
-ResultBord::eClickState ResultBord::mGetClickState(GameManager::eGameMode mode, GameManager::eDay day){
-	if (mode == GameManager::eGameMode::ePractice){
-		return eClickState::eExit;
-	}
-
-	if (day == GameManager::eDay::eLastDay || day == GameManager::eDay::eNull){
-		return eClickState::eExit;
-	}
-
-	return eClickState::eNextDay;
-}
 
 void ResultBord::RegisterTexture(ResultBord::eClickState key, std::string texturePath){
 	

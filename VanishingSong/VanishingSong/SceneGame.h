@@ -1,10 +1,14 @@
 #pragma once
 #include<GameScene.h>
-#include "ShaderBase.h"
-#include "ResultBord.h"
-#include "FadeManager.h"
-#include "Mode.h"
 #include <DirectXEntity.h>
+#include <memory>
+#include "ShaderBase.h"
+#include "FadeManager.h"
+#include "FieldPlayer.h"
+#include "CollideManager.h"
+#include "MessageManager.h"
+#include "AttackParticle.h"
+#include "Cage.h"
 class SceneGame :
 	public aetherClass::GameScene
 {
@@ -13,11 +17,9 @@ private:
 	enum class eState{
 		eRun,
 		ePause,
+		eBattle,
 		eExit,
-		eResult,
-		eGameOver,
 		eFadeIn,
-		eShowDay,
 		eFadeOut,
 		eNull
 	};
@@ -48,31 +50,21 @@ public:
 	static const std::string Name;
 
 private:
-	
-	std::shared_ptr<Mode> mReturnMode(GameManager::eGameMode);
-
-	void mShowResult(GameManager::eDay, aetherClass::ShaderBase* defaultShader, aetherClass::ShaderBase* bularShader);
-
 	bool mFadeState(eState);
-	void mResetProperty(); // 変数の初期化等々
-
-	void mRegisterDayHash(GameManager::eDay key, GameManager::eDay value);
-	void mRegisterDay();
+	bool mMessageUpdate();
 private:
-
-	std::unique_ptr<ResultBord> m_pResultBord;
-	std::unique_ptr<FadeManager> m_pFadeObject;
-
-	std::shared_ptr<Mode> m_pMode;
-	aetherClass::DirectXEntity m_directX;
-
-	GameManager::eDay m_day;
-	std::unordered_map<GameManager::eDay, GameManager::eDay> m_dayHash;
-	ResultData m_resultData; // リザルト表示時に使用
+	aetherClass::DirectXEntity m_directX;	
 	eState m_gameState;
-	// 経過時間保持用
-	float m_dayTime;
+	
+	std::unique_ptr<CollideManager> m_pCollideManager;
+	std::unique_ptr<FadeManager> m_pFadeObject;
+	std::shared_ptr<FieldPlayer> m_pFieldPlayer;
+	std::shared_ptr<FieldArea> m_pFieldArea;
+	std::shared_ptr<FieldEnemyManager> m_pFieldEnemy;
+	std::shared_ptr<MessageManager> m_pMessageManager;
 
+	std::shared_ptr<AttackParticle> m_pPaticle;
 
+	std::array<std::shared_ptr<Cage>, 3> m_pCage;
 };
 

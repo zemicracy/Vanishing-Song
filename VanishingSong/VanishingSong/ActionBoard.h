@@ -10,26 +10,40 @@ public:
 	ActionBoard();
 	~ActionBoard();
 
-	void mInitialize(GameManager::eSkillType);
-	void mRender(aetherClass::ShaderBase*);
-	void mUpdate(float);
+	bool mInitialize();
+
+	/*void mRender(aetherClass::ShaderBase*);
+	void mUpdate(float);*/
+
 	std::shared_ptr<ActionCommand> mSelectType();
-	
+
 	//AccessorMethod
+	std::shared_ptr<ActionCommand> mGetCommand(eMusical type);
+	std::shared_ptr<aetherClass::Texture> mGetCommandTexture(eMusical type);
+
+	public:
+
+	struct ActionCommandType{
+		std::shared_ptr<ActionCommand> _command;
+		std::shared_ptr<aetherClass::Texture> _texture;
+		ActionCommandType(){
+			_command = nullptr;
+			_texture = nullptr;
+		}
+		~ActionCommandType(){
+			_command.reset();
+			_command = nullptr;
+			_texture.reset();
+			_texture = nullptr;
+		}
+	};
+
 private:
-	void mChangeGround(int );
-	void mChangeAnimation(float,int);
 
 	void mFinalize();
-	bool mIntersect(std::shared_ptr<ActionCommand>);
-	std::array<std::shared_ptr<ActionCommand>, 7>m_actionCommand;
 private:
-	float m_frameCnt[3];
-	bool m_movingAnimation[3];
-	bool m_changedSuccess[3];
 
-	const float m_kForeground = 0;
-	const float m_kBackground = 0.5;
+	std::unordered_map<eMusical, ActionCommandType>m_actionList;
 
 };
 

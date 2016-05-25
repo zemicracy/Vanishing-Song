@@ -6,9 +6,9 @@
 #include "GameManager.h"
 #include <Singleton.h>
 #include "SceneTitle.h"
+#include "SceneBattle.h"
 #include "ResourceManager.h"
-#include "ModeSurvival.h"
-#include "ModePractice.h"
+#include "Debug.h"
 using namespace aetherClass;
 
 const std::string SceneGame::Name = "Game";
@@ -16,29 +16,21 @@ const std::string SceneGame::Name = "Game";
 namespace{
 	const float kScaleTime = 1.0f; 
 	const bool kError = false;
-	const float kDayTime = 180.0f; // 一日の時間
 }
 
 SceneGame::SceneGame():
 GameScene(Name, GetManager()) //Sceneごとの名前を設定
 {
-
-	m_day = GameManager::eDay::eNull;
 	m_gameState = eState::eNull;
-	m_dayTime = NULL;
-
 }
 
 
 SceneGame::~SceneGame()
 {
-
-	m_day = GameManager::eDay::eNull;
 	m_gameState = eState::eNull;
-	m_dayTime = NULL;
-
 }
 
+std::unique_ptr<FbxModel> fbx;
 bool SceneGame::Initialize(){
 	bool result = true;
 
@@ -46,56 +38,90 @@ bool SceneGame::Initialize(){
 
 	// シーンの登録
 	RegisterScene(new SceneTitle());
+	RegisterScene(new SceneBattle());
 
 	// フェードイン・アウトを行う
 	m_pFadeObject = std::make_unique<FadeManager>();
 
-	// ゲームモードの取得
-	// このシーンに来ている時点で、サバイバルか、プラクティスが選択されている
-	auto mode = Singleton<GameManager>::GetInstance().mGameMode(); 
-	mode = GameManager::eGameMode::eSurvaival;
+	m_pFieldPlayer = std::make_shared<FieldPlayer>();
+	m_pFieldPlayer->mInitialize(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,22.2,0));
 
+	auto view = m_pFieldPlayer->mGetView();
+	m_pFieldArea = std::make_shared<FieldArea>();
+	m_pFieldArea->mInitialize();
+	m_pFieldArea->mSetCamera(view);
 	
-	m_pResultBord = std::make_unique<ResultBord>();
-	m_pResultBord->mInitialize(mode);
-	
-	// 現在のモードの取得
-	m_pMode = mReturnMode(mode);
 
-	// スキルの取得
-	auto skill = Singleton<GameManager>::GetInstance().mSkillType();
-	skill = GameManager::eSkillType::eExHeel;
+	m_pFieldEnemy = std::make_shared<FieldEnemyManager>();
+	m_pFieldEnemy->mInitilize(view);
 
-	result = m_pMode->mInitialize(skill,m_day);
-	if (!result){
-		Debug::mErrorPrint("モードの初期化失敗", __FILE__, Debug::eState::eWindow);
-		return false;
+	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea,m_pFieldEnemy);
+
+	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy);
+
+	int count= 0;
+	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
+	for (auto& index : m_pCage){
+		const auto hoge = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
+		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, 22.2f, hoge._z), view);
+		count += 1;
 	}
+
+	AttackParticle::ParticleDesc particle;
+	particle._size = 100;
+	particle._endPoint = Vector3(0, 10, 0);
+	particle._rangeMin = Vector3(-10, 0, 0);
+	particle._rangeMax = Vector3(10, 0, 0);
+	particle._scale = Vector3(2,2, 0);
+	particle._texturePath = "Texture\\Battle\\note.png";
+	m_pPaticle = std::make_shared<AttackParticle>(particle,view);
+	fbx = std::make_unique<FbxModel>();
+	bool fbxResult =fbx->LoadFBX("Model\\StageBase.fbx", eAxisSystem::eAxisOpenGL);
+	fbx->SetCamera(view);
+	fbx->property._transform._translation = Vector3(0, 1, 0);
+
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
-
+	m_pFieldPlayer->mSetTransform(Singleton<GameManager>::GetInstance().mGetPlayerTransform());
 	return true;
 }
 
 // 解放処理
 // 全ての解放
 void SceneGame::Finalize(){
-	
-	if (m_pMode){
-		m_pMode->mFinalize();
-		m_pMode.reset();
-		m_pMode = nullptr;
+	if (fbx){
+		fbx->Finalize();
+		fbx.release();
 	}
-	
-	if (m_pResultBord){
-		m_pResultBord->mFinalize();
-		m_pResultBord.release();
-		m_pResultBord = nullptr;
+	if (m_pMessageManager){
+		m_pMessageManager.reset();
+		m_pMessageManager = nullptr;
+	}
+	if (m_pCollideManager){
+		m_pCollideManager.release();
+		m_pCollideManager = nullptr;
 	}
 
-	m_day = GameManager::eDay::eNull;
+	if (m_pFieldArea){
+		m_pFieldArea.reset();
+		m_pFieldArea = nullptr;
+	}
+
+	if (m_pFieldPlayer){
+		m_pFieldPlayer.reset();
+		m_pFieldPlayer = nullptr;
+	}
+
+	if (m_pFadeObject){
+		m_pFadeObject.release();
+		m_pFadeObject = nullptr;
+	}
+	if (m_pFieldEnemy){
+		m_pFieldEnemy->mFinalize();
+		m_pFieldEnemy = nullptr;
+	}
+	
 	m_gameState = eState::eNull;
-	m_dayTime = NULL;
 	return;
 }
 
@@ -108,73 +134,61 @@ bool SceneGame::Updater(){
 		}
 	}
 
+	// タイトルに戻る
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
 		m_gameState = eState::eExit;
-	}
-
-	// デバッグ用
-	if (GameController::GetKey().KeyDownTrigger('T')){
-		m_gameState = eState::eResult;
-	}
-
-	if (m_gameState == eState::eExit){
-		// 終了ならタイトルに戻る
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return true;
 	}
 
-	if (m_gameState == eState::eResult)return true;
+	m_pCollideManager->mUpdate();
 
-	// 時刻の取得
-	m_dayTime += (float)GameClock::GetDeltaTime();
-	
-	// 最後の日以外は制限時間になったらリザルト画面に行く
-	if (m_dayTime > kDayTime && m_day != GameManager::eDay::eLastDay){
-		m_gameState = eState::eResult;
+	// メッセージの更新処理
+	bool changeBattle = mMessageUpdate();
+	if (changeBattle){
+		// 戦闘に行く処理
+		// 戦闘に行く前に設定する奴もここでする
+		m_gameState = eState::eBattle;
+		ChangeScene(SceneBattle::Name, LoadState::eUse);
+		return true;
 	}
-
-	bool result = false;
-
-	// それぞれのモードの更新処理
-	m_pMode->mMainUpdate(kScaleTime, m_dayTime);
 	
-	// 状態の更新
-	auto state = m_pMode->mGetState();
+	m_pFieldEnemy->mUpdater();
 
-	// 特にないなら何もしない
-	if (state == Mode::eState::eNull)return true;
+	m_pFieldArea->mUpdate(kScaleTime);
+	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView());
 
-	switch (state)
-	{
-	case Mode::eState::eClear:
-		m_gameState = eState::eResult;
-		break;
-	case Mode::eState::eGameOver:
-	//	m_gameState = eState::eGameOver;
-		break;
-	case Mode::eState::eNextDay:
-		m_gameState = eState::eResult;
-		break;
-
-	default:
-		break;
+	// 捕虜を向かせる
+	for (auto& index : m_pCage){
+		index->mUpdate(kScaleTime,m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
 	}
 	return true;
 }
 
 void SceneGame::Render(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-	m_pMode->mMainRender(shaderHash);
+
+	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+
+	fbx->Render(shaderHash["color"].get());
+
+	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+
+	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+
+	// 捕虜の表示
+	for (auto& index : m_pCage){
+		index->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	}
+
+	m_pPaticle->mRender(shaderHash["texture"].get());
+
 	return;
 }
 
 void SceneGame::UIRender(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-
-	m_pMode->mMainUIRender(shaderHash);
-
-	mShowResult(m_day, shaderHash["texture"].get(), shaderHash["color"].get());
-
+	m_pMessageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		m_pFadeObject->mRedner(shaderHash["color"].get());
 	}
@@ -192,57 +206,6 @@ bool SceneGame::TransitionOut(){
 }
 
 
-std::shared_ptr<Mode> SceneGame::mReturnMode(GameManager::eGameMode mode){
-	switch (mode)
-	{
-	case GameManager::eGameMode::eSurvaival:
-		m_day = GameManager::eDay::e1day;
-		mRegisterDay();
-		Debug::mPrint("サバイバルモード");
-
-		return std::make_shared<ModeSurvival>();
-
-	case GameManager::eGameMode::ePractice:
-		Debug::mPrint("プラクティスモード");
-		return std::make_shared<ModePractice>();
-
-	case GameManager::eGameMode::eNull:
-	default:
-		assert(!"不正な値を検出しました :Part SG");
-		return nullptr;
-	}
-	return nullptr;
-}
-
-/*
-	リザルトの表示用
-*/
-void SceneGame::mShowResult(GameManager::eDay nowDay, ShaderBase* defaultShader,ShaderBase* bularShader){
-	if (m_gameState != eState::eResult)return;
-
-	m_pResultBord->mSetupData(m_pMode->mGetResultData(), nowDay); // 内部的には一回しか呼ばれない
-
-	auto mouse = GameController::GetMouse().GetMousePosition();
-	bool click = GameController::GetMouse().IsLeftButtonTrigger();
-	auto state = m_pResultBord->mUpdate(mouse, click);
-
-	if (state == ResultBord::eClickState::eExit){
-		m_gameState = eState::eExit;
-		return;
-	}
-	else if (state == ResultBord::eClickState::eNextDay){
-		// 次の日に進む処理
-		auto prevDay = m_day;
-		m_pMode->mPrevDayFinalize(prevDay);
-		m_day = m_dayHash[prevDay];
-		m_gameState = eState::eFadeIn;
-		m_dayTime = NULL;
-	}
-	m_pResultBord->mRender(defaultShader, bularShader);
-
-	return;
-}
-
 //
 bool SceneGame::mFadeState(SceneGame::eState state){ 
 	if (state == eState::eFadeIn || state == eState::eFadeOut){
@@ -257,8 +220,6 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 			break;
 
 		case eState::eFadeOut:
-			// 次の日に進むにあたっての初期化処理
-			m_pMode->mNextDayInitialize(m_day);
 			isEnd = m_pFadeObject->Out(1.0f);
 			if (isEnd){
 				m_gameState = eState::eRun;
@@ -270,24 +231,15 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 	return true;
 }
 
-//
-void SceneGame::mRegisterDay(){
-	mRegisterDayHash(GameManager::eDay::e1day, GameManager::eDay::e2day);
-	mRegisterDayHash(GameManager::eDay::e2day, GameManager::eDay::e3day);
-	mRegisterDayHash(GameManager::eDay::e3day, GameManager::eDay::e4day);
-	mRegisterDayHash(GameManager::eDay::e4day, GameManager::eDay::e5day);
-	mRegisterDayHash(GameManager::eDay::e5day, GameManager::eDay::e6day);
-	mRegisterDayHash(GameManager::eDay::e6day, GameManager::eDay::e7day);
-	mRegisterDayHash(GameManager::eDay::e7day, GameManager::eDay::eLastDay);
-	mRegisterDayHash(GameManager::eDay::eLastDay, GameManager::eDay::eNull);
-
-	return;
-}
-
-void SceneGame::mRegisterDayHash(GameManager::eDay key, GameManager::eDay value){
-	if (m_dayHash.find(key) != m_dayHash.end())return;
-
-	m_dayHash.insert(std::make_pair(key, value));
-
-	return;
+// メッセージの更新処理
+bool SceneGame::mMessageUpdate(){
+	auto collideInfo = m_pCollideManager->GetMassageInfo();
+	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
+	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
+	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton, m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
+	if (m_pMessageManager->mGetIsChangeScene()){
+		Singleton<GameManager>::GetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
+		return true;
+	}
+	return false;
 }
