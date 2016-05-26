@@ -1,6 +1,6 @@
 [Object]
-110,705,0,0,0,0,90,90,0,0,Rectangle2D,0,0.7,1,1,0,mpGauge,null_path
-0,570,0,0,0,0,150,150,0,0,Rectangle2D,1,1,0,1,0,hpGauge,null_path
+170,120,0,0,0,90,150,150,0,0,Rectangle2D,1,1,0,1,0,playerHP,null_path
+1250,120,0,0,0,90,150,150,0,0,Rectangle2D,1,1,0,1,0,enemyHP,null_path
 [Material]
 [Texture]
 none

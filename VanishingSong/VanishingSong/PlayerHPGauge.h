@@ -14,6 +14,7 @@ public:
 
 	//AccessorMethods
 	void mSetCharaStatus(CharaStatus*);
+	void mSetProperty(aetherClass::SpriteBase::Property);
 
 private:
 	void mFinalize()override;
@@ -22,6 +23,7 @@ private:
 	std::shared_ptr<aetherClass::SpriteBase>m_pDamageSprite;
 	HalfFillShader::FillType m_fillType;
 	CharaStatus *m_CharaStatus;
+	aetherClass::SpriteBase::Property m_property;
 	
 	struct DamageValue{
 		float _interpolation;
