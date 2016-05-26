@@ -235,7 +235,8 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 bool SceneGame::mMessageUpdate(){
 	auto collideInfo = m_pCollideManager->GetMassageInfo();
 	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
+	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight) ||
+		GameController::GetKey().KeyDownTrigger('A') || GameController::GetKey().KeyDownTrigger('D');
 	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton, m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
 	if (m_pMessageManager->mGetIsChangeScene()){
 		Singleton<GameManager>::GetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
