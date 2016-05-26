@@ -30,10 +30,10 @@ bool VanishingSongFrame::InitializeBuffer(){
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "\\green");
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "\\yellow");
 
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Ground");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground");
+	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air","\\Green");
+	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Ground", "\\Red");
+	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air","\\Blue");
+	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground","\\Yellow");
 
 	return true;
 }

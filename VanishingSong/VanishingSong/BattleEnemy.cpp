@@ -38,26 +38,7 @@ bool BattleEnemy::mInitializeBlue(ViewCamera* camera,Vector3& pos){
 
 	m_charaEntity.SetCamera(m_pTopGear, camera);
 
-	WorldReader read;
-	read.Load("data\\EnemyAirBattle.aether");
-	for (auto index : read.GetInputWorldInfo()._object){
-
-		if (index->_name == "body"){
-			//SetLoadModelValue(m_enemy._gearFrame->m_pBody, index);
-			m_enemy._gearFrame->m_pBody->_pGear->property._transform = index->_transform;
-			m_enemy._gearFrame->m_pBody->_pGear->property._transform._scale = 0.5;
-			m_enemy._gearFrame->m_pBody->_pGear->property._transform._translation._y += 5;
-		}
-
-		if (index->_name == "waist"){
-			//SetLoadModelValue(m_enemy._gearFrame->m_pWaist, index);
-			m_enemy._gearFrame->m_pWaist->_pGear->property._transform = index->_transform;
-			m_enemy._gearFrame->m_pWaist->_pGear->property._transform._scale = 0.5;
-			m_enemy._gearFrame->m_pWaist->_pGear->property._transform._translation._y += 5;
-	
-		}
-	}
-	read.UnLoad();
+	m_enemy._gearFrame->m_pBody->_pGear->property._transform._scale = 2;
 
 	m_charaEntity.mGearMove(m_pTopGear, pos, "+=");
 	
@@ -79,26 +60,7 @@ bool BattleEnemy::mInitializeGreen(ViewCamera* camera, Vector3& pos){
 
 	m_charaEntity.SetCamera(m_pTopGear, camera);
 
-	WorldReader read;
-	read.Load("data\\EnemyAirBattle.aether");
-	for (auto index : read.GetInputWorldInfo()._object){
-
-		if (index->_name == "body"){
-			//SetLoadModelValue(m_enemy._gearFrame->m_pBody, index);
-			m_enemy._gearFrame->m_pBody->_pGear->property._transform = index->_transform;
-			m_enemy._gearFrame->m_pBody->_pGear->property._transform._scale = 0.5;
-			m_enemy._gearFrame->m_pBody->_pGear->property._transform._translation._y += 5;
-		}
-
-		if (index->_name == "waist"){
-			//SetLoadModelValue(m_enemy._gearFrame->m_pWaist, index);
-			m_enemy._gearFrame->m_pWaist->_pGear->property._transform = index->_transform;
-			m_enemy._gearFrame->m_pWaist->_pGear->property._transform._scale = 0.5;
-			m_enemy._gearFrame->m_pWaist->_pGear->property._transform._translation._y += 5;
-
-		}
-	}
-	read.UnLoad();
+	m_enemy._gearFrame->m_pBody->_pGear->property._transform._scale = 2;
 
 	m_charaEntity.mGearMove(m_pTopGear, pos, "+=");
 
@@ -130,24 +92,6 @@ void BattleEnemy::mOnDamage(){
 void BattleEnemy::mRender(std::shared_ptr<ShaderBase> tex){
 
 	m_charaEntity.mGearRender(m_pTopGear, tex.get(), tex.get());
-	
-}
-
-void BattleEnemy::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
-
-	gear->_pGear->property._transform = info->_transform;
-	gear->_initialTransform = info->_transform;
-	if (gear->_pParent)
-	{
-		std::shared_ptr<Gear> pParent = gear->_pParent;
-		// ÅãˆÊ‚Æ‚Ì·
-		gear->_topDifference._translation = gear->_pGear->property._transform._translation - m_pTopGear->_pGear->property._transform._translation;
-		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - m_pTopGear->_pGear->property._transform._rotation;
-
-		// e‚Æ‚Ì·
-		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - pParent->_pGear->property._transform._translation;
-		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - pParent->_pGear->property._transform._rotation;
-	}
 }
 
 //GearFrame‚Í‰ð•ú‚µ‚È‚¢
