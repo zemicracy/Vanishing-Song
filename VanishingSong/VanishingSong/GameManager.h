@@ -26,8 +26,7 @@ public:
 public:
 	GameManager();
 	~GameManager();
-	void mInitialize();
-	bool mIsPause();	
+	void mInitialize();	
 
 	void mPushUsePlayer(eMusical);
 	std::unordered_map<eMusical, eMusical>& mGetUsePlayer();
