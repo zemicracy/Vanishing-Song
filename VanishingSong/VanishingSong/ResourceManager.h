@@ -46,7 +46,7 @@ public:
 	void mPlayerInitialize(eMusical, std::string directy, std::string tex);
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
-	void mEnemyInitialize(eMusical, std::string directy);
+	void mEnemyInitialize(eMusical, std::string directy, std::string tex);
 	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical);
 private:
 

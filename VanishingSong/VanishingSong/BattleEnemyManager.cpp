@@ -14,16 +14,14 @@ void BattleEnemyManager::Initialize(ViewCamera* camera,BattleField* lane){
 	
 	m_BattleField = lane;
 
-	auto transform =m_BattleField->mGetLane(eMusical::eBlue)->property._transform;
-	transform._translation._x += transform._scale._x;
+	auto transform = m_BattleField->mGetEnemyLane(eMusical::eBlue);
 	m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
-	m_pEnemy.begin()->get()->mInitialize(eMusical::eBlue, camera,transform._translation);
+	m_pEnemy.begin()->get()->mInitialize(eMusical::eBlue, camera,transform);
 	
 
-	transform = m_BattleField->mGetLane(eMusical::eGreen)->property._transform;
-	transform._translation._x += transform._scale._x;
+	transform = m_BattleField->mGetEnemyLane(eMusical::eGreen);
 	m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
-	m_pEnemy.begin()->get()->mInitialize(eMusical::eGreen, camera, transform._translation);
+	m_pEnemy.begin()->get()->mInitialize(eMusical::eGreen, camera, transform);
 
 }
 
