@@ -126,16 +126,10 @@ void FieldEnemyManager::mSetPosion(){
 	//“G‚ÌoŒ»ˆÊ’u
 	for (int i = 0; i <m_pEnemy.size(); i++){
 		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation = m_pEnemySpawner[i];
-		m_pEnemy[i]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation = m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
 		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y = +20;
-		m_pEnemy[i]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y - 2;
 		m_pEnemy[i]->mGetProperty()._enemyAreaNo = i;
 		m_enemyArray[i]=m_pEnemy[i];
 	}
-
-	m_pEnemy[1]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[1]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y+10;
-	m_pEnemy[2]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[1]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y + 10;
-
 }
 
 std::shared_ptr<FieldEnemy> FieldEnemyManager::mEnemyGet(int enemy){
