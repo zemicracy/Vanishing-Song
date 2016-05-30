@@ -4,6 +4,8 @@
 #include"GameManager.h"
 #include"ActionSound.h"
 #include"RhythmManager.h"
+#include"AttackParticle.h"
+#include"BattleField.h"
 
 #include<array>
 class OrderList
@@ -30,12 +32,15 @@ public:
 	void mEndReset();
 
 	//Indispensable Method
-	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,std::shared_ptr<ActionBoard>);
+	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,ActionBoard*,BattleField*);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUpdate();
-	//AccesserMethod
 
+	//AccesserMethod
 	bool mIsEnd();
+
+	//other
+	void mRender3D(aetherClass::ShaderBase*);
 
 private:
 	void mBattleUpdate();
@@ -58,6 +63,9 @@ private:
 	std::vector<std::shared_ptr<ActionCommand>>m_PlayerOrderList;
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
+	AttackParticle::ParticleDesc m_perticleDesc;
+	std::unique_ptr<AttackParticle>m_pParticle;
+
 	//ï`âÊêÊ
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;
 	std::vector<aetherClass::Vector3>m_pSpriteOrigin;
@@ -66,7 +74,8 @@ private:
 	std::shared_ptr<ActionCommand>m_playedAction;
 
 	//ÇªÇÃÇΩÉÇÅ[ÉVÉáÉìñ⁄ìI
-	std::shared_ptr<ActionBoard>m_ActionBoard;
+	ActionBoard* m_ActionBoard;
+	BattleField* m_Field;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
 	aetherClass::Vector3 m_VolumeOrigin;
 

@@ -38,8 +38,6 @@ bool SceneBattle::Initialize(){
 	m_pActionBoard = std::make_shared<ActionBoard>();
 	m_pActionBoard->mInitialize();
 
-	m_pOrderList = std::make_unique<OrderList>();
-	m_pOrderList->mInitialize(GameManager::eGameMode::eEighter,m_battleState,m_pActionBoard);
 
 
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
@@ -57,6 +55,8 @@ bool SceneBattle::Initialize(){
 	m_pGauge->mInitialize();
 	m_pGauge->mSetHpAll(&charaHp, &enemyHp);
 
+	m_pOrderList = std::make_unique<OrderList>();
+	m_pOrderList->mInitialize(GameManager::eGameMode::eEighter,m_battleState,m_pActionBoard.get(),m_pField.get());
 	// プレイヤーの初期化
 	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
 		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(index.second);
@@ -72,8 +72,10 @@ bool SceneBattle::Initialize(){
 	m_bgmVolume = 0;
 	charaHp._maxHp = charaHp._hp = 10;
 	enemyHp._maxHp = enemyHp._hp = 20;
+
 	//最後に行う
-	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(m_bgmVolume);
+	Singleton<ResourceManager>::GetInstance().mGetBGM(0)->SetValume(0);
+	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(0);
 	return true;
 }
 
@@ -134,6 +136,7 @@ void SceneBattle::Render(){
 	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
 	m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	m_players.mRender(shaderHash["texture"].get());
+	m_pOrderList->mRender3D(shaderHash["texture"].get());
 	return;
 }
 

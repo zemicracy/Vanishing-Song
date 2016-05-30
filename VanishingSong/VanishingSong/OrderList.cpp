@@ -42,10 +42,9 @@ void OrderList::mFinalize(){
 		itr->Finalize();
 		itr.reset();
 	}
+
 	m_EnemyOrderList.clear();
 	m_PlayerOrderList.clear();
-	m_ActionBoard.reset();
-
 	m_pTextureList.clear();
 	GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
 }
@@ -64,12 +63,15 @@ std::shared_ptr<Texture> gLoadTexture(std::string key, std::string path){
 }
 
 //èâä˙âª
-void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,std::shared_ptr<ActionBoard> board){
+void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,ActionBoard* board,BattleField* field){
 	WorldReader reader;
 	std::string dir = "Texture\\OrderList\\";
 
 	m_faze = &state;
 	m_mode = mode;
+	m_ActionBoard = board;
+	m_Field = field;
+
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 4 : 8;
 
 	reader.Load("data/orderList.aether");
@@ -154,7 +156,16 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	reader.UnLoad();
 	m_MaxOrderSize = requestVal;
 
-	m_ActionBoard = board;
+
+	m_perticleDesc._size = 8;
+	m_perticleDesc._scale = 5;
+	m_perticleDesc._texturePath = dir + "note.png";
+	m_perticleDesc._endPoint = Vector3(0, 50, 0);
+	m_perticleDesc._rangeMin = Vector3(5, 0, 5);
+	m_perticleDesc._rangeMax = Vector3(10, 0, 10);
+
+	m_pParticle = std::make_unique<AttackParticle>(m_perticleDesc, m_Field->mGetCamera());
+	m_pParticle->mReset(m_perticleDesc);
 
 	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 
@@ -199,8 +210,13 @@ void OrderList::mListenUpdate(){
 			m_processId++;
 			return;
 		};
+
+		
 		m_playedAction = m_EnemyOrderList[m_processId];
 		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull){
+			m_perticleDesc._startPoint = m_Field->mGetEnemyLane(m_EnemyOrderList[m_processId]->mGetType());
+			m_pParticle->mReset(m_perticleDesc);
+
 			auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
 			mPlaySound(sound);
 		}
@@ -392,6 +408,9 @@ void OrderList::mUpdate(){
 	}
 
 	mRhythmicMotion();
+	if (m_pParticle){
+		m_pParticle->mUpdate(3);
+	}
 }
 
 void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
@@ -583,4 +602,10 @@ bool OrderList::mIsEnd(){
 
 int OrderList::mGetDamage(){
 	return m_damagedValue;
+}
+
+void OrderList::mRender3D(aetherClass::ShaderBase* shader){
+	if (m_pParticle){
+		m_pParticle->mRender(shader);
+	}
 }

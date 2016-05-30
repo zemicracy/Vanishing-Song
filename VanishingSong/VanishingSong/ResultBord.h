@@ -38,6 +38,7 @@ public:
 		eExit,
 		eNull
 	};
+
 public:
 	ResultBord();
 	~ResultBord();
