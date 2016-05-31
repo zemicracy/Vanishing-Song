@@ -46,7 +46,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//EnemyGround‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(),std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Ground,camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Ground,camera,"data\\test");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -56,7 +56,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//EnemyAir‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Air, camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Air, camera, "data\\test");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -65,7 +65,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Blue, camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Blue, camera, "data\\test");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -74,7 +74,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Yellow, camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Yellow, camera, "data\\test");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");

@@ -28,7 +28,7 @@ public:
 	FieldEnemy();
 	~FieldEnemy();
 
-	bool mInitialize(eType,aetherClass::ViewCamera*);
+	bool mInitialize(eType,aetherClass::ViewCamera*,std::string dataPath);
 	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 	void mUpdate();
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
@@ -39,6 +39,7 @@ public:
 	void mRegisterMessage(std::string);
 	int mGetMessageNum()const;
 	std::shared_ptr<aetherClass::Texture> mGetMessage(const int id);
+	std::string mGetBattleDataPath();
 private:
 	bool mInitializeGround(aetherClass::ViewCamera*);				//“G‰Šú‰»(’nã)
 	bool mInitializeAir(aetherClass::ViewCamera*);				//“G‰Šú‰»(‹ó’†)
@@ -50,5 +51,6 @@ private:
 	std::shared_ptr<Gear> m_pTopGear;
 	Property m_property;
 	std::vector<std::shared_ptr<aetherClass::Texture>> m_message;
+	std::string m_dataPath;
 };
 #endif
