@@ -33,3 +33,12 @@ aetherClass::Transform GameManager::mGetPlayerTransform(){
 void GameManager::mSetPlayerTransform(aetherClass::Transform trans){
 	m_prevPlayerTransform = trans;
 }
+
+void GameManager::mBattleDataFile(std::string file){
+	m_battleDataFile = file;
+}
+
+
+std::string GameManager::mBattleDataFile(){
+	return m_battleDataFile;
+}

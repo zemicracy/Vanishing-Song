@@ -15,8 +15,8 @@ FieldEnemy::~FieldEnemy()
 	m_message.clear();
 }
 
-bool FieldEnemy::mInitialize(eType type,ViewCamera* camera){
-
+bool FieldEnemy::mInitialize(eType type, ViewCamera* camera, std::string dataPath){
+	m_dataPath = dataPath;
 	switch (type)
 	{
 	case eType::Ground:
@@ -188,4 +188,8 @@ int FieldEnemy::mGetMessageNum()const{
 
 std::shared_ptr<aetherClass::Texture> FieldEnemy::mGetMessage(const int id){
 	return m_message[id];
+}
+
+std::string FieldEnemy::mGetBattleDataPath(){
+	return m_dataPath;
 }
