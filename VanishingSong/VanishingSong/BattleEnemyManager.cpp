@@ -1,6 +1,6 @@
 #include "BattleEnemyManager.h"
 #include <random>
-
+#include "Cipher.h"
 using namespace aetherClass;
 BattleEnemyManager::BattleEnemyManager()
 {
@@ -22,6 +22,9 @@ void BattleEnemyManager::Initialize(ViewCamera* camera,BattleField* lane){
 	transform = m_BattleField->mGetEnemyLane(eMusical::eGreen);
 	m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
 	m_pEnemy.begin()->get()->mInitialize(eMusical::eGreen, camera, transform);
+
+
+	mLoadInfo("Battle\\Stage1");
 
 }
 
@@ -114,3 +117,13 @@ void BattleEnemyManager::mUpadate(const float timeScale){
 	
 }
 
+void BattleEnemyManager::mLoadInfo(std::string path){
+	Cipher chipher(path);
+	chipher.mConsoleFind();
+	int rrr;
+	/*for (auto splitString : chipher.mGetSpriteArray("[Wave1]")){
+		if (splitString.front() == 'r'){
+
+		}
+	}*/
+}

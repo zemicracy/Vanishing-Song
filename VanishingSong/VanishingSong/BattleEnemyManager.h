@@ -35,8 +35,12 @@ public:
 	bool mIsEnd();
 
 private:
+	void mLoadInfo(std::string);
+private:
 	
 	void BlueAdd();
+	void RedAdd();
+	void GreenAdd();
 
 	bool m_isEnd;
 	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
