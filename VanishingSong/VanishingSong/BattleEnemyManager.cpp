@@ -1,4 +1,5 @@
 #include "BattleEnemyManager.h"
+#include <random>
 
 using namespace aetherClass;
 BattleEnemyManager::BattleEnemyManager()
@@ -14,16 +15,13 @@ void BattleEnemyManager::Initialize(ViewCamera* camera,BattleField* lane){
 	
 	m_BattleField = lane;
 
-	auto transform =m_BattleField->mGetLane(eMusical::eBlue)->property._transform;
-	transform._translation._x += transform._scale._x;
+	auto transform = m_BattleField->mGetEnemyLane(eMusical::eBlue);
 	m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
-	m_pEnemy.begin()->get()->mInitialize(eMusical::eBlue, camera,transform._translation);
+	m_pEnemy.begin()->get()->mInitialize(eMusical::eBlue, camera,transform);
 	
-
-	transform = m_BattleField->mGetLane(eMusical::eGreen)->property._transform;
-	transform._translation._x += transform._scale._x;
+	transform = m_BattleField->mGetEnemyLane(eMusical::eGreen);
 	m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
-	m_pEnemy.begin()->get()->mInitialize(eMusical::eGreen, camera, transform._translation);
+	m_pEnemy.begin()->get()->mInitialize(eMusical::eGreen, camera, transform);
 
 }
 
@@ -35,12 +33,84 @@ void BattleEnemyManager::mRender(std::shared_ptr<ShaderBase> tex){
 	}
 }
 
-void BattleEnemyManager::EnemySet(eMusical type, std::shared_ptr<GearFrame> gearFrame){
-	
 
+void BattleEnemyManager::AddList(){
+
+	BlueAdd();
+}
+
+std::vector<eMusical>  BattleEnemyManager::GetList(){
+
+	m_enemyList.clear();
+
+	AddList();
+
+	return m_enemyList;
+}
+
+void BattleEnemyManager::BlueAdd(){
+
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<> rand100(0, 400);
+
+	int r;
+	int random = rand100(rnd);
+
+	if (random < 100){
+		r = 0;
+	}else if (random > 100 && random <= 200){
+		r = 1;
+	}
+	else if (random > 200 && random <= 300){
+		r = 2;
+	}
+	else if (random > 300 && random <= 400){
+		r = 3;
+	}
+
+	switch (r)
+	{
+	case 0: // › › ›››
+		for (int i = 0; i <8; i++){
+			m_enemyList.push_back(eMusical::eBlue);
+		}
+		m_enemyList.insert(m_enemyList.begin(), eMusical::eNull);
+		m_enemyList.insert(m_enemyList.begin() + 2,eMusical::eNull);
+		m_enemyList.insert(m_enemyList.begin() + 4, eMusical::eNull);
+		break;
+	case 1://› › › ››
+		for (int i = 0; i < 8; i++){
+			m_enemyList.push_back(eMusical::eBlue);
+		}
+		m_enemyList.insert(m_enemyList.begin() + 1, eMusical::eNull);
+		m_enemyList.insert(m_enemyList.begin() + 3, eMusical::eNull);
+		m_enemyList.insert(m_enemyList.begin() + 5, eMusical::eNull);
+		break;
+	case 2://  ›››› 
+		for (int i = 0; i < 8; i++){
+			m_enemyList.push_back(eMusical::eBlue);
+		}
+		m_enemyList.insert(m_enemyList.begin() + 1, eMusical::eNull);
+		m_enemyList.insert(m_enemyList.begin() + 2, eMusical::eNull);
+		m_enemyList.insert(m_enemyList.begin() + 6, eMusical::eNull);
+
+		break;
+	case 3:
+		for(int i = 0; i < 8; i++){
+			m_enemyList.push_back(eMusical::eBlue);
+		}
+		m_enemyList.insert(m_enemyList.begin() + 3, eMusical::eNull);
+		m_enemyList.insert(m_enemyList.begin() + 4, eMusical::eNull);
+		m_enemyList.insert(m_enemyList.begin() + 6, eMusical::eNull);
+		break;
+		
+	default:
+		break;
+	}
 }
 
 void BattleEnemyManager::mUpadate(const float timeScale){
-
+	
 }
 

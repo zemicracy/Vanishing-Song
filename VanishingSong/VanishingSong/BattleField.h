@@ -14,6 +14,7 @@ public:
 	void mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug);
 	aetherClass::Vector3 mGetEnemyLane(eMusical type);
 	aetherClass::Vector3 mGetPlayerLane(eMusical type);
+	aetherClass::ViewCamera* mGetCamera();
 
 	BattleField();
 	~BattleField();

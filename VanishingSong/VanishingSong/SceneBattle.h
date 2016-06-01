@@ -15,7 +15,10 @@
 #include"ActionBoard.h"
 #include"BattleField.h"
 #include "BattlePlayerManager.h"
+#include "BattleEnemyManager.h"
 #include"BattleMessage.h"
+#include"GaugeManager.h"
+
 class SceneBattle :
 	public aetherClass::GameScene
 {
@@ -63,15 +66,18 @@ private:
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<BattleField>m_pField;
 	std::unique_ptr<BattleMessage>m_pMessage;
+	std::unique_ptr<GaugeManager>m_pGauge;
 	aetherClass::ViewCamera m_view;
+	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
 
 	int m_prevWholeBeatNo;
 	bool m_InitUpdateProcess;
 	bool m_PreInitProcess;
+	float m_bgmVolume;
 
 	//karikari
-	int charaHp;
-	int enemyHp;
+	CharaStatus charaHp;
+	CharaStatus enemyHp;
 
 
 	eGameState m_processState;

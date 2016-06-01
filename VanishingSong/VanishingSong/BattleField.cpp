@@ -187,3 +187,7 @@ aetherClass::Vector3 BattleField::mGetEnemyLane(eMusical type){
 aetherClass::Vector3 BattleField::mGetPlayerLane(eMusical type){
 	return m_PlayerLane.at(type);
 }
+
+aetherClass::ViewCamera* BattleField::mGetCamera(){
+	return m_view;
+}

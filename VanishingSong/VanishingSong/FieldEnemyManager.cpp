@@ -46,7 +46,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//EnemyGround‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(),std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Ground,camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Ground,camera,"data\\test");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -56,7 +56,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//EnemyAir‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Air, camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Air, camera, "data\\test");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -65,7 +65,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Blue, camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Blue, camera, "data\\test");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -74,7 +74,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Yellow, camera);
+		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Yellow, camera, "data\\test");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -126,16 +126,10 @@ void FieldEnemyManager::mSetPosion(){
 	//“G‚ÌoŒ»ˆÊ’u
 	for (int i = 0; i <m_pEnemy.size(); i++){
 		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation = m_pEnemySpawner[i];
-		m_pEnemy[i]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation = m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
 		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y = +20;
-		m_pEnemy[i]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y - 2;
 		m_pEnemy[i]->mGetProperty()._enemyAreaNo = i;
 		m_enemyArray[i]=m_pEnemy[i];
 	}
-
-	m_pEnemy[1]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[1]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y+10;
-	m_pEnemy[2]->mGetProperty()._penemy->m_pWaist->_pGear->property._transform._translation._y = m_pEnemy[1]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y + 10;
-
 }
 
 std::shared_ptr<FieldEnemy> FieldEnemyManager::mEnemyGet(int enemy){

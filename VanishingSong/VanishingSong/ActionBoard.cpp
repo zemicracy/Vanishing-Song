@@ -70,18 +70,22 @@ bool ActionBoard::mInitialize(){
 
 
 std::shared_ptr<ActionCommand> ActionBoard::mSelectType(){
-	if (GameController::GetKey().KeyDownTrigger('1')){
-		return m_actionList[eMusical::eBlue]._command;
-	}
-	else if (GameController::GetKey().KeyDownTrigger('2')){
-		return m_actionList[eMusical::eGreen]._command;
-	}	else if (GameController::GetKey().KeyDownTrigger('3')){
-		return m_actionList[eMusical::eRed]._command;
-	}	else if (GameController::GetKey().KeyDownTrigger('4')){
-		return m_actionList[eMusical::eYellow]._command;
+	if (kCharaDebug){
+		if (GameController::GetKey().KeyDownTrigger('1')){
+			return m_actionList[eMusical::eBlue]._command;
+		}
+		else if (GameController::GetKey().KeyDownTrigger('2')){
+			return m_actionList[eMusical::eGreen]._command;
+		}
+		else if (GameController::GetKey().KeyDownTrigger('3')){
+			return m_actionList[eMusical::eRed]._command;
+		}
+		else if (GameController::GetKey().KeyDownTrigger('4')){
+			return m_actionList[eMusical::eYellow]._command;
+		}
 	}
 
-	/*if (GameController::GetJoypad().ButtonPress(eJoyButton::eA)){
+	if (GameController::GetJoypad().ButtonPress(eJoyButton::eA)){
 		return m_actionList[eMusical::eGreen]._command;
 
 	}
@@ -96,7 +100,7 @@ std::shared_ptr<ActionCommand> ActionBoard::mSelectType(){
 	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eY)){
 		return m_actionList[eMusical::eYellow]._command;
 
-	}*/
+	}
 
 	return nullptr;
 }

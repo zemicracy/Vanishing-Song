@@ -26,17 +26,20 @@ public:
 public:
 	GameManager();
 	~GameManager();
-	void mInitialize();
-	bool mIsPause();	
+	void mInitialize();	
 
 	void mPushUsePlayer(eMusical);
 	std::unordered_map<eMusical, eMusical>& mGetUsePlayer();
 	aetherClass::Transform mGetPlayerTransform();
 	void mSetPlayerTransform(aetherClass::Transform);
+
+	void mBattleDataFile(std::string);
+	std::string mBattleDataFile();
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;
 	aetherClass::Transform m_prevPlayerTransform;
+	std::string m_battleDataFile;
 };
 
 #endif

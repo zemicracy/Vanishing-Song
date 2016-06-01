@@ -15,8 +15,8 @@ FieldEnemy::~FieldEnemy()
 	m_message.clear();
 }
 
-bool FieldEnemy::mInitialize(eType type,ViewCamera* camera){
-
+bool FieldEnemy::mInitialize(eType type, ViewCamera* camera, std::string dataPath){
+	m_dataPath = dataPath;
 	switch (type)
 	{
 	case eType::Ground:
@@ -53,27 +53,12 @@ bool FieldEnemy::mInitializeGround(ViewCamera* camera){
 
 		m_property._penemy = gearframe;
 
-		WorldReader read;
-		read.Load("data\\Enemy.aether");
-		for (auto index : read.GetInputWorldInfo()._object){
-
-			if (index->_name == "body"){
-				SetLoadModelValue(m_property._penemy->m_pBody, index);
-				m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-			}
-
-			if (index->_name == "waist"){
-				//SetLoadModelValue(m_property._penemy->m_pWaist, index);
-				m_property._penemy->m_pWaist->_pGear->property._transform._scale = 2;
-			}
-		}
-		read.UnLoad();
+		m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
 
 		// 最上位に当たるパーツの設定
 		m_pTopGear = m_property._penemy->m_pBody;
 
 		// 体にパーツとの親子関係
-		m_charaEntity.mCreateRelationship(m_pTopGear, m_property._penemy->m_pWaist);
 		m_charaEntity.SetCamera(m_pTopGear,camera);
 
 		return true;
@@ -86,27 +71,13 @@ bool FieldEnemy::mInitializeAir(ViewCamera* camera){
 
 	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eGreen);
 	m_property._penemy = gearframe;
-	WorldReader read;
-	read.Load("data\\EnemyAir.aether");
-	for (auto index : read.GetInputWorldInfo()._object){
-
-		if (index->_name == "body"){
-			SetLoadModelValue(m_property._penemy->m_pBody, index);
-			m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-		}
-
-		if (index->_name == "waist"){
-			//SetLoadModelValue(m_property._penemy->m_pWaist, index);
-			m_property._penemy->m_pWaist->_pGear->property._transform._scale = 2;
-		}
-	}
-	read.UnLoad();
+	
+	m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
 
 	// 最上位に当たるパーツの設定
 	m_pTopGear = m_property._penemy->m_pBody;
 
 	// 体にパーツとの親子関係
-	m_charaEntity.mCreateRelationship(m_pTopGear, m_property._penemy->m_pWaist);
 	m_charaEntity.SetCamera(m_pTopGear, camera);
 
 	return true;
@@ -122,27 +93,12 @@ bool FieldEnemy::mInitializeBlue(ViewCamera* camera){
 
 	m_property._penemy = gearframe;
 
-	WorldReader read;
-	read.Load("data\\Enemy.aether");
-	for (auto index : read.GetInputWorldInfo()._object){
-
-		if (index->_name == "body"){
-			SetLoadModelValue(m_property._penemy->m_pBody, index);
-			m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-		}
-
-		if (index->_name == "waist"){
-			//SetLoadModelValue(m_property._penemy->m_pWaist, index);
-			m_property._penemy->m_pWaist->_pGear->property._transform._scale = 2;
-		}
-	}
-	read.UnLoad();
+	m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
 
 	// 最上位に当たるパーツの設定
 	m_pTopGear = m_property._penemy->m_pBody;
 
 	// 体にパーツとの親子関係
-	m_charaEntity.mCreateRelationship(m_pTopGear, m_property._penemy->m_pWaist);
 	m_charaEntity.SetCamera(m_pTopGear, camera);
 
 	return true;
@@ -157,27 +113,11 @@ bool FieldEnemy::mInitializeYellow(ViewCamera* camera){
 
 	m_property._penemy = gearframe;
 
-	WorldReader read;
-	read.Load("data\\Enemy.aether");
-	for (auto index : read.GetInputWorldInfo()._object){
-
-		if (index->_name == "body"){
-			SetLoadModelValue(m_property._penemy->m_pBody, index);
-			m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-		}
-
-		if (index->_name == "waist"){
-			//SetLoadModelValue(m_property._penemy->m_pWaist, index);
-			m_property._penemy->m_pWaist->_pGear->property._transform._scale = 2;
-		}
-	}
-	read.UnLoad();
+	m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
 
 	// 最上位に当たるパーツの設定
 	m_pTopGear = m_property._penemy->m_pBody;
 
-	// 体にパーツとの親子関係
-	m_charaEntity.mCreateRelationship(m_pTopGear, m_property._penemy->m_pWaist);
 	m_charaEntity.SetCamera(m_pTopGear, camera);
 
 	return true;
@@ -208,22 +148,6 @@ void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::Sha
 	m_property._pCollider->Render(colider_shader);
 }
 
-void FieldEnemy::SetLoadModelValue(std::shared_ptr<Gear>& gear, ObjectInfo* info){
-
-	gear->_pGear->property._transform = info->_transform;
-	gear->_initialTransform = info->_transform;
-	if (gear->_pParent)
-	{
-		std::shared_ptr<Gear> pParent = gear->_pParent;
-		// 最上位との差
-		gear->_topDifference._translation = gear->_pGear->property._transform._translation - m_pTopGear->_pGear->property._transform._translation;
-		gear->_topDifference._rotation = gear->_pGear->property._transform._rotation - m_pTopGear->_pGear->property._transform._rotation;
-
-		// 親との差
-		gear->_parentDifference._translation = gear->_pGear->property._transform._translation - pParent->_pGear->property._transform._translation;
-		gear->_parentDifference._rotation = gear->_pGear->property._transform._rotation - pParent->_pGear->property._transform._rotation;
-	}
-}
 
 FieldEnemy::Property& FieldEnemy::mGetProperty(){
 	return m_property;
@@ -248,8 +172,6 @@ void FieldEnemy::mFinalize(){
 		index = nullptr;
 	}
 	m_message.clear();
-
-
 }
 
 
@@ -266,4 +188,8 @@ int FieldEnemy::mGetMessageNum()const{
 
 std::shared_ptr<aetherClass::Texture> FieldEnemy::mGetMessage(const int id){
 	return m_message[id];
+}
+
+std::string FieldEnemy::mGetBattleDataPath(){
+	return m_dataPath;
 }

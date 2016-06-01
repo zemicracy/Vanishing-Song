@@ -11,9 +11,7 @@ Cage::Cage(std::shared_ptr<GearFrame> gearframe, Vector3 position, ViewCamera* c
 }
 
 
-Cage::~Cage()
-{
-}
+Cage::~Cage(){}
 
 //
 void Cage::mInitialize(std::shared_ptr<GearFrame> gearframe, Vector3 position, ViewCamera* camera){
@@ -45,7 +43,6 @@ void Cage::mUpdate(const float timeScale, Vector3 position){
 //
 void Cage::mRender(ShaderBase* tex, ShaderBase* color){
 	m_charaEntity.mGearRender(m_topGear, tex, color);
-	m_pCollider->Render(color);
 }
 
 //
