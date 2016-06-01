@@ -73,7 +73,7 @@ bool SceneBattle::Initialize(){
 	charaHp._maxHp = charaHp._hp = 10;
 	enemyHp._maxHp = enemyHp._hp = 20;
 	//ç≈å„Ç…çsÇ§
-	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(m_bgmVolume);
+	Singleton<ResourceManager>::GetInstance().PlayBaseBGM(eMusical::eBlue);
 	return true;
 }
 
@@ -259,7 +259,7 @@ void SceneBattle::mCountIn(){
 				cnt = 0;
 				m_pMessage->mSetActive(false);
 				ChangeScene(SceneGame::Name, LoadState::eUse);
-				Singleton<ResourceManager>::GetInstance().mGetBGM(0)->Stop();
+				Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->Stop();
 			}
 		}
 	}
@@ -290,7 +290,7 @@ void SceneBattle::mCountIn(){
 
 	if (cnt >= 2){
 		if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
-			Singleton<ResourceManager>::GetInstance().mGetBGM(0)->SetValume(-m_bgmVolume*100);
+			Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->SetValume(-m_bgmVolume * 100);
 			m_bgmVolume++;
 		}else{
 			if (!m_PreInitProcess){
