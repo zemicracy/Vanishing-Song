@@ -2,6 +2,9 @@
 #include "Debug.h"
 #include"ActionSound.h"
 #include "PixelShader.h"
+namespace{
+	const int kMaxBGM = 4;
+}
 using namespace aetherClass;
 ResourceManager::ResourceManager()
 {
@@ -18,15 +21,11 @@ ResourceManager::~ResourceManager()
 	BGMのパス情報配列
 	BGMを変えたい場合はここをいじってね
 */
-std::string ResourceManager::m_BgmPath[kMaxBGM] = {
-	"Sound/ドラムパート.wav",
-	"null",
-	"null",
-	"null",
-	"null",
-	"null",
-	"null",
-	"null",
+const ResourceManager::BGMType ResourceManager::m_BgmPath[kMaxBGM] = {
+	{ "Sound/BGM/Field1.wav", eMusical::eBlue},
+	{ "Sound/BGM/Field2.wav", eMusical::eGreen},
+	{ "Sound/BGM/Field3.wav", eMusical::eRed},
+	{ "Sound/BGM/Field4.wav", eMusical::eYellow}
 };
 /*
 	リソース系の初期化処理
@@ -59,17 +58,22 @@ std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eMusical type){
 	return m_pActionSoundHash[type];
 }
 
-
+std::shared_ptr<GameSound> ResourceManager::mGetLastBGM(){
+	return m_pLastBGM;
+}
 /*
 	基本BGMを流す奴
 
 */
-void ResourceManager::PlayBaseBGM(const int id){
-	m_pBaseBgmArray[id]->PlayToLoop();
+void ResourceManager::mPlayBaseBGM(eMusical type){
+	m_pBaseBgmArray[type]->PlayToLoop();
 
 	return;
 }
+void ResourceManager::mStopBaseBGM(eMusical type){
+	m_pBaseBgmArray[type]->Stop();
 
+}
 /*
 	テクスチャの取得用
 */
@@ -83,20 +87,24 @@ std::shared_ptr<aetherClass::Texture> ResourceManager::GetTexture(std::string na
 */
 bool ResourceManager::InitializeBGM(){
 
-	int now = 0;
 	bool result = false;
-	for (auto& index : m_pBaseBgmArray)
-	{
-		index = std::make_shared<GameSound>();
-		result = index->Load(m_BgmPath[now].c_str());
-		now += 1;
+	for (auto& index : m_BgmPath){
+		m_pBaseBgmArray[index._type] = std::make_shared<GameSound>();
+		result = m_pBaseBgmArray[index._type]->Load(index._path.c_str());
 		if (!result)
 		{
 			Debug::mErrorPrint("BGMの読み込みに失敗しました", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
-		}else
-		index->SetValume(0);
+			return false;
+		}
+		else
+		{
+			m_pBaseBgmArray[index._type]->SetValume(0);
+		}
 	}
 
+	m_pLastBGM = std::make_shared<GameSound>();
+	m_pLastBGM->Load("Sound/BGM/Field5.wav");
+	m_pLastBGM->Stop();
 	return true;
 }
 
@@ -168,11 +176,11 @@ BGMの配列の要素を削除
 void ResourceManager::FinalizeBGM(){
 	for (auto& index : m_pBaseBgmArray)
 	{
-		if (!index)continue;
-		index.reset();
-		index = nullptr;
+		if (!index.second)continue;
+		index.second.reset();
+		index.second = nullptr;
+		
 	}
-	m_pBaseBgmArray.fill(nullptr);
 	return;
 }
 
@@ -383,6 +391,6 @@ void ResourceManager::FinalizeEnemy(){
 	}
 }
 
-std::shared_ptr<aetherClass::GameSound> ResourceManager::mGetBGM(int index){
-	return m_pBaseBgmArray.at(index);
+std::shared_ptr<aetherClass::GameSound> ResourceManager::mGetBGM(eMusical type){
+	return m_pBaseBgmArray.at(type);
 }

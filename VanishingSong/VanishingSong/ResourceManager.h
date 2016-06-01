@@ -11,9 +11,7 @@
 #include "GearFrame.h"
 #include "CharaStatus.h"
 #include "Const.h"
-namespace{
-	const int kMaxBGM = 8;
-}
+
 class ActionSound;
 
 class ResourceManager
@@ -32,13 +30,14 @@ public:
 	void Finalize();
 	
 	// 基本BGMを流すよう
-	void PlayBaseBGM(const int id);
+	void mPlayBaseBGM(eMusical);
 
+	void mStopBaseBGM(eMusical);
 	// テクスチャ取得用
 	std::shared_ptr<aetherClass::Texture> GetTexture(std::string);
 
 	std::shared_ptr<ActionSound> GetActionSound(eMusical);
-	std::shared_ptr<aetherClass::GameSound> mGetBGM(int);
+	std::shared_ptr<aetherClass::GameSound> mGetBGM(eMusical);
 
 	// 基本的に使うシェーダーの取得用
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& mGetShaderHash();
@@ -48,6 +47,8 @@ public:
 
 	void mEnemyInitialize(eMusical, std::string directy, std::string tex);
 	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical);
+
+	std::shared_ptr<aetherClass::GameSound> mGetLastBGM();
 private:
 
 	/*
@@ -110,13 +111,20 @@ private:
 	template<class Type>
 	std::shared_ptr<Type> RegisterShader(std::string registerName, aetherClass::ShaderDesc);
 private:
+	struct BGMType
+	{
+		std::string _path;
+		eMusical _type;
+	};
+private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>> m_pTextureHash;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>> m_pShaderHash;
 
 	std::unordered_map<eMusical, std::shared_ptr<ActionSound>> m_pActionSoundHash;
-	std::array<std::shared_ptr<aetherClass::GameSound>,kMaxBGM> m_pBaseBgmArray;
-	static std::string m_BgmPath[kMaxBGM];
+	std::unordered_map<eMusical, std::shared_ptr<aetherClass::GameSound>>m_pBaseBgmArray;
+	static const BGMType m_BgmPath[4];
 
+	std::shared_ptr<aetherClass::GameSound> m_pLastBGM;
 	CharaEntity m_charaEntity;
 
 	CharaHash m_pPlayerHashes;

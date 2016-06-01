@@ -79,12 +79,27 @@ bool SceneGame::Initialize(){
 	m_gameState = eState::eRun;
 	m_pFieldPlayer->mSetTransform(Singleton<GameManager>::GetInstance().mGetPlayerTransform());
 
+	// ボスに勝っていたら完成の音楽を流す
+	auto bossState = Singleton<GameManager>::GetInstance().mFieldBossState();
+	if (bossState == GameManager::eBossState::eWin){
+		Singleton<ResourceManager>::GetInstance().mGetLastBGM()->PlayToLoop();
+	}
+	else{
+		for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
+			Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(index.second);
+		}
+	}
+	
 	return true;
 }
 
 // 解放処理
 // 全ての解放
 void SceneGame::Finalize(){
+	for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
+		Singleton<ResourceManager>::GetInstance().mStopBaseBGM(index.second);
+	}
+	Singleton<ResourceManager>::GetInstance().mGetLastBGM()->Stop();
 	if (m_pMessageManager){
 		m_pMessageManager.reset();
 		m_pMessageManager = nullptr;
