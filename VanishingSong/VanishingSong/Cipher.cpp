@@ -4,11 +4,11 @@
 #include "Debug.h"
 const int Cipher::mKey[]{
 	0x3727ba7,
-		0x543c746,
+		0x543a746,
 		0x4278b82,
 		0xca89431,
 		0x42de281,
-		0x3c8a43d
+		0x3a8a43d
 };
 
 const int Cipher::mKeySize = 5;
@@ -52,6 +52,12 @@ void Cipher::mLoadFile(std::string path){
 	}
 }
 
+void Cipher::mUnLoad(){
+	for (auto& index:m_elemetHash){
+		index.second.clear();
+	}
+	m_elemetHash.clear();
+}
 //
 void Cipher::mGetData(CipherType& hash, std::string tag, std::string data, const char spritChar){
 	//
@@ -77,7 +83,7 @@ std::string Cipher::mDecode(std::string readLine, int& KeyCount){
 	std::string decipher; // ˆÃ†‰»‚ğ‚Æ‚¢‚½•¶š—ñæ“¾—p
 	for (auto readIndex : readLine){
 
-		char decipherIndex = ~(readIndex ^ mKey[KeyCount]);
+		char decipherIndex = readIndex ^ mKey[KeyCount];
 
 		decipher.push_back(decipherIndex);
 		
