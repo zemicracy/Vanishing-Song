@@ -6,6 +6,7 @@ using namespace aetherClass;
 GameManager::GameManager()
 {
 	m_prevPlayerTransform._translation._y = 22.2f;
+	m_fieldBossState = eBossState::eUnVisible;
 }
 
 
@@ -41,4 +42,14 @@ void GameManager::mBattleDataFile(std::string file){
 
 std::string GameManager::mBattleDataFile(){
 	return m_battleDataFile;
+}
+
+//
+void GameManager::mFieldBossState(GameManager::eBossState state){
+	m_fieldBossState = state;
+}
+
+//
+GameManager::eBossState GameManager::mFieldBossState(){
+	return m_fieldBossState;
 }

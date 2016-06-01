@@ -23,6 +23,14 @@ public:
 		eQuarter,  // 四分
 		eEighter,   // 八分
 	};
+
+	// フィールドでのボスの状態
+	enum class eBossState{
+		eVisible,
+		eUnVisible,
+		eWin,
+		eNull
+	};
 public:
 	GameManager();
 	~GameManager();
@@ -35,11 +43,15 @@ public:
 
 	void mBattleDataFile(std::string);
 	std::string mBattleDataFile();
+
+	void mFieldBossState(eBossState);
+	eBossState mFieldBossState();
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;
 	aetherClass::Transform m_prevPlayerTransform;
 	std::string m_battleDataFile;
+	eBossState m_fieldBossState;
 };
 
 #endif

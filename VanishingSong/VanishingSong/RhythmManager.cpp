@@ -52,7 +52,7 @@ float RhythmManager::mGetPlayTime(){
 
 
 void RhythmManager::mInitializeRhythm(int index, int bpm){
-	m_sound = Singleton<ResourceManager>::GetInstance().mGetBGM(index);
+	m_sound = Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue);
 	m_bpm = bpm;
 	m_playTime = 0;
 }
