@@ -20,6 +20,10 @@ public:
 
 	void mUpadate(const float timeScale);
 
+	std::vector<eMusical> GetList();
+
+	void AddList();
+
 	/*
 		•`‰æˆ—
 	*/
@@ -31,10 +35,13 @@ public:
 	bool mIsEnd();
 
 private:
-	void EnemySet(eMusical type, std::shared_ptr<GearFrame> gearFrame);
+	
+	void BlueAdd();
+
 	bool m_isEnd;
 	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
 	BattleField* m_BattleField;
+	std::vector<eMusical> m_enemyList;
 
 };
 

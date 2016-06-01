@@ -38,8 +38,6 @@ bool SceneBattle::Initialize(){
 	m_pActionBoard = std::make_shared<ActionBoard>();
 	m_pActionBoard->mInitialize();
 
-
-
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 	m_rhythm->mAcquire();
 
@@ -72,6 +70,9 @@ bool SceneBattle::Initialize(){
 	m_bgmVolume = 0;
 	charaHp._maxHp = charaHp._hp = 10;
 	enemyHp._maxHp = enemyHp._hp = 20;
+
+	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
+	m_pBattleEnemyManager->Initialize(&m_view, m_pField.get());
 
 	//最後に行う
 	Singleton<ResourceManager>::GetInstance().mGetBGM(0)->SetValume(0);
@@ -137,6 +138,7 @@ void SceneBattle::Render(){
 	m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	m_players.mRender(shaderHash["texture"].get());
 	m_pOrderList->mRender3D(shaderHash["texture"].get());
+	m_pBattleEnemyManager->mRender(shaderHash["texture"]);
 	return;
 }
 
@@ -164,7 +166,10 @@ void SceneBattle::mOnListen(){
 	// TODO: 敵の演奏をする処理＆スタックされる処理＆敵によってはオーダーリストに細工をする
 
 	if (!m_InitUpdateProcess){
-		
+		EnemyVector.clear();
+		for (auto itr : m_pBattleEnemyManager->GetList()){
+			EnemyVector.push_back(m_pActionBoard->mGetCommand(itr));
+		}
 		m_pOrderList->mAddEnemyOrder(EnemyVector);
 		m_pOrderList->mPlay();
 		m_InitUpdateProcess = true;
