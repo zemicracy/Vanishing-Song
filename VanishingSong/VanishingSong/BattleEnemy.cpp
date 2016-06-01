@@ -42,7 +42,6 @@ bool BattleEnemy::mInitializeBlue(ViewCamera* camera,Vector3& pos){
 
 	m_charaEntity.mGearMove(m_pTopGear, pos, "+=");
 	
-
 	return true;
 
 }
@@ -63,7 +62,6 @@ bool BattleEnemy::mInitializeGreen(ViewCamera* camera, Vector3& pos){
 	m_enemy._gearFrame->m_pBody->_pGear->property._transform._scale = 2;
 
 	m_charaEntity.mGearMove(m_pTopGear, pos, "+=");
-
 
 	return true;
 
@@ -90,7 +88,6 @@ void BattleEnemy::mOnDamage(){
 }
 
 void BattleEnemy::mRender(std::shared_ptr<ShaderBase> tex){
-
 	m_charaEntity.mGearRender(m_pTopGear, tex.get(), tex.get());
 }
 

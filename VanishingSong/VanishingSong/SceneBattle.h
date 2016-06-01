@@ -15,6 +15,7 @@
 #include"ActionBoard.h"
 #include"BattleField.h"
 #include "BattlePlayerManager.h"
+#include "BattleEnemyManager.h"
 #include"BattleMessage.h"
 #include"GaugeManager.h"
 
@@ -67,6 +68,7 @@ private:
 	std::unique_ptr<BattleMessage>m_pMessage;
 	std::unique_ptr<GaugeManager>m_pGauge;
 	aetherClass::ViewCamera m_view;
+	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
 
 	int m_prevWholeBeatNo;
 	bool m_InitUpdateProcess;
