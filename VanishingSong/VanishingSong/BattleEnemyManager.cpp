@@ -24,7 +24,7 @@ void BattleEnemyManager::Initialize(ViewCamera* camera,BattleField* lane){
 	m_pEnemy.begin()->get()->mInitialize(eMusical::eGreen, camera, transform);
 
 
-	mLoadInfo("Battle\\Stage1");
+	mLoadInfo("data\\Battle\\Stage1");
 
 }
 
@@ -121,7 +121,7 @@ void BattleEnemyManager::mLoadInfo(std::string path){
 	Cipher chipher(path);
 	chipher.mConsoleFind();
 	int rrr;
-	/*for (auto splitString : chipher.mGetSpriteArray("[Wave1]")){
+	/*for (auto splitString : chipher.mGetSpriteArray("[Wave1
 		if (splitString.front() == 'r'){
 
 		}
