@@ -2,6 +2,7 @@
 #define _MESSAGEMANAGER_H
 #include "MessageWindow.h"
 #include "FieldEnemyManager.h"
+#include "Rectangle3D.h"
 class MessageManager
 {
 	enum class eState{
@@ -16,13 +17,14 @@ class MessageManager
 		eNull
 	};
 public:
-	MessageManager(std::shared_ptr<FieldEnemyManager>&);
+	MessageManager(std::shared_ptr<FieldEnemyManager>&,aetherClass::ViewCamera*);
 	~MessageManager();
-	void mUpdate(const std::pair<int,bool>,const bool isPressButton,const bool isCursor,aetherClass::Vector3 position);
+	void mUpdate(const std::pair<int, bool>, const bool isPressButton, const bool isCursor, aetherClass::Vector3 position, aetherClass::Vector3 enemy);
 	
 	void mChangeMessage(aetherClass::Texture*);
 	bool mGetIsChangeScene()const;
-	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
+	void m2DRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
+	void m3DRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	bool mIsView();
 private:
 	void mSetState(const int);
@@ -37,8 +39,13 @@ private:
 	eState m_state;
 	std::unordered_map<eSelectType, float> m_cursorPosition;
 	eSelectType m_selectType;
+
+	std::shared_ptr<aetherClass::Rectangle3D>m_messageFlame;
+	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture;
 	bool m_select;
 	bool m_isChangeScene;
+	bool m_viewMessageFlame;
+	aetherClass::ViewCamera* m_camera;
 };
 
 #endif
