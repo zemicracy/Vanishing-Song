@@ -25,7 +25,7 @@ public:
 		eEighter,   // ”ª•ª
 	};
 
-	// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã§ã®ãƒœã‚¹ã®çŠ¶æ…‹
+	// ƒtƒB[ƒ‹ƒh‚Å‚Ìƒ{ƒX‚Ìó‘Ô
 	enum class eBossState{
 		eVisible,
 		eUnVisible,
