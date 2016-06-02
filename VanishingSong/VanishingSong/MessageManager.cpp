@@ -3,6 +3,7 @@
 namespace{
 	const int kFirst = 0;
 	const int kCounterNull = 0;
+	const float kMessageFlameTime = 1.0f;
 }
 using namespace aetherClass;
 MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy, aetherClass::ViewCamera* camera)
@@ -21,12 +22,14 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy, aether
 	m_buttonTexture[eState::eSelect].Load("Texture\\Message\\yesno.png");
 
 	m_messageFlameTexture = std::make_shared<Texture>();
-	m_messageFlameTexture->Load("Texture\\Message\\message_flame3.png");
+	m_messageFlameTexture->Load("Texture\\Message\\message_flame2.png");
+
+	m_messageFlameTexture2 = std::make_shared<Texture>();
+	m_messageFlameTexture2->Load("Texture\\Message\\message_flame.png");
 
 	m_messageFlame = std::make_shared<Rectangle3D>();
 	m_messageFlame->Initialize();
 	m_messageFlame->SetCamera(camera);
-	m_messageFlame->SetTexture(m_messageFlameTexture.get());
 	m_messageFlame->property._transform._scale = Vector3(16, 12, 0);
 
 	// カーソルの位値
@@ -37,6 +40,8 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy, aether
 	m_select = true;
 	m_isChangeScene = false;
 	m_camera = camera;
+	m_changeMessageFlame = false;
+	m_messageFlameTime = NULL;
 }
 
 
@@ -64,8 +69,23 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	// 話してるときは何もしない
 	if (m_isView){
 		m_viewMessageFlame = false;
+		m_message.mUpdate();
 	}
 
+	if (m_viewMessageFlame){
+		m_messageFlameTime += GameClock::GetDeltaTime();
+		if (m_messageFlameTime > kMessageFlameTime){
+			m_changeMessageFlame = !m_changeMessageFlame;
+			m_messageFlameTime = NULL;
+		}
+	}
+
+	if (m_changeMessageFlame){
+		m_messageFlame->SetTexture(m_messageFlameTexture.get());
+	}
+	else{
+		m_messageFlame->SetTexture(m_messageFlameTexture2.get());
+	}
 	if (isPressButton){
 		
 		// シーンの遷移？
@@ -128,11 +148,11 @@ void MessageManager::mChangeMessage(aetherClass::Texture* tex){
 }
 
 //
-void MessageManager::m2DRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* color){
+void MessageManager::m2DRender(aetherClass::ShaderBase* trans, aetherClass::ShaderBase* col){
 	if (!m_isView)return;
-	m_message.mRender(shader);
+	m_message.mRender(trans);
 	if (m_state == eState::eSelect){
-		m_pCursor->Render(color);
+		m_pCursor->Render(col);
 	}
 }
 
@@ -150,6 +170,7 @@ bool MessageManager::mIsView(){
 	return m_isView;
 }
 
+//
 void MessageManager::mCursorUpdate(const bool flg){
 	if (m_state != eState::eSelect)return;
 	if (flg){

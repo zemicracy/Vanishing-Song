@@ -42,10 +42,13 @@ private:
 
 	std::shared_ptr<aetherClass::Rectangle3D>m_messageFlame;
 	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture;
+	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture2;
 	bool m_select;
 	bool m_isChangeScene;
 	bool m_viewMessageFlame;
 	aetherClass::ViewCamera* m_camera;
+	float m_messageFlameTime;
+	bool m_changeMessageFlame;
 };
 
 #endif

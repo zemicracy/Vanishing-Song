@@ -194,7 +194,7 @@ void SceneGame::Render(){
 
 void SceneGame::UIRender(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-	m_pMessageManager->m2DRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		m_pFadeObject->mRedner(shaderHash["color"].get());
 	}
