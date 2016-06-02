@@ -7,7 +7,6 @@
 #include "ResourceManager.h"
 #include"SceneGame.h"
 //debug
-
 using namespace aetherClass;
 const std::string SceneBattle::Name = "Battle";
 SceneBattle::SceneBattle():
@@ -293,7 +292,7 @@ void SceneBattle::mCountIn(){
 				m_PreInitProcess = false;
 				m_winner = m_battleState;
 				m_battleState = GameManager::eBattleState::eResult;
-				Singleton<ResourceManager>::GetInstance().mGetBGM(0)->Stop();
+				Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->Stop();
 			}
 		}
 	}
@@ -314,7 +313,7 @@ void SceneBattle::mCountIn(){
 	else {		//•’i‚Í‚±‚Á‚¿
 		if (int(m_rhythm->mWholeBeatTime() + 0.1f) != m_prevWholeBeatNo){
 			std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
-			cnt = 0;
+			m_inCount = 0;
 //			std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
 			m_inCount = 0;
 			m_pMessage->mSetActive(false);
@@ -330,7 +329,7 @@ void SceneBattle::mCountIn(){
 
 	if (m_inCount >= 2){
 		if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
-			Singleton<ResourceManager>::GetInstance().mGetBGM(0)->SetValume(-m_bgmVolume*100);
+			Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->SetValume(-m_bgmVolume*100);
 			m_bgmVolume++;
 		}else{
 			if (!m_PreInitProcess){

@@ -68,6 +68,19 @@ void ResultBoard::mInitialize(){
 	m_pNumSprite->Initialize();
 	m_pNumSprite->property._transform._scale = Vector3(25, 40, 1);
 
+	std::string path = "Texture\\Result\\";
+	m_TextureList["rankText"] = gLoadTexture(path + "rank.png");
+	m_pGeneral["rankText"]->SetTexture(m_TextureList["rankText"].get());
+
+	m_TextureList["miss"] = gLoadTexture(path + "Miss.png");
+	m_pGeneral["missText"]->SetTexture(m_TextureList["miss"].get());
+
+	m_TextureList["correct"] = gLoadTexture(path + "correct_rate.png");
+	m_pGeneral["correctRateText"]->SetTexture(m_TextureList["correct"].get());
+
+	m_TextureList["blank"] = gLoadTexture(path + "blank.png");
+	m_pGeneral["backboard"]->SetTexture(m_TextureList["blank"].get());
+
 
 	ShaderDesc desc;
 	desc._pixel._srcFile = L"Shader/HalfFiller.hlsl";
@@ -82,6 +95,7 @@ void ResultBoard::mInitialize(){
 		m_numberList[std::to_string(i)] = gLoadTexture("Texture\\Number\\" + std::to_string(i) + ".png");
 	}
 	m_numberList["."] = gLoadTexture("Texture\\Number\\dot.png");
+	m_numberList["%"] = gLoadTexture("Texture\\Number\\%.png");
 
 
 
@@ -95,10 +109,10 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_pGauge->mSetRate(rate);
 
 	if (state == GameManager::eBattleState::eWin){
-		m_TextureList["issue"] = gLoadTexture("Texture\\Battle\\Clear.png");
+		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Win.png");
 	}
 	else{
-		m_TextureList["issue"] = gLoadTexture("Texture\\Battle\\Miss.png");
+		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Lose.png");
 	}
 	m_pGeneral["battleResult"]->SetTexture(m_TextureList["issue"].get());
 
@@ -125,24 +139,28 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	int dotrate = rate * 10;
 	int integer = i;
 
-	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate);
+	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate)+"%";
 //	Debug::mPrint(std::to_string(i) + "  " + std::to_string(dotrate) + "  " + std::to_string(rate));
 
 }
 void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
 
 	for (auto itr : m_pGeneral){
-		if (itr.first == "battleResult" || itr.first == "missValue" || itr.first == "rankImage" || itr.first == "correctRate"){
 			itr.second->Render(shader);
-		}else 
-			itr.second->Render(debug);
 	}
 	m_pGauge->mRender(m_halfFill);
 
 	//missCount
 	m_pNumSprite->property._transform._translation = m_missCountPosision;
-	m_pNumSprite->SetTexture(m_numberList[std::to_string(m_resultData._missCount)].get());
-	m_pNumSprite->Render(shader);
+	for (int i = 0; i < std::to_string(m_resultData._missCount).length(); ++i){
+		char c = std::to_string(m_resultData._missCount).at(i);
+		std::string st;
+		st.push_back(c);
+
+		m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
+		m_pNumSprite->SetTexture(m_numberList[st].get());
+		m_pNumSprite->Render(shader);
+	}
 
 	//ClearRate
 	m_pNumSprite->property._transform._translation = m_rankRatePosision;
