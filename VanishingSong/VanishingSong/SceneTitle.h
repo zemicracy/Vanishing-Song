@@ -15,10 +15,8 @@ class SceneTitle :
 	// óÒãìå^íËêî
 	enum eNextMode{
 		eNull = 0,
-		eSurvival,
-		ePractice,
-		eTutorial,
-		eBattle,
+		eStart,
+		eCredit,
 		eExit
 	};
 
@@ -66,7 +64,7 @@ public:
 	static const std::string Name;
 private:
 	SceneInfo mGetGameMode(const int index);
-	void mChangeSelect(aetherClass::Vector2);
+	void mChangeSelect();
 	void mClickState();
 	bool mMenuSelectState();
 private:
@@ -76,10 +74,11 @@ private:
 	std::shared_ptr<aetherClass::Texture> m_pLogoTexture;
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
-	std::array<ModeSelect, 5> m_cursorArray;
+	std::array<ModeSelect, 3> m_cursorArray;
 	bool m_pushState;
 	int m_nowSelectMode;
 	bool m_alphaState;
+	int m_nowCursor;
 };
 
 #endif
