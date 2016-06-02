@@ -48,7 +48,9 @@ public:
 	void mEnemyInitialize(eMusical, std::string directy, std::string tex);
 	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical);
 
+
 	std::shared_ptr<aetherClass::GameSound> mGetLastBGM();
+	std::shared_ptr<aetherClass::GameSound> mGetFirstBGM();
 private:
 
 	/*
@@ -127,6 +129,7 @@ private:
 	static const BGMType m_BgmPath[4];
 
 	std::shared_ptr<aetherClass::GameSound> m_pLastBGM;
+	std::shared_ptr<aetherClass::GameSound> m_pFirstBGM;
 	CharaEntity m_charaEntity;
 
 	CharaHash m_pPlayerHashes;

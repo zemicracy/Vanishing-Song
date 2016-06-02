@@ -2,6 +2,7 @@
 #define _FIELDPLAYER_H
 
 #include <Cube.h>
+#include <Sphere.h>
 #include <ShaderBase.h>
 #include <Transform.h>
 #include <ViewCamera.h>
@@ -80,7 +81,7 @@ public:
 		コライダーの取得用
 	*/
 	std::shared_ptr<aetherClass::Cube> mGetBodyColldier();
-
+	std::shared_ptr<aetherClass::Sphere> mGetSphereColldier();
 	// 壁に当たった時の処理
 	void mOnHitWall();
 	
@@ -114,7 +115,9 @@ private:
 	/*
 		コライダーの初期化
 	*/
+
 	void mSetUpBodyCollider(std::shared_ptr<aetherClass::Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
+	void mSetUpBodyCollider(std::shared_ptr<aetherClass::Sphere>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
 
 	/*
 		コライダーの更新処理
@@ -160,7 +163,7 @@ private:
 	Offset m_cameraOffset;						//　カメラのオフセット
 	Counter m_actionCount;			// それぞれのアクションを行ったフレーム数を保存しとく用
 	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
-
+	std::shared_ptr<aetherClass::Sphere> m_pSphereCollider;   // 基本的なコライダー
 	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
 	eActionType m_action;
 

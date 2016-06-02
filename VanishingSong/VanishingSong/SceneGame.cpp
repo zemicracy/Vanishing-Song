@@ -80,13 +80,19 @@ bool SceneGame::Initialize(){
 	m_pFieldPlayer->mSetTransform(Singleton<GameManager>::GetInstance().mGetPlayerTransform());
 
 	// É{ÉXÇ…èüÇ¡ÇƒÇ¢ÇΩÇÁäÆê¨ÇÃâπäyÇó¨Ç∑
-	auto bossState = Singleton<GameManager>::GetInstance().mFieldBossState();
+	auto bossState = Singleton<GameManager>::GetInstance().mBossState();
 	if (bossState == GameManager::eBossState::eWin){
 		Singleton<ResourceManager>::GetInstance().mGetLastBGM()->PlayToLoop();
 	}
 	else{
-		for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
-			Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(index.second);
+		auto fieldState = Singleton<GameManager>::GetInstance().mFieldState();
+		if (fieldState == GameManager::eFieldState::eNormal){
+			for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
+				Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(index.second);
+			}
+		}
+		else{
+			Singleton<ResourceManager>::GetInstance().mGetFirstBGM()->PlayToLoop();
 		}
 	}
 	
