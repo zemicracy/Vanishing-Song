@@ -15,6 +15,7 @@ public:
 		ePerform,   // ƒvƒŒƒCƒ„[‚Ì‰‰‘tŠJnó‘Ô 
 		eBattle,    // í“¬‚ÌÀsó‘Ô
 		eCheck,     // ¡‚Ìó‘Ô‚ğ”»’è‚·‚é
+		eResult,	// ƒŠƒUƒ‹ƒg
 		eNull,
 	};
 
@@ -24,7 +25,7 @@ public:
 		eEighter,   // ”ª•ª
 	};
 
-	// ƒtƒB[ƒ‹ƒh‚Å‚Ìƒ{ƒX‚Ìó‘Ô
+	// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã§ã®ãƒœã‚¹ã®çŠ¶æ…‹
 	enum class eBossState{
 		eVisible,
 		eUnVisible,

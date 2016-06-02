@@ -6,6 +6,7 @@
 #include"RhythmManager.h"
 #include"AttackParticle.h"
 #include"BattleField.h"
+#include"ResultBoard.h"
 
 #include<array>
 class OrderList
@@ -38,6 +39,7 @@ public:
 
 	//AccesserMethod
 	bool mIsEnd();
+	ResultData mGetResult();
 
 	//other
 	void mRender3D(aetherClass::ShaderBase*);
@@ -86,6 +88,10 @@ private:
 	std::shared_ptr<aetherClass::SpriteBase>m_pReadLine;
 	aetherClass::Vector3 m_ReadLineOrigin;
 
+	std::shared_ptr<aetherClass::Rectangle2D>m_pFlame;
+	aetherClass::Vector3 m_flamePosOrigin;
+	aetherClass::Vector3 m_flameScaleOrigin;
+
 
 	//ÉäÉYÉÄ
 	RhythmManager *m_rhythm;
@@ -106,6 +112,7 @@ private:
 	int m_MaxOrderSize;
 	
 	int m_damagedValue;
+	ResultData m_resultData;
 
 	//
 	GameManager::eBattleState* m_faze;
@@ -113,7 +120,7 @@ private:
 	//íËêî
 
 	const float m_kMissLevel = 0.5f;
-	const float m_kGreat = 0.3f;
+	const float m_kGreat = 0.25f;
 
 };
 
