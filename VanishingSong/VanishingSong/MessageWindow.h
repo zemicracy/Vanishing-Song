@@ -19,7 +19,6 @@ private:
 	std::shared_ptr<aetherClass::Rectangle2D>m_window;
 	std::shared_ptr<aetherClass::Rectangle2D>m_text;
 	std::shared_ptr<aetherClass::Rectangle2D>m_button;
-
 	std::shared_ptr<aetherClass::Texture>m_texture;
 };
 

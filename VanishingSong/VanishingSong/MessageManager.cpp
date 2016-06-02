@@ -5,7 +5,7 @@ namespace{
 	const int kCounterNull = 0;
 }
 using namespace aetherClass;
-MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy)
+MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy, aetherClass::ViewCamera* camera)
 {
 	m_message.mInitialize();
 	m_isView = false;
@@ -20,6 +20,15 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy)
 	m_buttonTexture[eState::eEnd].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eSelect].Load("Texture\\Message\\yesno.png");
 
+	m_messageFlameTexture = std::make_shared<Texture>();
+	m_messageFlameTexture->Load("Texture\\Message\\message_flame3.png");
+
+	m_messageFlame = std::make_shared<Rectangle3D>();
+	m_messageFlame->Initialize();
+	m_messageFlame->SetCamera(camera);
+	m_messageFlame->SetTexture(m_messageFlameTexture.get());
+	m_messageFlame->property._transform._scale = Vector3(16, 12, 0);
+
 	// カーソルの位値
 	m_cursorPosition[eSelectType::eYes] = 360.f;
 	m_cursorPosition[eSelectType::eNo] = 670.f;
@@ -27,12 +36,16 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy)
 	m_state = eState::eNull;
 	m_select = true;
 	m_isChangeScene = false;
+	m_camera = camera;
 }
 
 
 MessageManager::~MessageManager()
 {
 	m_message.mFinalize();
+	if (m_messageFlame){
+		m_messageFlame->Finalize();
+	}
 	if (m_pCursor){
 		m_pCursor->Finalize();
 		m_pCursor = nullptr;
@@ -40,11 +53,21 @@ MessageManager::~MessageManager()
 }
 
 //
-void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPressButton,const bool isCursor, aetherClass::Vector3 position){
+void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPressButton, const bool isCursor, Vector3 position, Vector3 enemyPosition){
 	bool isEnd = false;
 	if (pair.second)return;
 	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum()-1;
+	m_viewMessageFlame = true;
+	m_messageFlame->property._transform._translation = enemyPosition;
+	m_messageFlame->property._transform._translation._y = enemyPosition._y+35;
+
+	// 話してるときは何もしない
+	if (m_isView){
+		m_viewMessageFlame = false;
+	}
+
 	if (isPressButton){
+		
 		// シーンの遷移？
 		if (m_state == eState::eSelect && m_selectType == eSelectType::eYes){
 			m_isChangeScene = true;
@@ -105,7 +128,7 @@ void MessageManager::mChangeMessage(aetherClass::Texture* tex){
 }
 
 //
-void MessageManager::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* color){
+void MessageManager::m2DRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* color){
 	if (!m_isView)return;
 	m_message.mRender(shader);
 	if (m_state == eState::eSelect){
@@ -113,6 +136,15 @@ void MessageManager::mRender(aetherClass::ShaderBase* shader, aetherClass::Shade
 	}
 }
 
+//
+void MessageManager::m3DRender(aetherClass::ShaderBase* tex, aetherClass::ShaderBase* col){
+	if (m_isView)return;
+	if (m_viewMessageFlame){
+		m_messageFlame->property._transform._rotation = m_camera->property._rotation;
+		m_messageFlame->Render(tex);
+		m_viewMessageFlame = false;
+	}
+}
 //
 bool MessageManager::mIsView(){
 	return m_isView;

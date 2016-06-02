@@ -87,9 +87,6 @@
     <ClCompile Include="BattleEnemy.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="BattleEnemyManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="BattlePlayer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -154,6 +151,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="BattleField.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleMessage.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -230,9 +230,6 @@
     <ClInclude Include="BattleEnemy.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="BattleEnemyManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="BattlePlayer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -306,6 +303,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="BattleField.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleMessage.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

@@ -15,7 +15,11 @@
 #include"ActionBoard.h"
 #include"BattleField.h"
 #include "BattlePlayerManager.h"
+#include "BattleEnemyManager.h"
 #include"BattleMessage.h"
+#include"GaugeManager.h"
+#include"ResultBoard.h"
+
 class SceneBattle :
 	public aetherClass::GameScene
 {
@@ -50,12 +54,15 @@ public:
 private:
 	void mCountIn();
 
+	void mOnResult();
 	void mOnListen();    // “G‚Ì‰‰‘t
 	void mOnPerform();   // ƒvƒŒƒCƒ„[‚Ì‰‰‘t
 	void mOnBattle();    // í“¬ŠJn
 	void mCheckBattle();
 private:
 	GameManager::eBattleState m_battleState;
+	GameManager::eBattleState m_winner;
+
 
 	BattlePlayerManager m_players;
 	CharaEntity m_charaEntity;
@@ -63,15 +70,20 @@ private:
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<BattleField>m_pField;
 	std::unique_ptr<BattleMessage>m_pMessage;
+	std::unique_ptr<GaugeManager>m_pGauge;
+	std::unique_ptr<ResultBoard>m_pResult;
+
 	aetherClass::ViewCamera m_view;
+	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
 
 	int m_prevWholeBeatNo;
 	bool m_InitUpdateProcess;
 	bool m_PreInitProcess;
-
+	float m_bgmVolume;
+	int m_inCount;
 	//karikari
-	int charaHp;
-	int enemyHp;
+	CharaStatus charaHp;
+	CharaStatus enemyHp;
 
 
 	eGameState m_processState;

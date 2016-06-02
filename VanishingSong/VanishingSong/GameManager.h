@@ -15,6 +15,7 @@ public:
 		ePerform,   // プレイヤーの演奏開始状態 
 		eBattle,    // 戦闘の実行状態
 		eCheck,     // 今の状態を判定する
+		eResult,	// リザルト
 		eNull,
 	};
 
@@ -23,20 +24,35 @@ public:
 		eQuarter,  // 四分
 		eEighter,   // 八分
 	};
+
+	// フィールドでのボスの状態
+	enum class eBossState{
+		eVisible,
+		eUnVisible,
+		eWin,
+		eNull
+	};
 public:
 	GameManager();
 	~GameManager();
-	void mInitialize();
-	bool mIsPause();	
+	void mInitialize();	
 
 	void mPushUsePlayer(eMusical);
 	std::unordered_map<eMusical, eMusical>& mGetUsePlayer();
 	aetherClass::Transform mGetPlayerTransform();
 	void mSetPlayerTransform(aetherClass::Transform);
+
+	void mBattleDataFile(std::string);
+	std::string mBattleDataFile();
+
+	void mFieldBossState(eBossState);
+	eBossState mFieldBossState();
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;
 	aetherClass::Transform m_prevPlayerTransform;
+	std::string m_battleDataFile;
+	eBossState m_fieldBossState;
 };
 
 #endif

@@ -30,7 +30,6 @@ SceneGame::~SceneGame()
 	m_gameState = eState::eNull;
 }
 
-std::unique_ptr<FbxModel> fbx;
 bool SceneGame::Initialize(){
 	bool result = true;
 
@@ -57,7 +56,7 @@ bool SceneGame::Initialize(){
 
 	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea,m_pFieldEnemy);
 
-	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy);
+	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy,view);
 
 	int count= 0;
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
@@ -75,24 +74,32 @@ bool SceneGame::Initialize(){
 	particle._scale = Vector3(2,2, 0);
 	particle._texturePath = "Texture\\Battle\\note.png";
 	m_pPaticle = std::make_shared<AttackParticle>(particle,view);
-	fbx = std::make_unique<FbxModel>();
-	bool fbxResult =fbx->LoadFBX("Model\\StageBase.fbx", eAxisSystem::eAxisOpenGL);
-	fbx->SetCamera(view);
-	fbx->property._transform._translation = Vector3(0, 1, 0);
 
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
 	m_pFieldPlayer->mSetTransform(Singleton<GameManager>::GetInstance().mGetPlayerTransform());
+
+	// ボスに勝っていたら完成の音楽を流す
+	auto bossState = Singleton<GameManager>::GetInstance().mFieldBossState();
+	if (bossState == GameManager::eBossState::eWin){
+		Singleton<ResourceManager>::GetInstance().mGetLastBGM()->PlayToLoop();
+	}
+	else{
+		for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
+			Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(index.second);
+		}
+	}
+	
 	return true;
 }
 
 // 解放処理
 // 全ての解放
 void SceneGame::Finalize(){
-	if (fbx){
-		fbx->Finalize();
-		fbx.release();
+	for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
+		Singleton<ResourceManager>::GetInstance().mStopBaseBGM(index.second);
 	}
+	Singleton<ResourceManager>::GetInstance().mGetLastBGM()->Stop();
 	if (m_pMessageManager){
 		m_pMessageManager.reset();
 		m_pMessageManager = nullptr;
@@ -149,6 +156,7 @@ bool SceneGame::Updater(){
 		// 戦闘に行く処理
 		// 戦闘に行く前に設定する奴もここでする
 		m_gameState = eState::eBattle;
+
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return true;
 	}
@@ -170,17 +178,15 @@ void SceneGame::Render(){
 
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
-	fbx->Render(shaderHash["color"].get());
-
-	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-
-	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-
 	// 捕虜の表示
 	for (auto& index : m_pCage){
 		index->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	}
 
+	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+
+	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pPaticle->mRender(shaderHash["texture"].get());
 
 	return;
@@ -188,7 +194,7 @@ void SceneGame::Render(){
 
 void SceneGame::UIRender(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-	m_pMessageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pMessageManager->m2DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		m_pFadeObject->mRedner(shaderHash["color"].get());
 	}
@@ -235,10 +241,17 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 bool SceneGame::mMessageUpdate(){
 	auto collideInfo = m_pCollideManager->GetMassageInfo();
 	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
-	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton, m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
+	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight) ||
+		GameController::GetKey().KeyDownTrigger('A') || GameController::GetKey().KeyDownTrigger('D');
+	const Vector3 playerPosition = m_pFieldPlayer->mGetBodyColldier()->property._transform._translation;
+	const Vector3 enemyPosition = m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetProperty()._pCollider->property._transform._translation;
+
+	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton,playerPosition,enemyPosition);
 	if (m_pMessageManager->mGetIsChangeScene()){
+
 		Singleton<GameManager>::GetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
+		Singleton<GameManager>::GetInstance().mBattleDataFile(m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetBattleDataPath());
+
 		return true;
 	}
 	return false;

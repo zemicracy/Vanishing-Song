@@ -11,9 +11,12 @@ public:
 
 	void mInitialize(aetherClass::ViewCamera* view);
 	void mUpdate(std::shared_ptr<ActionCommand>command);
+	void mRhythmicMotion();
+
 	void mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug);
 	aetherClass::Vector3 mGetEnemyLane(eMusical type);
 	aetherClass::Vector3 mGetPlayerLane(eMusical type);
+	aetherClass::ViewCamera* mGetCamera();
 
 	BattleField();
 	~BattleField();
@@ -21,6 +24,9 @@ private:
 	void mFinalize();
 private:
 	
+	float m_commandScale;
+	aetherClass::Vector3 m_tankScaleOrigin;
+
 	aetherClass::ViewCamera *m_view;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 	std::unordered_map < eMusical, std::shared_ptr<aetherClass::ModelBase>>m_pLane;
@@ -32,7 +38,6 @@ private:
 	std::shared_ptr<aetherClass::FbxModel>m_pPlane;
 
 	std::array < std::shared_ptr<aetherClass::ModelBase>, 2>m_pDebug;
-
 
 
 };

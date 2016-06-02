@@ -1,11 +1,9 @@
 #include "GaugeManager.h"
-#include<PixelShader.h>
+#include"WorldReader.h"
 
 using namespace aetherClass;
 GaugeManager::GaugeManager()
 {
-	m_hpGauge = nullptr;
-	m_mpGauge= nullptr;
 	m_shader = nullptr;
 }
 
@@ -22,14 +20,37 @@ void GaugeManager::mFinalize(){
 
 
 bool GaugeManager::mInitialize(){
-	bool result = false;
-	m_hpGauge = std::make_unique<PlayerHPGauge>();
-	result = m_hpGauge->mInitialize();
-	if (!result)return false;
+	WorldReader reader;
+	reader.Load("data\\gaugePosition.aether");
 
-	m_mpGauge = std::make_unique<PlayerMPGauge>();
-	result = m_mpGauge->mInitialize();
-	if (!result)return false;
+	for (auto itr : reader.GetInputWorldInfo()._object){
+		if (itr->_name == "playerHP"){
+			m_playerHpGauge = std::make_unique<PlayerHPGauge>();
+			SpriteBase::Property pp;
+			pp._transform = itr->_transform;
+			pp._color = Color(0,1,0,1);
+
+			m_playerHpGauge->mSetProperty(pp);
+			m_playerHpGauge->mInitialize();
+
+		}
+		else if (itr->_name == "enemyHP"){
+			m_enemyHpGauge = std::make_unique<PlayerHPGauge>();
+			SpriteBase::Property pp;
+			pp._transform = itr->_transform;
+			pp._color = Color(1,0.5,0,1);
+
+			m_enemyHpGauge->mSetProperty(pp);
+			m_enemyHpGauge->mInitialize();
+		}
+		
+	}
+
+
+
+
+	
+
 
 	ShaderDesc desc;
 	desc._pixel._srcFile = L"Shader/HalfFiller.hlsl";
@@ -38,27 +59,21 @@ bool GaugeManager::mInitialize(){
 	desc._vertex._entryName = "vs_main";
 
 	m_shader = std::make_shared<HalfFillShader>();
-	result = m_shader->Initialize(desc, eVertex | ePixel);
-	if (!result) return false;
-
+	m_shader->Initialize(desc, eVertex | ePixel);
+	
 	return true;
 }
 void GaugeManager::mRender(){
-	m_hpGauge->mRender(m_shader);
-	m_mpGauge->mRender(m_shader);
+	m_playerHpGauge->mRender(m_shader);
+	m_enemyHpGauge->mRender(m_shader);
 }
 void GaugeManager::mUpdate(float timeScale){
-	m_mpGauge->mUpdate(timeScale);
-	m_hpGauge->mUpdate(timeScale);
+	m_playerHpGauge->mUpdate(timeScale);
+	m_enemyHpGauge->mUpdate(timeScale);
 }
 
-void GaugeManager::mSetuseMp(float value){
-	m_mpGauge->mSetuseMpValue(value);
-}
 
-void GaugeManager::mSetCharaStatus(CharaStatus *status){
-	m_mpGauge->mSetCharaStatus(status);
-	m_hpGauge->mSetCharaStatus(status);
+void GaugeManager::mSetHpAll(CharaStatus* player, CharaStatus* enemy){
+	m_playerHpGauge->mSetCharaStatus(player);
+	m_enemyHpGauge->mSetCharaStatus(enemy);
 }
-
-//m_pCharaStatus = status;

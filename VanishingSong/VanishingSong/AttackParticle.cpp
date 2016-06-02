@@ -72,8 +72,6 @@ void AttackParticle::mUpdate(float timeScale){
 		if (!index._active || index._deth)continue;
 		index._object->property._transform._translation += index._vector*timeScale;
 
-		// 
-		
 		const float length = index._object->property._transform._translation.GetVectorLength();
 		if (length>m_endPointLength){
 			index._deth = true;

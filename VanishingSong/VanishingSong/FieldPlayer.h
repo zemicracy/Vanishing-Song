@@ -12,6 +12,7 @@
 #include "CharaEntity.h"
 #include "Const.h"
 #include "Animation.h"
+
 class FieldPlayer
 {
 private:

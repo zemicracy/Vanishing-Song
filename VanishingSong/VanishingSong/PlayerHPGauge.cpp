@@ -34,30 +34,25 @@ void PlayerHPGauge::mFinalize(){
 	}
 	m_CharaStatus = nullptr;
 }
+void PlayerHPGauge::mSetProperty(SpriteBase::Property pro){
+	m_property = pro;
+}
+
 bool PlayerHPGauge::mInitialize(){
 	bool result = false;
 	
 	m_pMainSprite = std::make_shared<Rectangle2D>();
-	result = m_pMainSprite->Initialize();
-	if (!result)return false;
+	m_pMainSprite->Initialize();
 
+	
 	m_maskTexture = std::make_shared<Texture>();
-	result = m_maskTexture->Load("Texture\\Game\\hpGauge.png");
-	if (!result)return false;
+	m_maskTexture->Load("Texture\\Game\\mpGauge.png");
 
-	WorldReader reader;
-	reader.Load("data/gaugePosition.aether");
-	for (auto itr : reader.GetInputWorldInfo()._object){
-		if (itr->_name == "hpGauge"){
-			m_pMainSprite->property._transform = itr->_transform;
-			m_pMainSprite->property._color = itr->_color;
-		}
-	}
+	m_pMainSprite->property = m_property;
 
-	reader.UnLoad();
 	//m_pMainSprite->property._transform._rotation._z = 180;
 	m_pMainSprite->SetTexture(m_maskTexture.get());
-	m_pMainSprite->property._color = Color(0, 1, 0, 1);
+
 
 	m_pDamageSprite = std::make_shared<Rectangle2D>();
 	*m_pDamageSprite.get() = *m_pMainSprite.get();
@@ -70,11 +65,12 @@ bool PlayerHPGauge::mInitialize(){
 
 	//ìhÇËï˚ÇÃéwíË
 	m_fillType._flg = 1;
+
 	//è„â∫îΩì]
 	m_fillType._direction = Vector2(1, -1);
 	m_fillType._interpolation = 1;
-	m_fillType._beginRadius = 80;
-	m_fillType._endRadius = 272;
+	m_fillType._beginRadius = 0;
+	m_fillType._endRadius = 360;
 	m_fillType._position = Vector2(0.5, 0.5);
 
 	

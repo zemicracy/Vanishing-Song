@@ -4,6 +4,9 @@
 #include"GameManager.h"
 #include"ActionSound.h"
 #include"RhythmManager.h"
+#include"AttackParticle.h"
+#include"BattleField.h"
+#include"ResultBoard.h"
 
 #include<array>
 class OrderList
@@ -30,12 +33,16 @@ public:
 	void mEndReset();
 
 	//Indispensable Method
-	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,std::shared_ptr<ActionBoard>);
+	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,ActionBoard*,BattleField*);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUpdate();
-	//AccesserMethod
 
+	//AccesserMethod
 	bool mIsEnd();
+	ResultData mGetResult();
+
+	//other
+	void mRender3D(aetherClass::ShaderBase*);
 
 private:
 	void mBattleUpdate();
@@ -58,6 +65,9 @@ private:
 	std::vector<std::shared_ptr<ActionCommand>>m_PlayerOrderList;
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
+	AttackParticle::ParticleDesc m_perticleDesc;
+	std::unique_ptr<AttackParticle>m_pParticle;
+
 	//描画先
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;
 	std::vector<aetherClass::Vector3>m_pSpriteOrigin;
@@ -66,7 +76,8 @@ private:
 	std::shared_ptr<ActionCommand>m_playedAction;
 
 	//そのたモーション目的
-	std::shared_ptr<ActionBoard>m_ActionBoard;
+	ActionBoard* m_ActionBoard;
+	BattleField* m_Field;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
 	aetherClass::Vector3 m_VolumeOrigin;
 
@@ -76,6 +87,10 @@ private:
 
 	std::shared_ptr<aetherClass::SpriteBase>m_pReadLine;
 	aetherClass::Vector3 m_ReadLineOrigin;
+
+	std::shared_ptr<aetherClass::Rectangle2D>m_pFlame;
+	aetherClass::Vector3 m_flamePosOrigin;
+	aetherClass::Vector3 m_flameScaleOrigin;
 
 
 	//リズム
@@ -97,6 +112,7 @@ private:
 	int m_MaxOrderSize;
 	
 	int m_damagedValue;
+	ResultData m_resultData;
 
 	//
 	GameManager::eBattleState* m_faze;
@@ -104,7 +120,7 @@ private:
 	//定数
 
 	const float m_kMissLevel = 0.5f;
-	const float m_kGreat = 0.3f;
+	const float m_kGreat = 0.25f;
 
 };
 

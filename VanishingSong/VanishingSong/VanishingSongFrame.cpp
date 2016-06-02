@@ -24,16 +24,17 @@ bool VanishingSongFrame::InitializeBuffer(){
 	result = Singleton<ResourceManager>::GetInstance().Initialize();
 	// 操作キャラクターのリソースを初期化
 	Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eBlue);
-	
+	Singleton<GameManager>::GetInstance().mFieldBossState(GameManager::eBossState::eUnVisible);
+
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","\\blue");
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "\\red");
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "\\green");
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "\\yellow");
 
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Ground");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground");
+	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air","\\Green");
+	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Ground", "\\Red");
+	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air","\\Blue");
+	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground","\\Yellow");
 
 	return true;
 }

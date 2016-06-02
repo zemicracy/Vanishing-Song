@@ -49,10 +49,10 @@ bool SceneTitle::Initialize(){
 	m_pLogoTexture->Load("Texture\\Title\\TitleImage.png");
 
 	m_pMenuTexture = std::make_shared<Texture>();
-	m_pMenuTexture->Load("Texture\\Title\\SelectMode.png");
+	m_pMenuTexture->Load("Texture\\Title\\Select.png");
 
 	m_pPushTexture = std::make_shared<Texture>();
-	m_pPushTexture->Load("Texture\\Title\\TitleImage.png");
+	m_pPushTexture->Load("Texture\\Title\\PushStart.png");
 	
 	// ロゴの初期化
 	m_pLogo = std::make_unique<Rectangle2D>();
@@ -81,13 +81,13 @@ bool SceneTitle::Initialize(){
 	m_pCursor->Initialize();
 	m_pCursor->property._color = Color(1, 1, 1, 0.3);
 	m_pCursor->property._transform._scale = Vector3(400, 50, 0);
-	m_pCursor->property._transform._translation = m_pMenu->property._transform._translation + Vector3(0,5,0);
+	m_pCursor->property._transform._translation = m_pMenu->property._transform._translation + Vector3(0,35,0);
 
 	const float cursorPosition = m_pCursor->property._transform._translation._y;
 	const float cursorSize = m_pCursor->property._transform._scale._y;
 
 	for (int i = 0; i < m_cursorArray.size(); ++i){
-		m_cursorArray[i]._cursorY = cursorPosition + (i * (10 + cursorSize));
+		m_cursorArray[i]._cursorY = cursorPosition + (i * (35 + cursorSize));
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
 	//次のシーン
@@ -96,6 +96,8 @@ bool SceneTitle::Initialize(){
 	m_pushState = false;
 	m_alphaState = false;
 	m_nowSelectMode = NULL;
+	m_nowCursor = NULL;
+	
 	return true;
 }
 
@@ -183,25 +185,36 @@ bool SceneTitle::TransitionOut(){
 }
 
 
-void SceneTitle::mChangeSelect(Vector2 mouse){
+void SceneTitle::mChangeSelect(){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
-	for (int i = 0; i < m_cursorArray.size();++i){
-		if (i == kSkipNumber || i == kSkipNumber - 1 || i == kSkipNumber - 2)continue;
-		
-		if (m_cursorArray[i]._cursorY<mouse._y&&m_cursorArray[i]._cursorY + cursorSize>mouse._y){
-			m_pCursor->property._transform._translation._y = m_cursorArray[i]._cursorY;
-			m_nowSelectMode = m_cursorArray[i]._modeNumber;
-		}
+	if (GameController::GetKey().KeyDownTrigger(VK_UP) || GameController::GetJoypad().ButtonPress(eJoyButton::eUp)){
+		m_nowCursor -= 1;
 	}
+	else if (GameController::GetKey().KeyDownTrigger(VK_DOWN) || GameController::GetJoypad().ButtonPress(eJoyButton::eDown)){
+		m_nowCursor += 1;
+
+	}
+
+	if (m_nowCursor > m_cursorArray.size() - 1){
+		m_nowCursor = 0;
+	}
+	else if (m_nowCursor < 0){
+		m_nowCursor = m_cursorArray.size() - 1;
+	}
+
+	m_pCursor->property._transform._translation._y = m_cursorArray[m_nowCursor]._cursorY;
+	m_nowSelectMode = m_cursorArray[m_nowCursor]._modeNumber;
+
 }
 
 
 void SceneTitle::mClickState(){
 	if (m_pushState != kPleaseClick)return;
 
-	if (GameController::GetMouse().IsLeftButtonTrigger()){
+	if (GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart)){
 		m_pMenu->SetTexture(m_pMenuTexture.get());
 		m_pushState = kMenuSelect;
+		m_pMenu->property._color._alpha = 1;
 	}
 
 	// 増減の選択
@@ -222,50 +235,35 @@ void SceneTitle::mClickState(){
 
 }
 
-
+//
 bool SceneTitle::mMenuSelectState(){
 	if (m_pushState != kMenuSelect)return true;
 
-	m_pMenu->property._color._alpha = 1;
-	// カーソルの移動処理
-	Vector2 mouse = GameController::GetMouse().GetMousePosition();
-	DirectXEntity directX;
-	Vector2 screenSize = GetWindowSize(directX.GetWindowHandle(kWindowName));
-	//ウィンドウサイズ調整
-	mouse._x = (mouse._x / (screenSize._x - GetSystemMetrics(SM_CXDLGFRAME) * 2))* screenSize._x;
-	mouse._y = (mouse._y / (screenSize._y - GetSystemMetrics(SM_CYCAPTION) - GetSystemMetrics(SM_CXDLGFRAME)))* screenSize._y;
+	mChangeSelect();
 
-	// カーソルの切り替え
-	mChangeSelect(mouse);
-
-	// カーソルの上でクリックしたら
-	Vector3 size = m_pCursor->property._transform._scale;
-	Vector3 origin = m_pCursor->property._transform._translation;
-	if (mouse._x > origin._x&&mouse._x <= origin._x + size._x&&
-		mouse._y > origin._y&&mouse._y <= origin._y + size._y){
-
-		if (GameController::GetMouse().IsLeftButtonTrigger()){
-			SceneInfo nextState = mGetGameMode(m_nowSelectMode);
-			// Exit以外が来たらシーンの遷移を開始
-			if (nextState._nextSceneName != kExit){
-				// シーンの遷移
-				ChangeScene(nextState._nextSceneName, LoadState::eUse);
-			}else{
-				// 終了
-				return kShutdown;
-			}
+	if (GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eB)){
+		SceneInfo nextState = mGetGameMode(m_nowSelectMode);
+		// Exit以外が来たらシーンの遷移を開始
+		if (nextState._nextSceneName != kExit){
+			// シーンの遷移
+			ChangeScene(nextState._nextSceneName, LoadState::eUse);
+		}
+		else{
+			// 終了
+			return kShutdown;
 		}
 	}
+	return true;
 }
 
 
 SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	SceneInfo info;
 	switch (index){
-	case eNextMode::eSurvival:
+	case eNextMode::eStart:
 		info._nextSceneName = SceneGame::Name;
 		break;
-
+	case eNextMode::eCredit:
 		// ここはならすべて終了
 	case eNextMode::eNull:
 	case eNextMode::eExit:

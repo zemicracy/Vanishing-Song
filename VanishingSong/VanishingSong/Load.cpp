@@ -2,56 +2,85 @@
 #include <Rectangle2D.h>
 #include "Const.h"
 #include "ResourceManager.h"
+#include <GameClock.h>
+#include <WorldReader.h>
+#include <GameController.h>
 using namespace aetherClass;
-
+namespace{
+	const float kChangeBarTime = 1.f;
+}
 Load::Load()
 {
+	m_changeBarTime = NULL;
+	m_barCount = NULL;
 }
 
 
 Load::~Load()
 {
+	m_changeBarTime = NULL;
+	m_barCount = NULL;
 }
 
 void Load::Initialize(){
 	bool result;
-	m_pLoadMainTexture = std::make_unique<Texture>();
-	result = m_pLoadMainTexture->Load("Texture\\Load\\LaodMain.png");
-	if (!result){
-		Debug::mPrint("テクスチャの読み込み失敗");
+	m_pLoadBar = std::make_unique<Rectangle2D>();
+	m_pLoadBar->Initialize();
+
+	WorldReader reader;
+	reader.Load("data\\Load\\load_screen", true);
+	for (auto& index : reader.GetInputWorldInfo()._object){
+		if (index->_name == "now_loading"){
+			m_pLoadBar->property._transform = index->_transform;
+		}
 	}
-	m_pLoadMain = std::make_unique<Rectangle2D>();
-	m_pLoadMain->Initialize();
-	m_pLoadMain->property._transform._scale = Vector3(kWindowWidth, kWindowHeight, 0);
-	m_pLoadMain->SetTexture(m_pLoadMainTexture.get());
 }
 
 
 void Load::Finalize(){
-	if (m_pLoadMain){
-		m_pLoadMain->Finalize();
-		m_pLoadMain.release();
-		m_pLoadMain = nullptr;
+	if (m_pLoadBar){
+		m_pLoadBar->Finalize();
+		m_pLoadBar.release();
+		m_pLoadBar = nullptr;
 	}
 
-	if (m_pLoadMainTexture){
-		m_pLoadMainTexture.release();
-		m_pLoadMainTexture = nullptr;
-	}
 }
 
 /*
 	ロード中の処理
 */
 void Load::Run(){
+	mChangeBar(m_changeBarTime);
 	DirectXEntity entity;
 	entity.GetDirect3DManager()->Change2DMode();
-
 	auto shader = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-	m_pLoadMain->Render(shader["texture"].get());
-	entity.GetDirect3DManager()->Change3DMode();
 
+	m_pLoadBar->Render(shader["texture"].get());
+	entity.GetDirect3DManager()->Change3DMode();
+	m_changeBarTime += GameClock::GetDeltaTime();
+	
+	auto loadBarTexture = Singleton<ResourceManager>::GetInstance().GetTexture("NowLoading" + std::to_string(m_barCount + 1)).get();
+	m_pLoadBar->SetTexture(loadBarTexture);
 }
+
 bool Load::WaitRun(){
 	return kWaitEnd;
+}
+
+void Load::mChangeBar(float& time){
+	if (time > kChangeBarTime){
+		m_barCount += 1;
+		if (m_barCount >= 3){
+			m_barCount = NULL;
+		}
+		auto loadBarTexture = Singleton<ResourceManager>::GetInstance().GetTexture("NowLoading" + std::to_string(m_barCount+1)).get();
+		m_pLoadBar->SetTexture(loadBarTexture);
+		time = NULL;
+	}
+}
+
+// 変数などの再初期化
+void Load::mResetProperty(){
+	m_changeBarTime = NULL;
+	m_barCount = NULL;
 }
