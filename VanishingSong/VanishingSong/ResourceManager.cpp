@@ -37,6 +37,8 @@ bool ResourceManager::Initialize(){
 	InitializeActionSound();
 	InitializeTexture();
 	InitializeShader();
+	mInitializeLaod();
+
 	return true;
 }
 
@@ -50,6 +52,8 @@ void ResourceManager::Finalize(){
 	FinalizeSound();
 	FinalizeBGM();
 	InitializeShader();
+	mFinalizeLoad();
+
 	return;
 }
 
@@ -393,4 +397,16 @@ void ResourceManager::FinalizeEnemy(){
 
 std::shared_ptr<aetherClass::GameSound> ResourceManager::mGetBGM(eMusical type){
 	return m_pBaseBgmArray.at(type);
+}
+
+//
+void ResourceManager::mInitializeLaod(){
+	for (int i = 0; i < 3; ++i){
+		RegisterTexture("NowLoading" + std::to_string(i + 1), "Texture\\Load\\NowLoading\\" + std::to_string(i + 1) + ".png");
+	}
+}
+
+//
+void ResourceManager::mFinalizeLoad(){
+
 }
