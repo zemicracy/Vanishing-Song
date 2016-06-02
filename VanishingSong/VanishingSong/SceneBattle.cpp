@@ -79,7 +79,6 @@ bool SceneBattle::Initialize(){
 	m_pBattleEnemyManager->Initialize(&m_view, m_pField.get());
 
 	//ç≈å„Ç…çsÇ§
-	Singleton<ResourceManager>::GetInstance().mGetBGM(0)->SetValume(0);
 	return true;
 }
 
