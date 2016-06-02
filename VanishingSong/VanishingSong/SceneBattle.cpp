@@ -79,6 +79,8 @@ bool SceneBattle::Initialize(){
 	m_pBattleEnemyManager->Initialize(&m_view, m_pField.get());
 
 	//ç≈å„Ç…çsÇ§
+	Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->SetValume(0);
+	Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(eMusical::eBlue);
 	return true;
 }
 
