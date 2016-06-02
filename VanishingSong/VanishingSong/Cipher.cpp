@@ -25,9 +25,8 @@ Cipher::~Cipher()
 void Cipher::mLoadFile(std::string path){
 	std::ifstream reader;
 	reader.open(path, std::ios::in);
-	reader.unsetf(std::ios::skipws);
+	//reader.unsetf(std::ios::skipws);
 
-	
 	int KeyCount = NULL;
 	std::string tag = "none";
 	while (!reader.eof())
