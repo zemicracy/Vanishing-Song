@@ -56,7 +56,7 @@ bool SceneGame::Initialize(){
 
 	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea,m_pFieldEnemy);
 
-	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy);
+	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy,view);
 
 	int count= 0;
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
@@ -186,7 +186,7 @@ void SceneGame::Render(){
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	
+	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pPaticle->mRender(shaderHash["texture"].get());
 
 	return;
@@ -194,7 +194,7 @@ void SceneGame::Render(){
 
 void SceneGame::UIRender(){
 	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
-	m_pMessageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pMessageManager->m2DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
 		m_pFadeObject->mRedner(shaderHash["color"].get());
 	}
@@ -243,7 +243,10 @@ bool SceneGame::mMessageUpdate(){
 	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight) ||
 		GameController::GetKey().KeyDownTrigger('A') || GameController::GetKey().KeyDownTrigger('D');
-	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton, m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
+	const Vector3 playerPosition = m_pFieldPlayer->mGetBodyColldier()->property._transform._translation;
+	const Vector3 enemyPosition = m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetProperty()._pCollider->property._transform._translation;
+
+	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton,playerPosition,enemyPosition);
 	if (m_pMessageManager->mGetIsChangeScene()){
 
 		Singleton<GameManager>::GetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());

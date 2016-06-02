@@ -6,6 +6,7 @@ using namespace aetherFunction;
 using namespace aetherClass;
 namespace{
 	const int kWallCount = 2;
+	const float kRange = 40.f;
 }
 CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field, std::shared_ptr<FieldEnemyManager> enemy)
 { 
@@ -54,7 +55,7 @@ void CollideManager::mCheckHitEnemy(const int number){
 
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
-	if ((x*x) + (z*z) > 30 * 30){
+	if ((x*x) + (z*z) > kRange*kRange){
 		m_messageInfo.first = number;
 		m_messageInfo.second = true;
 	}else{

@@ -3,7 +3,7 @@
 #include <sstream>
 #include "Debug.h"
 const int Cipher::mKey[]{
-	0x3727ba7,
+		0x3727ba7,
 		0x543a746,
 		0x4278b82,
 		0xca89431,
