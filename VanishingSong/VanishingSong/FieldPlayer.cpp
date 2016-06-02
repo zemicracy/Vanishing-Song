@@ -50,6 +50,7 @@ bool FieldPlayer::mInitialize(std::shared_ptr<GearFrame> gear, Vector3 position)
 	
 	// コライダーの初期化
 	mSetUpBodyCollider(m_pBodyCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
+	mSetUpBodyCollider(m_pSphereCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
 
 	/*	基本的なアニメーションの登録	*/
 	mRegisterAnimation(FieldPlayer::eState::eMove, kMoveAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Move.aether");
@@ -81,6 +82,15 @@ void FieldPlayer::mFinalize(){
 		m_pBodyCollider.reset();
 		m_pBodyCollider = nullptr;
 	}
+
+	if (m_pSphereCollider)
+	{
+		m_pSphereCollider->Finalize();
+		m_pSphereCollider.reset();
+		m_pSphereCollider = nullptr;
+	}
+
+	
 	m_prevState = eState::eNull;
 	m_cameraRotation = kVector3Zero;
 
@@ -119,7 +129,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// 基本的なアニメーションの再生
 	mDefaultAnimation(state);
-
+	
 	// 移動に使う値のを取得
 	Matrix4x4 rotationMatrix;
 	Vector3 rotationY = Vector3(0, m_cameraRotation._y, 0);
@@ -194,7 +204,8 @@ void FieldPlayer::mRender(aetherClass::ShaderBase* modelShader, aetherClass::Sha
 	m_charaEntity.mGearRender(m_topGear, modelShader, colliderShader);
 
 	if (m_pBodyCollider){
-		m_pBodyCollider->Render(colliderShader);
+		//m_pBodyCollider->Render(colliderShader);
+		m_pSphereCollider->Render(colliderShader);
 	}
 	return;
 }
@@ -208,6 +219,9 @@ std::shared_ptr<Cube> FieldPlayer::mGetBodyColldier(){
 	return m_pBodyCollider;
 }
 
+std::shared_ptr<Sphere> FieldPlayer::mGetSphereColldier(){
+	return m_pSphereCollider;
+}
 /*
 ギア系の初期化をまとめたもの
 
@@ -340,8 +354,11 @@ void FieldPlayer::mInitialPlayerView(CameraValue input){
 /*
 	コライダーの初期化用
 */
-void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<aetherClass::Cube>& collider, Vector3 original, Vector3 offset){
+
+void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset){
+	
 	collider = std::make_shared<Cube>();
+	
 	collider->Initialize();
 	collider->property._transform._translation = original + offset;
 	collider->property._transform._scale = 10;
@@ -350,13 +367,24 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<aetherClass::Cube>& collide
 	return;
 }
 
+void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<aetherClass::Sphere>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset){
+	collider = std::make_shared<Sphere>(10,10);
+
+	collider->Initialize();
+	collider->property._transform._translation = original + offset;
+	collider->property._transform._scale = 15;
+	collider->property._color = Color(1, 0, 0, 0.5);
+	collider->SetCamera(&m_playerView);
+}
+
 /*
 	コライダーの更新用
 */
 void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 	m_pBodyCollider->property._transform._translation = transform._translation + kColliderOffset;
 	m_pBodyCollider->property._transform._rotation = transform._rotation;
-
+	m_pSphereCollider->property._transform._translation = transform._translation + kColliderOffset;
+	m_pSphereCollider->property._transform._rotation = transform._rotation;
 	return;
 }
 

@@ -22,10 +22,10 @@ ResourceManager::~ResourceManager()
 	BGM‚ğ•Ï‚¦‚½‚¢ê‡‚Í‚±‚±‚ğ‚¢‚¶‚Á‚Ä‚Ë
 */
 const ResourceManager::BGMType ResourceManager::m_BgmPath[kMaxBGM] = {
-	{ "Sound/BGM/Field1.wav", eMusical::eBlue},
-	{ "Sound/BGM/Field2.wav", eMusical::eGreen},
+	{ "Sound/BGM/field2_1.wav", eMusical::eBlue},
+	{ "Sound/BGM/field2_2.wav", eMusical::eGreen},
 	{ "Sound/BGM/Field3.wav", eMusical::eRed},
-	{ "Sound/BGM/Field4.wav", eMusical::eYellow}
+	{ "Sound/BGM/field4.wav", eMusical::eYellow}
 };
 /*
 	ƒŠƒ\[ƒXŒn‚Ì‰Šú‰»ˆ—
@@ -65,6 +65,10 @@ std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eMusical type){
 std::shared_ptr<GameSound> ResourceManager::mGetLastBGM(){
 	return m_pLastBGM;
 }
+
+std::shared_ptr<GameSound> ResourceManager::mGetFirstBGM(){
+	return m_pFirstBGM;
+}
 /*
 	Šî–{BGM‚ğ—¬‚·“z
 
@@ -97,6 +101,7 @@ bool ResourceManager::InitializeBGM(){
 		result = m_pBaseBgmArray[index._type]->Load(index._path.c_str());
 		if (!result)
 		{
+			Debug::mPrint(index._path.c_str());
 			Debug::mErrorPrint("BGM‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½", __FILE__, __FUNCTION__, __LINE__, Debug::eState::eConsole);
 			return false;
 		}
@@ -109,6 +114,11 @@ bool ResourceManager::InitializeBGM(){
 	m_pLastBGM = std::make_shared<GameSound>();
 	m_pLastBGM->Load("Sound/BGM/Field5.wav");
 	m_pLastBGM->Stop();
+
+	m_pFirstBGM = std::make_shared<GameSound>();
+	m_pFirstBGM->Load("Sound/BGM/Field1.wav");
+	m_pFirstBGM->Stop();
+
 	return true;
 }
 

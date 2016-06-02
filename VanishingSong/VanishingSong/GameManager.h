@@ -32,6 +32,12 @@ public:
 		eWin,
 		eNull
 	};
+
+	enum class eFieldState{
+		eTutorial,
+		eNormal,
+		eNull
+	};
 public:
 	GameManager();
 	~GameManager();
@@ -45,14 +51,18 @@ public:
 	void mBattleDataFile(std::string);
 	std::string mBattleDataFile();
 
-	void mFieldBossState(eBossState);
-	eBossState mFieldBossState();
+	void mBossState(eBossState);
+	eBossState mBossState();
+
+	void mFieldState(eFieldState);
+	eFieldState mFieldState();
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;
 	aetherClass::Transform m_prevPlayerTransform;
 	std::string m_battleDataFile;
-	eBossState m_fieldBossState;
+	eBossState m_bossState;
+	eFieldState m_fieldState;
 };
 
 #endif
