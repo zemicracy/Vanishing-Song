@@ -16,8 +16,12 @@ public:
 	bool WaitRun()override;
 
 private:
-	std::unique_ptr<aetherClass::SpriteBase> m_pLoadMain;
-	std::unique_ptr<aetherClass::Texture> m_pLoadMainTexture;
+	void mChangeBar(float& time);
+	void mResetProperty();
+private:
+	std::unique_ptr<aetherClass::SpriteBase> m_pLoadBar;
+	float m_changeBarTime;
+	int m_barCount;
 };
 
 #endif

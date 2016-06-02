@@ -71,7 +71,9 @@ private:
 	*/
 	bool InitializeShader();
 
+	void mInitializeLaod();
 
+	void mFinalizeLoad();
 	/*
 		アクションコマンドに対応した音の解放処理
 	*/
