@@ -23,12 +23,13 @@ SceneBattle::~SceneBattle()
 //interim
 
 std::vector<std::shared_ptr<ActionCommand>>EnemyVector;
-eMusical askey[8] = {	eMusical::eBlue, eMusical::eGreen, eMusical::eNull, eMusical::eGreen,
-						eMusical::eBlue, eMusical::eYellow, eMusical::eNull, eMusical::eBlue	};
+eMusical askey[8] = {	eMusical::eBlue, eMusical::eNull, eMusical::eGreen, eMusical::eBlue,
+						eMusical::eNull, eMusical::eRed, eMusical::eGreen, eMusical::eBlue	};
 
 bool SceneBattle::Initialize(){
 	Singleton<RhythmManager>::GetInstance().mInitializeRhythm(0, 110);
 	
+	m_inCount = 0;
 	RegisterScene(new SceneGame());
 
 	m_battleState = GameManager::eBattleState::eListen;
@@ -52,6 +53,9 @@ bool SceneBattle::Initialize(){
 	m_pGauge = std::make_unique<GaugeManager>();
 	m_pGauge->mInitialize();
 	m_pGauge->mSetHpAll(&charaHp, &enemyHp);
+
+	m_pResult = std::make_unique<ResultBoard>();
+	m_pResult->mInitialize();
 
 	m_pOrderList = std::make_unique<OrderList>();
 	m_pOrderList->mInitialize(GameManager::eGameMode::eEighter,m_battleState,m_pActionBoard.get(),m_pField.get());
@@ -117,6 +121,10 @@ bool SceneBattle::Updater(){
 			break;
 		case GameManager::eBattleState::eNull:
 			break;
+
+		case GameManager::eBattleState::eResult:
+			mOnResult();
+			break;
 		default:
 			break;
 		}
@@ -126,6 +134,7 @@ bool SceneBattle::Updater(){
 		m_battleState = GameManager::eBattleState::eNull;
 	}
 
+	m_pField->mRhythmicMotion();
 	m_pGauge->mUpdate(1);
 	m_pOrderList->mUpdate();
 	m_players.mUpdate(0, eMusical::eNull);
@@ -147,6 +156,10 @@ void SceneBattle::UIRender(){
 	m_pOrderList->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	m_pMessage->mRender(shaderHash["transparent"].get());
 	m_pGauge->mRender();
+
+	if (m_battleState == GameManager::eBattleState::eResult){
+		m_pResult->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+	}
 	return;
 }
 
@@ -158,7 +171,18 @@ bool SceneBattle::TransitionOut(){
 	return kTransitionEnd;
 }
 
+void SceneBattle::mOnResult(){
 
+	if (!m_InitUpdateProcess){
+		m_pResult->mSetResultData(m_pOrderList->mGetResult(),m_winner);
+		m_InitUpdateProcess = true;
+	}
+
+	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
+	if (isPress){
+		ChangeScene(SceneGame::Name, LoadState::eUse);
+	}
+}
 
 // “G‚Ì‰‰‘t
 void SceneBattle::mOnListen(){
@@ -239,12 +263,12 @@ void SceneBattle::mCheckBattle(){
 	// TODO: Ÿ•‰”»’èˆ—•ê‡‚É‚æ‚Á‚Ä‚ÍWave‚ði‚ß‚éˆ—
 	m_pOrderList->mEndReset();
 
-	if (charaHp._hp <= 0){
-		m_battleState = GameManager::eBattleState::eLose;
+	if (enemyHp._hp <= 0){
+		m_battleState = GameManager::eBattleState::eWin;
 		m_processState = eGameState::ePreCountIn;
 	}
-	else if (enemyHp._hp <= 0){
-		m_battleState = GameManager::eBattleState::eWin;
+	else if (charaHp._hp <= 0){
+		m_battleState = GameManager::eBattleState::eLose;
 		m_processState = eGameState::ePreCountIn;
 	}
 	else{
@@ -255,7 +279,6 @@ void SceneBattle::mCheckBattle(){
 }
 
 void SceneBattle::mCountIn(){
-	static int cnt = 0;
 	double Padding;
 	float exFrame = modf(m_rhythm->mWholeBeatTime(), &Padding);
 
@@ -264,16 +287,19 @@ void SceneBattle::mCountIn(){
 		if (int(m_rhythm->mWholeBeatTime()) != m_prevWholeBeatNo){
 			const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 			if (isPress){
-				cnt = 0;
+				m_inCount = 0;
 				m_pMessage->mSetActive(false);
-				ChangeScene(SceneGame::Name, LoadState::eUse);
-				Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->Stop();
+				
+				m_PreInitProcess = false;
+				m_winner = m_battleState;
+				m_battleState = GameManager::eBattleState::eResult;
+				Singleton<ResourceManager>::GetInstance().mGetBGM(0)->Stop();
 			}
 		}
 	}
 	else if (m_battleState == GameManager::eBattleState::ePerform){
 		if (int(m_rhythm->mWholeBeatTime() + 0.03f) != m_prevWholeBeatNo){
-			cnt = 0;
+			m_inCount = 0;
 			m_processState = eGameState::eUpdate;
 			m_pMessage->mSetActive(false);
 			m_PreInitProcess = false;
@@ -281,10 +307,16 @@ void SceneBattle::mCountIn(){
 			return;
 		}
 	}
+	else if (m_battleState == GameManager::eBattleState::eResult){
+		m_processState = eGameState::eUpdate;
+		m_inCount = 0;
+	}
 	else {		//•’i‚Í‚±‚Á‚¿
 		if (int(m_rhythm->mWholeBeatTime() + 0.1f) != m_prevWholeBeatNo){
 			std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
 			cnt = 0;
+//			std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
+			m_inCount = 0;
 			m_pMessage->mSetActive(false);
 			m_processState = eGameState::eUpdate;
 			m_PreInitProcess = false;
@@ -292,13 +324,13 @@ void SceneBattle::mCountIn(){
 		}
 	}
 	if (m_rhythm->mIsQuarterBeat()){
-		cnt++;
-//		printf("%d\n", cnt);
+		m_inCount++;
+//		printf("%d\n", m_inCount);
 	}
 
-	if (cnt >= 2){
+	if (m_inCount >= 2){
 		if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
-			Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->SetValume(-m_bgmVolume * 100);
+			Singleton<ResourceManager>::GetInstance().mGetBGM(0)->SetValume(-m_bgmVolume*100);
 			m_bgmVolume++;
 		}else{
 			if (!m_PreInitProcess){

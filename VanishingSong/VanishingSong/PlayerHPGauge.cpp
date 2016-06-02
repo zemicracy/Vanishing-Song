@@ -43,6 +43,7 @@ bool PlayerHPGauge::mInitialize(){
 	
 	m_pMainSprite = std::make_shared<Rectangle2D>();
 	m_pMainSprite->Initialize();
+
 	
 	m_maskTexture = std::make_shared<Texture>();
 	m_maskTexture->Load("Texture\\Game\\mpGauge.png");
@@ -51,6 +52,7 @@ bool PlayerHPGauge::mInitialize(){
 
 	//m_pMainSprite->property._transform._rotation._z = 180;
 	m_pMainSprite->SetTexture(m_maskTexture.get());
+
 
 	m_pDamageSprite = std::make_shared<Rectangle2D>();
 	*m_pDamageSprite.get() = *m_pMainSprite.get();

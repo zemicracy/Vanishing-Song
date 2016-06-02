@@ -15,6 +15,7 @@ public:
 		ePerform,   // プレイヤーの演奏開始状態 
 		eBattle,    // 戦闘の実行状態
 		eCheck,     // 今の状態を判定する
+		eResult,	// リザルト
 		eNull,
 	};
 

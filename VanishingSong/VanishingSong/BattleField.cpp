@@ -4,6 +4,7 @@
 #include<Rectangle3D.h>
 #include<Cube.h>
 #include<Singleton.h>
+#include"RhythmManager.h"
 #include"ResourceManager.h"
 
 BattleField::BattleField()
@@ -58,7 +59,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 	camera->property._rotation = reader.GetInputWorldInfo()._camera._rotation;
 	m_view = camera;
 
-	Color COMMAND(0, 0, 0, 0.7);
+	Color COMMAND(0, 0, 0, 0.8);
 	Color WHITE(1, 1, 1, 0);
 	float normalScale = 9.9;
 
@@ -72,6 +73,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 		}
 		else if (itr->_name == "PlayerHP"){
 			m_pDebug[0] = gInitializer<Cube>(itr->_transform, itr->_color);
+			m_tankScaleOrigin = itr->_transform._scale;
 		}
 		else if (itr->_name == "EnemyHP"){
 			m_pDebug[1] = gInitializer<Cube>(itr->_transform, itr->_color);
@@ -88,6 +90,8 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 			m_pLane.insert(std::make_pair(eMusical::eGreen, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
 		}
 		else if (itr->_name == "command_green"){
+			m_commandScale = itr->_transform._scale._x;
+
 			m_pCommand[1] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[1]->property._transform._rotation = m_view->property._rotation;
 			m_pCommand[1]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionGreen").get());
@@ -190,4 +194,20 @@ aetherClass::Vector3 BattleField::mGetPlayerLane(eMusical type){
 
 aetherClass::ViewCamera* BattleField::mGetCamera(){
 	return m_view;
+}
+
+void BattleField::mRhythmicMotion(){
+	float note = 360 * Singleton<RhythmManager>::GetInstance().mQuarterBeatTime();
+	float nowFrameWave = cos(note * kAetherRadian);
+	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
+
+
+	for (auto itr : m_pDebug){
+		itr->property._transform._scale = m_tankScaleOrigin + (2 * scale);
+	}
+	for (auto itr : m_pCommand)
+	{
+		itr->property._transform._scale = m_commandScale + (2*scale);
+	}
+
 }
