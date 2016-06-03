@@ -42,6 +42,7 @@ enum class eMusical{
 	eBlue,
 	eYellow,
 	eGreen,
+	eAdlib,
 	eMiss
 };
 #endif
