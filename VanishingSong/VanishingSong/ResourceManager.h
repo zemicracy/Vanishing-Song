@@ -19,6 +19,7 @@ class ResourceManager
 
 public:
 	typedef std::unordered_map<eMusical, std::shared_ptr<GearFrame>> CharaHash;
+	typedef std::unordered_map<eMusical, std::unordered_map<eEnemyType,std::shared_ptr<GearFrame>>> EnemyHash;
 public:
 	ResourceManager();
 	~ResourceManager();
@@ -45,8 +46,8 @@ public:
 	void mPlayerInitialize(eMusical, std::string directy, std::string tex);
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
-	void mEnemyInitialize(eMusical, std::string directy, std::string tex);
-	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical);
+	void mEnemyInitialize(eMusical,eEnemyType, std::string directy, std::string tex);
+	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical,eEnemyType);
 
 
 	std::shared_ptr<aetherClass::GameSound> mGetLastBGM();
@@ -133,7 +134,7 @@ private:
 	CharaEntity m_charaEntity;
 
 	CharaHash m_pPlayerHashes;
-	CharaHash m_pEnemyHashes;
+	EnemyHash m_pEnemyHashes;
 };
 
 #endif

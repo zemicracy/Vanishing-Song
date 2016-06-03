@@ -22,10 +22,10 @@ ResourceManager::~ResourceManager()
 	BGMを変えたい場合はここをいじってね
 */
 const ResourceManager::BGMType ResourceManager::m_BgmPath[kMaxBGM] = {
-	{ "Sound/BGM/field2_1.wav", eMusical::eBlue},
-	{ "Sound/BGM/field2_2.wav", eMusical::eGreen},
+	{ "Sound/BGM/Field1.wav", eMusical::eBlue},
+	{ "Sound/BGM/Field2.wav", eMusical::eGreen},
 	{ "Sound/BGM/Field3.wav", eMusical::eRed},
-	{ "Sound/BGM/field4.wav", eMusical::eYellow}
+	{ "Sound/BGM/Field4.wav", eMusical::eYellow}
 };
 /*
 	リソース系の初期化処理
@@ -53,7 +53,6 @@ void ResourceManager::Finalize(){
 	FinalizeBGM();
 	InitializeShader();
 	mFinalizeLoad();
-
 	return;
 }
 
@@ -160,6 +159,7 @@ bool ResourceManager::InitializeTexture(){
 	RegisterTexture("ActionYellow", comPath + "Yellow.png");
 	RegisterTexture("ActionMiss",comPath + "miss.png");
 	RegisterTexture("ActionNull",comPath + "null.png");
+	RegisterTexture("ActionAdlib", comPath + "adlib.png");
 	return true;
 }
 
@@ -378,30 +378,33 @@ void ResourceManager::FinalizePlayer(){
 }
 
 // 雑魚敵用
-void ResourceManager::mEnemyInitialize(eMusical type, std::string directy, std::string tex){
+void ResourceManager::mEnemyInitialize(eMusical type,eEnemyType enemyType, std::string directy, std::string tex){
 	std::shared_ptr<Gear> gear;
-	if (m_pEnemyHashes.find(type) != m_pEnemyHashes.end() || type == eMusical::eNull)return;
+	if (type == eMusical::eNull)return;
 	
-	m_pEnemyHashes[type] = std::make_shared<GearFrame>();
+	m_pEnemyHashes[type][enemyType] = std::make_shared<GearFrame>();
 
 		// 体のパーツ
-	m_pEnemyHashes[type]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
+	m_pEnemyHashes[type][enemyType]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
 
 	
 		// それぞれのパーツとの親子関係構築
-	m_charaEntity.mCreateRelationship(m_pEnemyHashes[type]->m_pBody, m_pEnemyHashes[type]->m_pWaist);
+	m_charaEntity.mCreateRelationship(m_pEnemyHashes[type][enemyType]->m_pBody, m_pEnemyHashes[type][enemyType]->m_pWaist);
 }
 
 //
-std::shared_ptr<GearFrame> ResourceManager::mGetEnemyHash(eMusical type){
-	return m_pEnemyHashes[type];
+std::shared_ptr<GearFrame> ResourceManager::mGetEnemyHash(eMusical type,eEnemyType enemyType){
+	return m_pEnemyHashes[type][enemyType];
 }
 
 // 解放処理
 void ResourceManager::FinalizeEnemy(){
-	for (auto& index : m_pEnemyHashes){
-		if (!index.second)continue;
-		index.second->Release();
+	for (auto& firstHash : m_pEnemyHashes){
+		for (auto& index : firstHash.second){
+			if (!index.second)continue;
+			index.second->Release();
+
+		}
 	}
 }
 
@@ -409,7 +412,6 @@ std::shared_ptr<aetherClass::GameSound> ResourceManager::mGetBGM(eMusical type){
 	return m_pBaseBgmArray.at(type);
 }
 
-//
 void ResourceManager::mInitializeLaod(){
 	for (int i = 0; i < 3; ++i){
 		RegisterTexture("NowLoading" + std::to_string(i + 1), "Texture\\Load\\NowLoading\\" + std::to_string(i + 1) + ".png");

@@ -146,7 +146,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			gInitializer(m_pVolumeImage, itr->_transform, itr->_color);
 			m_VolumeOrigin = itr->_transform._translation + itr->_transform._scale / 2;
 			m_VolumeOrigin._z = 0;
-			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note.png");
+			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note_a.png");
 			m_pVolumeImage->SetTexture(m_pTextureList[itr->_name].get());
 		}
 	}
@@ -187,6 +187,8 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 //	m_rhythm->mInitializeRhythm(0, 110);
+
+	mAppendOptionInit();
 }
 
 void OrderList::mLineUpdate(){
@@ -203,6 +205,12 @@ void OrderList::mLineUpdate(){
 	
 
 }
+
+void OrderList::mAppendOptionInit(){
+	m_option = eAppendOption::eNone;
+	m_pTextureList["Cover"] = gLoadTexture("", "Texture\\ActionCommand\\Cover.png");
+}
+
 
 //敵行動フェイズ
 void OrderList::mListenUpdate(){
@@ -229,7 +237,7 @@ void OrderList::mListenUpdate(){
 
 		
 		m_playedAction = m_EnemyOrderList[m_processId];
-		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull){
+		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull && m_EnemyOrderList[m_processId]->mGetType() != eMusical::eAdlib){
 			m_perticleDesc._startPoint = m_Field->mGetEnemyLane(m_EnemyOrderList[m_processId]->mGetType());
 			m_pParticle->mReset(m_perticleDesc);
 
@@ -285,6 +293,9 @@ void OrderList::mPerformUpdate(){
 			if (m_processId < m_MaxOrderSize){
 				if (command->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
 				}
+				else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
+					command = m_ActionBoard->mGetCommand(eMusical::eNull);
+				}
 				else{
 					command = m_ActionBoard->mGetCommand(eMusical::eMiss);
 				}
@@ -310,6 +321,8 @@ void OrderList::mPerformUpdate(){
 		if (m_processId >= m_MaxOrderSize)return;
 		if (command->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
 		}
+		else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
+		}
 		else{
 			command = m_ActionBoard->mGetCommand(eMusical::eMiss);
 		}
@@ -322,8 +335,11 @@ void OrderList::mPerformUpdate(){
 			m_PlayerOrderList.push_back(command);
 		}
 		else {
-				//Debug::mPrint("DownMISS");
+			//Debug::mPrint("DownMISS");
 			m_isKeyDown = true;
+			if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
+				m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eNull));
+			}else
 			m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eMiss));
 			return;
 		}
@@ -387,6 +403,9 @@ void OrderList::mBattleUpdate(){
 			m_damagedValue = -1;
 			m_resultData._missCount++;
 		}
+		else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib && m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
+			m_damagedValue = 3;
+		}
 		else {
 			m_damagedValue = 1;
 		}
@@ -449,7 +468,12 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 			}
 
 			for (int i = 0; i < ifill; ++i){
-				m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+				if (m_option & 1 && m_EnemyOrderList[i]->mGetType() != eMusical::eAdlib){
+					m_pSpriteList[i*requestVal]->SetTexture(m_pTextureList["Cover"].get());
+				}
+				else{
+					m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+				}
 				m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
 
 
@@ -469,7 +493,12 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 		//enemyOrderRender
 		for (int i = m_processId; i < m_EnemyOrderList.size(); ++i){
 			if (i >= m_MaxOrderSize) break;
-			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+			if (m_option & 1 && m_EnemyOrderList[i]->mGetType() != eMusical::eAdlib){
+				m_pSpriteList[i*requestVal]->SetTexture(m_pTextureList["Cover"].get());
+			}
+			else{
+				m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+			}
 			m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
 			m_pSpriteList[i*requestVal]->Render(shader);
 		}
@@ -548,7 +577,7 @@ void OrderList::mEndReset(){
 	mListStop();
 	m_EnemyOrderList.clear();
 	m_PlayerOrderList.clear();
-
+	m_option = eAppendOption::eNone;
 }
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
@@ -643,4 +672,8 @@ void OrderList::mRender3D(aetherClass::ShaderBase* shader){
 
 ResultData OrderList::mGetResult(){
 	return m_resultData;
+}
+
+void OrderList::mSetOption(eAppendoption op){
+	m_option = op;
 }
