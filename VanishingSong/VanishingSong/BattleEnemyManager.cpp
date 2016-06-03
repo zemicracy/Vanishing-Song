@@ -11,21 +11,9 @@ BattleEnemyManager::~BattleEnemyManager()
 {
 }
 
-void BattleEnemyManager::Initialize(ViewCamera* camera,BattleField* lane){
+void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	
-	m_BattleField = lane;
-
-	auto transform = m_BattleField->mGetEnemyLane(eMusical::eBlue);
-	m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
-	m_pEnemy.begin()->get()->mInitialize(eMusical::eBlue, camera,transform);
-	
-	transform = m_BattleField->mGetEnemyLane(eMusical::eGreen);
-	m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
-	m_pEnemy.begin()->get()->mInitialize(eMusical::eGreen, camera, transform);
-
-
-	mLoadInfo("data\\Battle\\Stage1");
-
+	mLoadInfo("data\\Battle\\Stage1",lane,camera);
 }
 
 
@@ -36,22 +24,16 @@ void BattleEnemyManager::mRender(std::shared_ptr<ShaderBase> tex){
 	}
 }
 
-
-void BattleEnemyManager::AddList(){
-
-	BlueAdd();
-}
-
 std::vector<eMusical>  BattleEnemyManager::GetList(){
 
 	m_enemyList.clear();
 
-	AddList();
+	int random = mGetRandom();
 
-	return m_enemyList;
+	return m_enemyAttackList[random];
 }
 
-void BattleEnemyManager::BlueAdd(){
+int BattleEnemyManager::mGetRandom(){
 
 	std::random_device rnd;
 	std::mt19937 mt(rnd());
@@ -72,58 +54,128 @@ void BattleEnemyManager::BlueAdd(){
 		r = 3;
 	}
 
-	switch (r)
-	{
-	case 0: //Å†ÅõÅ†ÅõÅ†ÅõÅõÅõ
-		for (int i = 0; i <8; i++){
-			m_enemyList.push_back(eMusical::eBlue);
-		}
-		m_enemyList.insert(m_enemyList.begin(), eMusical::eNull);
-		m_enemyList.insert(m_enemyList.begin() + 2,eMusical::eNull);
-		m_enemyList.insert(m_enemyList.begin() + 4, eMusical::eNull);
-		break;
-	case 1://ÅõÅ†ÅõÅ†ÅõÅ†ÅõÅõ
-		for (int i = 0; i < 8; i++){
-			m_enemyList.push_back(eMusical::eBlue);
-		}
-		m_enemyList.insert(m_enemyList.begin() + 1, eMusical::eNull);
-		m_enemyList.insert(m_enemyList.begin() + 3, eMusical::eNull);
-		m_enemyList.insert(m_enemyList.begin() + 5, eMusical::eNull);
-		break;
-	case 2://Å†Å†ÅõÅõÅõÅõÅ†
-		for (int i = 0; i < 8; i++){
-			m_enemyList.push_back(eMusical::eBlue);
-		}
-		m_enemyList.insert(m_enemyList.begin() + 1, eMusical::eNull);
-		m_enemyList.insert(m_enemyList.begin() + 2, eMusical::eNull);
-		m_enemyList.insert(m_enemyList.begin() + 6, eMusical::eNull);
-
-		break;
-	case 3:
-		for(int i = 0; i < 8; i++){
-			m_enemyList.push_back(eMusical::eBlue);
-		}
-		m_enemyList.insert(m_enemyList.begin() + 3, eMusical::eNull);
-		m_enemyList.insert(m_enemyList.begin() + 4, eMusical::eNull);
-		m_enemyList.insert(m_enemyList.begin() + 6, eMusical::eNull);
-		break;
-		
-	default:
-		break;
+	if (r >= m_attackAllCount){
+		mGetRandom();
 	}
+	return r;
 }
 
 void BattleEnemyManager::mUpadate(const float timeScale){
 	
 }
 
-void BattleEnemyManager::mLoadInfo(std::string path){
+void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
 	Cipher chipher(path);
 	chipher.mConsoleFind();
-	int rrr;
-	/*for (auto splitString : chipher.mGetSpriteArray("[Wave1
-		if (splitString.front() == 'r'){
 
+	m_waveAllCount =std::atoi(&chipher.mGetSpriteArray("[WaveAll]").front().front());
+		
+	m_BattleField = lane;
+
+	for (int i = 0; i < m_waveAllCount; ++i){
+
+		std::vector<std::pair<eMusical, eEnemyType>> waveEnemyList;
+
+		for (auto splitString : chipher.mGetSpriteArray("[Wave"+std::to_string(i+1)+"]")){
+
+			auto color = mGetEnemyColor(splitString.front());
+			auto type = mGetEnemyType(splitString.back());
+
+			waveEnemyList.push_back(std::make_pair(color,type));
 		}
-	}*/
+		m_waveEnemyList.push_back(waveEnemyList);
+	}
+
+	m_attackAllCount = std::atoi(&chipher.mGetSpriteArray("[AttackAll]").front().front());
+
+	for (int i = 0; i < m_attackAllCount; ++i){
+
+		std::vector<eMusical> attackList;
+
+		for (auto splitString : chipher.mGetSpriteArray("[Attack" + std::to_string(i + 1) + "]")){
+
+			auto attack = mGetEnemyAttack(splitString.front());
+			attackList.push_back(attack);
+		}
+		m_enemyAttackList.push_back(attackList);
+	}
+}
+
+
+void BattleEnemyManager::ResetEnemyList(int waveCount,ViewCamera* camera){
+
+	for (auto& enemyType : m_waveEnemyList[waveCount]){
+		auto transform = m_BattleField->mGetEnemyLane(enemyType.first);
+		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
+		m_pEnemy.begin()->get()->mInitialize(enemyType.first, enemyType.second, camera, transform);
+	}
+
+}
+
+void BattleEnemyManager::misDie(){
+	for (auto& enemy : m_pEnemy){
+		enemy->misDie();
+	}
+}
+
+
+eMusical BattleEnemyManager::mGetEnemyColor(const char colorChar){
+	if (colorChar == 'b'){
+		return eMusical::eBlue;
+	}
+	else if (colorChar == 'g'){
+		return eMusical::eGreen;
+	}
+	else if (colorChar == 'r'){
+		return eMusical::eRed;
+	}
+	else if (colorChar == 'y'){
+		return eMusical::eYellow;
+	}
+	
+	return eMusical::eNull;
+}
+
+eEnemyType  BattleEnemyManager::mGetEnemyType(const char typeChar){
+	if (typeChar == '1'){
+		return eEnemyType::eGround;
+	}
+	else if(typeChar == '2'){
+		return eEnemyType::eAir;
+	}
+	else if (typeChar == '3'){
+		return eEnemyType::eBoss;
+	}
+	return eEnemyType::eNull;
+}
+
+int BattleEnemyManager::mGetWaveAllCount(){
+
+	return m_waveAllCount;
+}
+
+eMusical BattleEnemyManager::mGetEnemyAttack(const char attack){
+	if (attack == 'b'){
+		return eMusical::eBlue;
+	}
+	else if (attack == 'g'){
+		return eMusical::eGreen;
+	}
+	else if (attack == 'r'){
+		return eMusical::eRed;
+	}
+	else if (attack == 'y'){
+		return eMusical::eYellow;
+	}
+	else if (attack == 'k'){
+		return eMusical::eNull;
+	}
+	else if (attack == 'a'){
+		return eMusical::eNull;
+	}
+	else if (attack == 'n'){
+		return eMusical::eNull;
+	}
+
+	return eMusical::eNull;
 }
