@@ -23,7 +23,7 @@ public:
 	/*
 		‰Šú‰»ˆ—
 	*/
-	void mInitialize(eMusical type, aetherClass::ViewCamera*,aetherClass::Vector3&);
+	void mInitialize(eMusical type,eEnemyType enemytype, aetherClass::ViewCamera*,aetherClass::Vector3&);
 
 	Enemy &mGetEnemy();
 	eMusical mGetType();
@@ -45,6 +45,8 @@ public:
 	*/
 	void mOnDamage();
 
+	void misDie();
+
 	
 	/*
 		•`‰æˆ—
@@ -54,18 +56,15 @@ private:
 	// ‰ğ•úˆ—
 	// ‚½‚¾‚µGearFrame‚Í‰ğ•ú‚µ‚È‚¢
 	void Finalize();
-	bool mInitializeBlue(aetherClass::ViewCamera*, aetherClass::Vector3& pos);
-	bool mInitializeGreen(aetherClass::ViewCamera*, aetherClass::Vector3& pos);
 	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 
 
 private:
 	eMusical m_type;
 	Enemy m_enemy;
-	CharaEntity m_charaEntity;;
-	std::shared_ptr<GearFrame> m_GearFrame;
+	CharaEntity m_charaEntity;
 	std::shared_ptr<Gear> m_pTopGear;
-
+	bool m_isDie;
 };
 
 #endif

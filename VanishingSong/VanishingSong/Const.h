@@ -44,4 +44,12 @@ enum class eMusical{
 	eGreen,
 	eMiss
 };
+
+enum class eEnemyType{
+	eGround,
+	eAir,
+	eBoss,
+	eNull
+};
+
 #endif
