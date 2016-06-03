@@ -49,7 +49,7 @@ bool FieldEnemy::mInitializeGround(ViewCamera* camera){
 
 		m_property._penemy = std::make_shared<GearFrame>();
 	
-		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eRed);
+		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eRed, eEnemyType::eGround);
 
 		m_property._penemy = gearframe;
 
@@ -69,7 +69,7 @@ bool FieldEnemy::mInitializeAir(ViewCamera* camera){
 
 	m_property._penemy = std::make_shared<GearFrame>();
 
-	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eGreen);
+	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eGreen, eEnemyType::eAir);
 	m_property._penemy = gearframe;
 	
 	m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
@@ -89,7 +89,7 @@ bool FieldEnemy::mInitializeBlue(ViewCamera* camera){
 
 	m_property._penemy = std::make_shared<GearFrame>();
 
-	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eBlue);
+	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eBlue,eEnemyType::eAir);
 
 	m_property._penemy = gearframe;
 
@@ -109,7 +109,7 @@ bool FieldEnemy::mInitializeYellow(ViewCamera* camera){
 
 	m_property._penemy = std::make_shared<GearFrame>();
 
-	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eYellow);
+	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eYellow, eEnemyType::eAir);
 
 	m_property._penemy = gearframe;
 
