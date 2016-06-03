@@ -23,7 +23,7 @@ public:
 	float mGetPlayTime();
 	
 	
-	void mInitializeRhythm(int BGMindex,int bpm);
+	void mInitializeRhythm(std::shared_ptr<aetherClass::GameSound> BGMindex, int bpm);
 	void mAcquire();
 private:
 	std::shared_ptr<aetherClass::GameSound>m_sound;

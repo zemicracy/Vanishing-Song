@@ -62,7 +62,7 @@ private:
 private:
 	GameManager::eBattleState m_battleState;
 	GameManager::eBattleState m_winner;
-
+	std::shared_ptr<aetherClass::GameSound> m_sound;
 
 	BattlePlayerManager m_players;
 	CharaEntity m_charaEntity;

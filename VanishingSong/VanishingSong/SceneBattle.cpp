@@ -22,11 +22,13 @@ SceneBattle::~SceneBattle()
 //interim
 
 std::vector<std::shared_ptr<ActionCommand>>EnemyVector;
-eMusical askey[8] = {	eMusical::eBlue, eMusical::eNull, eMusical::eGreen, eMusical::eBlue,
+eMusical askey[8] = {	eMusical::eBlue, eMusical::eAdlib, eMusical::eNull, eMusical::eBlue,
 						eMusical::eNull, eMusical::eRed, eMusical::eGreen, eMusical::eBlue	};
 
 bool SceneBattle::Initialize(){
-	Singleton<RhythmManager>::GetInstance().mInitializeRhythm(0, 110);
+	m_sound = std::make_shared<GameSound>();
+	m_sound->Load("Sound\\Battle\\normal.wav");
+	Singleton<RhythmManager>::GetInstance().mInitializeRhythm(m_sound, 120);
 	
 	m_inCount = 0;
 	RegisterScene(new SceneGame());
@@ -58,6 +60,7 @@ bool SceneBattle::Initialize(){
 
 	m_pOrderList = std::make_unique<OrderList>();
 	m_pOrderList->mInitialize(GameManager::eGameMode::eEighter,m_battleState,m_pActionBoard.get(),m_pField.get());
+
 	// プレイヤーの初期化
 	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
 		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(index.second);
@@ -70,7 +73,7 @@ bool SceneBattle::Initialize(){
 	m_PreInitProcess = false;
 	m_prevWholeBeatNo = 0;
 
-	m_bgmVolume = 0;
+	m_bgmVolume = 40;
 	charaHp._maxHp = charaHp._hp = 10;
 	enemyHp._maxHp = enemyHp._hp = 20;
 
@@ -78,8 +81,8 @@ bool SceneBattle::Initialize(){
 	m_pBattleEnemyManager->Initialize(&m_view, m_pField.get());
 
 	//最後に行う
-	Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->SetValume(0);
-	Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(eMusical::eBlue);
+	m_sound->SetValume(-m_bgmVolume*100);
+	m_sound->PlayToLoop();
 	return true;
 }
 
@@ -90,13 +93,24 @@ void SceneBattle::Finalize(){
 
 bool SceneBattle::Updater(){
 	m_rhythm->mAcquire();
-
+	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult)
+	if (m_bgmVolume > 10){
+		m_sound->SetValume(-m_bgmVolume * 100);
+		m_bgmVolume--;
+	}
 
 	if (m_processState == eGameState::ePreCountIn){
 		m_processState = eGameState::eCountIn;
 		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime()+0.1f);
 	}
 	else if (m_processState == eGameState::eCountIn){
+		auto command = m_pActionBoard->mSelectType();
+		if (command){
+		}
+		else{
+			command = m_pActionBoard->mGetCommand(eMusical::eNull);
+		}
+		m_pField->mUpdate(command);
 		mCountIn();
 	}
 	else if (m_processState == eGameState::eUpdate){
@@ -190,9 +204,14 @@ void SceneBattle::mOnListen(){
 
 	if (!m_InitUpdateProcess){
 		EnemyVector.clear();
-		for (auto itr : m_pBattleEnemyManager->GetList()){
+		/*for (auto itr : m_pBattleEnemyManager->GetList()){
 			EnemyVector.push_back(m_pActionBoard->mGetCommand(itr));
+		}*/
+		for (int i = 0; i < 8; i++)
+		{
+			EnemyVector.push_back(m_pActionBoard->mGetCommand(askey[i]));
 		}
+		m_pOrderList->mSetOption(eAppendOption::eBlack);
 		m_pOrderList->mAddEnemyOrder(EnemyVector);
 		m_pOrderList->mPlay();
 		m_InitUpdateProcess = true;
@@ -284,16 +303,13 @@ void SceneBattle::mCountIn(){
 	//特殊仕様　Prefromの時だけ
 	if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
 		if (int(m_rhythm->mWholeBeatTime()) != m_prevWholeBeatNo){
-			const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-			if (isPress){
 				m_inCount = 0;
 				m_pMessage->mSetActive(false);
 				
 				m_PreInitProcess = false;
 				m_winner = m_battleState;
 				m_battleState = GameManager::eBattleState::eResult;
-				Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->Stop();
-			}
+				m_sound->Stop();
 		}
 	}
 	else if (m_battleState == GameManager::eBattleState::ePerform){
@@ -329,7 +345,7 @@ void SceneBattle::mCountIn(){
 
 	if (m_inCount >= 2){
 		if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
-			Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue)->SetValume(-m_bgmVolume*100);
+			m_sound->SetValume(-m_bgmVolume*100);
 			m_bgmVolume++;
 		}else{
 			if (!m_PreInitProcess){
