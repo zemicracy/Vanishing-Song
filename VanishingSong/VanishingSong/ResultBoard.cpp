@@ -67,6 +67,7 @@ void ResultBoard::mInitialize(){
 	m_pNumSprite = std::make_shared<Rectangle2D>();
 	m_pNumSprite->Initialize();
 	m_pNumSprite->property._transform._scale = Vector3(25, 40, 1);
+	m_pNumSprite->property._color = Color(0, 0, 0, 1);
 
 	std::string path = "Texture\\Result\\";
 	m_TextureList["rankText"] = gLoadTexture(path + "rank.png");
@@ -119,20 +120,26 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	std::string path = "Texture\\Result\\rank\\";
 	if (rate >= 0.90){
 		m_TextureList["rank"] = gLoadTexture(path + "S.png");
+		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note_a.png");
 	}
-	else if (rate >= 0.80){
-		m_TextureList["rank"] = gLoadTexture(path + "A.png");
-	}
-	else if (rate >= 0.70){
-		m_TextureList["rank"] = gLoadTexture(path + "B.png");
-	}
-	else if (rate >= 0.50){
-		m_TextureList["rank"] = gLoadTexture(path + "C.png");
-	}
-	else {
-		m_TextureList["rank"] = gLoadTexture(path + "D.png");
+	else{
+		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
+
+		if (rate >= 0.80){
+			m_TextureList["rank"] = gLoadTexture(path + "A.png");
+		}
+		else if (rate >= 0.70){
+			m_TextureList["rank"] = gLoadTexture(path + "B.png");
+		}
+		else if (rate >= 0.50){
+			m_TextureList["rank"] = gLoadTexture(path + "C.png");
+		}
+		else {
+			m_TextureList["rank"] = gLoadTexture(path + "D.png");
+		}
 	}
 	m_pGeneral["rankImage"]->SetTexture(m_TextureList["rank"].get());
+	m_pGeneral["noteImage"]->SetTexture(m_TextureList["note"].get());
 
 	float i = 0;
 	rate = modf(rate*100, &i);

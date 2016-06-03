@@ -160,6 +160,7 @@ bool ResourceManager::InitializeTexture(){
 	RegisterTexture("ActionYellow", comPath + "Yellow.png");
 	RegisterTexture("ActionMiss",comPath + "miss.png");
 	RegisterTexture("ActionNull",comPath + "null.png");
+	RegisterTexture("ActionAdlib", comPath + "adlib.png");
 	return true;
 }
 

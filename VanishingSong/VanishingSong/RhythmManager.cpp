@@ -51,8 +51,8 @@ float RhythmManager::mGetPlayTime(){
 }
 
 
-void RhythmManager::mInitializeRhythm(int index, int bpm){
-	m_sound = Singleton<ResourceManager>::GetInstance().mGetBGM(eMusical::eBlue);
+void RhythmManager::mInitializeRhythm(std::shared_ptr<aetherClass::GameSound> index, int bpm){
+	m_sound = index;
 	m_bpm = bpm;
 	m_playTime = 0;
 }

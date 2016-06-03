@@ -43,6 +43,7 @@ private:
 	void mFinalize();
 private:
 
+	std::unordered_map<eMusical, bool>m_playerOrder;
 	std::unordered_map<eMusical, ActionCommandType>m_actionList;
 
 };

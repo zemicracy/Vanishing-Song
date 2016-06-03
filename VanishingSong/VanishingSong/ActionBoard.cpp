@@ -5,6 +5,7 @@
 #include"ActionGreen.h"
 #include"ActionYellow.h"
 #include"ActionRed.h"
+#include"ActionAdlib.h"
 
 #include"ResourceManager.h"
 
@@ -49,14 +50,18 @@ void gInitializer(std::unordered_map<eMusical,ActionBoard::ActionCommandType>& t
 bool ActionBoard::mInitialize(){
 	bool result = false;
 	
-
 	gInitializer<ActionGreen>(m_actionList, Color(0, 1, 0, 1),"ActionGreen");
 	gInitializer<ActionBlue>(m_actionList, Color(0, 0, 1, 1), "ActionBlue");
 	gInitializer<ActionRed>(m_actionList, Color(1, 0, 0, 1), "ActionRed");
 	gInitializer<ActionYellow>(m_actionList, Color(1, 1, 0, 1), "ActionYellow");
 	gInitializer<ActionNull>(m_actionList, Color(1, 0, 1, 1), "ActionNull");
 	gInitializer<ActionMiss>(m_actionList, Color(1, 0, 1, 1), "ActionMiss");
+	gInitializer<ActionAdlib>(m_actionList, Color(1, 0, 1, 1), "ActionAdlib");
 
+	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
+		m_playerOrder[index.first] = true;
+	}
+	
 	return true;
 }
 
@@ -71,35 +76,33 @@ bool ActionBoard::mInitialize(){
 
 std::shared_ptr<ActionCommand> ActionBoard::mSelectType(){
 	if (kCharaDebug){
-		if (GameController::GetKey().KeyDownTrigger('1')){
+		if (GameController::GetKey().KeyDownTrigger('1') && m_playerOrder[eMusical::eBlue]){
 			return m_actionList[eMusical::eBlue]._command;
 		}
-		else if (GameController::GetKey().KeyDownTrigger('2')){
+		else if (GameController::GetKey().KeyDownTrigger('2') && m_playerOrder[eMusical::eGreen]){
 			return m_actionList[eMusical::eGreen]._command;
 		}
-		else if (GameController::GetKey().KeyDownTrigger('3')){
+		else if (GameController::GetKey().KeyDownTrigger('3') && m_playerOrder[eMusical::eRed]){
 			return m_actionList[eMusical::eRed]._command;
 		}
-		else if (GameController::GetKey().KeyDownTrigger('4')){
+		else if (GameController::GetKey().KeyDownTrigger('4') && m_playerOrder[eMusical::eYellow]){
 			return m_actionList[eMusical::eYellow]._command;
 		}
 	}
 
-	if (GameController::GetJoypad().ButtonPress(eJoyButton::eA)){
+
+
+	if (GameController::GetJoypad().ButtonPress(eJoyButton::eA) && m_playerOrder[eMusical::eGreen]){
 		return m_actionList[eMusical::eGreen]._command;
-
 	}
-	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eB)){
+	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eB) && m_playerOrder[eMusical::eRed]){
 		return m_actionList[eMusical::eRed]._command;
-
 	}
-	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eX)){
+	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eX) && m_playerOrder[eMusical::eBlue]){
 		return m_actionList[eMusical::eBlue]._command;
-
 	}
-	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eY)){
+	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eY) && m_playerOrder[eMusical::eYellow]){
 		return m_actionList[eMusical::eYellow]._command;
-
 	}
 
 	return nullptr;

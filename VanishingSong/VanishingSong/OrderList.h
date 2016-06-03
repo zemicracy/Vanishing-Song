@@ -9,6 +9,11 @@
 #include"ResultBoard.h"
 
 #include<array>
+namespace{
+	enum eAppendOption{
+		eNone = 0, eBlack = 1, eReverce = 2
+	};
+}
 class OrderList
 {
 public:
@@ -19,7 +24,9 @@ public:
 	void mPlay();
 	void mLinePlay();
 
+	typedef int eAppendoption;	//フラグだけどInt
 	//Listen
+	void mSetOption(eAppendoption op);
 	void mAddEnemyOrder(std::vector<std::shared_ptr<ActionCommand>>&);	//敵からリストを受け取る
 
 	//Perform
@@ -58,7 +65,7 @@ private:
 	void mListStop();
 	//リズムに合わせたモーションはここで
 	void mRhythmicMotion();
-
+	void mAppendOptionInit();
 private:
 
 	//敵とプレイヤーのリスト
@@ -97,6 +104,8 @@ private:
 	RhythmManager *m_rhythm;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 
+	//option
+	eAppendoption m_option;
 
 	bool m_isLineStart;		//ライン再生
 	int m_eighterCount;		//カウント
