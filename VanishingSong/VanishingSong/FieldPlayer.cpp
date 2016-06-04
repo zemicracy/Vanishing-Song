@@ -60,6 +60,7 @@ bool FieldPlayer::mInitialize(std::shared_ptr<GearFrame> gear, Vector3 position)
 	m_isHitWall = false;
 	
 	m_charaEntity.SetCamera(m_topGear, &m_playerView);
+	m_sign = NULL;
 	return true;
 }
 
@@ -137,10 +138,14 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// 壁に当たっているかの判定
 	if (m_isHitWall){
-		Vector3 revision = m_prevPosition;
-		m_playerTransform._translation = m_playerTransform._translation - Vector3(revision._x, 0, revision._z);
+		Vector3 revision = m_prevPosition.Normalize();
+		if (m_sign == '+'){
+			m_playerTransform._translation += Vector3(revision._x, 0, revision._z);
+		}
+		else{
+			m_playerTransform._translation -= Vector3(revision._x, 0, revision._z);
+		}
 		m_isHitWall = false; //フラグをオフにする
-
 	}
 	else{
 		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
@@ -171,17 +176,21 @@ FieldPlayer::KeyValues FieldPlayer::mReadKey(const float timeScale){
 	/* 奥行の移動(Z軸)	*/
 	if (GameController::GetKey().IsKeyDown('W')||GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
 		output._transform._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
+		m_sign = '-';
 	}
 	else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
 		output._transform._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		m_sign = '+';
 	}
 
 	/* 横の移動(X軸)	*/
 	if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
 		output._transform._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
+		m_sign = '+';
 	}
 	else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
 		output._transform._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		m_sign = '-';
 	}
 
 	/*	カメラの回転	*/	
@@ -504,7 +513,7 @@ void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
 
 // 壁に当たった時の処理
 void FieldPlayer::mOnHitWall(){
-	m_prevPosition = m_playerTransform._translation.Normalize();
+	m_prevPosition = m_playerTransform._translation;
 	m_isHitWall = true;
 	return;
 }

@@ -168,7 +168,7 @@ private:
 	eActionType m_action;
 
 	int m_fieldNumber;
-	
+	char m_sign;
 };
 
 #endif
