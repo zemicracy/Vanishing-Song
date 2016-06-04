@@ -1,6 +1,7 @@
 #include"ResultBoard.h"
 #include"WorldReader.h"
 #include"Rectangle2D.h"
+#include"GameClock.h"
 
 using namespace aetherClass;
 ResultBoard::ResultBoard(){
@@ -82,6 +83,9 @@ void ResultBoard::mInitialize(){
 	m_TextureList["blank"] = gLoadTexture(path + "blank.png");
 	m_pGeneral["backboard"]->SetTexture(m_TextureList["blank"].get());
 
+	m_TextureList["return"] = gLoadTexture("Texture\\ActionCommand\\Red.png");
+	m_pGeneral["return"]->SetTexture(m_TextureList["return"].get());
+
 
 	ShaderDesc desc;
 	desc._pixel._srcFile = L"Shader/HalfFiller.hlsl";
@@ -98,7 +102,7 @@ void ResultBoard::mInitialize(){
 	m_numberList["."] = gLoadTexture("Texture\\Number\\dot.png");
 	m_numberList["%"] = gLoadTexture("Texture\\Number\\%.png");
 
-
+	m_timer = 0;
 
 }
 
@@ -150,6 +154,19 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 //	Debug::mPrint(std::to_string(i) + "  " + std::to_string(dotrate) + "  " + std::to_string(rate));
 
 }
+
+
+void ResultBoard::mUpdate(){
+	Debug::mPrint(std::to_string(m_timer));
+	if (m_timer > 1){
+		m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
+		m_timer = 0;
+	}
+	else{
+		m_timer += GameClock::GetDeltaTime();
+	}
+}
+
 void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
 
 	for (auto itr : m_pGeneral){
