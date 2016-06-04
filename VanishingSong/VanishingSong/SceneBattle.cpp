@@ -78,7 +78,7 @@ bool SceneBattle::Initialize(){
 	enemyHp._maxHp = enemyHp._hp = 20;
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
-	m_pBattleEnemyManager->Initialize(&m_view, m_pField.get());
+	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
 
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume*100);
@@ -191,6 +191,7 @@ void SceneBattle::mOnResult(){
 		m_InitUpdateProcess = true;
 	}
 
+	m_pResult->mUpdate();
 	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 	if (isPress){
 		ChangeScene(SceneGame::Name, LoadState::eUse);
@@ -328,9 +329,6 @@ void SceneBattle::mCountIn(){
 	}
 	else {		//•’i‚Í‚±‚Á‚¿
 		if (int(m_rhythm->mWholeBeatTime() + 0.1f) != m_prevWholeBeatNo){
-			std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
-			m_inCount = 0;
-//			std::cout << m_prevWholeBeatNo <<" "<< int(m_rhythm->mWholeBeatTime() + 0.1f) <<std::endl;
 			m_inCount = 0;
 			m_pMessage->mSetActive(false);
 			m_processState = eGameState::eUpdate;
