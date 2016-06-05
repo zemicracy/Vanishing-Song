@@ -95,6 +95,7 @@ private:
 
 	std::shared_ptr<aetherClass::SpriteBase>m_pReadLine;
 	aetherClass::Vector3 m_ReadLineOrigin;
+	aetherClass::Vector3 m_ReadLineReverce;
 
 	std::shared_ptr<aetherClass::Rectangle2D>m_pFlame;
 	aetherClass::Vector3 m_flamePosOrigin;
