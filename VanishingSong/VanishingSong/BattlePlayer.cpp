@@ -28,20 +28,13 @@ void BattlePlayer::mInitialize(eMusical type, aetherClass::Vector3 position, std
 	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eWaist, m_playerGear->m_pWaist);
 
 	// ¶
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eLeftHand, m_playerGear->m_pLeftHand);
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eLeftLowerArm, m_playerGear->m_pLeftLowerArm);
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eLeftLowerLeg, m_playerGear->m_pLeftLowerLeg);
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eLeftUpperArm, m_playerGear->m_pLeftUpperArm);
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eLeftUpperLeg, m_playerGear->m_pLeftUpperLeg);
+	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eLeftArm, m_playerGear->m_pLeftArm);
 	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eLeftFoot, m_playerGear->m_pLeftFoot);
+	
 	// ‰E
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eRightHand, m_playerGear->m_pRightHand);
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eRightLowerArm, m_playerGear->m_pRightLowerArm);
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eRightLowerLeg, m_playerGear->m_pRightLowerLeg);
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eRightUpperArm, m_playerGear->m_pRightUpperArm);
-	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eRightUpperLeg, m_playerGear->m_pRightUpperLeg);
+	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eRightArm, m_playerGear->m_pRightArm);
 	m_charaEntity.mRegisterParts(m_gearHash, Gear::eType::eRightFoot, m_playerGear->m_pRightFoot);
-	mRegisterAnimation(eState::eWait, kWaitAnimation, "data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
+	mRegisterAnimation(eState::eWait, kWaitAnimation, "data\\Player\\stay.aether", "data\\Player\\wait.aether");
 
 	return;
 }

@@ -272,65 +272,24 @@ Gear::eType CharaEntity::mSetPartsValue(std::string partsName, Transform* input,
 	}
 
 	/*	左上半身*/
-	if (partsName == "LeftUpperArm"){
+	if (partsName == "LeftArm"){
 		*input = value;
-		return Gear::eType::eLeftUpperArm;
+		return Gear::eType::eLeftArm;
 	}
-
-	if (partsName == "LeftLowerArm"){
-		*input = value;
-		return Gear::eType::eLeftLowerArm;
-	}
-
-	if (partsName == "LeftHand"){
-		*input = value;
-
-		return Gear::eType::eLeftHand;
-	}
-
 	/*	右上半身	*/
-	if (partsName == "RightUpperArm"){
+	if (partsName == "RightArm"){
 		*input = value;
-		return Gear::eType::eRightUpperArm;
+		return Gear::eType::eRightArm;
 	}
 
-	if (partsName == "RightLowerArm"){
-		*input = value;
-		return Gear::eType::eRightLowerArm;
-	}
-
-	if (partsName == "RightHand"){
-		*input = value;
-		return Gear::eType::eRightHand;
-	}
-
+	
 	/*	右足	*/
-	if (partsName == "RightUpperLeg"){
-		*input = value;
-		return Gear::eType::eRightUpperLeg;
-	}
-
-	if (partsName == "RightLowerLeg"){
-		*input = value;
-		return Gear::eType::eRightLowerLeg;
-	}
-
 	if (partsName == "RightFoot"){
 		*input = value;
 		return Gear::eType::eRightFoot;
 	}
 
 	/*	左足	*/
-	if (partsName == "LeftUpperLeg"){
-		*input = value;
-		return Gear::eType::eLeftUpperLeg;
-	}
-
-	if (partsName == "LeftLowerLeg"){
-		*input = value;
-		return Gear::eType::eLeftLowerLeg;
-	}
-
 	if (partsName == "LeftFoot"){
 		*input = value;
 		return Gear::eType::eLeftFoot;

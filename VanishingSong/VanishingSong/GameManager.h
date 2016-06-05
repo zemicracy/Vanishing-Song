@@ -35,7 +35,13 @@ public:
 
 	enum class eFieldState{
 		eTutorial,
-		eNormal,
+		
+		eFirstStage,
+		eSecoundStage,
+		eThirdStage,
+		eForthStage,
+		
+		eBoss,
 		eNull
 	};
 public:
