@@ -6,7 +6,6 @@
 #include"ActionSound.h"
 #include"Const.h"
 #include"GameClock.h"
-#include"RhythmManager.h"
 #include<iostream>
 
 
@@ -187,6 +186,12 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	m_rhythm = &Singleton<RhythmManager>::GetInstance();
 //	m_rhythm->mInitializeRhythm(0, 110);
+
+	m_pEffect = std::make_shared<EffectGenerator2D>();
+	m_pEffect->mInitialize();
+
+	m_pEffect->mLoadEffect(9, "Break", "Effect\\BreakCommand\\");
+	m_effectTrans = Transform(Vector3(), Vector3(), Vector3( 16*10, 9*10,0));
 
 	mAppendOptionInit();
 }
@@ -398,6 +403,10 @@ void OrderList::mBattleUpdate(){
 			return;
 		}
 
+		m_effectTrans._translation._x = m_pSpriteOrigin[m_processId]._x - m_effectTrans._scale._x/2;
+		m_effectTrans._translation._y = m_pSpriteOrigin[m_processId]._y - m_effectTrans._scale._y/2;
+		m_pEffect->mPlay("Break", "Break" + std::to_string(m_processId), m_effectTrans);
+
 
 		if (m_PlayerOrderList[m_processId]->mGetType() == eMusical::eMiss){
 			m_damagedValue = -1;
@@ -425,6 +434,7 @@ void OrderList::mBattleUpdate(){
 void OrderList::mUpdate(){
 
 	mLineUpdate();
+	m_pEffect->mUpdate(1);
 
 	switch (*m_faze)
 	{
@@ -451,6 +461,7 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 	m_pBackImage->Render(shader);
 	m_pFlame->Render(shader);
 	m_pVolumeImage->Render(shader);
+	m_pEffect->mRender(shader);
 	const float l_kalpha = 0.5f;
 
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;

@@ -7,6 +7,7 @@
 #include"AttackParticle.h"
 #include"BattleField.h"
 #include"ResultBoard.h"
+#include"EffectGenerator2D.h"
 
 #include<array>
 namespace{
@@ -106,6 +107,10 @@ private:
 
 	//option
 	eAppendoption m_option;
+
+	//エフェクト
+	std::shared_ptr<EffectGenerator2D> m_pEffect;
+	aetherClass::Transform m_effectTrans;
 
 	bool m_isLineStart;		//ライン再生
 	int m_eighterCount;		//カウント
