@@ -100,6 +100,10 @@ bool SceneBattle::Updater(){
 	}
 
 	if (m_processState == eGameState::ePreCountIn){
+		//ƒIƒvƒVƒ‡ƒ“Ý’è
+		if (m_battleState == GameManager::eBattleState::eListen){
+			m_pOrderList->mSetOption(eAppendOption::eReverce | eAppendOption::eBlack);
+		}
 		m_processState = eGameState::eCountIn;
 		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime()+0.1f);
 	}
@@ -212,7 +216,6 @@ void SceneBattle::mOnListen(){
 		{
 			EnemyVector.push_back(m_pActionBoard->mGetCommand(askey[i]));
 		}
-		m_pOrderList->mSetOption(eAppendOption::eBlack);
 		m_pOrderList->mAddEnemyOrder(EnemyVector);
 		m_pOrderList->mPlay();
 		m_InitUpdateProcess = true;

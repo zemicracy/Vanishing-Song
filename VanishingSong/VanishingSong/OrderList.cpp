@@ -152,6 +152,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	//‚¿‚å‚¤‚Ç‚¢‚¢‚©‚çi
 	m_ReadLineOrigin._x = m_pSpriteOrigin[0]._x - (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x)*3;
+	m_ReadLineReverce._x = m_pSpriteOrigin[7]._x + (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x) * 3;
 	reader.UnLoad();
 	m_MaxOrderSize = requestVal;
 
@@ -198,16 +199,22 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 void OrderList::mLineUpdate(){
 	if (!m_isLineStart) return;
-	if(m_rhythm->mIsQuarterBeat()){
+	if (m_rhythm->mIsQuarterBeat()){
 		m_eighterCount++;
 	}
-	{
+
+	if (m_option & eAppendOption::eReverce){
+		float oneWay = m_pSpriteOrigin[0]._x - m_pSpriteOrigin[2]._x;
+		float time;
+		time = modf(m_rhythm->mQuarterBeatTime(), &time);
+		m_pReadLine->property._transform._translation._x = m_ReadLineReverce._x + (m_eighterCount * oneWay) + (time * oneWay);
+	}
+	else{
 		float oneWay = m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x;
 		float time;
-		time = modf(m_rhythm->mQuarterBeatTime(),&time);
+		time = modf(m_rhythm->mQuarterBeatTime(), &time);
 		m_pReadLine->property._transform._translation._x = m_ReadLineOrigin._x + (m_eighterCount * oneWay) + (time * oneWay);
 	}
-	
 
 }
 
@@ -403,10 +410,17 @@ void OrderList::mBattleUpdate(){
 			return;
 		}
 
-		m_effectTrans._translation._x = m_pSpriteOrigin[m_processId]._x - m_effectTrans._scale._x/2;
-		m_effectTrans._translation._y = m_pSpriteOrigin[m_processId]._y - m_effectTrans._scale._y/2;
-		m_pEffect->mPlay("Break", "Break" + std::to_string(m_processId), m_effectTrans);
-
+		if (m_option & eAppendOption::eReverce){
+			int id = (m_MaxOrderSize - 1) - m_processId;
+			m_effectTrans._translation._x = m_pSpriteOrigin[id]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[id]._y - m_effectTrans._scale._y / 2;
+			m_pEffect->mPlay("Break", "Break" + std::to_string(id), m_effectTrans);
+		}
+		else{
+			m_effectTrans._translation._x = m_pSpriteOrigin[m_processId]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[m_processId]._y - m_effectTrans._scale._y / 2;
+			m_pEffect->mPlay("Break", "Break" + std::to_string(m_processId), m_effectTrans);
+		}
 
 		if (m_PlayerOrderList[m_processId]->mGetType() == eMusical::eMiss){
 			m_damagedValue = -1;
@@ -479,58 +493,87 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 			}
 
 			for (int i = 0; i < ifill; ++i){
-				if (m_option & 1 && m_EnemyOrderList[i]->mGetType() != eMusical::eAdlib){
-					m_pSpriteList[i*requestVal]->SetTexture(m_pTextureList["Cover"].get());
+				//•“h‚è
+				int id = i;
+				if (m_option & eAppendOption::eReverce){
+					id = (m_MaxOrderSize -1)- id;
+				}
+
+				if (m_option & eAppendOption::eBlack && m_EnemyOrderList[i]->mGetType() != eMusical::eAdlib){
+					m_pSpriteList[id*requestVal]->SetTexture(m_pTextureList["Cover"].get());
 				}
 				else{
-					m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+					m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
 				}
-				m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
+				m_pSpriteList[id*requestVal]->property._color._alpha = 1.0f;
 
 
 				//Ä¶Ï‚Ý“§–¾ˆ—
 				if (m_isEnd){
-					m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+					m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
 				}
-				else if (m_processId > i + 1 && !m_isAlPlay){
-					m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+				else{
+					if (m_option & eAppendOption::eReverce){
+						int revProcess = (m_MaxOrderSize-1) - m_processId;
+						if (revProcess < id && !m_isAlPlay){
+							m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
+						}
+					}
+					else{
+						if (m_processId > id + 1 && !m_isAlPlay){
+							m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
+						}
+					}
 				}
 
-				m_pSpriteList[i*requestVal]->Render(shader);
+				m_pSpriteList[id*requestVal]->Render(shader);
 			}
 		}
 	}
 	else if (*m_faze == GameManager::eBattleState::ePerform){
 		//enemyOrderRender
 		for (int i = m_processId; i < m_EnemyOrderList.size(); ++i){
+			int id = i;
+			if (m_option & eAppendOption::eReverce){
+				id = (m_MaxOrderSize - 1) - id;
+			}
+
 			if (i >= m_MaxOrderSize) break;
 			if (m_option & 1 && m_EnemyOrderList[i]->mGetType() != eMusical::eAdlib){
-				m_pSpriteList[i*requestVal]->SetTexture(m_pTextureList["Cover"].get());
+				m_pSpriteList[id*requestVal]->SetTexture(m_pTextureList["Cover"].get());
 			}
 			else{
-				m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+				m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
 			}
-			m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
-			m_pSpriteList[i*requestVal]->Render(shader);
+			m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
+			m_pSpriteList[id*requestVal]->Render(shader);
 		}
 		
 
 		if (!m_PlayerOrderList.empty()){
 			for (int i = 0; i < m_PlayerOrderList.size(); ++i){
+				int id = i;
+				if (m_option & eAppendOption::eReverce){
+					id = (m_MaxOrderSize - 1) - id;
+				}
 				if (i >= m_MaxOrderSize) break;
-				m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
-				m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
-				m_pSpriteList[i*requestVal]->Render(shader);
+				m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
+				m_pSpriteList[id*requestVal]->property._color._alpha = 1.0f;
+				m_pSpriteList[id*requestVal]->Render(shader);
 			}
 		}
 
 	}
 	else if (*m_faze == GameManager::eBattleState::eBattle){
 		for (int i = m_processId; i < m_PlayerOrderList.size(); ++i){
+			int id = i;
+			if (m_option & eAppendOption::eReverce){
+				id = (m_MaxOrderSize - 1) - id;
+			}
 			if (i >= m_MaxOrderSize) break;
-			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
-			m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
-			m_pSpriteList[i*requestVal]->Render(shader);
+			m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
+			m_pSpriteList[id*requestVal]->property._color._alpha = 1.0f;
+			m_pSpriteList[id*requestVal]->Render(shader);
 		}
 	}
 
@@ -580,7 +623,12 @@ void OrderList::mListStop(){
 }
 void OrderList::mLinePlay(){
 	m_isLineStart = true;
-	m_pReadLine->property._transform._translation = m_ReadLineOrigin;
+	if (m_option & eAppendOption::eReverce){
+		m_pReadLine->property._transform._translation = m_ReadLineReverce;
+	}
+	else{
+		m_pReadLine->property._transform._translation = m_ReadLineOrigin;
+	}
 	m_eighterCount = 0;
 }
 
