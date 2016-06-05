@@ -3,7 +3,7 @@
 #include <GameClock.h>
 using namespace aetherClass;
 namespace{
-	const float kMaxButtonTime = 1.0f;
+	const float kMaxButtonTime = 0.5f;
 }
 MessageWindow::MessageWindow()
 {
@@ -73,7 +73,7 @@ bool MessageWindow::mInitialize(){
 	reader.UnLoad();
 
 	m_buttonTime = NULL;
-	m_buttonChange =false;
+	m_buttonChange =true;
 	return true;
 }
 
@@ -85,18 +85,22 @@ void MessageWindow::mSetButton(aetherClass::Texture* tex){
 	m_button->SetTexture(tex);
 }
 
-void MessageWindow::mUpdate(){
+void MessageWindow::mUpdate(const bool flg){
 	m_buttonTime += GameClock::GetDeltaTime();
 	if (m_buttonTime > kMaxButtonTime){
 		m_buttonChange = !m_buttonChange;
 		m_buttonTime = NULL;
 	}
-
-	if (m_buttonChange){
+	if (flg){
 		m_button->property._color._alpha = 1.0f;
 	}
 	else{
-		m_button->property._color._alpha = 0.0f;
+		if (m_buttonChange){
+			m_button->property._color._alpha = 1.0f;
+		}
+		else{
+			m_button->property._color._alpha = 0.0f;
+		}
 	}
 }
 

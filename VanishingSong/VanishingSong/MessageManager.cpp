@@ -12,11 +12,12 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy, aether
 	m_isView = false;
 	m_counter = kCounterNull;
 	m_enemy = enemy;
+
 	m_pCursor = std::make_shared<Rectangle2D>();
 	m_pCursor->Initialize();
 	m_pCursor->property._transform._translation._y = 630;
-	m_pCursor->property._transform._scale = 50;
-
+	m_pCursor->property._transform._scale = Vector3(120,50,0);
+	m_pCursor->property._color = Color(1.f, 1.f, 1.f, 0.3f);
 	m_buttonTexture[eState::eNext].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eEnd].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eSelect].Load("Texture\\Message\\yesno.png");
@@ -33,8 +34,8 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy, aether
 	m_messageFlame->property._transform._scale = Vector3(16, 12, 0);
 
 	// カーソルの位値
-	m_cursorPosition[eSelectType::eYes] = 360.f;
-	m_cursorPosition[eSelectType::eNo] = 670.f;
+	m_cursorPosition[eSelectType::eYes] = 400.f;
+	m_cursorPosition[eSelectType::eNo] = 730.f;
 
 	m_state = eState::eNull;
 	m_select = true;
@@ -69,9 +70,9 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	// 話してるときは何もしない
 	if (m_isView){
 		m_viewMessageFlame = false;
-		m_message.mUpdate();
+		m_message.mUpdate((m_state == eState::eSelect));
 	}
-
+	
 	if (m_viewMessageFlame){
 		m_messageFlameTime += GameClock::GetDeltaTime();
 		if (m_messageFlameTime > kMessageFlameTime){

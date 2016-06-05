@@ -15,7 +15,7 @@ public:
 	void mFinalize();
 	void mRender(aetherClass::ShaderBase*);
 	void mSetButton(aetherClass::Texture*);
-	void mUpdate();
+	void mUpdate(const bool);
 private:
 	std::shared_ptr<aetherClass::Rectangle2D>m_window;
 	std::shared_ptr<aetherClass::Rectangle2D>m_text;
