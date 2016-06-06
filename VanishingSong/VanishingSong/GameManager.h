@@ -65,6 +65,9 @@ public:
 
 	void mNote(eMusical);
 	std::vector<eMusical>& mNote();
+
+	void mGetCanStage(const int);
+	int  mGetCanStage()const;
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;
@@ -73,6 +76,7 @@ private:
 	eBossState m_bossState;
 	eFieldState m_fieldState;
 	std::vector<eMusical> m_noteArray;
+	int m_canStageNumber;
 };
 
 #endif
