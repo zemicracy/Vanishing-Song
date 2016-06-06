@@ -36,16 +36,7 @@ bool VanishingSongFrame::InitializeBuffer(){
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "\\green");
 	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "\\yellow");
 
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eBlue, eEnemyType::eAir, "Model\\Enemy\\Air", "\\Blue");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eRed, eEnemyType::eAir, "Model\\Enemy\\Air", "\\Red");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eGreen, eEnemyType::eAir, "Model\\Enemy\\Air", "\\Green");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eYellow, eEnemyType::eAir, "Model\\Enemy\\Air", "\\Yellow");
 
-
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eBlue, eEnemyType::eGround, "Model\\Enemy\\Ground", "\\Blue");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eRed, eEnemyType::eGround, "Model\\Enemy\\Ground", "\\Red");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eGreen, eEnemyType::eGround, "Model\\Enemy\\Ground", "\\Green");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eYellow, eEnemyType::eGround, "Model\\Enemy\\Ground", "\\Yellow");
 
 	return true;
 }
