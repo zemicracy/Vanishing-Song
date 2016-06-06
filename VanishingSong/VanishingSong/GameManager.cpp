@@ -64,3 +64,16 @@ void GameManager::mFieldState(GameManager::eFieldState state){
 GameManager::eFieldState GameManager::mFieldState(){
 	return m_fieldState;
 }
+
+//
+void GameManager::mNote(eMusical type){
+	for (auto index : m_noteArray){
+		if (index == type)return;
+	}
+	m_noteArray.push_back(type);
+}
+
+//
+std::vector<eMusical>& GameManager::mNote(){
+	return m_noteArray;
+}
