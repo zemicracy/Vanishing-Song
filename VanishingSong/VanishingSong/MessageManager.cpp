@@ -19,6 +19,7 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy, aether
 	m_pCursor->property._transform._scale = Vector3(120,50,0);
 	m_pCursor->property._color = Color(1.f, 1.f, 1.f, 0.3f);
 	m_buttonTexture[eState::eNext].Load("Texture\\Message\\nextButton.png");
+	m_buttonTexture[eState::eCannotSelect].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eEnd].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eSelect].Load("Texture\\Message\\yesno.png");
 
@@ -59,7 +60,7 @@ MessageManager::~MessageManager()
 }
 
 //
-void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPressButton, const bool isCursor, Vector3 position, Vector3 enemyPosition){
+void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPressButton, const bool isCursor, Vector3 position, Vector3 enemyPosition,const int nowStage){
 	bool isEnd = false;
 	if (pair.second)return;
 	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum()-1;
@@ -87,6 +88,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	else{
 		m_messageFlame->SetTexture(m_messageFlameTexture2.get());
 	}
+
 	if (isPressButton){
 		
 		// シーンの遷移？
@@ -100,7 +102,12 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		}
 		else{
 			// メッセージの切り替え
-			mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());
+			if (m_state == eState::eCannotSelect){
+				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());
+			}
+			else{
+				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());
+			}
 		}
 
 		
@@ -112,12 +119,19 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 			m_state = eState::eNext;
 			m_selectType = eSelectType::eNull;
 		}
+
 		// 状態の切り替え
 		if (m_counter == kEnd){
 			m_state = eState::eEnd;
 		}
 		else if(m_counter == kEnd-1){
-			m_state = eState::eSelect;
+			// そのステージを受ける資格があるかの判断
+			if (pair.first <= nowStage){
+				m_state = eState::eSelect;
+			}
+			else{
+				m_state = eState::eCannotSelect;
+			}
 		}
 		else{
 			m_state = eState::eNext;
