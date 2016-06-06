@@ -47,7 +47,6 @@ bool ResourceManager::Initialize(){
 */
 void ResourceManager::Finalize(){
 	FinalizePlayer();
-	FinalizeEnemy();
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
@@ -355,37 +354,6 @@ std::shared_ptr<GearFrame> ResourceManager::mGetPlayerHash(eMusical type){
 void ResourceManager::FinalizePlayer(){
 	for (auto& index : m_pPlayerHashes){
 		index.second->Release();
-	}
-}
-
-// 雑魚敵用
-void ResourceManager::mEnemyInitialize(eMusical type,eEnemyType enemyType, std::string directy, std::string tex){
-	std::shared_ptr<Gear> gear;
-	if (type == eMusical::eNull)return;
-	
-	m_pEnemyHashes[type][enemyType] = std::make_shared<GearFrame>();
-
-		// 体のパーツ
-	m_pEnemyHashes[type][enemyType]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
-
-	
-		// それぞれのパーツとの親子関係構築
-	m_charaEntity.mCreateRelationship(m_pEnemyHashes[type][enemyType]->m_pBody, m_pEnemyHashes[type][enemyType]->m_pWaist);
-}
-
-//
-std::shared_ptr<GearFrame> ResourceManager::mGetEnemyHash(eMusical type,eEnemyType enemyType){
-	return m_pEnemyHashes[type][enemyType];
-}
-
-// 解放処理
-void ResourceManager::FinalizeEnemy(){
-	for (auto& firstHash : m_pEnemyHashes){
-		for (auto& index : firstHash.second){
-			if (!index.second)continue;
-			index.second->Release();
-
-		}
 	}
 }
 

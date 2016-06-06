@@ -62,6 +62,9 @@ public:
 
 	void mFieldState(eFieldState);
 	eFieldState mFieldState();
+
+	void mNote(eMusical);
+	std::vector<eMusical>& mNote();
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;
@@ -69,6 +72,7 @@ private:
 	std::string m_battleDataFile;
 	eBossState m_bossState;
 	eFieldState m_fieldState;
+	std::vector<eMusical> m_noteArray;
 };
 
 #endif
