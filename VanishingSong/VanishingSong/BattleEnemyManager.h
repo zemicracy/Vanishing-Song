@@ -3,12 +3,15 @@
 #include "BattleEnemy.h"
 #include"BattleField.h"
 #include <ShaderBase.h>
+#include "CharaStatus.h"
 #include <array>
 namespace{
 	const int kEnemyMaxNum = 4;
 }
 class BattleEnemyManager
 {
+	
+
 public:
 	BattleEnemyManager();
 	~BattleEnemyManager();
@@ -16,13 +19,17 @@ public:
 		‰Šú‰»‚Ìˆø”‚Å‚Ç‚Ì“G‚ğ”z’u‚·‚é‚©‚ğæ“¾‚·‚é
 		_type‚ªNull‚Ìê‡‚Í‰Šú‰»‚Ìˆ—‚ğ”ò‚Î‚·
 	*/
-	void Initialize(aetherClass::ViewCamera* camera,BattleField* );
+	void mInitialize(aetherClass::ViewCamera* camera,BattleField* );
+
+	
 
 	void mUpadate(const float timeScale);
 
 	std::vector<eMusical> GetList();
 
-	void AddList();
+	void ResetEnemyList(int,aetherClass::ViewCamera*camera);
+
+	void misDie();
 
 	/*
 		•`‰æˆ—
@@ -34,14 +41,40 @@ public:
 	*/
 	bool mIsEnd();
 
+	int mGetWaveAllCount();
+
+private:
+	void mFinalize();
+	void mLoadInfo(std::string, BattleField*, aetherClass::ViewCamera*);
+	int mGetRandom();
+	eMusical mGetEnemyColor(const char);
+	eEnemyType mGetEnemyType(const char);
+	eMusical mGetEnemyAttack(const char);
+	CharaStatus& mGetCharaStatus(int);
+
+
 private:
 	
-	void BlueAdd();
+	BattleField* m_BattleField;
+
+	aetherClass::ViewCamera* m_camera;
+	bool flag;
+
+	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
+	std::vector<eMusical> m_enemyList;
+	std::vector<std::vector<std::pair<eMusical, eEnemyType>>> m_waveEnemyList;
+	std::vector<std::vector<eMusical>> m_enemyAttackList;
+
+
+
+	std::vector<CharaStatus> m_hp;
+
+	
 
 	bool m_isEnd;
-	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
-	BattleField* m_BattleField;
-	std::vector<eMusical> m_enemyList;
+	int m_waveAllCount;
+	int m_attackAllCount;
+	
 
 };
 
