@@ -25,6 +25,9 @@ public:
 	*/
 	void mInitialize(eMusical type,eEnemyType enemytype, aetherClass::ViewCamera*,aetherClass::Vector3&);
 
+	
+
+
 	Enemy &mGetEnemy();
 	eMusical mGetType();
 

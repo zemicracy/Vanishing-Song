@@ -37,7 +37,7 @@ int BattleEnemyManager::mGetRandom(){
 
 	std::random_device rnd;
 	std::mt19937 mt(rnd());
-	std::uniform_int_distribution<> rand100(0, 400);
+	std::uniform_int_distribution<> rand100(0, 1100);
 
 	int r;
 	int random = rand100(rnd);
@@ -53,6 +53,29 @@ int BattleEnemyManager::mGetRandom(){
 	else if (random > 300 && random <= 400){
 		r = 3;
 	}
+	else if (random > 400 && random <= 500){
+		r = 4;
+	}
+	/*}
+	else if (random > 500 && random <= 600){
+		r = 5;
+	}
+	else if (random > 600 && random <= 700){
+		r = 6;
+	}
+	else if (random > 700 && random <= 800){
+		r = 7;
+	}
+	else if (random > 800 && random <= 900){
+		r = 8;
+	}
+	else if (random > 900 && random <= 1000){
+		r = 9;
+	}
+	else if (random > 1000 && random <= 1100){
+		r = 10;
+	}*/
+
 
 	if (r >= m_attackAllCount){
 		mGetRandom();
