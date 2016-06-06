@@ -2,6 +2,8 @@
 #include <random>
 #include "Cipher.h"
 using namespace aetherClass;
+int cnt = 0;
+
 BattleEnemyManager::BattleEnemyManager()
 {
 }
@@ -9,11 +11,20 @@ BattleEnemyManager::BattleEnemyManager()
 
 BattleEnemyManager::~BattleEnemyManager()
 {
+	mFinalize();
 }
 
 void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	
 	mLoadInfo("data\\Battle\\Stage1",lane,camera);
+
+	ResetEnemyList(0, camera);
+
+	m_camera = camera;
+
+	flag = true;
+
+
 }
 
 
@@ -83,8 +94,17 @@ int BattleEnemyManager::mGetRandom(){
 	return r;
 }
 
-void BattleEnemyManager::mUpadate(const float timeScale){
+void BattleEnemyManager::mUpadate(const float timeScale ){
 	
+	cnt++;
+
+	if (flag == true){
+		if (cnt > 300){
+			ResetEnemyList(1, m_camera);
+			flag = false;
+
+		}
+	}
 }
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
@@ -122,10 +142,29 @@ void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamer
 		}
 		m_enemyAttackList.push_back(attackList);
 	}
+
+	for (int i = 0; i < m_waveAllCount; ++i){
+		for (auto splitString : chipher.mGetSpriteArray("[HP" + std::to_string(i + 1) + "]")){
+			CharaStatus hp;
+			hp._hp = hp._maxHp = std::atoi(splitString.c_str());
+			m_hp.push_back(hp);
+		}
+	}
 }
 
+CharaStatus& BattleEnemyManager::mGetCharaStatus(int index){
+	return m_hp[index];
+
+}
 
 void BattleEnemyManager::ResetEnemyList(int waveCount,ViewCamera* camera){
+
+	if (!m_pEnemy.empty()){
+		for (auto& enemy : m_pEnemy){
+			enemy.reset();
+		}
+		m_pEnemy.clear();
+	}
 
 	for (auto& enemyType : m_waveEnemyList[waveCount]){
 		auto transform = m_BattleField->mGetEnemyLane(enemyType.first);
@@ -201,4 +240,21 @@ eMusical BattleEnemyManager::mGetEnemyAttack(const char attack){
 	}
 
 	return eMusical::eNull;
+}
+
+void BattleEnemyManager:: mFinalize(){
+	
+
+	
+	for (auto enemy : m_pEnemy){
+		enemy.reset();
+	}
+
+	for (auto enemy :m_waveEnemyList){
+		enemy.clear();
+	}
+	for (auto enemy : m_enemyAttackList){
+		enemy.clear();
+	}
+
 }

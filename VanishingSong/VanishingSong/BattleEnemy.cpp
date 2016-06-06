@@ -9,6 +9,7 @@ BattleEnemy::BattleEnemy()
 
 BattleEnemy::~BattleEnemy()
 {
+	Finalize();
 }
 
 void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* camera,Vector3& pos){
@@ -23,34 +24,34 @@ void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* ca
 	{
 	case eMusical::eBlue:
 		if (enemytype==eEnemyType::eAir){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\Enemy\Air\\body.fbx", Gear::eType::eBody, "Model\Enemy\Air\\Blue");
+			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Blue");
 		}
 		else if (enemytype == eEnemyType::eGround){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\Enemy\Ground\\body.fbx", Gear::eType::eBody, "Model\Enemy\Ground\\Blue");
+			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Blue");
 		}
 		break;
 	case eMusical::eGreen:
 		if (enemytype == eEnemyType::eAir){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\Enemy\Air\\body.fbx", Gear::eType::eBody, "Model\Enemy\Air\\Green");
+			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Green");
 		}
 		else if (enemytype == eEnemyType::eGround){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\Enemy\Ground\\body.fbx", Gear::eType::eBody, "Model\Enemy\Ground\\Green");
+			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Green");
 		}
 		break;
 	case eMusical::eRed:
 		if (enemytype == eEnemyType::eAir){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\Enemy\Air\\body.fbx", Gear::eType::eBody, "Model\Enemy\Air\\Red");
+			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Red");
 		}
 		else if (enemytype == eEnemyType::eGround){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\Enemy\Ground\\body.fbx", Gear::eType::eBody, "Model\Enemy\Ground\\Red");
+			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Red");
 		}
 		break;
 	case eMusical::eYellow:
 		if (enemytype == eEnemyType::eAir){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\Enemy\Air\\body.fbx", Gear::eType::eBody, "Model\Enemy\Air\\Yellow");
+			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Yellow");
 		}
 		else if (enemytype == eEnemyType::eGround){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\Enemy\Ground\\body.fbx", Gear::eType::eBody, "Model\Enemy\Ground\\Yellow");
+			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Yellow");
 		}
 		break;
 	default:
@@ -102,4 +103,9 @@ void BattleEnemy::misDie(){
 
 //GearFrame‚Í‰ð•ú‚µ‚È‚¢
 void BattleEnemy::Finalize(){
+
+	if (m_pTopGear){
+		m_pTopGear->Release();
+		m_pTopGear = nullptr;
+	}
 }

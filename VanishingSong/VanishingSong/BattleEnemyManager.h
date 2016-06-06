@@ -3,6 +3,7 @@
 #include "BattleEnemy.h"
 #include"BattleField.h"
 #include <ShaderBase.h>
+#include "CharaStatus.h"
 #include <array>
 namespace{
 	const int kEnemyMaxNum = 4;
@@ -19,6 +20,8 @@ public:
 		_type‚ªNull‚Ìê‡‚Í‰Šú‰»‚Ìˆ—‚ğ”ò‚Î‚·
 	*/
 	void mInitialize(aetherClass::ViewCamera* camera,BattleField* );
+
+	
 
 	void mUpadate(const float timeScale);
 
@@ -41,23 +44,38 @@ public:
 	int mGetWaveAllCount();
 
 private:
+	void mFinalize();
 	void mLoadInfo(std::string, BattleField*, aetherClass::ViewCamera*);
 	int mGetRandom();
 	eMusical mGetEnemyColor(const char);
 	eEnemyType mGetEnemyType(const char);
 	eMusical mGetEnemyAttack(const char);
+	CharaStatus& mGetCharaStatus(int);
+
 
 private:
 	
 	BattleField* m_BattleField;
+
+	aetherClass::ViewCamera* m_camera;
+	bool flag;
+
 	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
 	std::vector<eMusical> m_enemyList;
 	std::vector<std::vector<std::pair<eMusical, eEnemyType>>> m_waveEnemyList;
 	std::vector<std::vector<eMusical>> m_enemyAttackList;
 
+
+
+	std::vector<CharaStatus> m_hp;
+
+	
+
 	bool m_isEnd;
 	int m_waveAllCount;
 	int m_attackAllCount;
+	
+
 };
 
 #endif
