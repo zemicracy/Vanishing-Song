@@ -87,8 +87,8 @@ bool SceneGame::Initialize(){
 	else{
 		auto fieldState = Singleton<GameManager>::GetInstance().mFieldState();
 		if (fieldState != GameManager::eFieldState::eTutorial){
-			for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
-				Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(index.second);
+			for (auto index : Singleton<GameManager>::GetInstance().mNote()){
+				Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(index);
 			}
 		}
 		else{
@@ -247,6 +247,7 @@ bool SceneGame::mFadeState(SceneGame::eState state){
 
 // メッセージの更新処理
 bool SceneGame::mMessageUpdate(){
+
 	auto collideInfo = m_pCollideManager->GetMassageInfo();
 	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight) ||
@@ -255,9 +256,10 @@ bool SceneGame::mMessageUpdate(){
 	const Vector3 playerPosition = m_pFieldPlayer->mGetBodyColldier()->property._transform._translation;
 	const Vector3 enemyPosition = m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetProperty()._pCollider->property._transform._translation;
 
-	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton,playerPosition,enemyPosition);
-	if (m_pMessageManager->mGetIsChangeScene()){
+	const int canStageNumber = Singleton<GameManager>::GetInstance().mGetCanStage();
+	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton,playerPosition,enemyPosition,canStageNumber);
 
+	if (m_pMessageManager->mGetIsChangeScene()){
 		Singleton<GameManager>::GetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
 		Singleton<GameManager>::GetInstance().mBattleDataFile(m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetBattleDataPath());
 

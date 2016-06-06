@@ -8,11 +8,16 @@ GameManager::GameManager()
 	m_prevPlayerTransform._translation._y = 22.2f;
 	m_bossState = eBossState::eUnVisible;
 	m_fieldState = eFieldState::eNull;
+	m_canStageNumber = NULL;
 }
 
 
 GameManager::~GameManager()
 {
+	m_prevPlayerTransform._translation._y = 22.2f;
+	m_bossState = eBossState::eUnVisible;
+	m_fieldState = eFieldState::eNull;
+	m_canStageNumber = NULL;
 }
 
 //
@@ -76,4 +81,14 @@ void GameManager::mNote(eMusical type){
 //
 std::vector<eMusical>& GameManager::mNote(){
 	return m_noteArray;
+}
+
+//
+void GameManager::mGetCanStage(const int stage){
+	m_canStageNumber = stage;
+}
+
+//
+int  GameManager::mGetCanStage()const{
+	return m_canStageNumber;
 }
