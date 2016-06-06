@@ -212,10 +212,6 @@ void FieldPlayer::mRender(aetherClass::ShaderBase* modelShader, aetherClass::Sha
 	// 全ての親は体のパーツなので、必ず体のパーツから始める
 	m_charaEntity.mGearRender(m_topGear, modelShader, colliderShader);
 
-	if (m_pBodyCollider){
-		//m_pBodyCollider->Render(colliderShader);
-		m_pSphereCollider->Render(colliderShader);
-	}
 	return;
 }
 
