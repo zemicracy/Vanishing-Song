@@ -20,7 +20,7 @@ public:
 
 	struct Property{
 		std::shared_ptr<GearFrame> _penemy;			//Enemy本体
-		std::shared_ptr<aetherClass::Cube> _pCollider;	//コライダー
+		std::shared_ptr<aetherClass::ModelBase> _pCollider;	//コライダー
 		bool _talkflag;
 		int _enemyAreaNo;		//エリアナンバー
 	};

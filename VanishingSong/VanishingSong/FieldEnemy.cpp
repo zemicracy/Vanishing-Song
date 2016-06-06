@@ -3,7 +3,7 @@
 #include "ResourceManager.h"
 #include <Singleton.h>
 #include "Debug.h"
-
+#include <Sphere.h>
 using namespace aetherClass;
 
 FieldEnemy::FieldEnemy(){
@@ -129,7 +129,7 @@ void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 	m_property._pCollider = std::make_shared<Cube>();
 	m_property._pCollider->Initialize();
 	m_property._pCollider->property._transform._translation = m_pTopGear->_pGear->property._transform._translation;
-	m_property._pCollider->property._transform._scale = Vector3(9, 12, 4);
+	m_property._pCollider->property._transform._scale = Vector3(10, 10, 10);
 	m_property._pCollider->property._color = Color(1, 1, 1, 0.5);
 	m_property._pCollider->SetCamera(camera);
 

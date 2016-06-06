@@ -42,7 +42,7 @@ bool FieldPlayer::mInitialize(std::shared_ptr<GearFrame> gear, Vector3 position)
 	}
 
 	// パーツの初期位置
-	result = mLoadProperty(gearFrame, "data\\Player\\Stay.aether");
+	result = mLoadProperty(gearFrame, "data\\Player\\stay.aether");
 
 	if (!result){
 		return false;
@@ -53,8 +53,8 @@ bool FieldPlayer::mInitialize(std::shared_ptr<GearFrame> gear, Vector3 position)
 	mSetUpBodyCollider(m_pSphereCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
 
 	/*	基本的なアニメーションの登録	*/
-	mRegisterAnimation(FieldPlayer::eState::eMove, kMoveAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Move.aether");
-	mRegisterAnimation(FieldPlayer::eState::eWait, kWaitAnimationFrame, "data\\Player\\Stay.aether", "data\\Player\\Wait.aether");
+	//mRegisterAnimation(FieldPlayer::eState::eMove, kMoveAnimationFrame, "data\\Player\\stay.aether", "data\\Player\\Move.aether");
+	mRegisterAnimation(FieldPlayer::eState::eWait, kWaitAnimationFrame, "data\\Player\\stay.aether", "data\\Player\\wait.aether");
 
 	m_initialTransform = m_playerTransform;
 	m_isHitWall = false;
@@ -127,7 +127,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	else{
 		state = eState::eMove;
 	}
-
+	state = eState::eWait;
 	// 基本的なアニメーションの再生
 	mDefaultAnimation(state);
 	
@@ -244,18 +244,11 @@ bool FieldPlayer::mInitializeGearFrame(std::shared_ptr<GearFrame>& gearFrame, ae
 	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eWaist, gearFrame->m_pWaist);
 
 	// 左
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftHand, gearFrame->m_pLeftHand);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftLowerArm, gearFrame->m_pLeftLowerArm);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftLowerLeg, gearFrame->m_pLeftLowerLeg);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftUpperArm, gearFrame->m_pLeftUpperArm);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftUpperLeg, gearFrame->m_pLeftUpperLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftArm, gearFrame->m_pLeftArm);
 	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eLeftFoot, gearFrame->m_pLeftFoot);
+
 	// 右
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightHand, gearFrame->m_pRightHand);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightLowerArm, gearFrame->m_pRightLowerArm);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightLowerLeg, gearFrame->m_pRightLowerLeg);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightUpperArm, gearFrame->m_pRightUpperArm);
-	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightUpperLeg, gearFrame->m_pRightUpperLeg);
+	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightArm, gearFrame->m_pRightArm);
 	m_charaEntity.mRegisterParts(m_pGearHash, Gear::eType::eRightFoot, gearFrame->m_pRightFoot);
 	return true;
 }
@@ -286,51 +279,17 @@ bool FieldPlayer::mLoadProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 		}
 
 		/*	左上半身*/
-		if (index->_name == "LeftUpperArm"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftUpperArm, index);
-		}
-
-		if (index->_name == "LeftLowerArm"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftLowerArm, index);
-		}
-
-		if (index->_name == "LeftHand"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftHand, index);
+		if (index->_name == "LeftArm"){
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftArm, index);
 		}
 
 		/*	右上半身	*/
-		if (index->_name == "RightUpperArm"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightUpperArm, index);
-		}
-
-		if (index->_name == "RightLowerArm"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightLowerArm, index);
-		}
-
-		if (index->_name == "RightHand"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightHand, index);
-		}
-
-		/*	右足	*/
-		if (index->_name == "RightUpperLeg"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightUpperLeg, index);
-		}
-
-		if (index->_name == "RightLowerLeg"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightLowerLeg, index);
+		if (index->_name == "RightArm"){
+			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightArm, index);
 		}
 
 		if (index->_name == "RightFoot"){
 			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pRightFoot, index);
-		}
-
-		/*	左足	*/
-		if (index->_name == "LeftUpperLeg"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftUpperLeg, index);
-		}
-
-		if (index->_name == "LeftLowerLeg"){
-			m_charaEntity.mSetLoadGearValue(m_topGear, gearFrame->m_pLeftLowerLeg, index);
 		}
 
 		if (index->_name == "LeftFoot"){

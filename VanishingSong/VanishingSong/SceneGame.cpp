@@ -86,7 +86,7 @@ bool SceneGame::Initialize(){
 	}
 	else{
 		auto fieldState = Singleton<GameManager>::GetInstance().mFieldState();
-		if (fieldState == GameManager::eFieldState::eNormal){
+		if (fieldState != GameManager::eFieldState::eTutorial){
 			for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
 				Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(index.second);
 			}
@@ -106,6 +106,8 @@ void SceneGame::Finalize(){
 		Singleton<ResourceManager>::GetInstance().mStopBaseBGM(index.second);
 	}
 	Singleton<ResourceManager>::GetInstance().mGetLastBGM()->Stop();
+	Singleton<ResourceManager>::GetInstance().mGetFirstBGM()->Stop();
+
 	if (m_pMessageManager){
 		m_pMessageManager.reset();
 		m_pMessageManager = nullptr;

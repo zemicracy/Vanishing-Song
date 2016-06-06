@@ -16,25 +16,12 @@ public:
 		eBody,
 		
 		// 腕パーツ
-		eRightUpperArm,
-		eLeftUpperArm,
-		eRightLowerArm,
-		eLeftLowerArm,
+		eRightArm,
+		eLeftArm,
 
 		// 腰パーツ
 		eWaist,
-
-		// 足パーツ
-		eRightUpperLeg,
-		eLeftUpperLeg,
-		eRightLowerLeg,
-		eLeftLowerLeg,
-
-		// 手のパーツ
-		eRightHand,
-		eLeftHand,
-
-		// 手のパーツ
+		// 足のパーツ
 		eRightFoot,
 		eLeftFoot,
 		eNull,
