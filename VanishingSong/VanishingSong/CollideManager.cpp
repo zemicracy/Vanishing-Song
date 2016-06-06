@@ -28,7 +28,6 @@ void CollideManager::mUpdate(){
 	const int playerNumber = mCheckPlayerFieldArea();
 	mCheckHitObject(playerNumber);
 	mCheckHitEnemy(playerNumber);
-	Debug::mPrint("Œ»İ‚ÌêŠ" + std::to_string(playerNumber));
 	return;
 }
 
