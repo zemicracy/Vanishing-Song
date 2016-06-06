@@ -91,6 +91,7 @@ private:
 
 	std::shared_ptr<aetherClass::SpriteBase>m_pBackImage;
 	aetherClass::Vector3 m_BackImageOrigin;
+	aetherClass::Vector3 m_BackImageReverceOrigin;
 	aetherClass::Vector3 m_BackImageScaleOrigin;
 
 	std::shared_ptr<aetherClass::SpriteBase>m_pReadLine;

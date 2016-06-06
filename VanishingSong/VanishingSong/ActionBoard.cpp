@@ -28,14 +28,15 @@ ActionBoard::~ActionBoard(){
 
 void ActionBoard::mFinalize(){
 	m_actionList.clear();
+	m_playerOrder.clear();
 }
 
 template <class T>
 void gInitializer(std::unordered_map<eMusical,ActionBoard::ActionCommandType>& tree,Color color,std::string str){
 	
 	std::shared_ptr<ActionCommand> command = std::make_shared<T>();
-	command->mCreate();                                                                                                                                                                                                                                                                                                          
-	
+	command->mCreate();
+
 	auto tex = Singleton<ResourceManager>::GetInstance().GetTexture(str);
 
 	command->mSetTexture(tex.get());

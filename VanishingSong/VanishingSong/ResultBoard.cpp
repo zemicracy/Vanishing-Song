@@ -44,7 +44,7 @@ void ResultBoard::mInitialize(){
 
 
 	Color BLACK(0, 0, 0, 1);
-	for (auto itr : reader.GetInputWorldInfo()._object){
+	for (auto& itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "correctGauge"){
 			m_pGauge = std::make_shared<ClearGauge>();
 			m_pGauge->mSetTransform(itr->_transform);
@@ -169,7 +169,7 @@ void ResultBoard::mUpdate(){
 
 void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
 
-	for (auto itr : m_pGeneral){
+	for (auto& itr : m_pGeneral){
 			itr.second->Render(shader);
 	}
 	m_pGauge->mRender(m_halfFill);

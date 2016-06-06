@@ -46,6 +46,10 @@ public:
 	void mPlayerInitialize(eMusical, std::string directy, std::string tex);
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
+	void mEnemyInitialize(eMusical,eEnemyType, std::string directy, std::string tex);
+	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical,eEnemyType);
+
+
 	std::shared_ptr<aetherClass::GameSound> mGetLastBGM();
 	std::shared_ptr<aetherClass::GameSound> mGetFirstBGM();
 private:
@@ -95,6 +99,7 @@ private:
 
 	void FinalizePlayer();
 
+	void FinalizeEnemy();
 	/*
 		アクションコマンドに対応した音の登録用
 	*/
@@ -129,6 +134,7 @@ private:
 	CharaEntity m_charaEntity;
 
 	CharaHash m_pPlayerHashes;
+	EnemyHash m_pEnemyHashes;
 };
 
 #endif

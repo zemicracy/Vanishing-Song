@@ -22,12 +22,13 @@ SceneBattle::~SceneBattle()
 //interim
 
 std::vector<std::shared_ptr<ActionCommand>>EnemyVector;
-eMusical askey[8] = {	eMusical::eBlue, eMusical::eAdlib, eMusical::eNull, eMusical::eBlue,
+eMusical askey[8] = {	eMusical::eBlue, eMusical::eYellow, eMusical::eNull, eMusical::eBlue,
 						eMusical::eNull, eMusical::eRed, eMusical::eGreen, eMusical::eBlue	};
 
 bool SceneBattle::Initialize(){
 	m_sound = std::make_shared<GameSound>();
 	m_sound->Load("Sound\\Battle\\normal.wav");
+
 	Singleton<RhythmManager>::GetInstance().mInitializeRhythm(m_sound, 120);
 	
 	m_inCount = 0;
@@ -73,7 +74,7 @@ bool SceneBattle::Initialize(){
 	m_PreInitProcess = false;
 	m_prevWholeBeatNo = 0;
 
-	m_bgmVolume = 40;
+	m_bgmVolume = 30;
 	charaHp._maxHp = charaHp._hp = 10;
 	enemyHp._maxHp = enemyHp._hp = 20;
 
@@ -88,13 +89,21 @@ bool SceneBattle::Initialize(){
 
 void SceneBattle::Finalize(){
 	m_pOrderList.release();
+	m_sound.reset();
+	m_pActionBoard.reset();
+	m_pField.release();
+	m_pGauge.release();
+	m_pMessage.release();
+	m_pResult.release();
+	m_rhythm->mFinalize();
+
 	return;
 }
 
 bool SceneBattle::Updater(){
 	m_rhythm->mAcquire();
 	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult)
-	if (m_bgmVolume > 10){
+	if (m_bgmVolume > 8){
 		m_sound->SetValume(-m_bgmVolume * 100);
 		m_bgmVolume--;
 	}

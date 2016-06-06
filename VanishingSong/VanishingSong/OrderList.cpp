@@ -80,7 +80,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_pSpriteOrigin.resize(8);
 
 
-	for (auto itr : reader.GetInputWorldInfo()._object){
+	for (auto& itr : reader.GetInputWorldInfo()._object){
 		itr->_color = Color(0, 0, 0, 1);
 		if (itr->_name == "base"){
 			gInitializer(m_pBackImage, itr->_transform, itr->_color);
@@ -90,6 +90,11 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			m_BackImageOrigin._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
 			m_BackImageOrigin._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
 			m_BackImageScaleOrigin = itr->_transform._scale;
+
+			m_BackImageReverceOrigin._x = itr->_transform._translation._x + itr->_transform._scale._x + 80;
+			m_BackImageReverceOrigin._y = itr->_transform._translation._y;
+
+
 		}
 		if (itr->_name == "linepos"){
 			gInitializer(m_pReadLine, itr->_transform, Color(1,0,0,1));
@@ -145,6 +150,9 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			gInitializer(m_pVolumeImage, itr->_transform, itr->_color);
 			m_VolumeOrigin = itr->_transform._translation + itr->_transform._scale / 2;
 			m_VolumeOrigin._z = 0;
+
+
+
 			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note_a.png");
 			m_pVolumeImage->SetTexture(m_pTextureList[itr->_name].get());
 		}
@@ -662,14 +670,26 @@ void OrderList::mRhythmicMotion(){
 	}
 	
 	//リスト
-	{
-		m_pBackImage->property._transform._scale._x = m_BackImageScaleOrigin._x + (scale*10);
-		m_pBackImage->property._transform._scale._y = m_BackImageScaleOrigin._y + (scale*10);
-		auto size = (m_pBackImage->property._transform._scale);
-		m_pBackImage->property._transform._translation._x = m_BackImageOrigin._x - (size._x / 2);
-		m_pBackImage->property._transform._translation._y = m_BackImageOrigin._y - (size._y / 2);
-		m_pBackImage->property._transform._translation._z = 0;
-	}
+		if (m_option & eAppendOption::eReverce){
+			m_pBackImage->property._transform._scale._x = m_BackImageScaleOrigin._x + (scale * 10);
+			m_pBackImage->property._transform._scale._y = m_BackImageScaleOrigin._y + (scale * 10);
+			auto size = (m_pBackImage->property._transform._scale);
+			m_pBackImage->property._transform._scale._x *= -1;
+
+			float reversive = m_BackImageReverceOrigin._x - (m_BackImageScaleOrigin._x / 2);
+			m_pBackImage->property._transform._translation._x = reversive + (size._x / 2);
+			m_pBackImage->property._transform._translation._y = m_BackImageOrigin._y - (size._y / 2);
+			m_pBackImage->property._transform._translation._z = 0;
+
+		}
+		else{
+			m_pBackImage->property._transform._scale._x = m_BackImageScaleOrigin._x + (scale * 10);
+			m_pBackImage->property._transform._scale._y = m_BackImageScaleOrigin._y + (scale * 10);
+			auto size = (m_pBackImage->property._transform._scale);
+			m_pBackImage->property._transform._translation._x = m_BackImageOrigin._x - (size._x / 2);
+			m_pBackImage->property._transform._translation._y = m_BackImageOrigin._y - (size._y / 2);
+			m_pBackImage->property._transform._translation._z = 0;
+		}
 	//フレーム
 	{
 		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (scale * 20);

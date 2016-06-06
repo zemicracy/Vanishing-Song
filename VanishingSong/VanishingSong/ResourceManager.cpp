@@ -47,6 +47,7 @@ bool ResourceManager::Initialize(){
 */
 void ResourceManager::Finalize(){
 	FinalizePlayer();
+	FinalizeEnemy();
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
@@ -125,10 +126,10 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-	RegisterActionSound(eMusical::eBlue, "Sound/Bm7_1.wav");
-	RegisterActionSound(eMusical::eGreen, "Sound/Bm7_2.wav");
-	RegisterActionSound(eMusical::eRed, "Sound/Bm7_3.wav");
-	RegisterActionSound(eMusical::eYellow, "Sound/Bm7_4.wav");
+	RegisterActionSound(eMusical::eBlue, "Sound/blue.wav");
+	RegisterActionSound(eMusical::eGreen, "Sound/green.wav");
+	RegisterActionSound(eMusical::eRed, "Sound/red.wav");
+	RegisterActionSound(eMusical::eYellow, "Sound/yellow.wav");
 	RegisterActionSound(eMusical::eMiss, "Sound/miss.wav");
 
 	return true;
@@ -354,6 +355,37 @@ std::shared_ptr<GearFrame> ResourceManager::mGetPlayerHash(eMusical type){
 void ResourceManager::FinalizePlayer(){
 	for (auto& index : m_pPlayerHashes){
 		index.second->Release();
+	}
+}
+
+// 雑魚敵用
+void ResourceManager::mEnemyInitialize(eMusical type,eEnemyType enemyType, std::string directy, std::string tex){
+	std::shared_ptr<Gear> gear;
+	if (type == eMusical::eNull)return;
+	
+	m_pEnemyHashes[type][enemyType] = std::make_shared<GearFrame>();
+
+		// 体のパーツ
+	m_pEnemyHashes[type][enemyType]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
+
+	
+		// それぞれのパーツとの親子関係構築
+	m_charaEntity.mCreateRelationship(m_pEnemyHashes[type][enemyType]->m_pBody, m_pEnemyHashes[type][enemyType]->m_pWaist);
+}
+
+//
+std::shared_ptr<GearFrame> ResourceManager::mGetEnemyHash(eMusical type,eEnemyType enemyType){
+	return m_pEnemyHashes[type][enemyType];
+}
+
+// 解放処理
+void ResourceManager::FinalizeEnemy(){
+	for (auto& firstHash : m_pEnemyHashes){
+		for (auto& index : firstHash.second){
+			if (!index.second)continue;
+			index.second->Release();
+
+		}
 	}
 }
 

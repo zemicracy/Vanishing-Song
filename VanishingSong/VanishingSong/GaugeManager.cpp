@@ -43,13 +43,8 @@ bool GaugeManager::mInitialize(){
 			m_enemyHpGauge->mSetProperty(pp);
 			m_enemyHpGauge->mInitialize();
 		}
-		
+
 	}
-
-
-
-
-	
 
 
 	ShaderDesc desc;

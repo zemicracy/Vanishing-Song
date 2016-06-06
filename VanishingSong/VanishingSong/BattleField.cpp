@@ -19,21 +19,20 @@ BattleField::~BattleField()
 }
 
 void BattleField::mFinalize(){
-	for (auto itr : m_pLane){
+	for (auto& itr : m_pLane){
 		itr.second->Finalize();
 	}
 	m_pLane.clear();
 
 	m_pSkyBox->Finalize();
 	m_pPlane->Finalize();
-	for (auto itr : m_pDebug){
+	for (auto& itr : m_pDebug){
 		itr->Finalize();
 		itr.reset();
 	}
 
 	m_EnemyLane.clear();
 	m_PlayerLane.clear();
-
 }
 template<class T>
 std::shared_ptr<T> gInitializer(aetherClass::Transform transform, aetherClass::Color color){
@@ -64,7 +63,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 	Color WHITE(1, 1, 1, 0);
 	float normalScale = 9.9;
 
-	for (auto itr : reader.GetInputWorldInfo()._object){
+	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
 			m_pPlane->LoadFBX("Model\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisDirectX);
@@ -182,6 +181,7 @@ void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 	if (m_pLane.find(command->mGetType()) == m_pLane.end())return;
 	m_pLane.at(command->mGetType())->property._color._alpha = 0.9;
 }
+
 void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug){
 	m_pSkyBox->Render(texture);
 	m_pPlane->Render(debug);
@@ -195,7 +195,6 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 	for (int i = m_pCommand.size()-1; i >= 0; --i){
 		m_pCommand.at(i)->Render(texture);
 	}
-
 }
 
 

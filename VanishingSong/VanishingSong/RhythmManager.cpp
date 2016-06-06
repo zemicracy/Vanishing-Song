@@ -4,8 +4,8 @@
 
 RhythmManager::RhythmManager()
 {
-	m_playTime = 0;
 	m_sound = nullptr;
+	m_playTime = 0;
 	m_prevEighterBeat = 0;
 	m_prevQuarterBeat= 0;
 	m_prevWholeBeat = 0;
@@ -15,6 +15,20 @@ RhythmManager::RhythmManager()
 
 RhythmManager::~RhythmManager()
 {
+}
+
+void RhythmManager::mFinalize(){
+	m_sound.reset();
+	m_playTime = 0;
+	m_prevEighterBeat = 0;
+	m_prevQuarterBeat = 0;
+	m_prevSixteenthBeat = 0;
+	m_prevWholeBeat = 0;
+	m_bpm = 0;
+	m_IsEighterBeat = 0;
+	m_IsQuarterBeat = 0;
+	m_IsSixteenthBeat = 0;
+	m_IsWholeBeat = 0;
 }
 
 
