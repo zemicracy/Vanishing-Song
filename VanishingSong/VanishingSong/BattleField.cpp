@@ -141,7 +141,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 
 	m_pSkyBox = std::make_shared<Skybox>();
 	m_pSkyBox->Initialize();
-	m_pTextureList.insert(std::make_pair("skybox", gCreateTexture("Texture\\Game\\GameBack.jpg")));
+	m_pTextureList.insert(std::make_pair("skybox", Singleton<ResourceManager>::GetInstance().GetTexture("skybox")));
 	m_pSkyBox->SetTexture(m_pTextureList["skybox"].get());
 
 	for (auto itr : m_pDebug){
@@ -160,7 +160,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 
-	if (aetherClass::GameController::GetKey().IsKeyDown('X')){
+	/*if (aetherClass::GameController::GetKey().IsKeyDown('X')){
 		m_pSkyBox->property._transform._rotation._x += 0.1;
 	}
 	else if (aetherClass::GameController::GetKey().IsKeyDown('C')){
@@ -169,7 +169,7 @@ void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 	if (aetherClass::GameController::GetKey().IsKeyDown(VK_SPACE)){
 
 		Debug::mPrint(std::to_string(m_pSkyBox->property._transform._rotation._x));
-	}
+	}*/
 
 	//ƒ¿‚¯‚·‚æ
 	for (auto itr : m_pLane){

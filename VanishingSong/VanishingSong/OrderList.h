@@ -127,7 +127,7 @@ private:
 	int m_processId;		//ˆ—’†‚ÌID
 	int m_MaxOrderSize;
 	
-	int m_damagedValue;
+	int m_damagedValue;		//UŒ‚‚©ƒ_ƒ[ƒW‚©
 	ResultData m_resultData;
 
 	//

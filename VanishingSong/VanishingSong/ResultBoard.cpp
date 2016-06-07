@@ -150,7 +150,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	int dotrate = rate * 10;
 	int integer = i;
 
-	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate)+"%";
+//	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate)+"%";
 //	Debug::mPrint(std::to_string(i) + "  " + std::to_string(dotrate) + "  " + std::to_string(rate));
 
 }

@@ -16,6 +16,7 @@ public:
 		eBattle,    // í“¬‚ÌÀsó‘Ô
 		eCheck,     // ¡‚Ìó‘Ô‚ğ”»’è‚·‚é
 		eResult,	// ƒŠƒUƒ‹ƒg
+		eNewWave,
 		eNull,
 	};
 

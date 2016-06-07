@@ -141,16 +141,6 @@ bool ResourceManager::InitializeActionSound(){
 */
 bool ResourceManager::InitializeTexture(){
 	RegisterTexture("skybox", "Texture\\Game\\GameBack.jpg");
-	RegisterTexture("0", "Texture\\Number\\0.png");
-	RegisterTexture("1", "Texture\\Number\\1.png");
-	RegisterTexture("2", "Texture\\Number\\2.png");
-	RegisterTexture("3", "Texture\\Number\\3.png");
-	RegisterTexture("4", "Texture\\Number\\4.png");
-	RegisterTexture("5", "Texture\\Number\\5.png");
-	RegisterTexture("6", "Texture\\Number\\6.png");
-	RegisterTexture("7", "Texture\\Number\\7.png");
-	RegisterTexture("8", "Texture\\Number\\8.png");
-	RegisterTexture("9", "Texture\\Number\\9.png");
 	
 	std::string comPath = "Texture\\ActionCommand\\";
 	RegisterTexture("ActionBlue", comPath + "Blue.png");
