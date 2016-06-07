@@ -62,7 +62,7 @@ bool SceneGame::Initialize(){
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
 	for (auto& index : m_pCage){
 		const auto hoge = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
-		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, 22.2f, hoge._z), view);
+		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, kPlayerInitializeY, hoge._z), view);
 		count += 1;
 	}
 
