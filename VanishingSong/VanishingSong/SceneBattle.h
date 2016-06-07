@@ -59,6 +59,8 @@ private:
 	void mOnPerform();   // プレイヤーの演奏
 	void mOnBattle();    // 戦闘開始
 	void mCheckBattle();
+
+	void mLoadTextData();
 private:
 	GameManager::eBattleState m_battleState;
 	GameManager::eBattleState m_winner;
@@ -77,14 +79,22 @@ private:
 	aetherClass::ViewCamera m_view;
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
 
+
+
 	int m_prevWholeBeatNo;
 	bool m_InitUpdateProcess;
 	bool m_PreInitProcess;
 	float m_bgmVolume;
 	int m_inCount;
+
+	//ウェーブ
+	int m_MaxWave;
+	int m_nowWave;
+	int m_stageID;
+	GameManager::eGameMode m_beatMode;
 	//karikari
-	CharaStatus charaHp;
-	CharaStatus enemyHp;
+	CharaStatus m_charaHp;
+	CharaStatus *m_enemyHp;
 
 
 	eGameState m_processState;

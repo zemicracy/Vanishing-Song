@@ -14,8 +14,6 @@ BattleEnemy::~BattleEnemy()
 
 void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* camera,Vector3& pos){
 
-	Finalize();
-
 	m_isDie = false;
 	
 	m_enemy._gearFrame = std::make_shared<GearFrame>();

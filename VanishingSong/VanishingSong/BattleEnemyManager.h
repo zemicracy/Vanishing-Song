@@ -42,6 +42,7 @@ public:
 	bool mIsEnd();
 
 	int mGetWaveAllCount();
+	CharaStatus& mGetCharaStatus(int);
 
 private:
 	void mFinalize();
@@ -50,7 +51,6 @@ private:
 	eMusical mGetEnemyColor(const char);
 	eEnemyType mGetEnemyType(const char);
 	eMusical mGetEnemyAttack(const char);
-	CharaStatus& mGetCharaStatus(int);
 
 
 private:

@@ -17,9 +17,7 @@ BattleEnemyManager::~BattleEnemyManager()
 void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	
 	mLoadInfo("data\\Battle\\Stage1",lane,camera);
-
-	ResetEnemyList(0, camera);
-
+//	ResetEnemyList(0, camera);
 	m_camera = camera;
 
 	flag = true;
@@ -48,12 +46,12 @@ int BattleEnemyManager::mGetRandom(){
 
 	std::random_device rnd;
 	std::mt19937 mt(rnd());
-	std::uniform_int_distribution<> rand100(0, 1100);
+	std::uniform_int_distribution<> rand100(0, 500);
 
 	int r;
 	int random = rand100(rnd);
 
-	if (random < 100){
+	if (random <= 100){
 		r = 0;
 	}else if (random > 100 && random <= 200){
 		r = 1;
@@ -88,23 +86,14 @@ int BattleEnemyManager::mGetRandom(){
 	}*/
 
 
-	if (r >= m_attackAllCount){
-		mGetRandom();
+	if (r > m_attackAllCount-1){
+		r = mGetRandom();
 	}
 	return r;
 }
 
 void BattleEnemyManager::mUpadate(const float timeScale ){
 	
-	cnt++;
-
-	if (flag == true){
-		if (cnt > 300){
-			ResetEnemyList(1, m_camera);
-			flag = false;
-
-		}
-	}
 }
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){

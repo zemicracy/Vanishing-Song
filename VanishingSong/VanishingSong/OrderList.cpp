@@ -78,7 +78,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	
 	m_pSpriteList.resize(8);
 	m_pSpriteOrigin.resize(8);
-
+	
 
 	for (auto& itr : reader.GetInputWorldInfo()._object){
 		itr->_color = Color(0, 0, 0, 1);
@@ -158,14 +158,14 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 		}
 	}
 
-	//ちょうどいいから（
+	//ライン開始位置
 	m_ReadLineOrigin._x = m_pSpriteOrigin[0]._x - (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x)*3;
 	m_ReadLineReverce._x = m_pSpriteOrigin[7]._x + (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x) * 3;
 	reader.UnLoad();
 	m_MaxOrderSize = requestVal;
 
 
-
+	//画面の枠
 	m_pFlame = std::make_shared<Rectangle2D>();
 	m_pFlame->Initialize();
 	m_flameScaleOrigin = m_pFlame->property._transform._scale = Vector3(1280, 720, 1);
@@ -181,15 +181,6 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_pFlame->SetTexture(m_pTextureList["flame"].get());
 
 
-	m_perticleDesc._size = 8;
-	m_perticleDesc._scale = 5;
-	m_perticleDesc._texturePath = dir + "note.png";
-	m_perticleDesc._endPoint = Vector3(0, 50, 0);
-	m_perticleDesc._rangeMin = Vector3(5, 0, 5);
-	m_perticleDesc._rangeMax = Vector3(10, 0, 10);
-
-	m_pParticle = std::make_unique<AttackParticle>(m_perticleDesc, m_Field->mGetCamera());
-	m_pParticle->mReset(m_perticleDesc);
 
 	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 
@@ -200,9 +191,27 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_pEffect->mInitialize();
 
 	m_pEffect->mLoadEffect(9, "Break", "Effect\\BreakCommand\\");
+	m_pEffect->mLoadEffect(6, "In", "Effect\\InCommand\\");
 	m_effectTrans = Transform(Vector3(), Vector3(), Vector3( 16*10, 9*10,0));
 
 	mAppendOptionInit();
+
+//パーティクル
+	m_perticleDesc._size = 8;
+	m_perticleDesc._scale = 5;
+	m_perticleDesc._texturePath = dir + "note_a.png";
+	m_perticleDesc._endPoint = Vector3(0, 50, 0);
+	m_perticleDesc._rangeMin = Vector3(5, 0, 5);
+	m_perticleDesc._rangeMax = Vector3(10, 0, 10);
+
+	m_pParticle = std::make_unique<AttackParticle>(m_perticleDesc, m_Field->mGetCamera());
+	m_pParticle->mReset(m_perticleDesc);
+}
+
+
+void OrderList::mAppendOptionInit(){
+	m_option = eAppendOption::eNone;
+	m_pTextureList["Cover"] = gLoadTexture("", "Texture\\ActionCommand\\Cover.png");
 }
 
 void OrderList::mLineUpdate(){
@@ -225,12 +234,6 @@ void OrderList::mLineUpdate(){
 	}
 
 }
-
-void OrderList::mAppendOptionInit(){
-	m_option = eAppendOption::eNone;
-	m_pTextureList["Cover"] = gLoadTexture("", "Texture\\ActionCommand\\Cover.png");
-}
-
 
 //敵行動フェイズ
 void OrderList::mListenUpdate(){
@@ -255,6 +258,20 @@ void OrderList::mListenUpdate(){
 			return;
 		};
 
+		//エフェクト関係
+		int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
+		if (m_option & eAppendOption::eReverce){
+			int id = (m_MaxOrderSize - 1) - m_processId;
+			m_effectTrans._translation._x = m_pSpriteOrigin[id*requestVal]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[id*requestVal]._y - m_effectTrans._scale._y / 2;
+			m_pEffect->mPlay("In", "In" + std::to_string(id), m_effectTrans);
+		}
+		else{
+			m_effectTrans._translation._x = m_pSpriteOrigin[m_processId*requestVal]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[m_processId*requestVal]._y - m_effectTrans._scale._y / 2;
+			m_pEffect->mPlay("In", "In" + std::to_string(m_processId), m_effectTrans);
+		}
+
 		
 		m_playedAction = m_EnemyOrderList[m_processId];
 		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull && m_EnemyOrderList[m_processId]->mGetType() != eMusical::eAdlib){
@@ -276,6 +293,7 @@ void OrderList::mPerformUpdate(){
 	if (!m_isAlPlay){
 		//一回しか処理させたくないもの	
 		m_PlayerOrderList.clear();
+		m_PlayerOrderList.reserve(8);
 		m_isAlPlay = true;
 	}
 	float reducation = 0;
@@ -389,6 +407,10 @@ void OrderList::mPerformUpdate(){
 	sound->mPlaySoundAction(0);
 	m_isPlaySound = false;
 
+	if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eMiss){
+		m_perticleDesc._startPoint = m_Field->mGetPlayerLane(m_PlayerOrderList[m_processId]->mGetType());
+		m_pParticle->mReset(m_perticleDesc);
+	}
 }
 
 //バトル
@@ -417,16 +439,17 @@ void OrderList::mBattleUpdate(){
 			m_processId++;
 			return;
 		}
+		int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
 
 		if (m_option & eAppendOption::eReverce){
 			int id = (m_MaxOrderSize - 1) - m_processId;
-			m_effectTrans._translation._x = m_pSpriteOrigin[id]._x - m_effectTrans._scale._x / 2;
-			m_effectTrans._translation._y = m_pSpriteOrigin[id]._y - m_effectTrans._scale._y / 2;
+			m_effectTrans._translation._x = m_pSpriteOrigin[id*requestVal]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[id*requestVal]._y - m_effectTrans._scale._y / 2;
 			m_pEffect->mPlay("Break", "Break" + std::to_string(id), m_effectTrans);
 		}
 		else{
-			m_effectTrans._translation._x = m_pSpriteOrigin[m_processId]._x - m_effectTrans._scale._x / 2;
-			m_effectTrans._translation._y = m_pSpriteOrigin[m_processId]._y - m_effectTrans._scale._y / 2;
+			m_effectTrans._translation._x = m_pSpriteOrigin[m_processId*requestVal]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[m_processId*requestVal]._y - m_effectTrans._scale._y / 2;
 			m_pEffect->mPlay("Break", "Break" + std::to_string(m_processId), m_effectTrans);
 		}
 
@@ -659,11 +682,10 @@ void OrderList::mRhythmicMotion(){
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
-	//拡大縮小をするために
-	m_pVolumeImage->property._transform._scale = 150 + (scale * 15);
-
+	
 	//音符
 	{
+		m_pVolumeImage->property._transform._scale = 150 + (scale * 15);
 		auto size = (m_pVolumeImage->property._transform._scale);
 		m_pVolumeImage->property._transform._translation = m_VolumeOrigin - (size / 2);
 		m_pVolumeImage->property._transform._translation._z = 0;
@@ -727,7 +749,7 @@ void OrderList::mRhythmicMotion(){
 		power = 2;
 	}
 	if (framecnt < maxFrame){
-		GameController::GetJoypad().SetVibration(std::make_pair(15000 * power, 15000 * power));
+		GameController::GetJoypad().SetVibration(std::make_pair(10000 * power, 35000 * power));
 	}
 	else{
 		GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
