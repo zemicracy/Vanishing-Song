@@ -35,6 +35,8 @@ bool FieldPlayer::mInitialize(std::shared_ptr<GearFrame> gear, Vector3 position)
 	m_playerTransform._translation = position;
 	
 	auto gearFrame = gear;
+
+	m_topGear = gearFrame->m_pBody;
 	// ギア系の初期化用
 	result = mInitializeGearFrame(gearFrame, &m_playerView);
 	if (!result){
@@ -50,16 +52,14 @@ bool FieldPlayer::mInitialize(std::shared_ptr<GearFrame> gear, Vector3 position)
 	
 	// コライダーの初期化
 	mSetUpBodyCollider(m_pBodyCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
-	mSetUpBodyCollider(m_pSphereCollider, m_topGear->_pGear->property._transform._translation, kColliderOffset);
-
+	
 	/*	基本的なアニメーションの登録	*/
 	//mRegisterAnimation(FieldPlayer::eState::eMove, kMoveAnimationFrame, "data\\Player\\stay.aether", "data\\Player\\Move.aether");
 	mRegisterAnimation(FieldPlayer::eState::eWait, kWaitAnimationFrame, "data\\Player\\stay.aether", "data\\Player\\wait.aether");
 
-	m_initialTransform = m_playerTransform;
 	m_isHitWall = false;
-	
 	m_charaEntity.SetCamera(m_topGear, &m_playerView);
+
 	m_sign = NULL;
 	return true;
 }
@@ -82,16 +82,7 @@ void FieldPlayer::mFinalize(){
 		m_pBodyCollider->Finalize();
 		m_pBodyCollider.reset();
 		m_pBodyCollider = nullptr;
-	}
-
-	if (m_pSphereCollider)
-	{
-		m_pSphereCollider->Finalize();
-		m_pSphereCollider.reset();
-		m_pSphereCollider = nullptr;
-	}
-
-	
+	}	
 	m_prevState = eState::eNull;
 	m_cameraRotation = kVector3Zero;
 
@@ -106,25 +97,24 @@ void FieldPlayer::mFinalize(){
 void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// キーの処理を取得
-	KeyValues getKeyValues;
+	std::pair<Transform, Vector3> getKeyValues;
 	if (!isWait){
-		getKeyValues = mReadKey(timeScale);
+		getKeyValues = mReadKey(timeScale,m_sign);
 	}
 
 	// カメラの処理
-	m_cameraRotation += getKeyValues._cameraRotation;
-
+	m_cameraRotation += getKeyValues.second;
 	mUpdateView(m_playerView, m_cameraRotation, m_topGear->_pGear->property._transform._translation);
 
-	// 向きだけ変える
-	m_playerTransform._rotation._y += getKeyValues._cameraRotation._y;
-
+	
 	// 移動があれば
 	FieldPlayer::eState state;
-	if (getKeyValues._transform._translation == kVector3Zero){
+	if (getKeyValues.first._translation == kVector3Zero){
 		state = eState::eWait;
 	}
 	else{
+		// 向きだけ変える
+		m_playerTransform._rotation._y = getKeyValues.first._rotation._y + m_cameraRotation._y;
 		state = eState::eMove;
 	}
 	state = eState::eWait;
@@ -140,16 +130,18 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	if (m_isHitWall){
 		Vector3 revision = m_prevPosition.Normalize();
 		if (m_sign == '+'){
-			m_playerTransform._translation += Vector3(revision._x, 0, revision._z);
+			m_playerTransform._translation = m_prevPosition + Vector3(revision._x, 0, revision._z);
 		}
-		else{
-			m_playerTransform._translation -= Vector3(revision._x, 0, revision._z);
+		else if (m_sign == '-'){
+			m_playerTransform._translation = m_prevPosition - Vector3(revision._x, 0, revision._z);
 		}
+		
 		m_isHitWall = false; //フラグをオフにする
+	
 	}
 	else{
 		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
-		Vector3 translation = getKeyValues._transform._translation.TransformCoordNormal(rotationMatrix);
+		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
 		m_playerTransform._translation += translation;
 	}
 
@@ -169,36 +161,40 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 キーを読み込む
 返りは今のところtransform
 */
-FieldPlayer::KeyValues FieldPlayer::mReadKey(const float timeScale){
+std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale, char& sign){
 
-	KeyValues output;
+	std::pair<Transform, Vector3> output;
 
 	/* 奥行の移動(Z軸)	*/
 	if (GameController::GetKey().IsKeyDown('W')||GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
-		output._transform._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		m_sign = '-';
+		output.first._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
+		output.first._rotation._y = 0;
+		sign = '-';
 	}
 	else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
-		output._transform._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		m_sign = '+';
+		output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output.first._rotation._y = 180;
+		sign = '+';
 	}
 
 	/* 横の移動(X軸)	*/
 	if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
-		output._transform._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		m_sign = '+';
+		output.first._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
+		output.first._rotation._y = 90;
+		sign = '+';
 	}
 	else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
-		output._transform._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		m_sign = '-';
+		output.first._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output.first._rotation._y = 270;
+		sign = '-';
 	}
 
 	/*	カメラの回転	*/	
 	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRB1)){
-		output._cameraRotation._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output.second._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
-		output._cameraRotation._y -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output.second._y -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
 	return output;
@@ -224,9 +220,6 @@ std::shared_ptr<Cube> FieldPlayer::mGetBodyColldier(){
 	return m_pBodyCollider;
 }
 
-std::shared_ptr<Sphere> FieldPlayer::mGetSphereColldier(){
-	return m_pSphereCollider;
-}
 /*
 ギア系の初期化をまとめたもの
 
@@ -260,7 +253,6 @@ bool FieldPlayer::mLoadProperty(std::shared_ptr<GearFrame>& gearFrame, std::stri
 		Debug::mErrorPrint("ファイルの読み込みに失敗しました", __FILE__, __LINE__);
 		return false;
 	}
-	m_topGear = gearFrame->m_pBody;
 	for (auto index : read.GetInputWorldInfo()._object){
 
 		/*	体	*/
@@ -331,15 +323,6 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 	return;
 }
 
-void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<aetherClass::Sphere>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset){
-	collider = std::make_shared<Sphere>(10,10);
-
-	collider->Initialize();
-	collider->property._transform._translation = original + offset;
-	collider->property._transform._scale = 15;
-	collider->property._color = Color(1, 0, 0, 0.5);
-	collider->SetCamera(&m_playerView);
-}
 
 /*
 	コライダーの更新用
@@ -347,8 +330,6 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<aetherClass::Sphere>& colli
 void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 	m_pBodyCollider->property._transform._translation = transform._translation + kColliderOffset;
 	m_pBodyCollider->property._transform._rotation = transform._rotation;
-	m_pSphereCollider->property._transform._translation = transform._translation + kColliderOffset;
-	m_pSphereCollider->property._transform._rotation = transform._rotation;
 	return;
 }
 
@@ -454,7 +435,7 @@ void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookA
 	return;
 }
 
-
+//
 void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
 	// カメラ可動範囲の上限の確認
 	if (rotation._x > kCameraRotationMaxX){
@@ -483,12 +464,13 @@ int FieldPlayer::mGetFieldNumber()const{
 	return m_fieldNumber;
 }
 
-
+//
 void FieldPlayer::mSetTransform(Transform trans){
 	m_playerTransform = trans;
 	m_cameraRotation = m_playerTransform._rotation;
 }
 
+//
 Transform FieldPlayer::mGetTransform(){
 	return m_playerTransform;
 }

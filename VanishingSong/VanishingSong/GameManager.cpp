@@ -5,7 +5,7 @@
 using namespace aetherClass;
 GameManager::GameManager()
 {
-	m_prevPlayerTransform._translation._y = 22.2f;
+	m_prevPlayerTransform._translation._y = kPlayerInitializeY;
 	m_bossState = eBossState::eUnVisible;
 	m_fieldState = eFieldState::eNull;
 	m_canStageNumber = NULL;
@@ -14,7 +14,7 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
-	m_prevPlayerTransform._translation._y = 22.2f;
+	m_prevPlayerTransform._translation._y = 10.f;
 	m_bossState = eBossState::eUnVisible;
 	m_fieldState = eFieldState::eNull;
 	m_canStageNumber = NULL;

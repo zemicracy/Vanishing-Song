@@ -48,12 +48,6 @@ private:
 			_changeDefaultFrame = false;
 		}
 	};
-	
-	struct KeyValues{
-
-		aetherClass::Transform _transform;
-		aetherClass::Vector3 _cameraRotation;
-	};
 
 public:
 	FieldPlayer() = default;
@@ -81,7 +75,6 @@ public:
 		コライダーの取得用
 	*/
 	std::shared_ptr<aetherClass::Cube> mGetBodyColldier();
-	std::shared_ptr<aetherClass::Sphere> mGetSphereColldier();
 	// 壁に当たった時の処理
 	void mOnHitWall();
 	
@@ -117,8 +110,7 @@ private:
 	*/
 
 	void mSetUpBodyCollider(std::shared_ptr<aetherClass::Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
-	void mSetUpBodyCollider(std::shared_ptr<aetherClass::Sphere>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset);
-
+	
 	/*
 		コライダーの更新処理
 	*/
@@ -141,8 +133,8 @@ private:
 	/*
 	キーやマウスの処理の読み取り
 	*/
-	KeyValues mReadKey(const float timeScale);
-	
+	std::pair<aetherClass::Transform,aetherClass::Vector3> mReadKey(const float timeScale,char& sign);
+
 	void mCheckCameraRotation(aetherClass::Vector3&);
 private:
 	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearHash;   // それぞれのギアのポインタを扱いやすいようにまとめた連想配列
@@ -154,8 +146,7 @@ private:
 
 	aetherClass::Transform m_playerTransform;   // プレイヤーの回転、移動、スケールを管理
 	aetherClass::Vector3 m_prevPosition;     // 前回のトランスフォーム情報
-	aetherClass::Transform m_initialTransform; 
-
+	
 	aetherClass::Vector3 m_cameraRotation;		//　カメラの回転を管理
 
 	eState m_prevState;							// 前回のプレイヤーの状態
@@ -163,7 +154,6 @@ private:
 	Offset m_cameraOffset;						//　カメラのオフセット
 	Counter m_actionCount;			// それぞれのアクションを行ったフレーム数を保存しとく用
 	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
-	std::shared_ptr<aetherClass::Sphere> m_pSphereCollider;   // 基本的なコライダー
 	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
 	eActionType m_action;
 
