@@ -18,17 +18,23 @@ FieldArea::~FieldArea()
 	mFinalize();
 }
 void FieldArea::mFinalize(){
-	for (auto itr : m_ground){
+	for (auto& itr : m_ground){
 		itr->Finalize();
 		itr.reset();
 	}
-	for (auto itr : m_wall){
+	for (auto& itr : m_wall){
 		itr->Finalize();
 		itr.reset();
 	}
-	for (auto itr : m_partitionCube){
+	for (auto& itr : m_partitionCube){
 		itr->Finalize();
 		itr.reset();
+	}
+	for (auto& itr : m_partitionWall){
+		for (auto& itr2 : itr){
+			itr2->Finalize();
+			itr2.reset();
+		}
 	}
 
 }

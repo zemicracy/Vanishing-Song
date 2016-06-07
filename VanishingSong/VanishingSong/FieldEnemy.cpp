@@ -12,7 +12,6 @@ FieldEnemy::FieldEnemy(){
 
 FieldEnemy::~FieldEnemy()
 {
-	m_message.clear();
 }
 
 bool FieldEnemy::mInitialize(eType type, ViewCamera* camera, std::string dataPath){
@@ -158,6 +157,11 @@ void FieldEnemy::mFinalize(){
 		m_property._pCollider->Finalize();
 		m_property._pCollider.reset();
 		m_property._pCollider = nullptr;
+	}
+
+	if (m_property._penemy->m_pBody){
+		m_property._penemy->Release();
+		m_property._penemy.reset();
 	}
 
 	for (auto index : m_message){

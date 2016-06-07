@@ -115,6 +115,9 @@ void SceneBattle::Finalize(){
 	if (m_rhythm){
 		m_rhythm->mFinalize();
 	}
+	if (m_pBattleEnemyManager){
+		m_pBattleEnemyManager.reset();
+	}
 
 	return;
 }
@@ -136,8 +139,8 @@ void SceneBattle::mLoadTextData(){
 	m_sound->Load("Sound\\Battle\\normal.wav");
 
 	m_rhythm = std::make_shared<RhythmManager>();
-	m_rhythm->mAcquire();
 	m_rhythm->mInitializeRhythm(m_sound, 120);
+	m_rhythm->mAcquire();
 
 
 	cip.mUnLoad();
