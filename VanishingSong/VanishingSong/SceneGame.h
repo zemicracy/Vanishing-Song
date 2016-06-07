@@ -50,21 +50,17 @@ public:
 	static const std::string Name;
 
 private:
-	bool mFadeState(eState);
+
 	bool mMessageUpdate();
 private:
 	aetherClass::DirectXEntity m_directX;	
 	eState m_gameState;
 	
 	std::unique_ptr<CollideManager> m_pCollideManager;
-	std::unique_ptr<FadeManager> m_pFadeObject;
 	std::shared_ptr<FieldPlayer> m_pFieldPlayer;
 	std::shared_ptr<FieldArea> m_pFieldArea;
 	std::shared_ptr<FieldEnemyManager> m_pFieldEnemy;
 	std::shared_ptr<MessageManager> m_pMessageManager;
-
-	std::shared_ptr<AttackParticle> m_pPaticle;
-
 	std::array<std::shared_ptr<Cage>, 3> m_pCage;
 };
 

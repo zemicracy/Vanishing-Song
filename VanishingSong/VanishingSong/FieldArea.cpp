@@ -86,7 +86,7 @@ void FieldArea::mInitialize(){
 
 	m_ground[1] = std::make_shared<Skybox>();
 	m_ground[1]->Initialize();
-	m_ground[1]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("skybox").get());
+	m_ground[1]->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
 	// 先にコライダーの検出をする
 	int nextNumber = NULL;

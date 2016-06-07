@@ -21,20 +21,20 @@ VanishingSongFrame::~VanishingSongFrame()
 */
 bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
-	result = Singleton<ResourceManager>::GetInstance().Initialize();
+	result = ResourceManager::mGetInstance().Initialize();
 	// 操作キャラクターのリソースを初期化
-	Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eBlue);
-	Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eGreen);
-	Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eRed);
-	Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eYellow);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
 
-	Singleton<GameManager>::GetInstance().mBossState(GameManager::eBossState::eUnVisible);
-	Singleton<GameManager>::GetInstance().mFieldState(GameManager::eFieldState::eTutorial);
+	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
+	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","\\blue");
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "\\red");
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "\\green");
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "\\yellow");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","\\blue");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "\\red");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "\\yellow");
 
 
 
@@ -51,6 +51,6 @@ bool VanishingSongFrame::FrameRunningBuffer(){
 // プログラムの終了時に実行される
 void VanishingSongFrame::FinalizeBuffer(){
 
-	Singleton<ResourceManager>::GetInstance().Finalize();
+	ResourceManager::mGetInstance().Finalize();
 	return;
 }

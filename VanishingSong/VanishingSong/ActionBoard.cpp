@@ -37,7 +37,7 @@ void gInitializer(std::unordered_map<eMusical,ActionBoard::ActionCommandType>& t
 	std::shared_ptr<ActionCommand> command = std::make_shared<T>();
 	command->mCreate();
 
-	auto tex = Singleton<ResourceManager>::GetInstance().GetTexture(str);
+	auto tex = ResourceManager::mGetInstance().GetTexture(str);
 
 	command->mSetTexture(tex.get());
 
@@ -59,7 +59,7 @@ bool ActionBoard::mInitialize(){
 	gInitializer<ActionMiss>(m_actionList, Color(1, 0, 1, 1), "ActionMiss");
 	gInitializer<ActionAdlib>(m_actionList, Color(1, 0, 1, 1), "ActionAdlib");
 
-	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
+	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
 		m_playerOrder[index.first] = true;
 	}
 	

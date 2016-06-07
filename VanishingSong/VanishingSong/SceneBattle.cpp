@@ -54,8 +54,8 @@ bool SceneBattle::Initialize(){
 	m_pOrderList->mInitialize(m_beatMode,m_battleState,m_pActionBoard.get(),m_pField.get(),m_rhythm.get());
 
 	// ƒvƒŒƒCƒ„[‚Ì‰Šú‰»
-	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
-		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetPlayerHash(index.second);
+	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
+		auto gearframe = ResourceManager::mGetInstance().mGetPlayerHash(index.second);
 		m_charaEntity.SetCamera(gearframe->m_pBody, &m_view);
 		m_players.mSetPlayer(index.second, m_pField->mGetPlayerLane(index.second),gearframe);
 		m_charaHp._maxHp = m_charaHp._hp += 8;
@@ -234,7 +234,7 @@ bool SceneBattle::Updater(){
 
 void SceneBattle::Render(){
 	m_view.Render();
-	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	auto& shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	if (m_pField){
 		m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
@@ -249,7 +249,7 @@ void SceneBattle::Render(){
 }
 
 void SceneBattle::UIRender(){
-	auto& shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	auto& shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	if (m_pOrderList){
 		m_pOrderList->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}

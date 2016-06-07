@@ -40,10 +40,9 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneBattle());
 
 	// フェードイン・アウトを行う
-	m_pFadeObject = std::make_unique<FadeManager>();
-
+	
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
-	m_pFieldPlayer->mInitialize(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,22.2,0));
+	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,22.2,0));
 
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
@@ -62,37 +61,28 @@ bool SceneGame::Initialize(){
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
 	for (auto& index : m_pCage){
 		const auto hoge = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
-		index = std::make_shared<Cage>(Singleton<ResourceManager>::GetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, kPlayerInitializeY, hoge._z), view);
+		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, kPlayerInitializeY, hoge._z), view);
 		count += 1;
 	}
 
-	AttackParticle::ParticleDesc particle;
-	particle._size = 100;
-	particle._endPoint = Vector3(0, 10, 0);
-	particle._rangeMin = Vector3(-10, 0, 0);
-	particle._rangeMax = Vector3(10, 0, 0);
-	particle._scale = Vector3(2,2, 0);
-	particle._texturePath = "Texture\\Battle\\note.png";
-	m_pPaticle = std::make_shared<AttackParticle>(particle,view);
-
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
-	m_pFieldPlayer->mSetTransform(Singleton<GameManager>::GetInstance().mGetPlayerTransform());
+	m_pFieldPlayer->mSetTransform(GameManager::mGetInstance().mGetPlayerTransform());
 
 	// ボスに勝っていたら完成の音楽を流す
-	auto bossState = Singleton<GameManager>::GetInstance().mBossState();
+	auto bossState = GameManager::mGetInstance().mBossState();
 	if (bossState == GameManager::eBossState::eWin){
-		Singleton<ResourceManager>::GetInstance().mGetLastBGM()->PlayToLoop();
+		ResourceManager::mGetInstance().mGetLastBGM()->PlayToLoop();
 	}
 	else{
-		auto fieldState = Singleton<GameManager>::GetInstance().mFieldState();
+		auto fieldState = GameManager::mGetInstance().mFieldState();
 		if (fieldState != GameManager::eFieldState::eTutorial){
-			for (auto index : Singleton<GameManager>::GetInstance().mNote()){
-				Singleton<ResourceManager>::GetInstance().mPlayBaseBGM(index);
+			for (auto index : GameManager::mGetInstance().mNote()){
+				ResourceManager::mGetInstance().mPlayBaseBGM(index);
 			}
 		}
 		else{
-			Singleton<ResourceManager>::GetInstance().mGetFirstBGM()->PlayToLoop();
+			ResourceManager::mGetInstance().mGetFirstBGM()->PlayToLoop();
 		}
 	}
 	
@@ -102,18 +92,24 @@ bool SceneGame::Initialize(){
 // 解放処理
 // 全ての解放
 void SceneGame::Finalize(){
-	for (auto index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
-		Singleton<ResourceManager>::GetInstance().mStopBaseBGM(index.second);
+	for (auto index : GameManager::mGetInstance().mGetUsePlayer()){
+		ResourceManager::mGetInstance().mStopBaseBGM(index.second);
 	}
-	Singleton<ResourceManager>::GetInstance().mGetLastBGM()->Stop();
-	Singleton<ResourceManager>::GetInstance().mGetFirstBGM()->Stop();
+	ResourceManager::mGetInstance().mGetLastBGM()->Stop();
+	ResourceManager::mGetInstance().mGetFirstBGM()->Stop();
 
+	if (!m_pCage.empty()){
+		for (auto& index : m_pCage){
+			if (!index)continue;
+			index->mFinalize();
+		}
+	}
 	if (m_pMessageManager){
 		m_pMessageManager.reset();
 		m_pMessageManager = nullptr;
 	}
 	if (m_pCollideManager){
-		m_pCollideManager.release();
+		m_pCollideManager.reset();
 		m_pCollideManager = nullptr;
 	}
 
@@ -127,10 +123,6 @@ void SceneGame::Finalize(){
 		m_pFieldPlayer = nullptr;
 	}
 
-	if (m_pFadeObject){
-		m_pFadeObject.release();
-		m_pFadeObject = nullptr;
-	}
 	if (m_pFieldEnemy){
 		m_pFieldEnemy->mFinalize();
 		m_pFieldEnemy = nullptr;
@@ -142,12 +134,6 @@ void SceneGame::Finalize(){
 
 // 更新処理
 bool SceneGame::Updater(){
-	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
-		bool result = mFadeState(m_gameState);
-		if (!result){
-			return true;
-		}
-	}
 
 	// タイトルに戻る
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
@@ -182,7 +168,7 @@ bool SceneGame::Updater(){
 }
 
 void SceneGame::Render(){
-	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
@@ -195,17 +181,14 @@ void SceneGame::Render(){
 
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	m_pPaticle->mRender(shaderHash["texture"].get());
-
+	
 	return;
 }
 
 void SceneGame::UIRender(){
-	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
-		m_pFadeObject->mRedner(shaderHash["color"].get());
-	}
+
 	return;
 }
 
@@ -219,32 +202,6 @@ bool SceneGame::TransitionOut(){
 	return kTransitionEnd;
 }
 
-
-//
-bool SceneGame::mFadeState(SceneGame::eState state){ 
-	if (state == eState::eFadeIn || state == eState::eFadeOut){
-		bool isEnd = false;
-		switch (state)
-		{
-		case eState::eFadeIn:
-			isEnd = m_pFadeObject->In(1.0f);
-			if (isEnd){
-				m_gameState = eState::eFadeOut;
-			}
-			break;
-
-		case eState::eFadeOut:
-			isEnd = m_pFadeObject->Out(1.0f);
-			if (isEnd){
-				m_gameState = eState::eRun;
-			}
-			break;
-		}
-		if (!isEnd) return false;
-	}
-	return true;
-}
-
 // メッセージの更新処理
 bool SceneGame::mMessageUpdate(){
 
@@ -256,12 +213,12 @@ bool SceneGame::mMessageUpdate(){
 	const Vector3 playerPosition = m_pFieldPlayer->mGetBodyColldier()->property._transform._translation;
 	const Vector3 enemyPosition = m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetProperty()._pCollider->property._transform._translation;
 
-	const int canStageNumber = Singleton<GameManager>::GetInstance().mGetCanStage();
+	const int canStageNumber = GameManager::mGetInstance().mGetCanStage();
 	m_pMessageManager->mUpdate(collideInfo, isPress, selectButton,playerPosition,enemyPosition,canStageNumber);
 
 	if (m_pMessageManager->mGetIsChangeScene()){
-		Singleton<GameManager>::GetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
-		Singleton<GameManager>::GetInstance().mBattleDataFile(m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetBattleDataPath());
+		GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
+		GameManager::mGetInstance().mBattleDataFile(m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetBattleDataPath());
 
 		return true;
 	}

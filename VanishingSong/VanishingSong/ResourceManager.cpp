@@ -56,6 +56,10 @@ void ResourceManager::Finalize(){
 	return;
 }
 
+ResourceManager& ResourceManager::mGetInstance(){
+	static ResourceManager instance;
+	return instance;
+}
 
 std::shared_ptr<ActionSound> ResourceManager::GetActionSound(eMusical type){
 	return m_pActionSoundHash[type];
