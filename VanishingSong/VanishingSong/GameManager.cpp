@@ -25,7 +25,10 @@ void GameManager::mPushUsePlayer(eMusical type){
 	if (m_players.find(type) != m_players.end() || type == eMusical::eNull)return;
 	m_players.insert(std::make_pair(type, type));
 }
-
+GameManager& GameManager::mGetInstance(){
+	static GameManager instance;
+	return instance;
+}
 //
 std::unordered_map<eMusical, eMusical>& GameManager::mGetUsePlayer(){
 	return m_players;

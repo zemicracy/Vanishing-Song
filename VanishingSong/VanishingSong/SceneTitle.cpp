@@ -165,7 +165,7 @@ void SceneTitle::Render(){
 }
 
 void SceneTitle::UIRender(){
-	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pLogo->Render(shaderHash["transparent"].get());
 	m_pMenu->Render(shaderHash["transparent"].get());
 

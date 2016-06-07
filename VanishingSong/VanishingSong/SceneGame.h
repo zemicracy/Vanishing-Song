@@ -62,9 +62,6 @@ private:
 	std::shared_ptr<FieldArea> m_pFieldArea;
 	std::shared_ptr<FieldEnemyManager> m_pFieldEnemy;
 	std::shared_ptr<MessageManager> m_pMessageManager;
-
-	std::shared_ptr<AttackParticle> m_pPaticle;
-
 	std::array<std::shared_ptr<Cage>, 3> m_pCage;
 };
 

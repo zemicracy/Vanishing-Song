@@ -52,11 +52,26 @@ MessageManager::~MessageManager()
 	m_message.mFinalize();
 	if (m_messageFlame){
 		m_messageFlame->Finalize();
+		m_messageFlame.reset();
+		m_messageFlame = nullptr;
 	}
+
 	if (m_pCursor){
 		m_pCursor->Finalize();
 		m_pCursor = nullptr;
 	}
+
+	if (m_messageFlameTexture){
+		m_messageFlameTexture.reset();
+		m_messageFlameTexture = nullptr;
+	}
+
+	if (m_messageFlameTexture2){
+		m_messageFlameTexture2.reset();
+		m_messageFlameTexture2 = nullptr;
+	}
+
+	m_buttonTexture.clear();
 }
 
 //

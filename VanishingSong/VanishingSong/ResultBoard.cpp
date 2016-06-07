@@ -161,10 +161,10 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 
 	//ステージ曲追加分
 	if (stageID == 1){
-		Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eGreen);
+		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
 		Debug::mPrint(std::to_string(integer));
 		if (integer < 90)return;		//レート0.90以上で音符の取得
-		Singleton<GameManager>::GetInstance().mNote(eMusical::eGreen);
+		GameManager::mGetInstance().mNote(eMusical::eGreen);
 	}
 	else{
 

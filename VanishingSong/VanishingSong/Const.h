@@ -19,7 +19,7 @@ namespace{
 	// Editorとの連携用
 	const float kResolutionFromEditor_x = 1.6f;
 	const float kResolutionFromEditor_y = 1.2f;
-
+	const float kPlayerInitializeY = 13.5f;
 	// デバッグ関係
 	const bool kCharaDebug = true;
 

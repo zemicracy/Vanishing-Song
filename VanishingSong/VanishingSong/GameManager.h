@@ -46,8 +46,8 @@ public:
 		eNull
 	};
 public:
-	GameManager();
-	~GameManager();
+
+	static GameManager& mGetInstance();
 	void mInitialize();	
 
 	void mPushUsePlayer(eMusical);
@@ -69,6 +69,9 @@ public:
 
 	void mGetCanStage(const int);
 	int  mGetCanStage()const;
+private:
+	GameManager();
+	~GameManager();
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;

@@ -290,7 +290,7 @@ void OrderList::mListenUpdate(){
 			m_perticleDesc._startPoint = m_Field->mGetEnemyLane(m_EnemyOrderList[m_processId]->mGetType());
 			m_pParticle->mReset(m_perticleDesc);
 
-			auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
+			auto sound = ResourceManager::mGetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
 			mPlaySound(sound);
 		}
 		m_processId++;
@@ -414,7 +414,7 @@ void OrderList::mPerformUpdate(){
 
 
 	//‰¹‚ª‚ ‚é‚â‚Â‚Í—¬‚·
-	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
+	auto sound = ResourceManager::mGetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
 	sound->mStop();
 	sound->mPlaySoundAction(0);
 	m_isPlaySound = false;
@@ -480,7 +480,7 @@ void OrderList::mBattleUpdate(){
 
 		//ƒAƒhƒŠƒuhantei“Š“üêŠ
 		if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
-			auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
+			auto sound = ResourceManager::mGetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
 			mPlaySound(sound);
 		}
 		m_processId++;

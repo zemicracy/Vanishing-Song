@@ -21,9 +21,8 @@ public:
 	typedef std::unordered_map<eMusical, std::shared_ptr<GearFrame>> CharaHash;
 	typedef std::unordered_map<eMusical, std::unordered_map<eEnemyType,std::shared_ptr<GearFrame>>> EnemyHash;
 public:
-	ResourceManager();
-	~ResourceManager();
 
+	static ResourceManager& mGetInstance();
 	// 全体の初期化
 	bool Initialize();
 
@@ -53,6 +52,8 @@ public:
 	std::shared_ptr<aetherClass::GameSound> mGetLastBGM();
 	std::shared_ptr<aetherClass::GameSound> mGetFirstBGM();
 private:
+	ResourceManager();
+	~ResourceManager();
 
 	/*
 		アクションコマンドに対応したサウンドの初期化

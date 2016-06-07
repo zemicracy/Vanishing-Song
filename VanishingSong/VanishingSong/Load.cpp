@@ -53,13 +53,13 @@ void Load::Run(){
 	mChangeBar(m_changeBarTime);
 	DirectXEntity entity;
 	entity.GetDirect3DManager()->Change2DMode();
-	auto shader = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	auto shader = ResourceManager::mGetInstance().mGetShaderHash();
 
 	m_pLoadBar->Render(shader["texture"].get());
 	entity.GetDirect3DManager()->Change3DMode();
 	m_changeBarTime += GameClock::GetDeltaTime();
 	
-	auto loadBarTexture = Singleton<ResourceManager>::GetInstance().GetTexture("NowLoading" + std::to_string(m_barCount + 1)).get();
+	auto loadBarTexture = ResourceManager::mGetInstance().GetTexture("NowLoading" + std::to_string(m_barCount + 1)).get();
 	m_pLoadBar->SetTexture(loadBarTexture);
 }
 
@@ -73,7 +73,7 @@ void Load::mChangeBar(float& time){
 		if (m_barCount >= 3){
 			m_barCount = NULL;
 		}
-		auto loadBarTexture = Singleton<ResourceManager>::GetInstance().GetTexture("NowLoading" + std::to_string(m_barCount+1)).get();
+		auto loadBarTexture = ResourceManager::mGetInstance().GetTexture("NowLoading" + std::to_string(m_barCount+1)).get();
 		m_pLoadBar->SetTexture(loadBarTexture);
 		time = NULL;
 	}

@@ -90,7 +90,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 		else if (itr->_name == "command_blue"){
 			m_pCommand[0] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[0]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[0]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionBlue").get());
+			m_pCommand[0]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionBlue").get());
 		}
 		else if (itr->_name == "lane_green"){
 			m_pLane.insert(std::make_pair(eMusical::eGreen, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
@@ -100,7 +100,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 
 			m_pCommand[1] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[1]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[1]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionGreen").get());
+			m_pCommand[1]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionGreen").get());
 		}
 		else if (itr->_name == "lane_red"){
 			m_pLane.insert(std::make_pair(eMusical::eRed, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
@@ -108,7 +108,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 		else if (itr->_name == "command_red"){
 			m_pCommand[2] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[2]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[2]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionRed").get());
+			m_pCommand[2]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionRed").get());
 		}
 		else if (itr->_name == "lane_yellow"){
 			m_pLane.insert(std::make_pair(eMusical::eYellow, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
@@ -116,7 +116,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 		else if (itr->_name == "command_yellow"){
 			m_pCommand[3] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[3]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[3]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionYellow").get());
+			m_pCommand[3]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionYellow").get());
 
 		}
 		else if (itr->_name == "enemy_blue"){
@@ -147,7 +147,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 
 	m_pSkyBox = std::make_shared<Skybox>();
 	m_pSkyBox->Initialize();
-	m_pTextureList.insert(std::make_pair("skybox", Singleton<ResourceManager>::GetInstance().GetTexture("skybox")));
+	m_pTextureList.insert(std::make_pair("skybox", ResourceManager::mGetInstance().GetTexture("skybox")));
 	m_pSkyBox->SetTexture(m_pTextureList["skybox"].get());
 
 	for (auto itr : m_pDebug){
