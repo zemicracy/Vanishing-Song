@@ -64,6 +64,12 @@ void BattleMessage::mRender(aetherClass::ShaderBase* shader){
 }
 void BattleMessage::mFinalize(){
 	m_pSprite->Finalize();
+	for (auto &itr : m_textureList){
+		itr.second.reset();
+	}
+	for (auto &itr : m_waveMessage){
+		itr.reset();
+	}
 	m_textureList.clear();
 	m_waveMessage.clear();
 }

@@ -40,7 +40,7 @@ void Load::Initialize(){
 void Load::Finalize(){
 	if (m_pLoadBar){
 		m_pLoadBar->Finalize();
-		m_pLoadBar.release();
+		m_pLoadBar.reset();
 		m_pLoadBar = nullptr;
 	}
 

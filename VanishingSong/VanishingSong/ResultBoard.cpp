@@ -16,12 +16,18 @@ void ResultBoard::mFinalize(){
 	m_halfFill->Finalize();
 	m_pGauge.reset();
 	
-	for (auto itr : m_pGeneral){
+	for (auto &itr : m_pGeneral){
 		itr.second->Finalize();
 	}
 	m_pGeneral.clear();
 	m_pNumSprite->Finalize();
 
+	for (auto& itr : m_numberList){
+		itr.second.reset();
+	}
+	for (auto& itr : m_TextureList){
+		itr.second.reset();
+	}
 	m_numberList.clear();
 	m_TextureList.clear();
 }

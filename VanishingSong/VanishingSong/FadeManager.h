@@ -64,7 +64,7 @@ private:
 	void mFinalize(){
 		if (m_pFadeObject){
 			m_pFadeObject->Finalize();
-			m_pFadeObject.release();
+			m_pFadeObject.reset();
 			m_pFadeObject = nullptr;
 		}
 	}

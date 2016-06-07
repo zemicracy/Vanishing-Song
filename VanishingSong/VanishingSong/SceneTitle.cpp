@@ -105,19 +105,19 @@ void SceneTitle::Finalize(){
 	
 	if (m_pLogo){
 		m_pLogo->Finalize();
-		m_pLogo.release();
+		m_pLogo.reset();
 		m_pLogo = nullptr;
 	}
 
 	if (m_pCursor){
 		m_pCursor->Finalize();
-		m_pCursor.release();
+		m_pCursor.reset();
 		m_pCursor = nullptr;
 	}
 
 	if (m_pMenu){
 		m_pMenu->Finalize();
-		m_pMenu.release();
+		m_pMenu.reset();
 		m_pMenu = nullptr;
 	}
 

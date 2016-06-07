@@ -94,7 +94,7 @@ bool SceneBattle::Initialize(){
 
 void SceneBattle::Finalize(){
 	if (m_pOrderList){
-		m_pOrderList.release();
+		m_pOrderList.reset();
 	}
 	if (m_sound){
 		m_sound.reset();
@@ -103,16 +103,16 @@ void SceneBattle::Finalize(){
 		m_pActionBoard.reset();
 	}
 	if (m_pField){
-		m_pField.release();
+		m_pField.reset();
 	}
 	if (m_pGauge){
-		m_pGauge.release();
+		m_pGauge.reset();
 	}
 	if (m_pMessage){
-		m_pMessage.release();
+		m_pMessage.reset();
 	}
 	if (m_pResult){
-		m_pResult.release();
+		m_pResult.reset();
 	}
 	if (m_rhythm){
 		m_rhythm->mFinalize();

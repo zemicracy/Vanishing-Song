@@ -58,6 +58,9 @@ void OrderList::mFinalize(){
 
 	m_EnemyOrderList.clear();
 	m_PlayerOrderList.clear();
+	for (auto itr : m_pTextureList){
+		itr.second.reset();
+	}
 	m_pTextureList.clear();
 	GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
 }

@@ -36,6 +36,9 @@ void BattleField::mFinalize(){
 
 	m_EnemyLane.clear();
 	m_PlayerLane.clear();
+	for (auto& itr : m_pTextureList){
+		itr.second.reset();
+	}
 	m_pTextureList.clear();
 }
 template<class T>
