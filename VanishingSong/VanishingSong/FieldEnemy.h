@@ -37,8 +37,12 @@ public:
 	Property &mGetProperty();
 	void mFaceToPlayer(aetherClass::Vector3);
 	void mRegisterMessage(std::string);
+	void mRegisterCannotMessage(std::string);
+
 	int mGetMessageNum()const;
 	std::shared_ptr<aetherClass::Texture> mGetMessage(const int id);
+	std::shared_ptr<aetherClass::Texture> mGetCannotMessage();
+
 	std::string mGetBattleDataPath();
 private:
 	bool mInitializeGround(aetherClass::ViewCamera*);				//“G‰Šú‰»(’nã)
@@ -51,6 +55,7 @@ private:
 	std::shared_ptr<Gear> m_pTopGear;
 	Property m_property;
 	std::vector<std::shared_ptr<aetherClass::Texture>> m_message;
+	std::shared_ptr<aetherClass::Texture> m_cannotMessage;
 	std::string m_dataPath;
 };
 #endif
