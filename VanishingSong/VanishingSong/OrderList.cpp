@@ -46,12 +46,14 @@ void OrderList::mFinalize(){
 	m_pFlame->Finalize();
 	m_pFlame.reset();
 
-	m_pParticle.release();
+	m_pParticle.reset();
 	m_playedAction.reset();
 
 	for (auto itr : m_pSpriteList){
-		itr->Finalize();
-		itr.reset();
+		if (itr){
+			itr->Finalize();
+			itr.reset();
+		}
 	}
 
 	m_EnemyOrderList.clear();

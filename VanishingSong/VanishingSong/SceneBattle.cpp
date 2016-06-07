@@ -27,6 +27,8 @@ eMusical askey[8] = {	eMusical::eBlue, eMusical::eYellow, eMusical::eNull, eMusi
 						eMusical::eNull, eMusical::eRed, eMusical::eAdlib, eMusical::eAdlib };
 
 bool SceneBattle::Initialize(){
+	Finalize();
+
 	mLoadTextData();
 
 	
@@ -279,11 +281,12 @@ bool SceneBattle::TransitionOut(){
 void SceneBattle::mOnResult(){
 
 	if (!m_InitUpdateProcess){
-		m_pGauge.release();
-		m_pMessage.release();
+		m_pGauge.reset();
+		m_pMessage.reset();
 		m_sound.reset();
 		m_rhythm->mFinalize();
 		m_rhythm.reset();
+		
 
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();
@@ -291,7 +294,7 @@ void SceneBattle::mOnResult(){
 		m_pResult->mSetResultData(m_pOrderList->mGetResult(),m_winner,m_stageID);
 		m_InitUpdateProcess = true;
 
-		m_pOrderList.release();
+		m_pOrderList.reset();
 	}
 
 	m_pResult->mUpdate();

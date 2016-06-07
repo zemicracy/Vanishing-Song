@@ -16,8 +16,8 @@ void GaugeManager::mFinalize(){
 	if (m_shader){
 		m_shader->Finalize();
 	}
-	m_playerHpGauge.release();
-	m_enemyHpGauge.release();
+	m_playerHpGauge.reset();
+	m_enemyHpGauge.reset();
 }
 
 
