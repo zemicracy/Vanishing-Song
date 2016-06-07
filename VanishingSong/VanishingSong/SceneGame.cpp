@@ -40,8 +40,7 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneBattle());
 
 	// フェードイン・アウトを行う
-	m_pFadeObject = std::make_unique<FadeManager>();
-
+	
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,22.2,0));
 
@@ -110,7 +109,7 @@ void SceneGame::Finalize(){
 		m_pMessageManager = nullptr;
 	}
 	if (m_pCollideManager){
-		m_pCollideManager.release();
+		m_pCollideManager.reset();
 		m_pCollideManager = nullptr;
 	}
 
@@ -124,10 +123,6 @@ void SceneGame::Finalize(){
 		m_pFieldPlayer = nullptr;
 	}
 
-	if (m_pFadeObject){
-		m_pFadeObject.release();
-		m_pFadeObject = nullptr;
-	}
 	if (m_pFieldEnemy){
 		m_pFieldEnemy->mFinalize();
 		m_pFieldEnemy = nullptr;
@@ -139,12 +134,6 @@ void SceneGame::Finalize(){
 
 // 更新処理
 bool SceneGame::Updater(){
-	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
-		bool result = mFadeState(m_gameState);
-		if (!result){
-			return true;
-		}
-	}
 
 	// タイトルに戻る
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
@@ -199,9 +188,7 @@ void SceneGame::Render(){
 void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-	if (m_gameState == eState::eFadeIn || m_gameState == eState::eFadeOut){
-		m_pFadeObject->mRedner(shaderHash["color"].get());
-	}
+
 	return;
 }
 
@@ -213,32 +200,6 @@ bool SceneGame::TransitionIn(){
 bool SceneGame::TransitionOut(){
 
 	return kTransitionEnd;
-}
-
-
-//
-bool SceneGame::mFadeState(SceneGame::eState state){ 
-	if (state == eState::eFadeIn || state == eState::eFadeOut){
-		bool isEnd = false;
-		switch (state)
-		{
-		case eState::eFadeIn:
-			isEnd = m_pFadeObject->In(1.0f);
-			if (isEnd){
-				m_gameState = eState::eFadeOut;
-			}
-			break;
-
-		case eState::eFadeOut:
-			isEnd = m_pFadeObject->Out(1.0f);
-			if (isEnd){
-				m_gameState = eState::eRun;
-			}
-			break;
-		}
-		if (!isEnd) return false;
-	}
-	return true;
 }
 
 // メッセージの更新処理
