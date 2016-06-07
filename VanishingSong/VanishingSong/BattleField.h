@@ -5,11 +5,12 @@
 #include"Const.h"
 #include"GameManager.h"
 #include"FbxModel.h"
+#include"RhythmManager.h"
 class BattleField
 {
 public:
 
-	void mInitialize(aetherClass::ViewCamera* view);
+	void mInitialize(aetherClass::ViewCamera* view,RhythmManager*);
 	void mUpdate(std::shared_ptr<ActionCommand>command);
 	void mRhythmicMotion();
 
@@ -38,7 +39,7 @@ private:
 	std::shared_ptr<aetherClass::FbxModel>m_pPlane;
 
 	std::array < std::shared_ptr<aetherClass::ModelBase>, 2>m_pDebug;
-
+	RhythmManager *m_rhythm;
 
 };
 

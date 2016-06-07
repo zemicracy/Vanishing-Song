@@ -29,7 +29,6 @@ eMusical askey[8] = {	eMusical::eBlue, eMusical::eYellow, eMusical::eNull, eMusi
 bool SceneBattle::Initialize(){
 	mLoadTextData();
 
-	Singleton<RhythmManager>::GetInstance().mInitializeRhythm(m_sound, 120);
 	
 	RegisterScene(new SceneGame());
 
@@ -38,8 +37,6 @@ bool SceneBattle::Initialize(){
 	m_pActionBoard = std::make_shared<ActionBoard>();
 	m_pActionBoard->mInitialize();
 
-	m_rhythm = &Singleton<RhythmManager>::GetInstance();
-	m_rhythm->mAcquire();
 
 	//âº
 	/*for (int i = 0; i < 8; i++){
@@ -47,14 +44,14 @@ bool SceneBattle::Initialize(){
 	}*/
 
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view);
+	m_pField->mInitialize(&m_view,m_rhythm.get());
 
 	m_pGauge = std::make_unique<GaugeManager>();
 	m_pGauge->mInitialize();
 
 
 	m_pOrderList = std::make_unique<OrderList>();
-	m_pOrderList->mInitialize(m_beatMode,m_battleState,m_pActionBoard.get(),m_pField.get());
+	m_pOrderList->mInitialize(m_beatMode,m_battleState,m_pActionBoard.get(),m_pField.get(),m_rhythm.get());
 
 	// ÉvÉåÉCÉÑÅ[ÇÃèâä˙âª
 	for (auto& index : Singleton<GameManager>::GetInstance().mGetUsePlayer()){
@@ -138,13 +135,24 @@ void SceneBattle::mLoadTextData(){
 	m_sound = std::make_shared<GameSound>();
 	m_sound->Load("Sound\\Battle\\normal.wav");
 
+	m_rhythm = std::make_shared<RhythmManager>();
+	m_rhythm->mAcquire();
+	m_rhythm->mInitializeRhythm(m_sound, 120);
+
 
 	cip.mUnLoad();
 }
 
 
 bool SceneBattle::Updater(){
-	m_rhythm->mAcquire();
+	if (kCharaDebug){
+		if (GameController::GetKey().IsKeyDown('I')){
+			m_enemyHp->_hp -= 1;
+		}
+	}
+	if (m_rhythm){
+		m_rhythm->mAcquire();
+	}
 	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
 		if (m_bgmVolume > 8){
 			m_sound->SetValume(-m_bgmVolume * 100);
@@ -272,11 +280,12 @@ void SceneBattle::mOnResult(){
 		m_pMessage.release();
 		m_sound.reset();
 		m_rhythm->mFinalize();
+		m_rhythm.reset();
 
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();
 
-		m_pResult->mSetResultData(m_pOrderList->mGetResult(),m_winner);
+		m_pResult->mSetResultData(m_pOrderList->mGetResult(),m_winner,m_stageID);
 		m_InitUpdateProcess = true;
 
 		m_pOrderList.release();

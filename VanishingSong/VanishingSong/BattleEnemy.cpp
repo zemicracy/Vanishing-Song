@@ -99,11 +99,9 @@ void BattleEnemy::misDie(){
 	m_isDie = true;
 }
 
-//GearFrame‚Í‰ð•ú‚µ‚È‚¢
 void BattleEnemy::Finalize(){
-
-	if (m_pTopGear){
-		m_pTopGear->Release();
-		m_pTopGear = nullptr;
+	if (m_enemy._gearFrame){
+		m_enemy._gearFrame->Release();
+		m_enemy._gearFrame.reset();
 	}
 }

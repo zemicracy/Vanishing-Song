@@ -29,6 +29,9 @@ void ClearGauge::mFinalize(){
 	if (m_maskTexture){
 		m_maskTexture.reset();
 	}
+	if (m_mainTexture){
+		m_mainTexture.reset();
+	}
 }
 bool ClearGauge::mInitialize(){
 	bool result = false;

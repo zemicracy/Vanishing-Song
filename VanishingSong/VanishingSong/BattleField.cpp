@@ -4,7 +4,6 @@
 #include<Rectangle3D.h>
 #include<Cube.h>
 #include<Singleton.h>
-#include"RhythmManager.h"
 #include"ResourceManager.h"
 #include"GameController.h"
 
@@ -30,9 +29,14 @@ void BattleField::mFinalize(){
 		itr->Finalize();
 		itr.reset();
 	}
+	for (auto& itr : m_pCommand){
+		itr->Finalize();
+		itr.reset();
+	}
 
 	m_EnemyLane.clear();
 	m_PlayerLane.clear();
+	m_pTextureList.clear();
 }
 template<class T>
 std::shared_ptr<T> gInitializer(aetherClass::Transform transform, aetherClass::Color color){
@@ -49,11 +53,13 @@ std::shared_ptr<aetherClass::Texture> gCreateTexture(std::string path){
 	return tex;
 }
 
-void BattleField::mInitialize(aetherClass::ViewCamera* camera){
+void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhythm){
 	using namespace aetherClass;
 
 	WorldReader reader;
 	reader.Load("data\\BattleStage.aether");
+
+	m_rhythm = rhythm;
 
 	camera->property._translation = reader.GetInputWorldInfo()._camera._position;
 	camera->property._rotation = reader.GetInputWorldInfo()._camera._rotation;
@@ -154,8 +160,9 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 		itr->SetCamera(m_view);
 	}
 	m_pSkyBox->SetCamera(m_view);
-	m_pSkyBox->property._transform._rotation._x = 26.7f;
+	m_pSkyBox->property._transform._rotation._x = 36.7f;
 
+	reader.UnLoad();
 }
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
@@ -211,7 +218,9 @@ aetherClass::ViewCamera* BattleField::mGetCamera(){
 }
 
 void BattleField::mRhythmicMotion(){
-	float note = 360 * Singleton<RhythmManager>::GetInstance().mQuarterBeatTime();
+	
+	if (!m_rhythm)return;
+	float note = 360 * m_rhythm->mQuarterBeatTime();
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 

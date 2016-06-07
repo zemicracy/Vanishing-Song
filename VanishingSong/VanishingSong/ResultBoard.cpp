@@ -20,6 +20,10 @@ void ResultBoard::mFinalize(){
 		itr.second->Finalize();
 	}
 	m_pGeneral.clear();
+	m_pNumSprite->Finalize();
+
+	m_numberList.clear();
+	m_TextureList.clear();
 }
 
 
@@ -104,9 +108,10 @@ void ResultBoard::mInitialize(){
 
 	m_timer = 0;
 
+	reader.UnLoad();
 }
 
-void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state){
+void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state,UINT stageID){
 	m_resultData = result;
 
 	float rate = (float)m_resultData._missCount / m_resultData._maxCount;
@@ -150,14 +155,26 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	int dotrate = rate * 10;
 	int integer = i;
 
-//	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate)+"%";
+	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate)+"%";
 //	Debug::mPrint(std::to_string(i) + "  " + std::to_string(dotrate) + "  " + std::to_string(rate));
+
+
+	//ステージ曲追加分
+	if (stageID == 1){
+		Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eGreen);
+		Debug::mPrint(std::to_string(integer));
+		if (integer < 90)return;		//レート0.90以上で音符の取得
+		Singleton<GameManager>::GetInstance().mNote(eMusical::eGreen);
+	}
+	else{
+
+	}
 
 }
 
 
 void ResultBoard::mUpdate(){
-	Debug::mPrint(std::to_string(m_timer));
+//	Debug::mPrint(std::to_string(m_timer));
 	if (m_timer > 1){
 		m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
 		m_timer = 0;
