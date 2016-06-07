@@ -179,6 +179,14 @@ void FieldEnemy::mRegisterMessage(std::string path){
 	m_message[id] = std::make_shared<Texture>();
 	m_message[id]->Load(path);
 }
+
+void FieldEnemy::mRegisterCannotMessage(std::string path){
+	if (m_cannotMessage)return;
+	m_cannotMessage = std::make_shared<Texture>();
+	m_cannotMessage->Load(path);
+	return;
+}
+
 int FieldEnemy::mGetMessageNum()const{
 	return m_message.size();
 }
@@ -186,6 +194,11 @@ int FieldEnemy::mGetMessageNum()const{
 std::shared_ptr<aetherClass::Texture> FieldEnemy::mGetMessage(const int id){
 	return m_message[id];
 }
+
+std::shared_ptr<aetherClass::Texture> FieldEnemy::mGetCannotMessage(){
+	return m_cannotMessage;
+}
+
 
 std::string FieldEnemy::mGetBattleDataPath(){
 	return m_dataPath;

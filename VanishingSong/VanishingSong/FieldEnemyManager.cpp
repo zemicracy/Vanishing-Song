@@ -50,7 +50,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-
+		m_pEnemy.begin()->get()->mRegisterCannotMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//EnemyAir‚Ì¶¬
@@ -60,6 +60,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterCannotMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(‰¼)
@@ -69,6 +70,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterCannotMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(‰¼)
@@ -78,6 +80,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.begin()->get()->mRegisterCannotMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//“G‚Ì‰ŠúˆÊ’u
