@@ -36,7 +36,7 @@ public:
 	~ResultBoard();
 	void mInitialize();
 	void mUpdate();
-	void mSetResultData(ResultData,GameManager::eBattleState);
+	void mSetResultData(ResultData,GameManager::eBattleState,UINT);
 	void mRender(aetherClass::ShaderBase*,aetherClass::ShaderBase*);
 
 private:

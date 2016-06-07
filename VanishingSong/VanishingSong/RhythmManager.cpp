@@ -73,6 +73,8 @@ void RhythmManager::mInitializeRhythm(std::shared_ptr<aetherClass::GameSound> in
 
 void RhythmManager::mAcquire(){
 	DWORD currentTempWav, nextTempWav;
+	if (!m_sound)return;
+
 	m_sound->GetPlayPosition(&currentTempWav, &nextTempWav);
 	m_playTime = (( float(currentTempWav) * 8 / 44100 / 2 / 16) / (60 / float(m_bpm)) + FLT_EPSILON);
 

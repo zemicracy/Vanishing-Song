@@ -14,6 +14,7 @@ FieldEnemyManager::FieldEnemyManager()
 
 FieldEnemyManager::~FieldEnemyManager()
 {
+	mFinalize();
 }
 
 bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
@@ -25,7 +26,6 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 
 	//Spawn場所
 	for (auto index : reader.GetInputWorldInfo()._object){
-
 		if (index->_name == "area1"){
 			m_pEnemySpawner[0] = index->_transform._translation;
 		}
@@ -114,11 +114,10 @@ void FieldEnemyManager::mUpdater(){
 
 //解放処理(コライダーはしなくていい)
 void FieldEnemyManager::mFinalize(){
-	
-	for (auto itr:m_pEnemy){
-	itr->mFinalize();
-	}
 
+	m_pEnemy.clear();
+	m_enemyArray.fill(nullptr);
+	
 }
 
 void FieldEnemyManager::mSetPosion(){

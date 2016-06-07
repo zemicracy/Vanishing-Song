@@ -139,6 +139,8 @@ void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamer
 			m_hp.push_back(hp);
 		}
 	}
+
+	chipher.mUnLoad();
 }
 
 CharaStatus& BattleEnemyManager::mGetCharaStatus(int index){
@@ -233,17 +235,13 @@ eMusical BattleEnemyManager::mGetEnemyAttack(const char attack){
 
 void BattleEnemyManager:: mFinalize(){
 	
-
-	
 	for (auto enemy : m_pEnemy){
 		enemy.reset();
 	}
 
-	for (auto enemy :m_waveEnemyList){
-		enemy.clear();
-	}
-	for (auto enemy : m_enemyAttackList){
-		enemy.clear();
-	}
+	m_waveEnemyList.clear();
+	m_enemyList.clear();
+	m_enemyAttackList.clear();
+	m_hp.clear();
 
 }

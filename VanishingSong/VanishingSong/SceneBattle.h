@@ -100,7 +100,7 @@ private:
 	eGameState m_processState;
 
 	//ptr
-	RhythmManager *m_rhythm;
+	std::shared_ptr<RhythmManager>m_rhythm;
 };
 
 

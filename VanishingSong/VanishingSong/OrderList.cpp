@@ -37,6 +37,18 @@ void OrderList::mFinalize(){
 	m_pBackImage->Finalize();
 	m_pBackImage.reset();
 
+	m_pReadLine->Finalize();
+	m_pReadLine.reset();
+
+	m_pVolumeImage->Finalize();
+	m_pVolumeImage.reset();
+
+	m_pFlame->Finalize();
+	m_pFlame.reset();
+
+	m_pParticle.release();
+	m_playedAction.reset();
+
 	for (auto itr : m_pSpriteList){
 		itr->Finalize();
 		itr.reset();
@@ -62,7 +74,7 @@ std::shared_ptr<Texture> gLoadTexture(std::string key, std::string path){
 }
 
 //初期化
-void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,ActionBoard* board,BattleField* field){
+void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,ActionBoard* board,BattleField* field,RhythmManager*rhythm){
 	WorldReader reader;
 	std::string dir = "Texture\\OrderList\\";
 
@@ -157,11 +169,11 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			m_pVolumeImage->SetTexture(m_pTextureList[itr->_name].get());
 		}
 	}
+	reader.UnLoad();
 
 	//ライン開始位置
 	m_ReadLineOrigin._x = m_pSpriteOrigin[0]._x - (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x)*3;
 	m_ReadLineReverce._x = m_pSpriteOrigin[7]._x + (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x) * 3;
-	reader.UnLoad();
 	m_MaxOrderSize = requestVal;
 
 
@@ -184,7 +196,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 
-	m_rhythm = &Singleton<RhythmManager>::GetInstance();
+	m_rhythm = rhythm;
 //	m_rhythm->mInitializeRhythm(0, 110);
 
 	m_pEffect = std::make_shared<EffectGenerator2D>();
