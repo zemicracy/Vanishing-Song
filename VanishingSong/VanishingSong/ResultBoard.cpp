@@ -126,6 +126,9 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 
 	if (state == GameManager::eBattleState::eWin){
 		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Win.png");
+		int stage = GameManager::mGetInstance().mGetCanStage();
+		stage = stage < stageID ? stageID+1 : stage;
+		GameManager::mGetInstance().mGetCanStage(stage);
 	}
 	else{
 		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Lose.png");
@@ -133,17 +136,17 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_pGeneral["battleResult"]->SetTexture(m_TextureList["issue"].get());
 
 	std::string path = "Texture\\Result\\rank\\";
-	if (rate >= 0.90){
+	if (rate >= 0.90 && state == GameManager::eBattleState::eWin){
 		m_TextureList["rank"] = gLoadTexture(path + "S.png");
 		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note_a.png");
 	}
 	else{
 		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
 
-		if (rate >= 0.80){
+		if (rate >= 0.80 && state == GameManager::eBattleState::eWin){
 			m_TextureList["rank"] = gLoadTexture(path + "A.png");
 		}
-		else if (rate >= 0.70){
+		else if (rate >= 0.70 && state == GameManager::eBattleState::eWin){
 			m_TextureList["rank"] = gLoadTexture(path + "B.png");
 		}
 		else if (rate >= 0.50){
@@ -168,9 +171,21 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	//ステージ曲追加分
 	if (stageID == 1){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
-		Debug::mPrint(std::to_string(integer));
+		//Debug::mPrint(std::to_string(integer));
 		if (integer < 90)return;		//レート0.90以上で音符の取得
 		GameManager::mGetInstance().mNote(eMusical::eGreen);
+	}
+	else if (stageID == 2){
+		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
+		//Debug::mPrint(std::to_string(integer));
+		if (integer < 90)return;		//レート0.90以上で音符の取得
+		GameManager::mGetInstance().mNote(eMusical::eRed);
+	}
+	else if (stageID == 3){
+		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
+		//Debug::mPrint(std::to_string(integer));
+		if (integer < 90)return;		//レート0.90以上で音符の取得
+		GameManager::mGetInstance().mNote(eMusical::eYellow);
 	}
 	else{
 

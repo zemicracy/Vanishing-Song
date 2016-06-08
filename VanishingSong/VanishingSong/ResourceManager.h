@@ -47,7 +47,7 @@ public:
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
 	void mEnemyInitialize(eMusical,eEnemyType, std::string directy, std::string tex);
-	std::shared_ptr<FbxModel> mGetEnemyHash(eMusical);
+	std::shared_ptr<aetherClass::FbxModel> mGetEnemyHash(eMusical);
 
 
 	std::shared_ptr<aetherClass::GameSound> mGetLastBGM();

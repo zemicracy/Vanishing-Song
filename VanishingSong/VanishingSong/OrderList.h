@@ -21,11 +21,13 @@ public:
 
 	OrderList();
 	~OrderList();
-	//再生
+	//処理再生
 	void mPlay();
+	//ライン再生
 	void mLinePlay();
 
-	typedef int eAppendoption;	//フラグだけどInt
+	typedef int eAppendoption;	//フラグ int(BitFlgs) = eAppendOption
+
 	//Listen
 	void mSetOption(eAppendoption op);
 	void mAddEnemyOrder(std::vector<std::shared_ptr<ActionCommand>>&);	//敵からリストを受け取る
@@ -33,7 +35,6 @@ public:
 	//Perform
 	std::shared_ptr<ActionCommand> mGetActionCommand();
 
-	//Check
 	//Battle
 	int mGetDamage();
 
