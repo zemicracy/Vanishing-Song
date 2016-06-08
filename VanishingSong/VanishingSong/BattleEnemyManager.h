@@ -2,6 +2,7 @@
 #define _BATTLEENEMYMANAGER_H
 #include "BattleEnemy.h"
 #include"BattleField.h"
+#include <GameController.h>
 #include <ShaderBase.h>
 #include "CharaStatus.h"
 #include <array>
@@ -62,11 +63,8 @@ private:
 
 	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
 	std::vector<eMusical> m_enemyList;
-	std::vector<std::vector<std::pair<eMusical, eEnemyType>>> m_waveEnemyList;
+	std::vector<std::vector<std::shared_ptr<BattleEnemy>>> m_waveEnemyList;
 	std::vector<std::vector<eMusical>> m_enemyAttackList;
-
-
-
 	std::vector<CharaStatus> m_hp;
 
 	
