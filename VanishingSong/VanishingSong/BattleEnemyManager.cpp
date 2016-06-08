@@ -16,15 +16,13 @@ BattleEnemyManager::~BattleEnemyManager()
 
 void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	
-	mLoadInfo("data\\Battle\\Stage1",lane,camera);
-
-	ResetEnemyList(0, camera);
-
 	m_camera = camera;
 
+	mLoadInfo("data\\Battle\\Stage1",lane,camera);
+	
 	flag = true;
 
-
+	
 }
 
 
@@ -48,63 +46,30 @@ int BattleEnemyManager::mGetRandom(){
 
 	std::random_device rnd;
 	std::mt19937 mt(rnd());
-	std::uniform_int_distribution<> rand100(0, 1100);
+	std::uniform_int_distribution<> rand100(0,m_attackAllCount*100);
 
 	int r;
-	int random = rand100(rnd);
-
-	if (random < 100){
-		r = 0;
-	}else if (random > 100 && random <= 200){
-		r = 1;
-	}
-	else if (random > 200 && random <= 300){
-		r = 2;
-	}
-	else if (random > 300 && random <= 400){
-		r = 3;
-	}
-	else if (random > 400 && random <= 500){
-		r = 4;
-	}
-	/*}
-	else if (random > 500 && random <= 600){
-		r = 5;
-	}
-	else if (random > 600 && random <= 700){
-		r = 6;
-	}
-	else if (random > 700 && random <= 800){
-		r = 7;
-	}
-	else if (random > 800 && random <= 900){
-		r = 8;
-	}
-	else if (random > 900 && random <= 1000){
-		r = 9;
-	}
-	else if (random > 1000 && random <= 1100){
-		r = 10;
-	}*/
+	float random = rand100(rnd);
 
 
-	if (r >= m_attackAllCount){
-		mGetRandom();
+	Debug::mPrint("rand:"+std::to_string(random));
+	r = int(random / 100);
+
+
+	Debug::mPrint("r:"+std::to_string(r));
+
+	if (r > m_attackAllCount-1){
+		r = mGetRandom();
 	}
 	return r;
 }
 
 void BattleEnemyManager::mUpadate(const float timeScale ){
-	
-	cnt++;
 
-	if (flag == true){
-		if (cnt > 300){
-			ResetEnemyList(1, m_camera);
-			flag = false;
-
-		}
+	if (GameController::GetKey().IsKeyDown('H')){
+		ResetEnemyList(1, m_camera);
 	}
+	
 }
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
@@ -115,18 +80,25 @@ void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamer
 		
 	m_BattleField = lane;
 
+	
 	for (int i = 0; i < m_waveAllCount; ++i){
 
-		std::vector<std::pair<eMusical, eEnemyType>> waveEnemyList;
+		std::vector<std::shared_ptr<BattleEnemy>> waveEnemyList;
 
-		for (auto splitString : chipher.mGetSpriteArray("[Wave"+std::to_string(i+1)+"]")){
+		for (auto splitString : chipher.mGetSpriteArray("[Wave" + std::to_string(i + 1) + "]")){
 
 			auto color = mGetEnemyColor(splitString.front());
 			auto type = mGetEnemyType(splitString.back());
 
-			waveEnemyList.push_back(std::make_pair(color,type));
+			std::shared_ptr<BattleEnemy> waveEnemy;
+			waveEnemy = std::make_shared<BattleEnemy>();
+			auto transform = m_BattleField->mGetEnemyLane(color);
+			waveEnemy->mInitialize(color, type, m_camera, transform);
+			waveEnemyList.push_back(waveEnemy);
 		}
 		m_waveEnemyList.push_back(waveEnemyList);
+
+		
 	}
 
 	m_attackAllCount = std::atoi(&chipher.mGetSpriteArray("[AttackAll]").front().front());
@@ -150,6 +122,8 @@ void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamer
 			m_hp.push_back(hp);
 		}
 	}
+
+	chipher.mUnLoad();
 }
 
 CharaStatus& BattleEnemyManager::mGetCharaStatus(int index){
@@ -167,9 +141,7 @@ void BattleEnemyManager::ResetEnemyList(int waveCount,ViewCamera* camera){
 	}
 
 	for (auto& enemyType : m_waveEnemyList[waveCount]){
-		auto transform = m_BattleField->mGetEnemyLane(enemyType.first);
-		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<BattleEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(enemyType.first, enemyType.second, camera, transform);
+		m_pEnemy.push_back(enemyType);
 	}
 
 }
@@ -182,6 +154,7 @@ void BattleEnemyManager::misDie(){
 
 
 eMusical BattleEnemyManager::mGetEnemyColor(const char colorChar){
+
 	if (colorChar == 'b'){
 		return eMusical::eBlue;
 	}
@@ -199,6 +172,7 @@ eMusical BattleEnemyManager::mGetEnemyColor(const char colorChar){
 }
 
 eEnemyType  BattleEnemyManager::mGetEnemyType(const char typeChar){
+
 	if (typeChar == '1'){
 		return eEnemyType::eGround;
 	}
@@ -217,6 +191,7 @@ int BattleEnemyManager::mGetWaveAllCount(){
 }
 
 eMusical BattleEnemyManager::mGetEnemyAttack(const char attack){
+
 	if (attack == 'b'){
 		return eMusical::eBlue;
 	}
@@ -244,17 +219,13 @@ eMusical BattleEnemyManager::mGetEnemyAttack(const char attack){
 
 void BattleEnemyManager:: mFinalize(){
 	
-
-	
 	for (auto enemy : m_pEnemy){
 		enemy.reset();
 	}
 
-	for (auto enemy :m_waveEnemyList){
-		enemy.clear();
-	}
-	for (auto enemy : m_enemyAttackList){
-		enemy.clear();
-	}
+	m_waveEnemyList.clear();
+	m_enemyList.clear();
+	m_enemyAttackList.clear();
+	m_hp.clear();
 
 }
