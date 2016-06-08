@@ -11,6 +11,7 @@
 #include "GearFrame.h"
 #include "CharaStatus.h"
 #include "Const.h"
+#include<FbxModel.h>
 
 class ActionSound;
 
@@ -19,7 +20,7 @@ class ResourceManager
 
 public:
 	typedef std::unordered_map<eMusical, std::shared_ptr<GearFrame>> CharaHash;
-	typedef std::unordered_map<eMusical, std::unordered_map<eEnemyType,std::shared_ptr<GearFrame>>> EnemyHash;
+	typedef std::unordered_map<eMusical,std::shared_ptr<aetherClass::FbxModel>> EnemyHash;
 public:
 
 	static ResourceManager& mGetInstance();
@@ -46,7 +47,7 @@ public:
 	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
 
 	void mEnemyInitialize(eMusical,eEnemyType, std::string directy, std::string tex);
-	std::shared_ptr<GearFrame> mGetEnemyHash(eMusical,eEnemyType);
+	std::shared_ptr<FbxModel> mGetEnemyHash(eMusical);
 
 
 	std::shared_ptr<aetherClass::GameSound> mGetLastBGM();

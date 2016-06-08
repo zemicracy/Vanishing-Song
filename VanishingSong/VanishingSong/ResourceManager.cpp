@@ -353,32 +353,33 @@ void ResourceManager::FinalizePlayer(){
 }
 
 // ŽG‹›“G—p
-void ResourceManager::mEnemyInitialize(eMusical type,eEnemyType enemyType, std::string directy, std::string tex){
-	std::shared_ptr<Gear> gear;
+void ResourceManager::mEnemyInitialize(eMusical type,eEnemyType enemyType, std::string directry, std::string tex){
 	if (type == eMusical::eNull)return;
 	
-	m_pEnemyHashes[type][enemyType] = std::make_shared<GearFrame>();
+	m_pEnemyHashes[type] = std::make_shared<FbxModel>();
+	m_pEnemyHashes[type]->LoadFBX(directry + "\\body.fbx", eAxisSystem::eAxisOpenGL);
+	m_pEnemyHashes[type]->SetTextureDirectoryName(directry+tex);
 
 		// ‘Ì‚Ìƒp[ƒc
-	m_pEnemyHashes[type][enemyType]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
+//	m_pEnemyHashes[type][enemyType] = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
 
 	
 		// ‚»‚ê‚¼‚ê‚Ìƒp[ƒc‚Æ‚ÌeŽqŠÖŒW\’z
-	m_charaEntity.mCreateRelationship(m_pEnemyHashes[type][enemyType]->m_pBody, m_pEnemyHashes[type][enemyType]->m_pWaist);
+	//m_charaEntity.mCreateRelationship(m_pEnemyHashes[type][enemyType]->m_pBody, m_pEnemyHashes[type][enemyType]->m_pWaist);
 }
 
-//
-std::shared_ptr<GearFrame> ResourceManager::mGetEnemyHash(eMusical type,eEnemyType enemyType){
-	return m_pEnemyHashes[type][enemyType];
+
+//“G‚ÌŽæ“¾
+std::shared_ptr<FbxModel> ResourceManager::mGetEnemyHash(eMusical type){
+	if (m_pEnemyHashes.find(type) == m_pEnemyHashes.end())return nullptr;
+	return m_pEnemyHashes.at(type);
 }
 
 // ‰ð•úˆ—
 void ResourceManager::FinalizeEnemy(){
-	for (auto& firstHash : m_pEnemyHashes){
-		for (auto& index : firstHash.second){
-			if (!index.second)continue;
-			index.second->Release();
-
+	for (auto& index : m_pEnemyHashes){
+		if (index.second){
+			index.second->Finalize();
 		}
 	}
 }
