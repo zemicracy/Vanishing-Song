@@ -6,7 +6,7 @@ namespace{
 	const float kMessageFlameTime = 1.0f;
 }
 using namespace aetherClass;
-MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager>& enemy, aetherClass::ViewCamera* camera)
+MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherClass::ViewCamera* camera)
 {
 	m_message.mInitialize();
 	m_isView = false;
@@ -118,7 +118,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		else{
 			// メッセージの切り替え
 			if (m_state == eState::eCannotSelect){
-				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetCannotMessage().get());
+				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());
 			}
 			else{
 				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());

@@ -17,8 +17,8 @@ void GearFrame::Release()
 	if (m_pBody)
 	{
 		m_pBody->Release();
-		m_pWaist.reset();
-		m_pWaist = nullptr;
+		m_pBody.reset();
+		m_pBody = nullptr;
 	}
 
 	// ˜ƒp[ƒc‚Ì‰ğ•ú

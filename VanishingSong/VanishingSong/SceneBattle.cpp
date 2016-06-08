@@ -27,7 +27,7 @@ eMusical askey[8] = {	eMusical::eBlue, eMusical::eYellow, eMusical::eNull, eMusi
 						eMusical::eNull, eMusical::eRed, eMusical::eAdlib, eMusical::eAdlib };
 
 bool SceneBattle::Initialize(){
-	Finalize();
+	_heapmin();
 
 	mLoadTextData();
 
@@ -48,8 +48,20 @@ bool SceneBattle::Initialize(){
 	m_pField = std::make_unique<BattleField>();
 	m_pField->mInitialize(&m_view,m_rhythm.get());
 
+	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
+	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
+
+	//ウェーブ系
+	m_MaxWave = m_pBattleEnemyManager->mGetWaveAllCount();
+	m_nowWave = 1;
+	m_pBattleEnemyManager->ResetEnemyList(m_nowWave-1, &m_view);
+
 	m_pGauge = std::make_unique<GaugeManager>();
 	m_pGauge->mInitialize();
+
+	//hp
+	m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_nowWave - 1);
+	m_pGauge->mSetHpAll(&m_charaHp, m_enemyHp);
 
 
 	m_pOrderList = std::make_unique<OrderList>();
@@ -73,26 +85,16 @@ bool SceneBattle::Initialize(){
 	m_bgmVolume = 30;
 	m_inCount = 0;
 	
-	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
-	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
-
-
-	//ウェーブ系
-	m_MaxWave = m_pBattleEnemyManager->mGetWaveAllCount();
-	m_nowWave = 1;
-
-	m_pBattleEnemyManager->ResetEnemyList(m_nowWave-1, &m_view);
-	m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_nowWave - 1);
-	m_pGauge->mSetHpAll(&m_charaHp, m_enemyHp);
-	
 		
 	//最後に行う
 	m_sound->SetValume(-m_bgmVolume*100);
 	m_sound->PlayToLoop();
+	_heapmin();
 	return true;
 }
 
 void SceneBattle::Finalize(){
+	_heapmin();
 	if (m_pOrderList){
 		m_pOrderList.reset();
 	}
@@ -121,6 +123,7 @@ void SceneBattle::Finalize(){
 		m_pBattleEnemyManager.reset();
 	}
 
+	_heapmin();
 	return;
 }
 void SceneBattle::mLoadTextData(){

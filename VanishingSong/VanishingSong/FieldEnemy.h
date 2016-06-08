@@ -19,7 +19,7 @@ public:
 	};
 
 	struct Property{
-		std::shared_ptr<GearFrame> _penemy;			//Enemy本体
+		std::shared_ptr<aetherClass::FbxModel> _penemy;			//Enemy本体
 		std::shared_ptr<aetherClass::ModelBase> _pCollider;	//コライダー
 		bool _talkflag;
 		int _enemyAreaNo;		//エリアナンバー
@@ -29,20 +29,14 @@ public:
 	~FieldEnemy();
 
 	bool mInitialize(eType,aetherClass::ViewCamera*,std::string dataPath);
-	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 	void mUpdate();
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mFinalize();	//開放処理
-	void mEnemyOnHit();	//当たったかどうか
 	Property &mGetProperty();
 	void mFaceToPlayer(aetherClass::Vector3);
 	void mRegisterMessage(std::string);
-	void mRegisterCannotMessage(std::string);
-
 	int mGetMessageNum()const;
 	std::shared_ptr<aetherClass::Texture> mGetMessage(const int id);
-	std::shared_ptr<aetherClass::Texture> mGetCannotMessage();
-
 	std::string mGetBattleDataPath();
 private:
 	bool mInitializeGround(aetherClass::ViewCamera*);				//敵初期化(地上)
@@ -55,7 +49,6 @@ private:
 	std::shared_ptr<Gear> m_pTopGear;
 	Property m_property;
 	std::vector<std::shared_ptr<aetherClass::Texture>> m_message;
-	std::shared_ptr<aetherClass::Texture> m_cannotMessage;
 	std::string m_dataPath;
 };
 #endif

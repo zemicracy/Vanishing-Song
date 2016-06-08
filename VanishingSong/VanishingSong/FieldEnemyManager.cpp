@@ -42,45 +42,43 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 
 	reader.UnLoad();
 
+	m_pEnemy.reserve(4);
+
 
 	//EnemyGroundの生成
 	for (int i = 0; i < EnemySize; i++){
-		m_pEnemy.insert(m_pEnemy.begin(),std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Ground,camera,"data\\test");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterCannotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(FieldEnemy::eType::Ground,camera,"data\\test");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//EnemyAirの生成
 	for (int i = 0; i < EnemySize; i++){
-		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Air, camera, "data\\test");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterCannotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(FieldEnemy::eType::Air, camera, "data\\test");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(仮)
 	for (int i = 0; i < EnemySize; i++){
-		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Blue, camera, "data\\test");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterCannotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(FieldEnemy::eType::Blue, camera, "data\\test");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(仮)
 	for (int i = 0; i < EnemySize; i++){
-		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Yellow, camera, "data\\test");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterCannotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(FieldEnemy::eType::Yellow, camera, "data\\test");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//敵の初期位置
@@ -118,17 +116,24 @@ void FieldEnemyManager::mUpdater(){
 //解放処理(コライダーはしなくていい)
 void FieldEnemyManager::mFinalize(){
 
-	m_pEnemy.clear();
-	m_enemyArray.fill(nullptr);
-	
+
+	for (auto &itr : m_pEnemy){
+		itr.reset();
+	}
+	for (auto &itr : m_enemyArray){
+		if (itr){
+			itr->mFinalize();
+			itr.reset();
+		}
+	}	
 }
 
 void FieldEnemyManager::mSetPosion(){
 
 	//敵の出現位置
 	for (int i = 0; i <m_pEnemy.size(); i++){
-		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation = m_pEnemySpawner[i];
-		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y = +20;
+		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation = m_pEnemySpawner[i];
+		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation._y = +20;
 		m_pEnemy[i]->mGetProperty()._enemyAreaNo = i;
 		m_enemyArray[i]=m_pEnemy[i];
 	}

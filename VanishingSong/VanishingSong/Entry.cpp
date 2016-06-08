@@ -53,7 +53,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	}
 
 	//一番最初のシーンとロード画面の設定
-	GameSceneManager::SetCurrentScene(new SceneGame());
+	GameSceneManager::SetCurrentScene(new SceneTitle());
 	GameSceneManager::SetLoadScreen(new Load());
 	frame->BackgroundColor(Color(0, 0, 0, 0));
 	//メインループの開始

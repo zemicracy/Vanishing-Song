@@ -43,6 +43,7 @@ SceneTitle::~SceneTitle()
 }
 
 bool SceneTitle::Initialize(){
+	_heapmin();
 
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
@@ -98,11 +99,13 @@ bool SceneTitle::Initialize(){
 	m_nowSelectMode = NULL;
 	m_nowCursor = NULL;
 	
+	_heapmin();
 	return true;
 }
 
 void SceneTitle::Finalize(){
-	
+	_heapmin();
+
 	if (m_pLogo){
 		m_pLogo->Finalize();
 		m_pLogo.reset();
@@ -143,6 +146,8 @@ void SceneTitle::Finalize(){
 
 	// NULLで初期化
 	m_cursorArray.fill(ModeSelect(NULL));
+
+	_heapmin();
 	return;
 }
 

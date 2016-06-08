@@ -31,6 +31,8 @@ SceneGame::~SceneGame()
 }
 
 bool SceneGame::Initialize(){
+	_heapmin();
+
 	bool result = true;
 
 	Finalize();
@@ -39,8 +41,8 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
 
-	// フェードイン・アウトを行う
-	
+	//// フェードイン・アウトを行う
+	//
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,22.2,0));
 
@@ -60,7 +62,7 @@ bool SceneGame::Initialize(){
 	int count= 0;
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
 	for (auto& index : m_pCage){
-		const auto hoge = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation;
+		const auto hoge = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->property._transform._translation;
 		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, kPlayerInitializeY, hoge._z), view);
 		count += 1;
 	}
@@ -85,13 +87,15 @@ bool SceneGame::Initialize(){
 			ResourceManager::mGetInstance().mGetFirstBGM()->PlayToLoop();
 		}
 	}
-	
+
+	_heapmin();
 	return true;
 }
 
 // 解放処理
 // 全ての解放
 void SceneGame::Finalize(){
+	_heapmin();
 	for (auto index : GameManager::mGetInstance().mGetUsePlayer()){
 		ResourceManager::mGetInstance().mStopBaseBGM(index.second);
 	}
@@ -124,18 +128,20 @@ void SceneGame::Finalize(){
 	}
 
 	if (m_pFieldEnemy){
-		m_pFieldEnemy->mFinalize();
+		m_pFieldEnemy.reset();
 		m_pFieldEnemy = nullptr;
 	}
 	
 	m_gameState = eState::eNull;
+	_heapmin();
 	return;
 }
 
 // 更新処理
+
 bool SceneGame::Updater(){
 
-	// タイトルに戻る
+	//// タイトルに戻る
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
 		m_gameState = eState::eExit;
 		ChangeScene(SceneTitle::Name, LoadState::eUse);

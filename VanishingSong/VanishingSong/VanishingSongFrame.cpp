@@ -43,7 +43,7 @@ bool VanishingSongFrame::InitializeBuffer(){
 
 //　１フレームごとに実行される
 bool VanishingSongFrame::FrameRunningBuffer(){
-
+	_heapmin();
 	
 	return true;
 }

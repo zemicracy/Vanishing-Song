@@ -59,7 +59,6 @@ private:
 	// ‰ğ•úˆ—
 	// ‚½‚¾‚µGearFrame‚Í‰ğ•ú‚µ‚È‚¢
 	void Finalize();
-	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 
 
 private:

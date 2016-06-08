@@ -163,7 +163,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 		itr->SetCamera(m_view);
 	}
 	m_pSkyBox->SetCamera(m_view);
-	m_pSkyBox->property._transform._rotation._x = 36.7f;
+	m_pSkyBox->property._transform._rotation._x = 22.7f;
 
 	reader.UnLoad();
 }

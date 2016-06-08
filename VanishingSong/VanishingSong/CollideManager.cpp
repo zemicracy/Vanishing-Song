@@ -20,6 +20,9 @@ CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_
 
 CollideManager::~CollideManager()
 {
+	m_enemy = nullptr;
+	m_filed = nullptr;
+	m_player = nullptr;
 }
 
 //
