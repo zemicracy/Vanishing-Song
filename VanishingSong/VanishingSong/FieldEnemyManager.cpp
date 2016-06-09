@@ -48,7 +48,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//EnemyGround‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
-		m_pEnemy.back()->mInitialize(FieldEnemy::eType::Ground,camera,"data\\Battle\\Stage1");
+		m_pEnemy.back()->mInitialize(eMusical::eRed,camera,"data\\Battle\\Stage1");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -57,7 +57,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//EnemyAir‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
-		m_pEnemy.back()->mInitialize(FieldEnemy::eType::Air, camera, "data\\Battle\\Stage2");
+		m_pEnemy.back()->mInitialize(eMusical::eGreen, camera, "data\\Battle\\Stage2");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -66,7 +66,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
-		m_pEnemy.back()->mInitialize(FieldEnemy::eType::Blue, camera, "data\\Battle\\Stage3");
+		m_pEnemy.back()->mInitialize(eMusical::eBlue, camera, "data\\Battle\\Stage3");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -75,7 +75,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
-		m_pEnemy.back()->mInitialize(FieldEnemy::eType::Yellow, camera, "data\\Battle\\Stage4");
+		m_pEnemy.back()->mInitialize(eMusical::eYellow, camera, "data\\Battle\\Stage4");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");

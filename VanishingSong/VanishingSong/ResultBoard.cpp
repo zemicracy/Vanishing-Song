@@ -173,18 +173,22 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
 		//Debug::mPrint(std::to_string(integer));
 		if (integer < 90)return;		//レート0.90以上で音符の取得
-		GameManager::mGetInstance().mNote(eMusical::eGreen);
+		GameManager::mGetInstance().mNote(eMusical::eBlue);
 	}
 	else if (stageID == 2){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
 		//Debug::mPrint(std::to_string(integer));
 		if (integer < 90)return;		//レート0.90以上で音符の取得
-		GameManager::mGetInstance().mNote(eMusical::eRed);
+		GameManager::mGetInstance().mNote(eMusical::eGreen);
 	}
 	else if (stageID == 3){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
 		//Debug::mPrint(std::to_string(integer));
 		if (integer < 90)return;		//レート0.90以上で音符の取得
+		GameManager::mGetInstance().mNote(eMusical::eRed);
+	}
+	else if (stageID == 4){
+		if (integer < 90)return;
 		GameManager::mGetInstance().mNote(eMusical::eYellow);
 	}
 	else{

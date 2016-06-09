@@ -1,6 +1,7 @@
 #include "BattleEnemyManager.h"
 #include <random>
 #include "Cipher.h"
+#include"ResourceManager.h"
 using namespace aetherClass;
 int cnt = 0;
 
@@ -27,9 +28,8 @@ void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 
 
 void BattleEnemyManager::mRender(std::shared_ptr<ShaderBase> tex){
-	
-	for (int i = 0; i < m_pEnemy.size(); i++){
-		m_pEnemy[i]->mRender(tex);
+	for (auto itr : m_pEnemy){
+		itr->mRender(tex);
 	}
 }
 
@@ -66,15 +66,15 @@ int BattleEnemyManager::mGetRandom(){
 
 void BattleEnemyManager::mUpadate(const float timeScale ){
 
-	if (GameController::GetKey().IsKeyDown('H')){
+	/*if (GameController::GetKey().IsKeyDown('H')){
 		ResetEnemyList(1, m_camera);
-	}
+	}*/
 	
 }
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
 	Cipher chipher(path);
-	chipher.mConsoleFind();
+//	chipher.mConsoleFind();
 
 	m_waveAllCount =std::atoi(&chipher.mGetSpriteArray("[WaveAll]").front().front());
 		
@@ -92,8 +92,8 @@ void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamer
 
 			std::shared_ptr<BattleEnemy> waveEnemy;
 			waveEnemy = std::make_shared<BattleEnemy>();
-			auto transform = m_BattleField->mGetEnemyLane(color);
-			waveEnemy->mInitialize(color, type, m_camera, transform);
+			auto translation = m_BattleField->mGetEnemyLane(color);
+			waveEnemy->mInitialize(color, type, m_camera, translation);
 			waveEnemyList.push_back(waveEnemy);
 		}
 		m_waveEnemyList.push_back(waveEnemyList);

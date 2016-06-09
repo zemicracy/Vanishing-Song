@@ -6,13 +6,14 @@
 #include "ShaderBase.h"
 #include "CharaEntity.h"
 #include <memory>
+#include<FbxModel.h>
 class BattleEnemy
 {
 
 public:
 	struct Enemy
 	{
-		std::shared_ptr<GearFrame> _gearFrame;
+		std::shared_ptr<aetherClass::FbxModel> _model;
 		eMusical _type;
 	};
 
@@ -64,8 +65,6 @@ private:
 private:
 	eMusical m_type;
 	Enemy m_enemy;
-	CharaEntity m_charaEntity;
-	std::shared_ptr<Gear> m_pTopGear;
 	bool m_isDie;
 };
 

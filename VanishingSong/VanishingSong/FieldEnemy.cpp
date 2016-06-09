@@ -4,6 +4,7 @@
 #include <Singleton.h>
 #include "Debug.h"
 #include <Sphere.h>
+#include"GameManager.h"
 using namespace aetherClass;
 
 FieldEnemy::FieldEnemy(){
@@ -15,9 +16,11 @@ FieldEnemy::~FieldEnemy()
 //	mFinalize();
 }
 
-bool FieldEnemy::mInitialize(eType type, ViewCamera* camera, std::string dataPath){
+bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string dataPath){
 	m_dataPath = dataPath;
-	switch (type)
+	mInitializeEnemy(type, camera);
+	mInitializeEnemyColider(camera);
+	/*switch (type)
 	{
 	case eType::Ground:
 		mInitializeGround(camera);
@@ -39,106 +42,17 @@ bool FieldEnemy::mInitialize(eType type, ViewCamera* camera, std::string dataPat
 
 	default:
 		break;
-	}
+	}*/
 
 	return true;
 }
-
-//Enemy地上
-bool FieldEnemy::mInitializeGround(ViewCamera* camera){
-
-		m_property._penemy = std::make_shared<FbxModel>();		
-		m_property._penemy->LoadFBX("Model\\Enemy\\Air\\body.fbx", eAxisSystem::eAxisOpenGL);
-		m_property._penemy->SetTextureDirectoryName("Model\\Enemy\\Air\\Red");
-		m_property._penemy->property._transform._scale = 2;
-		m_property._penemy->SetCamera(camera);
-	
-		//m_property._penemy->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Red");
-
-//		m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-
-//		m_property._penemy->m_pBody->_pGear->SetCamera(camera);
-		// 最上位に当たるパーツの設定
-//		m_pTopGear = m_property._penemy->m_pBody;
-
-		// 体にパーツとの親子関係
-//		m_charaEntity.SetCamera(m_pTopGear,camera);
-
-		return true;
-}
-
-//Enemy空中
-bool FieldEnemy::mInitializeAir(ViewCamera* camera){
-	m_property._penemy = std::make_shared<FbxModel>();
-	m_property._penemy->LoadFBX("Model\\Enemy\\Air\\body.fbx", eAxisSystem::eAxisOpenGL);
-	m_property._penemy->SetTextureDirectoryName("Model\\Enemy\\Air\\Green");
+bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
+	m_property._penemy = ResourceManager::mGetInstance().mGetEnemyHash(type);
 	m_property._penemy->property._transform._scale = 2;
 	m_property._penemy->SetCamera(camera);
-
-
-	//m_property._penemy = std::make_shared<GearFrame>();
-
-	//m_property._penemy->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Green");
-
-	//m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-
-	//m_property._penemy->m_pBody->_pGear->SetCamera(camera);
-	// 最上位に当たるパーツの設定
-//	m_pTopGear = m_property._penemy->m_pBody;
-
-	// 体にパーツとの親子関係
-//	m_charaEntity.SetCamera(m_pTopGear, camera);
-
-	return true;
-
-}
-
-//仮用敵
-bool FieldEnemy::mInitializeBlue(ViewCamera* camera){
-	m_property._penemy = std::make_shared<FbxModel>();
-	m_property._penemy->LoadFBX("Model\\Enemy\\Ground\\body.fbx", eAxisSystem::eAxisOpenGL);
-	m_property._penemy->SetTextureDirectoryName("Model\\Enemy\\Ground\\Blue");
-	m_property._penemy->property._transform._scale = 2;
-	m_property._penemy->SetCamera(camera);
-
-	//m_property._penemy = std::make_shared<GearFrame>();
-
-	//m_property._penemy->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Blue");
-
-	//m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-
-	//m_property._penemy->m_pBody->_pGear->SetCamera(camera);
-	// 最上位に当たるパーツの設定
-//	m_pTopGear = m_property._penemy->m_pBody;
-
-	// 体にパーツとの親子関係
-//	m_charaEntity.SetCamera(m_pTopGear, camera);
-
 	return true;
 }
 
-//仮用敵
-bool FieldEnemy::mInitializeYellow(ViewCamera* camera){
-	m_property._penemy = std::make_shared<FbxModel>();
-	m_property._penemy->LoadFBX("Model\\Enemy\\Ground\\body.fbx", eAxisSystem::eAxisOpenGL);
-	m_property._penemy->SetTextureDirectoryName("Model\\Enemy\\Ground\\Yellow");
-	m_property._penemy->property._transform._scale = 2;
-	m_property._penemy->SetCamera(camera);
-
-	//m_property._penemy = std::make_shared<GearFrame>();
-
-	//m_property._penemy->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Yellow");
-
-	//m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-
-	//m_property._penemy->m_pBody->_pGear->SetCamera(camera);
-	// 最上位に当たるパーツの設定
-//	m_pTopGear = m_property._penemy->m_pBody;
-
-//	m_charaEntity.SetCamera(m_pTopGear, camera);
-
-	return true;
-}
 
 
 //コライダーの初期化
@@ -182,7 +96,7 @@ void FieldEnemy::mFinalize(){
 	}
 
 	if (m_property._penemy){
-		m_property._penemy->Finalize();
+//		m_property._penemy->Finalize();
 		m_property._penemy.reset();
 	}
 	m_pTopGear = nullptr;

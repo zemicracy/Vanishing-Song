@@ -220,6 +220,10 @@ bool SceneBattle::Updater(){
 			if (m_rhythm->mIsQuarterBeat()){
 				m_processState = eGameState::ePreCountIn;
 				m_battleState = GameManager::eBattleState::eListen;
+				m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_nowWave - 1);
+				m_pGauge->mSetHpAll(&m_charaHp, m_enemyHp);
+				m_pBattleEnemyManager->ResetEnemyList(m_nowWave - 1, &m_view);
+
 			}
 			break;
 		default:
@@ -398,10 +402,8 @@ void SceneBattle::mCheckBattle(){
 	if (m_enemyHp->_hp <= 0){
 		if (m_nowWave < m_MaxWave){
 			m_nowWave++;
-			m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_nowWave - 1);
-			m_pGauge->mSetHpAll(&m_charaHp, m_enemyHp);
 
-//			m_pBattleEnemyManager->ResetEnemyList(m_nowWave - 1, &m_view);
+			m_pBattleEnemyManager->misDie();
 			m_battleState = GameManager::eBattleState::eNewWave;
 			m_processState = eGameState::ePreCountIn;
 		}

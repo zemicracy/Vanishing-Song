@@ -353,7 +353,7 @@ void ResourceManager::FinalizePlayer(){
 }
 
 // ŽG‹›“G—p
-void ResourceManager::mEnemyInitialize(eMusical type,eEnemyType enemyType, std::string directry, std::string tex){
+void ResourceManager::mEnemyInitialize(eMusical type, std::string directry, std::string tex){
 	if (type == eMusical::eNull)return;
 	
 	m_pEnemyHashes[type] = std::make_shared<FbxModel>();

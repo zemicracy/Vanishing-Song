@@ -23,19 +23,21 @@ bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
 	result = ResourceManager::mGetInstance().Initialize();
 	// 操作キャラクターのリソースを初期化
+
 	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
 
 	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
-	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
+//	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","\\blue");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "\\red");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "\\green");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "\\yellow");
 
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Ground", "\\blue");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Air", "\\red");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air", "\\green");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground", "\\yellow");
 
 
 	return true;
