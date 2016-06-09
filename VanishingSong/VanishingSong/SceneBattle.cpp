@@ -127,7 +127,7 @@ void SceneBattle::Finalize(){
 	return;
 }
 void SceneBattle::mLoadTextData(){
-	std::string file = "data\\Battle\\Stage1";
+	std::string file = GameManager::mGetInstance().mBattleDataFile();
 	Cipher cip(file);
 	
 	m_stageID = std::atoi(&cip.mGetSpriteArray("[Stage]").front().front());
@@ -141,7 +141,12 @@ void SceneBattle::mLoadTextData(){
 
 	//サウンドのデータも読み込む
 	m_sound = std::make_shared<GameSound>();
-	m_sound->Load("Sound\\Battle\\normal.wav");
+	if (m_stageID != 5){
+		m_sound->Load("Sound\\Battle\\normal.wav");
+	}
+	else{
+		m_sound->Load("Sound\\Battle\\normal.wav");
+	}
 
 	m_rhythm = std::make_shared<RhythmManager>();
 	m_rhythm->mInitializeRhythm(m_sound, 120);

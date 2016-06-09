@@ -18,7 +18,7 @@ void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	
 	m_camera = camera;
 
-	mLoadInfo("data\\Battle\\Stage1",lane,camera);
+	mLoadInfo(GameManager::mGetInstance().mBattleDataFile(),lane,camera);
 	
 	flag = true;
 
