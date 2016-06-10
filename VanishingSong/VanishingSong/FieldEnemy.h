@@ -10,17 +10,10 @@
 class FieldEnemy
 {
 public:
-	enum class eType{
-		Air,
-		Ground,
-		Blue,
-		Yellow,
-		Null
-	};
 
 	struct Property{
-		std::shared_ptr<GearFrame> _penemy;			//Enemy本体
-		std::shared_ptr<aetherClass::Cube> _pCollider;	//コライダー
+		std::shared_ptr<aetherClass::FbxModel> _penemy;			//Enemy本体
+		std::shared_ptr<aetherClass::ModelBase> _pCollider;	//コライダー
 		bool _talkflag;
 		int _enemyAreaNo;		//エリアナンバー
 	};
@@ -28,12 +21,10 @@ public:
 	FieldEnemy();
 	~FieldEnemy();
 
-	bool mInitialize(eType,aetherClass::ViewCamera*,std::string dataPath);
-	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
+	bool mInitialize(eMusical,aetherClass::ViewCamera*,std::string dataPath);
 	void mUpdate();
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mFinalize();	//開放処理
-	void mEnemyOnHit();	//当たったかどうか
 	Property &mGetProperty();
 	void mFaceToPlayer(aetherClass::Vector3);
 	void mRegisterMessage(std::string);
@@ -41,10 +32,7 @@ public:
 	std::shared_ptr<aetherClass::Texture> mGetMessage(const int id);
 	std::string mGetBattleDataPath();
 private:
-	bool mInitializeGround(aetherClass::ViewCamera*);				//敵初期化(地上)
-	bool mInitializeAir(aetherClass::ViewCamera*);				//敵初期化(空中)
-	bool mInitializeYellow(aetherClass::ViewCamera*);				//敵初期化(地上)
-	bool mInitializeBlue(aetherClass::ViewCamera*);				//敵初期化(空中)
+	bool mInitializeEnemy(eMusical,aetherClass::ViewCamera*);	//敵の初期化
 	void mInitializeEnemyColider(aetherClass::ViewCamera*);	//コライダーの初期化
 
 	CharaEntity m_charaEntity;

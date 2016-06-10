@@ -14,60 +14,16 @@ BattleEnemy::~BattleEnemy()
 
 void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* camera,Vector3& pos){
 
-	Finalize();
-
 	m_isDie = false;
 	
-	m_enemy._gearFrame = std::make_shared<GearFrame>();
+	m_enemy._model= std::make_shared<FbxModel>();
 
-	switch (type)
-	{
-	case eMusical::eBlue:
-		if (enemytype==eEnemyType::eAir){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Blue");
-		}
-		else if (enemytype == eEnemyType::eGround){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Blue");
-		}
-		break;
-	case eMusical::eGreen:
-		if (enemytype == eEnemyType::eAir){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Green");
-		}
-		else if (enemytype == eEnemyType::eGround){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Green");
-		}
-		break;
-	case eMusical::eRed:
-		if (enemytype == eEnemyType::eAir){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Red");
-		}
-		else if (enemytype == eEnemyType::eGround){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Red");
-		}
-		break;
-	case eMusical::eYellow:
-		if (enemytype == eEnemyType::eAir){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Yellow");
-		}
-		else if (enemytype == eEnemyType::eGround){
-			m_enemy._gearFrame->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Yellow");
-		}
-		break;
-	default:
-		break;
-	}
-	
-	// ÅãˆÊ‚É“–‚½‚éƒp[ƒc‚ÌÝ’è
-	m_pTopGear = m_enemy._gearFrame->m_pBody;
+	m_enemy._model = ResourceManager::mGetInstance().mGetEnemyHash(type);
+	m_enemy._model->SetCamera(camera);
+	m_enemy._model->property._transform._translation = pos;
+	m_enemy._model->property._transform._scale = 1.5;
+	m_enemy._model->property._transform._rotation._y = -90;
 
-	m_charaEntity.SetCamera(m_pTopGear, camera);
-
-	m_enemy._gearFrame->m_pBody->_pGear->property._transform._scale = 1.5;
-
-	m_charaEntity.mGearMove(m_pTopGear, pos, "+=");
-
-	m_enemy._gearFrame->m_pBody->_pGear->property._transform._rotation._y -= 90;
 }
 
 BattleEnemy::Enemy& BattleEnemy::mGetEnemy(){
@@ -94,18 +50,15 @@ void BattleEnemy::mRender(std::shared_ptr<ShaderBase> tex){
 	if (m_isDie){
 		return;
 	}
-	m_charaEntity.mGearRender(m_pTopGear, tex.get(), tex.get());
+	m_enemy._model->Render(tex.get());
 }
 
 void BattleEnemy::misDie(){
 	m_isDie = true;
 }
 
-//GearFrame‚Í‰ð•ú‚µ‚È‚¢
 void BattleEnemy::Finalize(){
-
-	if (m_pTopGear){
-		m_pTopGear->Release();
-		m_pTopGear = nullptr;
+	if (m_enemy._model){
+		m_enemy._model.reset();
 	}
 }
