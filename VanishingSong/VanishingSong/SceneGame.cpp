@@ -88,6 +88,7 @@ bool SceneGame::Initialize(){
 		}
 	}
 
+	Updater();
 	_heapmin();
 	return true;
 }
@@ -188,6 +189,8 @@ void SceneGame::Render(){
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	
+	
+	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
 	return;
 }
 
@@ -195,15 +198,22 @@ void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 
+
 	return;
 }
 
 bool SceneGame::TransitionIn(){
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		return kTransitionning;
+	}
 
 	return kTransitionEnd;
 }
 
 bool SceneGame::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+		return kTransitionning;
+	}
 
 	return kTransitionEnd;
 }

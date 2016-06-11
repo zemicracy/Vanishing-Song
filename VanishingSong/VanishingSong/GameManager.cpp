@@ -95,3 +95,7 @@ void GameManager::mGetCanStage(const int stage){
 int  GameManager::mGetCanStage()const{
 	return m_canStageNumber;
 }
+
+FadeManager& GameManager::mfadeManager(){
+	return m_fadeManager;
+}
