@@ -32,9 +32,6 @@ SceneGame::~SceneGame()
 
 bool SceneGame::Initialize(){
 	_heapmin();
-
-	bool result = true;
-
 	Finalize();
 
 	// シーンの登録
@@ -42,7 +39,6 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneBattle());
 
 	//// フェードイン・アウトを行う
-	//
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue), GameManager::mGetInstance().mGetPlayerTransform());
 
@@ -175,7 +171,7 @@ bool SceneGame::Updater(){
 
 void SceneGame::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
-
+	
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
 	// 捕虜の表示
@@ -189,7 +185,6 @@ void SceneGame::Render(){
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	
 	
-	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
 	return;
 }
 
@@ -197,6 +192,7 @@ void SceneGame::Render(){
 void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
 	return;
 }
 

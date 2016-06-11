@@ -35,7 +35,7 @@ std::unordered_map<eMusical, eMusical>& GameManager::mGetUsePlayer(){
 }
 
 //
-aetherClass::Transform GameManager::mGetPlayerTransform(){
+Transform GameManager::mGetPlayerTransform(){
 	return m_prevPlayerTransform;
 }
 

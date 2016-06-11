@@ -19,7 +19,7 @@ namespace{
 	// Editorとの連携用
 	const float kResolutionFromEditor_x = 1.6f;
 	const float kResolutionFromEditor_y = 1.2f;
-	const float kPlayerInitializeY = 13.5f;
+
 	// デバッグ関係
 	const bool kCharaDebug = true;
 
@@ -29,7 +29,7 @@ namespace{
 	const int kPartition3 = 2;
 	const int kPartition4 = 3;
 
-	const int kPartitionSize = 4;
+	const int kPartitionSize = 5;
 
 	// ゲームにかかわる定数
 	const signed char kFirstDay = 1;
