@@ -104,7 +104,7 @@ private:
 	CharaEntity m_charaEntity;					// 便利関数のあるクラスオブジェクト
 	Offset m_cameraOffset;						//　カメラのオフセット
 	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
-	
+	float m_prevRotationY;
 	int m_fieldNumber;
 };
 

@@ -80,6 +80,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	// 移動があれば
 	FieldPlayer::eState state;
 	if (getKeyValues.first._translation == kVector3Zero){
+		playerTransform._rotation._y = m_prevRotationY;
 		state = eState::eWait;
 	}
 	else{
@@ -95,11 +96,15 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 
 	// 壁に当たっているかの判定
-
-	// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
-	Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
-	playerTransform._translation += translation;
-	
+	if (m_isHitWall){
+		
+		m_isHitWall = false; //フラグをオフにする
+	}
+	else{
+		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
+		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
+		playerTransform._translation += translation;
+	}
 
 	// 移動処理
 	m_model->property._transform._translation += playerTransform._translation;
@@ -108,7 +113,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	m_model->property._transform._rotation = playerTransform._rotation;
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_model->property._transform);
-
+	m_prevRotationY = m_model->property._transform._rotation._y;
 	return;
 }
 
@@ -129,7 +134,7 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 		output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 		output.first._rotation._y += 180;
 	}
-
+	else
 	/* 横の移動(X軸)	*/
 	if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
 		output.first._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
@@ -180,7 +185,7 @@ void FieldPlayer::mInitialPlayerView(CameraValue input, Vector3 rotation){
 	m_playerView.property._rotation = input._rotation;
 	
 	// カメラのオフセットの設定
-	m_cameraOffset._translation = m_playerView.property._translation + m_model->property._transform._translation;
+	m_cameraOffset._translation = m_playerView.property._translation;
 	m_cameraOffset._rotation = m_playerView.property._rotation;
 
 	m_cameraRotation = rotation;
