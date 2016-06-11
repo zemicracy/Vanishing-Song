@@ -24,16 +24,17 @@ FieldPlayer::~FieldPlayer()
 }
 
 //
-bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position){
+bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	mFinalize();
 
 	// 初期位置の設定
 	m_model = model;
 	m_model->SetCamera(&m_playerView);
-	m_model->property._transform._translation = position;
+	m_model->property._transform = trans;
+
 	WorldReader read;
 	read.Load("data\\Player\\FieldCamera.aether");
-	mInitialPlayerView(read.GetInputWorldInfo()._camera);
+	mInitialPlayerView(read.GetInputWorldInfo()._camera, m_model->property._transform._rotation);
 	read.UnLoad();
 
 	// コライダーの初期化
@@ -180,15 +181,16 @@ std::shared_ptr<Cube> FieldPlayer::mGetBodyColldier(){
 /*
 	カメラの初期化
 */
-void FieldPlayer::mInitialPlayerView(CameraValue input){
+void FieldPlayer::mInitialPlayerView(CameraValue input, Vector3 rotation){
 	// カメラの初期化
 	m_playerView.property._translation = input._position;
 	m_playerView.property._rotation = input._rotation;
-
+	
 	// カメラのオフセットの設定
 	m_cameraOffset._translation = m_playerView.property._translation + m_model->property._transform._translation;
 	m_cameraOffset._rotation = m_playerView.property._rotation;
 
+	m_cameraRotation = rotation;
 	return;
 }
 
@@ -265,13 +267,6 @@ void FieldPlayer::mSetFieldNumber(const int number){
 int FieldPlayer::mGetFieldNumber()const{
 	return m_fieldNumber;
 }
-
-//
-void FieldPlayer::mSetTransform(Transform trans){
-	m_model->property._transform = trans;
-	m_cameraRotation = m_model->property._transform._rotation;
-}
-
 //
 Transform FieldPlayer::mGetTransform(){
 	return m_model->property._transform;

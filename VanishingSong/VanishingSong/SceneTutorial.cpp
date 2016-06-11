@@ -61,7 +61,7 @@ bool SceneTutorial::Initialize(){
 	// ƒvƒŒƒCƒ„[‚Ì‰Šú‰»
 	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
 		auto gearframe = ResourceManager::mGetInstance().mGetPlayerHash(index.second);
-		m_charaEntity.SetCamera(gearframe->m_pBody, &m_view);
+		gearframe->SetCamera(&m_view);
 		m_players.mSetPlayer(index.second, m_pField->mGetPlayerLane(index.second), gearframe);
 		m_charaHp._maxHp = m_charaHp._hp += 8;
 	}

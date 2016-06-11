@@ -36,7 +36,7 @@ public:
 	/*
 	初期化
 	*/
-	bool mInitialize(std::shared_ptr<aetherClass::FbxModel> gearFrame,aetherClass::Vector3 position);
+	bool mInitialize(std::shared_ptr<aetherClass::FbxModel> model,aetherClass::Transform trans);
 
 	/*
 	更新処理
@@ -61,7 +61,6 @@ public:
 	
 	void mSetFieldNumber(const int);
 	int mGetFieldNumber()const; 
-	void mSetTransform(aetherClass::Transform);
 	aetherClass::Transform mGetTransform();
 private:
 	/*
@@ -72,7 +71,7 @@ private:
 	/*
 		カメラオブジェクトの初期化
 	*/
-	void mInitialPlayerView(CameraValue);
+	void mInitialPlayerView(CameraValue,aetherClass::Vector3);
 
 	/*
 		コライダーの初期化
