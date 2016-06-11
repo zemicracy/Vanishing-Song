@@ -65,21 +65,14 @@ bool SceneGame::Initialize(){
 
 	// ƒQ[ƒ€‚Ìó‘Ô‚ð“o˜^
 	m_gameState = eState::eRun;
-	
-	// ƒ{ƒX‚ÉŸ‚Á‚Ä‚¢‚½‚çŠ®¬‚Ì‰¹Šy‚ð—¬‚·
-	auto bossState = GameManager::mGetInstance().mBossState();
-	if (bossState == GameManager::eBossState::eWin){
-		ResourceManager::mGetInstance().mGetLastBGM()->PlayToLoop();
-	}
-	else{
-		auto fieldState = GameManager::mGetInstance().mFieldState();
-		if (fieldState != GameManager::eFieldState::eTutorial){
-			for (auto index : GameManager::mGetInstance().mNote()){
-				ResourceManager::mGetInstance().mPlayBaseBGM(index);
-			}
+	{
+		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
+			m_pBGMArray.push_back(std::make_shared<GameSound>());
+			m_pBGMArray.back()->Load(itr.second.c_str());
+			m_pBGMArray.back()->SetValume(0);
 		}
-		else{
-			ResourceManager::mGetInstance().mGetFirstBGM()->PlayToLoop();
+		for (auto &itr : m_pBGMArray){
+			itr->PlayToLoop();
 		}
 	}
 
@@ -92,11 +85,11 @@ bool SceneGame::Initialize(){
 // ‘S‚Ä‚Ì‰ð•ú
 void SceneGame::Finalize(){
 	_heapmin();
-	for (auto index : GameManager::mGetInstance().mGetUsePlayer()){
-		ResourceManager::mGetInstance().mStopBaseBGM(index.second);
+
+	for (auto &itr : m_pBGMArray){
+		itr->Stop();
+		itr.reset();
 	}
-	ResourceManager::mGetInstance().mGetLastBGM()->Stop();
-	ResourceManager::mGetInstance().mGetFirstBGM()->Stop();
 
 	if (!m_pCage.empty()){
 		for (auto& index : m_pCage){

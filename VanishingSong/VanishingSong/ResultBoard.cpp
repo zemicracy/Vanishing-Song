@@ -2,6 +2,7 @@
 #include"WorldReader.h"
 #include"Rectangle2D.h"
 #include"GameClock.h"
+#include"ResourceManager.h"
 
 using namespace aetherClass;
 ResultBoard::ResultBoard(){
@@ -120,6 +121,12 @@ void ResultBoard::mInitialize(){
 void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state,UINT stageID){
 	m_resultData = result;
 
+	const float S_Border = 0.80;
+	const float A_Border = 0.65;
+	const float B_underBorder = 0.50;
+	const int noteBorder = 80;
+
+
 	float rate = (float)m_resultData._missCount / m_resultData._maxCount;
 	rate = 1 - rate;
 	m_pGauge->mSetRate(rate);
@@ -136,20 +143,20 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_pGeneral["battleResult"]->SetTexture(m_TextureList["issue"].get());
 
 	std::string path = "Texture\\Result\\rank\\";
-	if (rate >= 0.80 && state == GameManager::eBattleState::eWin){
+	if (rate >= S_Border&& state == GameManager::eBattleState::eWin){
 		m_TextureList["rank"] = gLoadTexture(path + "S.png");
 		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note_a.png");
 	}
 	else{
 		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
 
-		if (rate >= 0.65 && state == GameManager::eBattleState::eWin){
+		if (rate >= A_Border && state == GameManager::eBattleState::eWin){
 			m_TextureList["rank"] = gLoadTexture(path + "A.png");
 		}
-		else if (rate >= 0.50 && state == GameManager::eBattleState::eWin){
+		else if (rate >= B_underBorder && state == GameManager::eBattleState::eWin){
 			m_TextureList["rank"] = gLoadTexture(path + "B.png");
 		}
-		else if (rate >= 0.50){
+		else if (rate >= B_underBorder){
 			m_TextureList["rank"] = gLoadTexture(path + "C.png");
 		}
 		else {
@@ -168,31 +175,51 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 //	Debug::mPrint(std::to_string(i) + "  " + std::to_string(dotrate) + "  " + std::to_string(rate));
 
 
+	auto& itr = ResourceManager::mGetInstance().mGetBGMPath();
 	//ステージ曲追加分
-	if (stageID == 1){
+	if (stageID == 0){
+		if (itr.find(eMusical::eBlue) != itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
+			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
+		}
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
+	}
+	else if (stageID == 1){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
-		//Debug::mPrint(std::to_string(integer));
-		if (integer < 90)return;		//レート0.90以上で音符の取得
-		GameManager::mGetInstance().mNote(eMusical::eBlue);
+		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
+
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field2_1.wav";
 	}
 	else if (stageID == 2){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
-		//Debug::mPrint(std::to_string(integer));
-		if (integer < 90)return;		//レート0.90以上で音符の取得
-		GameManager::mGetInstance().mNote(eMusical::eGreen);
+		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
+		
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eGreen) = "Sound\\BGM\\field2.wav";
 	}
 	else if (stageID == 3){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
-		//Debug::mPrint(std::to_string(integer));
-		if (integer < 90)return;		//レート0.90以上で音符の取得
-		GameManager::mGetInstance().mNote(eMusical::eRed);
+		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
+		
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eRed) = "Sound\\BGM\\field3.wav";
 	}
 	else if (stageID == 4){
-		if (integer < 90)return;
-		GameManager::mGetInstance().mNote(eMusical::eYellow);
+		if (integer < noteBorder)return;
+		
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
 	}
-	else{
-
+	else if(stageID == 5){
+		if (integer < noteBorder)return;
+		int cnt = 0;
+		for (auto &path : itr){
+			cnt++;
+		}		//ボスは音符全部で
+		if (cnt >= 4){
+			itr.clear();
+			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eAdlib) = "Sound\\BGM\\field5.wav";
+		}
 	}
 
 }
