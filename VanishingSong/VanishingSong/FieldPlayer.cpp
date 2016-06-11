@@ -6,9 +6,10 @@
 #include <WorldReader.h>
 #include <GameClock.h>
 #include <Windows.h>
+#include <Physics.h>
 #include "ResourceManager.h"
 using namespace aetherClass;
-
+using namespace aetherFunction;
 namespace{
 	const float kCameraRotationMaxX = 15.0f;
 	const float kCameraRotationMinX = -15.0f;
@@ -68,7 +69,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// キーの処理を取得
 	std::pair<Transform, Vector3> getKeyValues;
-	Transform playerTransform;
+
 	if (!isWait){
 		getKeyValues = mReadKey(timeScale);
 	}
@@ -80,16 +81,14 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	// 移動があれば
 	FieldPlayer::eState state;
 	if (getKeyValues.first._translation == kVector3Zero){
-		playerTransform._rotation._y = m_prevRotationY;
 		state = eState::eWait;
 	}
 	else{
 		// 向きだけ変える
-		playerTransform._rotation._y = getKeyValues.first._rotation._y + m_cameraRotation._y;
+		m_transform._rotation._y = getKeyValues.first._rotation._y + m_cameraRotation._y;
 		state = eState::eMove;
 	}
-	state = eState::eWait;
-	
+
 	// 移動に使う値のを取得
 	Matrix4x4 rotationMatrix;
 	Vector3 rotationY = Vector3(0, m_cameraRotation._y, 0);
@@ -100,24 +99,25 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
 		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
-		playerTransform._translation -= Vector3(10, 0, 10)-translation;
+		m_transform._translation += translation;
+		m_pBodyCollider->property._transform._translation = m_transform._translation;
+		if (m_hitObject&&CollideBoxOBB(*m_pBodyCollider, *m_hitObject)){
+			m_transform._translation = m_prevPosition - translation;
+		}
 		m_isHitWall = false; //フラグをオフにする
 	}
 	else{
 		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
 		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
-		playerTransform._translation += translation;
+		m_transform._translation += translation;
 	}
 
-	// 移動処理
-	m_model->property._transform._translation += playerTransform._translation;
-	// 回転処理
 
-	m_model->property._transform._rotation = playerTransform._rotation;
+	m_model->property._transform._translation = m_transform._translation;
+	m_model->property._transform._rotation = m_transform._rotation;
+	
 	// コライダーの更新処理
-	mUpdateBodyCollider(m_model->property._transform);
-	m_prevRotationY = m_model->property._transform._rotation._y;
-	m_prevVector = playerTransform._translation;
+	mUpdateBodyCollider(m_transform);
 	return;
 }
 
@@ -207,7 +207,7 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 */
 void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 	m_pBodyCollider->property._transform._translation = transform._translation + kColliderOffset;
-//	m_pBodyCollider->property._transform._rotation = transform._rotation;
+	m_pBodyCollider->property._transform._rotation = transform._rotation;
 	return;
 }
 
@@ -240,8 +240,9 @@ void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
 }
 
 // 壁に当たった時の処理
-void FieldPlayer::mOnHitWall(){
-	
+void FieldPlayer::mOnHitWall(aetherClass::ModelBase* hitObject){
+	m_prevPosition = m_transform._translation;
+	m_hitObject = hitObject;
 	m_isHitWall = true;
 	return;
 }
