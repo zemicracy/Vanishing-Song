@@ -48,7 +48,12 @@ public:
 
 	//AccesserMethod
 	bool mIsEnd();
-	ResultData mGetResult();
+	ResultData& mGetResult();
+	void mSetTutorial(bool);
+
+	//リズムに合わせたモーション
+	void mRhythmicMotion();
+
 
 	//other
 	void mRender3D(aetherClass::ShaderBase*);
@@ -65,8 +70,7 @@ private:
 	void mPlaySound(std::shared_ptr<ActionSound>);
 	//停止
 	void mListStop();
-	//リズムに合わせたモーションはここで
-	void mRhythmicMotion();
+	//オプション
 	void mAppendOptionInit();
 private:
 
@@ -74,17 +78,18 @@ private:
 	std::vector<std::shared_ptr<ActionCommand>>m_PlayerOrderList;
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
+	//パーティクル
 	AttackParticle::ParticleDesc m_perticleDesc;
 	std::unique_ptr<AttackParticle>m_pParticle;
 
-	//描画先
+	//コマンド描画先
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;
 	std::vector<aetherClass::Vector3>m_pSpriteOrigin;
 
 	//一時補間場所（外に出す用）
 	std::shared_ptr<ActionCommand>m_playedAction;
 
-	//そのたモーション目的
+	//そのたモーション目的と本体
 	ActionBoard* m_ActionBoard;
 	BattleField* m_Field;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
@@ -106,6 +111,8 @@ private:
 
 	//リズム
 	RhythmManager *m_rhythm;
+
+	//テクスチャ
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 
 	//option
@@ -124,6 +131,7 @@ private:
 
 	bool m_isKeyDown;		//その拍ににキーが押されたか
 	bool m_isPlaySound;		//コマンド再生dできるか
+	bool m_isTutorialDemo;	//デモモードか
 
 	int m_processId;		//処理中のID
 	int m_MaxOrderSize;

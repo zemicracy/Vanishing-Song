@@ -127,7 +127,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	if (state == GameManager::eBattleState::eWin){
 		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Win.png");
 		int stage = GameManager::mGetInstance().mGetCanStage();
-		stage = stage < stageID ? stageID+1 : stage;
+		stage = stage < stageID ? stageID : stage;
 		GameManager::mGetInstance().mGetCanStage(stage);
 	}
 	else{
@@ -136,17 +136,17 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_pGeneral["battleResult"]->SetTexture(m_TextureList["issue"].get());
 
 	std::string path = "Texture\\Result\\rank\\";
-	if (rate >= 0.90 && state == GameManager::eBattleState::eWin){
+	if (rate >= 0.80 && state == GameManager::eBattleState::eWin){
 		m_TextureList["rank"] = gLoadTexture(path + "S.png");
 		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note_a.png");
 	}
 	else{
 		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
 
-		if (rate >= 0.80 && state == GameManager::eBattleState::eWin){
+		if (rate >= 0.65 && state == GameManager::eBattleState::eWin){
 			m_TextureList["rank"] = gLoadTexture(path + "A.png");
 		}
-		else if (rate >= 0.70 && state == GameManager::eBattleState::eWin){
+		else if (rate >= 0.50 && state == GameManager::eBattleState::eWin){
 			m_TextureList["rank"] = gLoadTexture(path + "B.png");
 		}
 		else if (rate >= 0.50){
