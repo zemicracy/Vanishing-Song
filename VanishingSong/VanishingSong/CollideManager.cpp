@@ -41,7 +41,7 @@ void CollideManager::mCheckHitObject(const int number){
 	if (number > 3)return;
 	for (auto wall : m_filed->mGetPartitionWall(number)){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
-			m_player->mOnHitWall();
+			m_player->mOnHitWall(wall.get());
 			break;
 		}
 	}
@@ -60,7 +60,7 @@ void CollideManager::mCheckHitEnemy(const int number){
 	}
 
 	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
-		m_player->mOnHitWall();
+		m_player->mOnHitWall(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
 	}
 	
 }
