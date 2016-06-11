@@ -6,14 +6,13 @@
 #include <WorldReader.h>
 #include <GameClock.h>
 #include <Windows.h>
-#include <Singleton.h>
 #include "ResourceManager.h"
 using namespace aetherClass;
 
 namespace{
 	const float kCameraRotationMaxX = 15.0f;
 	const float kCameraRotationMinX = -15.0f;
-	const Vector3 kColliderOffset = Vector3(0, -5, 0); 
+	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
 	const float kDefaultMove = 100.0f;
 
 }
@@ -96,17 +95,11 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 
 	// 壁に当たっているかの判定
-	if (m_isHitWall){
-		Vector3 revision = m_prevPosition.Normalize();
-		playerTransform._translation = m_prevPosition + Vector3(revision._x, 0, revision._z);
-		m_isHitWall = false; //フラグをオフにする
+
+	// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
+	Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
+	playerTransform._translation += translation;
 	
-	}
-	else{
-		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
-		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
-		playerTransform._translation += translation;
-	}
 
 	// 移動処理
 	m_model->property._transform._translation += playerTransform._translation;
@@ -130,22 +123,21 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 	/* 奥行の移動(Z軸)	*/
 	if (GameController::GetKey().IsKeyDown('W')||GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
 		output.first._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		output.first._rotation._y = 0;
+		output.first._rotation._y += 0;
 	}
 	else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
 		output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		output.first._rotation._y = 180;
-	
+		output.first._rotation._y += 180;
 	}
 
 	/* 横の移動(X軸)	*/
 	if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
 		output.first._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		output.first._rotation._y = 90;
+		output.first._rotation._y += 90;
 	}
 	else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
 		output.first._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		output.first._rotation._y = 270;
+		output.first._rotation._y += 270;
 	}
 
 	/*	カメラの回転	*/	
@@ -160,17 +152,18 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 }
 
 //
-void FieldPlayer::mRender(aetherClass::ShaderBase* modelShader, aetherClass::ShaderBase* colliderShader){
+void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 
 	m_playerView.Render();
 	if (!m_model)return;
+
 	m_model->Render(modelShader);
 	m_pBodyCollider->Render(colliderShader);
 	return;
 }
 
 //
-aetherClass::ViewCamera *FieldPlayer::mGetView(){
+ViewCamera* FieldPlayer::mGetView(){
 	return &m_playerView;
 }
 
@@ -197,7 +190,6 @@ void FieldPlayer::mInitialPlayerView(CameraValue input, Vector3 rotation){
 /*
 	コライダーの初期化用
 */
-
 void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClass::Vector3 original, aetherClass::Vector3 offset){
 	
 	collider = std::make_shared<Cube>();
@@ -219,9 +211,6 @@ void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 	m_pBodyCollider->property._transform._rotation = transform._rotation;
 	return;
 }
-
-
-
 
 //
 void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookAtPosition){
