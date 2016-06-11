@@ -18,7 +18,7 @@ public:
 private:
 	void mFinalize();
 	std::array<std::shared_ptr<aetherClass::ModelBase>, 4>m_wall;
-	std::array<std::shared_ptr<aetherClass::ModelBase>, 4>m_partitionCube;
+	std::array<std::shared_ptr<aetherClass::ModelBase>, 5>m_partitionCube;
 	std::array<std::shared_ptr<aetherClass::ModelBase>, 2>m_ground;
 	std::array<std::array<std::shared_ptr<aetherClass::ModelBase>, 2>, 4> m_partitionWall;
 };
