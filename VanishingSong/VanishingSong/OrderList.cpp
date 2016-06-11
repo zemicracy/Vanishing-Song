@@ -19,11 +19,12 @@ OrderList::OrderList()
 
 	m_isKeyDown = 0;
 	m_isPlaySound = 0;
+	m_isTutorialDemo = 0;
+	m_isLineStart = 0;
 
 	m_processId = 0;
 	m_MaxOrderSize = 0;
 
-	m_isLineStart = 0;
 	m_eighterCount = 0;
 	m_damagedValue = 0;
 }
@@ -192,12 +193,21 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_flameScaleOrigin *= 1.2;
 	m_pFlame->property._transform._translation = m_flameScaleOrigin / 2 * -1 + m_flameScaleOrigin;
 
+	//位置補正
+	{
+		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (0 * 20);
+		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y + (0 * 20);
+		auto size = (m_pFlame->property._transform._scale);
+		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
+		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
+		m_pFlame->property._transform._translation._z = 0;
+	}
+
+
 
 
 	m_pTextureList["flame"] = gLoadTexture("",dir + "flame.png");
 	m_pFlame->SetTexture(m_pTextureList["flame"].get());
-
-
 
 	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 
@@ -337,7 +347,7 @@ void OrderList::mPerformUpdate(){
 		(!m_rhythm->mIsEighterBeat() && m_rhythm->mIsSixteenthBeat()) ;
 
 	
-	//裏打ちのタイミングで毎回フラグをリセットし次を判定
+	//更に細かい符の裏打ちのタイミングで毎回フラグをリセットし次を判定
 	if (backBeat){
 			//std::cout << "Reset " << m_processId << std::endl;
 		if (m_isKeyDown){
@@ -369,7 +379,32 @@ void OrderList::mPerformUpdate(){
 			onCommand = true;
 		}
 	}
-	if (onCommand){
+	
+	if (m_processId > m_MaxOrderSize){
+		//停止場所	Debug::mPrint("Stop List");
+		mListStop();
+		return;
+	}
+
+	
+	//デモモードの時は入力はオート
+	if (m_isTutorialDemo){
+		if (m_isKeyDown) return;
+		if (m_processId >= m_MaxOrderSize)return;
+
+		command = m_EnemyOrderList[m_processId];
+
+		if (command->mGetType() == eMusical::eAdlib){
+			command = m_ActionBoard->mGetCommand(eMusical::eBlue);
+		}
+		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
+			m_playedAction = command;
+			m_isKeyDown = true;
+			m_isPlaySound = true;
+			m_PlayerOrderList.push_back(command);
+		}
+	}
+	else if (onCommand){
 		m_playedAction = command;
 		if (m_isKeyDown) return;
 		//間違ってたらミスを入れる
@@ -384,7 +419,7 @@ void OrderList::mPerformUpdate(){
 
 
 		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
-				//Debug::mPrint("Great");
+			//Debug::mPrint("Great");
 			m_isKeyDown = true;
 			m_isPlaySound = true;
 			m_PlayerOrderList.push_back(command);
@@ -394,19 +429,16 @@ void OrderList::mPerformUpdate(){
 			m_isKeyDown = true;
 			if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
 				m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eNull));
-			}else
-			m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eMiss));
+			}
+			else
+				m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eMiss));
 			return;
 		}
 	}
 
 
 
-	if (m_processId > m_MaxOrderSize){
-		//停止場所	Debug::mPrint("Stop List");
-		mListStop();
-		return;
-	}
+	
 
 	//１つ多く処理して時間調整
 	if (m_processId > m_MaxOrderSize - 1)return;
@@ -513,7 +545,6 @@ void OrderList::mUpdate(){
 		break;
 	}
 
-	mRhythmicMotion();
 	if (m_pParticle){
 		m_pParticle->mUpdate(3);
 	}
@@ -766,7 +797,7 @@ void OrderList::mRhythmicMotion(){
 		power = 2;
 	}
 	if (framecnt < maxFrame){
-		GameController::GetJoypad().SetVibration(std::make_pair(10000 * power, 35000 * power));
+		GameController::GetJoypad().SetVibration(std::make_pair(20000 * power, 60000 * power));
 	}
 	else{
 		GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
@@ -788,10 +819,14 @@ void OrderList::mRender3D(aetherClass::ShaderBase* shader){
 	}
 }
 
-ResultData OrderList::mGetResult(){
+ResultData& OrderList::mGetResult(){
 	return m_resultData;
 }
 
 void OrderList::mSetOption(eAppendoption op){
 	m_option = op;
+}
+
+void OrderList::mSetTutorial(bool flg){
+	m_isTutorialDemo = flg;
 }

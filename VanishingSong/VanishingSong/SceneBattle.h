@@ -82,14 +82,15 @@ private:
 
 
 	int m_prevWholeBeatNo;
-	bool m_InitUpdateProcess;
-	bool m_PreInitProcess;
+	bool m_initUpdateProcess;
+
+	bool m_preInitProcess;
 	float m_bgmVolume;
 	int m_inCount;
 
 	//ウェーブ
 	int m_MaxWave;
-	int m_nowWave;
+	int m_waveID;
 	int m_stageID;
 	GameManager::eGameMode m_beatMode;
 	//karikari
@@ -98,6 +99,7 @@ private:
 
 
 	eGameState m_processState;
+	std::vector<std::shared_ptr<ActionCommand>>m_enemyVector;
 
 	//ptr
 	std::shared_ptr<RhythmManager>m_rhythm;
