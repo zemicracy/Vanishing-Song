@@ -154,9 +154,13 @@ int BattleEnemyManager::mGetAppendOption(){
 			return eAppendOption::eReverce;
 		}
 	}
+
 	if (m_stageID == 5){
-		return eAppendOption::eBlack;
+		if (m_waveID == 2){
+			return eAppendOption::eBlack;
+		}
 	}
+	
 	return eAppendOption::eNone;
 }
 
@@ -174,6 +178,9 @@ eMusical BattleEnemyManager::mGetEnemyColor(const char colorChar){
 	}
 	else if (colorChar == 'y'){
 		return eMusical::eYellow;
+	}
+	else if (colorChar == 'a'){
+		return eMusical::eAdlib;
 	}
 	
 	return eMusical::eNull;
@@ -216,7 +223,7 @@ eMusical BattleEnemyManager::mGetEnemyAttack(const char attack){
 		return eMusical::eNull;
 	}
 	else if (attack == 'a'){
-		return eMusical::eNull;
+		return eMusical::eAdlib;
 	}
 	else if (attack == 'n'){
 		return eMusical::eNull;

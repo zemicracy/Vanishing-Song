@@ -38,6 +38,7 @@ void CollideManager::mUpdate(){
 void CollideManager::mCheckHitObject(const int number){
 
 	// プレイヤーと壁
+	if (number > 3)return;
 	for (auto wall : m_filed->mGetPartitionWall(number)){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
 			m_player->mOnHitWall();
@@ -60,8 +61,8 @@ void CollideManager::mCheckHitEnemy(const int number){
 
 	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
 		m_player->mOnHitWall();
-
 	}
+	
 }
 
 std::pair<int,bool> CollideManager::GetMassageInfo(){
@@ -76,7 +77,7 @@ std::pair<int,bool> CollideManager::GetMassageInfo(){
 int CollideManager::mCheckPlayerFieldArea(){
 	
 	// 前回の番号からプラスしていく
-	for (int id = m_player->mGetFieldNumber(); id < kPartitionSize; ++id){
+	for (int id = m_player->mGetFieldNumber(); id <5; ++id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
 			m_player->mSetFieldNumber(id);
 			return id;

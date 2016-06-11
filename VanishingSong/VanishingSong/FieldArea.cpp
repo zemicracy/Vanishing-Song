@@ -81,6 +81,9 @@ void FieldArea::mInitialize(){
 		if (itr->_name == "area4"){
 			gInitalizer<Cube>(m_partitionCube[3], itr->_transform, itr->_color);
 		}
+		if (itr->_name == "area5"){
+			gInitalizer<Cube>(m_partitionCube[4], itr->_transform, itr->_color);
+		}
 	}
 	reader.UnLoad();
 
@@ -90,10 +93,9 @@ void FieldArea::mInitialize(){
 
 	// 先にコライダーの検出をする
 	int nextNumber = NULL;
-	for (int i = 0; i < m_partitionCube.size(); ++i){
+	for (int i = 0; i < 4; ++i){
 		for (auto& wall : m_partitionWall[i]){
-
-			for (int j = nextNumber; j < m_partitionCube.size(); ++j){
+			for (int j = nextNumber; j < 4; ++j){
 				if (CollideBoxOBB(*m_wall[j], *m_partitionCube[i])){
 					wall = m_wall[j];
 					nextNumber = j + 1;

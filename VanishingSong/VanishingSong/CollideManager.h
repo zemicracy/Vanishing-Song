@@ -16,6 +16,7 @@ private:
 	void mCheckHitObject(const int number);
 	void mCheckHitEnemy(const int number);
 
+
 private:
 	std::shared_ptr<FieldPlayer> m_player;
 	std::shared_ptr<FieldArea> m_filed;
