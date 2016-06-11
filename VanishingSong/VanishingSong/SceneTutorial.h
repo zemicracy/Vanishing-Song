@@ -19,8 +19,9 @@
 #include"BattleMessage.h"
 #include"GaugeManager.h"
 #include"ResultBoard.h"
+#include"TutorialMessage.h"
 
-class SceneBattle :
+class SceneTutorial :
 	public aetherClass::GameScene
 {
 
@@ -28,11 +29,12 @@ public:
 	static const std::string Name;
 public:
 	enum class eGameState{
-		ePreCountIn,eCountIn,eUpdate,eFin
+		ePreCountIn, eCountIn, eUpdate, eFin
 	};
 
-	SceneBattle();
-	~SceneBattle();
+
+	SceneTutorial();
+	~SceneTutorial();
 
 	//初期化
 	bool Initialize()override;
@@ -61,6 +63,9 @@ private:
 	void mCheckBattle();
 
 	void mLoadTextData();
+	bool mTutorialUpdater();
+	void mTimeEngagerForTuto();
+	void mRhythmicMotion();
 private:
 	GameManager::eBattleState m_battleState;
 	GameManager::eBattleState m_winner;
@@ -75,31 +80,39 @@ private:
 	std::unique_ptr<BattleMessage>m_pMessage;
 	std::unique_ptr<GaugeManager>m_pGauge;
 	std::unique_ptr<ResultBoard>m_pResult;
+	std::unique_ptr<TutorialMessage>m_pTutorial;
 
 	aetherClass::ViewCamera m_view;
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
 
 
 
-	int m_prevWholeBeatNo;
 	bool m_initUpdateProcess;
-
 	bool m_preInitProcess;
+	bool m_timeEngage;
+	bool m_isTutorialPlay;
+
 	float m_bgmVolume;
 	int m_inCount;
+	int m_prevWholeBeatNo;
 
+	int m_textReadCnt;
 	//ウェーブ
 	int m_MaxWave;
 	int m_waveID;
 	int m_stageID;
 	GameManager::eGameMode m_beatMode;
-	//karikari
+	//HPData
 	CharaStatus m_charaHp;
 	CharaStatus *m_enemyHp;
 
 
 	eGameState m_processState;
+
+	//Tutorial用
+	eTutorialState m_tutorialState;
 	std::vector<std::shared_ptr<ActionCommand>>m_enemyVector;
+
 
 	//ptr
 	std::shared_ptr<RhythmManager>m_rhythm;
