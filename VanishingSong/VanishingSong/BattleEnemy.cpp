@@ -24,20 +24,6 @@ void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* ca
 	m_enemy._model->property._transform._scale = 1.5;
 	m_enemy._model->property._transform._rotation._y = -90;
 
-	/*case eMusical::eYellow:
-		if (enemytype == eEnemyType::eAir){
-			m_enemy._model->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Air\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Air\\Yellow");
-		}
-		else if (enemytype == eEnemyType::eGround){
-			m_enemy._model->m_pBody = m_charaEntity.mSetUpGear("Model\\Enemy\\Ground\\body.fbx", Gear::eType::eBody, "Model\\Enemy\\Ground\\Yellow");
-		}*/
-	
-	// ÅãˆÊ‚É“–‚½‚éƒp[ƒc‚ÌÝ’è
-	/*m_pTopGear = m_enemy._model->m_pBody;
-	m_charaEntity.SetCamera(m_pTopGear, camera);
-	m_enemy._model->m_pBody->_pGear->property._transform._scale = 1.5;
-	m_charaEntity.mGearMove(m_pTopGear, pos, "+=");
-	m_enemy._model->m_pBody->_pGear->property._transform._rotation._y -= 90;*/
 }
 
 BattleEnemy::Enemy& BattleEnemy::mGetEnemy(){

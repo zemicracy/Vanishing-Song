@@ -13,37 +13,14 @@ FieldEnemy::FieldEnemy(){
 
 FieldEnemy::~FieldEnemy()
 {
-//	mFinalize();
+	mFinalize();
 }
 
 bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string dataPath){
 	m_dataPath = dataPath;
 	mInitializeEnemy(type, camera);
 	mInitializeEnemyColider(camera);
-	/*switch (type)
-	{
-	case eType::Ground:
-		mInitializeGround(camera);
-		mInitializeEnemyColider(camera);
-		break;
-	case eType::Air:
-		mInitializeAir(camera);
-		mInitializeEnemyColider(camera);
-		break;
-	case eType::Blue:
-		mInitializeBlue(camera);
-		mInitializeEnemyColider(camera);
-		break;
-	case eType::Yellow:
-		mInitializeYellow(camera);
-		mInitializeEnemyColider(camera);
-		break;
-	case eType::Null:
-
-	default:
-		break;
-	}*/
-
+	
 	return true;
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
@@ -73,8 +50,6 @@ void FieldEnemy::mUpdate(){
 
 void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	
-	// 全ての親は体のパーツなので、必ず体のパーツから始める
-//	m_charaEntity.mGearRender(m_property._penemy->m_pBody, model_shader, colider_shader);
 	m_property._penemy->Render(model_shader);
 	m_property._pCollider->Render(colider_shader);
 }
@@ -96,7 +71,6 @@ void FieldEnemy::mFinalize(){
 	}
 
 	if (m_property._penemy){
-//		m_property._penemy->Finalize();
 		m_property._penemy.reset();
 	}
 	m_pTopGear = nullptr;

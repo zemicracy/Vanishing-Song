@@ -51,12 +51,7 @@ int BattleEnemyManager::mGetRandom(){
 	int r;
 	float random = rand100(rnd);
 
-
-	Debug::mPrint("rand:"+std::to_string(random));
 	r = int(random / 100);
-
-
-	Debug::mPrint("r:"+std::to_string(r));
 
 	if (r > m_attackAllCount-1){
 		r = mGetRandom();
@@ -66,21 +61,15 @@ int BattleEnemyManager::mGetRandom(){
 
 void BattleEnemyManager::mUpadate(const float timeScale ){
 
-	/*if (GameController::GetKey().IsKeyDown('H')){
-		ResetEnemyList(1, m_camera);
-	}*/
-	
 }
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
 	Cipher chipher(path);
-//	chipher.mConsoleFind();
 
 	m_waveAllCount =std::atoi(&chipher.mGetSpriteArray("[WaveAll]").front().front());
 		
 	m_BattleField = lane;
 
-	
 	for (int i = 0; i < m_waveAllCount; ++i){
 
 		std::vector<std::shared_ptr<BattleEnemy>> waveEnemyList;
@@ -96,10 +85,10 @@ void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamer
 			waveEnemy->mInitialize(color, type, m_camera, translation);
 			waveEnemyList.push_back(waveEnemy);
 		}
-		m_waveEnemyList.push_back(waveEnemyList);
-
-		
+		m_waveEnemyList.push_back(waveEnemyList);	
 	}
+
+	m_stageID = std::atoi(&chipher.mGetSpriteArray("[Stage]").front().front());
 
 	m_attackAllCount = std::atoi(&chipher.mGetSpriteArray("[AttackAll]").front().front());
 
@@ -127,11 +116,14 @@ void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamer
 }
 
 CharaStatus& BattleEnemyManager::mGetCharaStatus(int index){
+
 	return m_hp[index];
 
 }
 
 void BattleEnemyManager::ResetEnemyList(int waveCount,ViewCamera* camera){
+
+	m_waveID = waveCount;
 
 	if (!m_pEnemy.empty()){
 		for (auto& enemy : m_pEnemy){
@@ -150,6 +142,22 @@ void BattleEnemyManager::misDie(){
 	for (auto& enemy : m_pEnemy){
 		enemy->misDie();
 	}
+}
+
+int BattleEnemyManager::mGetAppendOption(){
+
+	if (m_stageID < 3){
+		return eAppendOption::eNone;
+	}
+	if (m_stageID == 4){
+		if (m_waveID == 2){
+			return eAppendOption::eReverce;
+		}
+	}
+	if (m_stageID == 5){
+		return eAppendOption::eBlack;
+	}
+	return eAppendOption::eNone;
 }
 
 

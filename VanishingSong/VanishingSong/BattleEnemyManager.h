@@ -1,7 +1,10 @@
 #ifndef _BATTLEENEMYMANAGER_H
 #define _BATTLEENEMYMANAGER_H
 #include "BattleEnemy.h"
+#include "BattleBoss.h"
 #include"BattleField.h"
+#include"Const.h"
+#include"OrderList.h"
 #include <GameController.h>
 #include <ShaderBase.h>
 #include "CharaStatus.h"
@@ -12,7 +15,6 @@ namespace{
 class BattleEnemyManager
 {
 	
-
 public:
 	BattleEnemyManager();
 	~BattleEnemyManager();
@@ -44,6 +46,7 @@ public:
 
 	int mGetWaveAllCount();
 	CharaStatus& mGetCharaStatus(int);
+	int mGetAppendOption();
 
 private:
 	void mFinalize();
@@ -52,6 +55,7 @@ private:
 	eMusical mGetEnemyColor(const char);
 	eEnemyType mGetEnemyType(const char);
 	eMusical mGetEnemyAttack(const char);
+	
 
 
 private:
@@ -61,17 +65,20 @@ private:
 	aetherClass::ViewCamera* m_camera;
 	bool flag;
 
+	std::shared_ptr<BattleBoss> m_pBattle;
 	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
+	
 	std::vector<eMusical> m_enemyList;
 	std::vector<std::vector<std::shared_ptr<BattleEnemy>>> m_waveEnemyList;
 	std::vector<std::vector<eMusical>> m_enemyAttackList;
 	std::vector<CharaStatus> m_hp;
 
 	
-
+	int m_waveID;
 	bool m_isEnd;
 	int m_waveAllCount;
 	int m_attackAllCount;
+	int m_stageID;
 	
 
 };

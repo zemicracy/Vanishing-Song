@@ -38,11 +38,14 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		if (index->_name == "area4"){
 			m_pEnemySpawner[3] = index->_transform._translation;
 		}
+		if (index->_name == "area5"){
+			m_pEnemySpawner[4] = index->_transform._translation;
+		}
 	}
 
 	reader.UnLoad();
 
-	m_pEnemy.reserve(4);
+	m_pEnemy.reserve(5);
 
 
 	//EnemyGround‚Ì¶¬
@@ -80,6 +83,16 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
+
+	//Enemy(‰¼)
+	for (int i = 0; i < EnemySize; i++){
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(eMusical::eAdlib, camera, "data\\Battle\\Stage5");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+	}
+
 
 	//“G‚Ì‰ŠúˆÊ’u
 	mSetPosion();

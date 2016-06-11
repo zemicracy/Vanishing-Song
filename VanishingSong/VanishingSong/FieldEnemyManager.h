@@ -24,8 +24,8 @@ public:
 private:
 
 	std::vector<std::shared_ptr<FieldEnemy>> m_pEnemy;
-	std::array<std::shared_ptr<FieldEnemy>,4> m_enemyArray;
-	std::array<aetherClass::Vector3, 4>	m_pEnemySpawner;	//oŒ»êŠ
+	std::array<std::shared_ptr<FieldEnemy>,5> m_enemyArray;
+	std::array<aetherClass::Vector3, 5>	m_pEnemySpawner;	//oŒ»êŠ
 	
 	int EnemySize;	//Enemy”
 	int EnemyMaxSize;
