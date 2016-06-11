@@ -57,7 +57,7 @@ public:
 	*/
 	std::shared_ptr<aetherClass::Cube> mGetBodyColldier();
 	// 壁に当たった時の処理
-	void mOnHitWall();
+	void mOnHitWall(aetherClass::ModelBase*);
 	
 	void mSetFieldNumber(const int);
 	int mGetFieldNumber()const; 
@@ -97,6 +97,7 @@ private:
 private:
 	
 	std::shared_ptr<aetherClass::FbxModel> m_model;
+	aetherClass::ModelBase* m_hitObject;
 	bool m_isHitWall;
 	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
 	aetherClass::Vector3 m_prevPosition;     // 前回のトランスフォーム情報
@@ -104,9 +105,9 @@ private:
 	CharaEntity m_charaEntity;					// 便利関数のあるクラスオブジェクト
 	Offset m_cameraOffset;						//　カメラのオフセット
 	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
+	aetherClass::Transform m_transform;
 	float m_prevRotationY;
 	int m_fieldNumber;
-	aetherClass::Vector3 m_prevVector;
 };
 
 #endif
