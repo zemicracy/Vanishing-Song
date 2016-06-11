@@ -2,7 +2,6 @@
 #define _FieldEnemy_H
 #include "CharaStatus.h"
 #include "GameController.h"
-#include "GearFrame.h"
 #include "Cube.h"
 #include "CharaEntity.h"
 #include <array>
@@ -36,7 +35,6 @@ private:
 	void mInitializeEnemyColider(aetherClass::ViewCamera*);	//コライダーの初期化
 
 	CharaEntity m_charaEntity;
-	std::shared_ptr<Gear> m_pTopGear;
 	Property m_property;
 	std::vector<std::shared_ptr<aetherClass::Texture>> m_message;
 	std::string m_dataPath;

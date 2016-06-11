@@ -44,7 +44,7 @@ bool SceneGame::Initialize(){
 	//// フェードイン・アウトを行う
 	//
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
-	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,22.2,0));
+	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,0,0));
 
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
@@ -63,7 +63,7 @@ bool SceneGame::Initialize(){
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
 	for (auto& index : m_pCage){
 		const auto hoge = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->property._transform._translation;
-		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, kPlayerInitializeY, hoge._z), view);
+		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, 0.0f, hoge._z), view);
 		count += 1;
 	}
 
@@ -88,6 +88,7 @@ bool SceneGame::Initialize(){
 		}
 	}
 
+	Updater();
 	_heapmin();
 	return true;
 }
@@ -105,7 +106,7 @@ void SceneGame::Finalize(){
 	if (!m_pCage.empty()){
 		for (auto& index : m_pCage){
 			if (!index)continue;
-			index->mFinalize();
+			index.reset();
 		}
 	}
 	if (m_pMessageManager){
@@ -188,6 +189,8 @@ void SceneGame::Render(){
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	
+	
+	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
 	return;
 }
 
@@ -195,15 +198,22 @@ void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 
+
 	return;
 }
 
 bool SceneGame::TransitionIn(){
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		return kTransitionning;
+	}
 
 	return kTransitionEnd;
 }
 
 bool SceneGame::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+		return kTransitionning;
+	}
 
 	return kTransitionEnd;
 }

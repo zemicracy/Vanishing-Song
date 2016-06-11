@@ -73,8 +73,7 @@ void FieldEnemy::mFinalize(){
 	if (m_property._penemy){
 		m_property._penemy.reset();
 	}
-	m_pTopGear = nullptr;
-
+	
 	for (auto index : m_message){
 		index.reset();
 		index = nullptr;

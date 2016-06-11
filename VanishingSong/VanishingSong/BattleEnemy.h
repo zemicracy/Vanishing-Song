@@ -1,7 +1,6 @@
 #ifndef _BATTLEENEMY_H
 #define _BATTLEENEMY_H
 #include "Const.h"
-#include "GearFrame.h"
 #include "ActionBlue.h"
 #include "ShaderBase.h"
 #include "CharaEntity.h"

@@ -4,6 +4,7 @@
 #include "Const.h"
 #include <unordered_map>
 #include <Transform.h>
+#include "FadeManager.h"
 class GameManager
 {
 public:
@@ -69,6 +70,9 @@ public:
 
 	void mGetCanStage(const int);
 	int  mGetCanStage()const;
+
+	FadeManager& mfadeManager();
+
 private:
 	GameManager();
 	~GameManager();
@@ -81,6 +85,8 @@ private:
 	eFieldState m_fieldState;
 	std::vector<eMusical> m_noteArray;
 	int m_canStageNumber;
+
+	FadeManager m_fadeManager;
 };
 
 #endif
