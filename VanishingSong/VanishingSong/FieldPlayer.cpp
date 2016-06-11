@@ -207,7 +207,7 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 */
 void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 	m_pBodyCollider->property._transform._translation = transform._translation + kColliderOffset;
-//	m_pBodyCollider->property._transform._rotation = transform._rotation;
+	m_pBodyCollider->property._transform._rotation = transform._rotation;
 	return;
 }
 
