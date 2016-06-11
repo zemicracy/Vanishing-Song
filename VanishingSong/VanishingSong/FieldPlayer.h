@@ -8,11 +8,9 @@
 #include <ViewCamera.h>
 #include <unordered_map>
 #include <vector>
-#include "GearFrame.h"
 #include "CharaStatus.h"
 #include "CharaEntity.h"
 #include "Const.h"
-#include "Animation.h"
 
 class FieldPlayer
 {
@@ -32,30 +30,13 @@ private:
 		aetherClass::Vector3 _rotation;
 	};
 
-	struct Counter{
-		Counter(){
-			Reset();
-		}
-
-		~Counter(){
-			Reset();
-		}
-		int _defaultFrame;
-		bool _changeDefaultFrame;
-	private:
-		void Reset(){
-			_defaultFrame = NULL;
-			_changeDefaultFrame = false;
-		}
-	};
-
 public:
 	FieldPlayer() = default;
 	~FieldPlayer();
 	/*
 	初期化
 	*/
-	bool mInitialize(std::shared_ptr<GearFrame> gearFrame,aetherClass::Vector3 position);
+	bool mInitialize(std::shared_ptr<aetherClass::FbxModel> gearFrame,aetherClass::Vector3 position);
 
 	/*
 	更新処理
@@ -83,8 +64,6 @@ public:
 	void mSetTransform(aetherClass::Transform);
 	aetherClass::Transform mGetTransform();
 private:
-
-
 	/*
 	解放処理
 	*/
@@ -96,16 +75,6 @@ private:
 	void mInitialPlayerView(CameraValue);
 
 	/*
-		全てのギアの初期化
-	*/
-	bool mInitializeGearFrame(std::shared_ptr<GearFrame>&, aetherClass::ViewCamera*);
-
-	/*
-		エディターからの値を読み取るよう
-	*/
-	bool mLoadProperty(std::shared_ptr<GearFrame>&, std::string modelDataFile);
-	
-	/*
 		コライダーの初期化
 	*/
 
@@ -116,16 +85,6 @@ private:
 	*/
 	void mUpdateBodyCollider(aetherClass::Transform&);
 	/*
-		アニメーションの登録
-	*/
-	void mRegisterAnimation(FieldPlayer::eState key,const int allFrame, std::string first, std::string last);
-
-	/*
-		アニメーション再生用
-	*/
-	void mDefaultAnimation(FieldPlayer::eState& state);
-
-	/*
 		カメラオブジェクトの更新
 	*/
 	void mUpdateView(aetherClass::ViewCamera&,aetherClass::Vector3& rotation,aetherClass::Vector3 lookAtPosition);
@@ -133,32 +92,21 @@ private:
 	/*
 	キーやマウスの処理の読み取り
 	*/
-	std::pair<aetherClass::Transform,aetherClass::Vector3> mReadKey(const float timeScale,char& sign);
+	std::pair<aetherClass::Transform,aetherClass::Vector3> mReadKey(const float timeScale);
 
 	void mCheckCameraRotation(aetherClass::Vector3&);
 private:
-	std::unordered_map<Gear::eType, std::shared_ptr<Gear>> m_pGearHash;   // それぞれのギアのポインタを扱いやすいようにまとめた連想配列
-
-	std::shared_ptr<Gear> m_topGear;            // 最上位パーツのポインタを入れておく
-
+	
+	std::shared_ptr<aetherClass::FbxModel> m_model;
 	bool m_isHitWall;
 	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
-
-	aetherClass::Transform m_playerTransform;   // プレイヤーの回転、移動、スケールを管理
 	aetherClass::Vector3 m_prevPosition;     // 前回のトランスフォーム情報
-	
 	aetherClass::Vector3 m_cameraRotation;		//　カメラの回転を管理
-
-	eState m_prevState;							// 前回のプレイヤーの状態
 	CharaEntity m_charaEntity;					// 便利関数のあるクラスオブジェクト
 	Offset m_cameraOffset;						//　カメラのオフセット
-	Counter m_actionCount;			// それぞれのアクションを行ったフレーム数を保存しとく用
 	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
-	std::unordered_map<eState, AnimationFrame> m_defaultAnimation;   // 基本的なアニメーションの値を含んだ連想配列
-	eActionType m_action;
-
+	
 	int m_fieldNumber;
-	char m_sign;
 };
 
 #endif

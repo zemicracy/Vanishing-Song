@@ -99,8 +99,7 @@ void FieldEnemy::mFinalize(){
 //		m_property._penemy->Finalize();
 		m_property._penemy.reset();
 	}
-	m_pTopGear = nullptr;
-
+	
 	for (auto index : m_message){
 		index.reset();
 		index = nullptr;

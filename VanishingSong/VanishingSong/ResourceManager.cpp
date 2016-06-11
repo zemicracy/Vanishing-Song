@@ -307,49 +307,27 @@ std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& Resou
 }
 
 // プレイヤー系初期化用
-void ResourceManager::mPlayerInitialize(eMusical type, std::string directy, std::string tex){
-	std::shared_ptr<Gear> gear;
+void ResourceManager::mPlayerInitialize(eMusical type, std::string path, std::string tex){
 	if (m_pPlayerHashes.find(type) != m_pPlayerHashes.end() || type == eMusical::eNull)return;
-	m_pPlayerHashes[type] = std::make_shared<GearFrame>();
+	m_pPlayerHashes[type] = std::make_shared<FbxModel>();
 
 	// 体のパーツ
-	m_pPlayerHashes[type]->m_pBody = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
-
-	// 腰のパーツ
-	m_pPlayerHashes[type]->m_pWaist = m_charaEntity.mSetUpGear(directy + "\\waist.fbx", Gear::eType::eWaist, directy + tex);
-
-	// 腕のパーツ
-	m_pPlayerHashes[type]->m_pLeftArm = m_charaEntity.mSetUpGear(directy + "\\arm.fbx", Gear::eType::eLeftArm, directy + tex);
-	m_pPlayerHashes[type]->m_pRightArm = m_charaEntity.mSetUpGear(directy + "\\arm.fbx", Gear::eType::eRightArm, directy + tex);
-	
-	// 足のパーツ
-	m_pPlayerHashes[type]->m_pLeftFoot = m_charaEntity.mSetUpGear(directy + "\\foot.fbx", Gear::eType::eLeftFoot, directy + tex);
-	m_pPlayerHashes[type]->m_pRightFoot = m_charaEntity.mSetUpGear(directy + "\\foot.fbx", Gear::eType::eRightFoot, directy + tex);
-
-	// それぞれのパーツとの親子関係構築
-	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pBody, m_pPlayerHashes[type]->m_pWaist);
-	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pBody, m_pPlayerHashes[type]->m_pRightArm);
-	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pBody, m_pPlayerHashes[type]->m_pLeftArm);
-
-	// 右
-	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pWaist, m_pPlayerHashes[type]->m_pRightFoot);
-
-	// 左
-	m_charaEntity.mCreateRelationship(m_pPlayerHashes[type]->m_pWaist, m_pPlayerHashes[type]->m_pLeftFoot);
-
+	m_pPlayerHashes[type]->LoadFBX(path+"\\Player.fbx", eAxisSystem::eAxisOpenGL);
+	m_pPlayerHashes[type]->SetTextureDirectoryName(tex);
 	return;
 }
 
 // プレイヤー取得用
-std::shared_ptr<GearFrame> ResourceManager::mGetPlayerHash(eMusical type){
+std::shared_ptr<FbxModel> ResourceManager::mGetPlayerHash(eMusical type){
 	return m_pPlayerHashes[type];
 }
 
 // 解放処理
 void ResourceManager::FinalizePlayer(){
 	for (auto& index : m_pPlayerHashes){
-		index.second->Release();
+		index.second->Finalize();
 	}
+	m_pPlayerHashes.clear();
 }
 
 // 雑魚敵用

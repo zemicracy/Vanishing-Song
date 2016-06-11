@@ -3,12 +3,12 @@
 3,-9,0,0,0,0,1,1,1,0,FbxModel,0,0,0,0,0,RightFoot,C:\Users\nwuser.DA\Desktop\player_ver2\model_ver2\fbx_ver2\leg_ver2.fbx
 0,-9,0,0,0,0,1,1,1,0,FbxModel,0,0,0,0,0,Waist,C:\Users\nwuser.DA\Desktop\player_ver2\model_ver2\fbx_ver2\hip.fbx
 0,0,0,0,0,0,1,1,1,0,FbxModel,0,0,0,0,0,Body,C:\Users\nwuser.DA\Desktop\player_ver2\model_ver2\fbx_ver2\doutai_ver2.fbx
-4.5,0,0,0,0,-30,1,1,1,0,FbxModel,0,0,0,0,0,RightArm,C:\Users\nwuser.DA\Desktop\player_ver2\model_ver2\fbx_ver2\arm_ver2_take2.fbx
--4.5,0,0,0,0,30,-1,1,1,0,FbxModel,0,0,0,0,0,LeftArm,C:\Users\nwuser.DA\Desktop\player_ver2\model_ver2\fbx_ver2\arm_ver2_take2.fbx
+4.5,0,0,0,0,-50,1,1,1,0,FbxModel,0,0,0,0,0,RightArm,C:\Users\nwuser.DA\Desktop\player_ver2\model_ver2\fbx_ver2\arm_ver2_take2.fbx
+-4.5,0,0,0,0,50,-1,1,1,0,FbxModel,0,0,0,0,0,LeftArm,C:\Users\nwuser.DA\Desktop\player_ver2\model_ver2\fbx_ver2\arm_ver2_take2.fbx
 [Material]
 [Texture]
 none
 [Camera]
-0,0,-50,0,0,0
+0,50,-100,0,0,0
 [Light]
 0,10,0

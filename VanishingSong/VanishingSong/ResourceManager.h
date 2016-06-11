@@ -8,7 +8,6 @@
 #include <ShaderBase.h>
 #include <Singleton.h>
 #include "CharaEntity.h"
-#include "GearFrame.h"
 #include "CharaStatus.h"
 #include "Const.h"
 #include<FbxModel.h>
@@ -19,8 +18,7 @@ class ResourceManager
 {
 
 public:
-	typedef std::unordered_map<eMusical, std::shared_ptr<GearFrame>> CharaHash;
-	typedef std::unordered_map<eMusical,std::shared_ptr<aetherClass::FbxModel>> EnemyHash;
+	typedef std::unordered_map<eMusical, std::shared_ptr<aetherClass::FbxModel>> CharaHash;
 public:
 
 	static ResourceManager& mGetInstance();
@@ -43,8 +41,8 @@ public:
 	// 基本的に使うシェーダーの取得用
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& mGetShaderHash();
 
-	void mPlayerInitialize(eMusical, std::string directy, std::string tex);
-	std::shared_ptr<GearFrame> mGetPlayerHash(eMusical);
+	void mPlayerInitialize(eMusical, std::string path, std::string tex);
+	std::shared_ptr<aetherClass::FbxModel> mGetPlayerHash(eMusical);
 
 	void mEnemyInitialize(eMusical, std::string directy, std::string tex);
 	std::shared_ptr<aetherClass::FbxModel> mGetEnemyHash(eMusical);
@@ -136,7 +134,7 @@ private:
 	CharaEntity m_charaEntity;
 
 	CharaHash m_pPlayerHashes;
-	EnemyHash m_pEnemyHashes;
+	CharaHash m_pEnemyHashes;
 };
 
 #endif
