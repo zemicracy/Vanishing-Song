@@ -97,7 +97,10 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// 壁に当たっているかの判定
 	if (m_isHitWall){
-		
+
+		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
+		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
+		playerTransform._translation -= Vector3(10, 0, 10)-translation;
 		m_isHitWall = false; //フラグをオフにする
 	}
 	else{
@@ -114,6 +117,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_model->property._transform);
 	m_prevRotationY = m_model->property._transform._rotation._y;
+	m_prevVector = playerTransform._translation;
 	return;
 }
 
@@ -166,16 +170,6 @@ void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 	m_pBodyCollider->Render(colliderShader);
 	return;
 }
-
-//
-ViewCamera* FieldPlayer::mGetView(){
-	return &m_playerView;
-}
-
-std::shared_ptr<Cube> FieldPlayer::mGetBodyColldier(){
-	return m_pBodyCollider;
-}
-
 /*
 	カメラの初期化
 */
@@ -213,7 +207,7 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 */
 void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 	m_pBodyCollider->property._transform._translation = transform._translation + kColliderOffset;
-	m_pBodyCollider->property._transform._rotation = transform._rotation;
+//	m_pBodyCollider->property._transform._rotation = transform._rotation;
 	return;
 }
 
@@ -247,7 +241,7 @@ void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
 
 // 壁に当たった時の処理
 void FieldPlayer::mOnHitWall(){
-	m_prevPosition = m_model->property._transform._translation;
+	
 	m_isHitWall = true;
 	return;
 }
@@ -264,4 +258,13 @@ int FieldPlayer::mGetFieldNumber()const{
 //
 Transform FieldPlayer::mGetTransform(){
 	return m_model->property._transform;
+}
+
+//
+ViewCamera* FieldPlayer::mGetView(){
+	return &m_playerView;
+}
+
+std::shared_ptr<Cube> FieldPlayer::mGetBodyColldier(){
+	return m_pBodyCollider;
 }

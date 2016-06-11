@@ -106,6 +106,7 @@ private:
 	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
 	float m_prevRotationY;
 	int m_fieldNumber;
+	aetherClass::Vector3 m_prevVector;
 };
 
 #endif
