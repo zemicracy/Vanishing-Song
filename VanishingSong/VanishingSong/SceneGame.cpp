@@ -44,7 +44,7 @@ bool SceneGame::Initialize(){
 	//// フェードイン・アウトを行う
 	//
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
-	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue),Vector3(0,0,0));
+	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue), GameManager::mGetInstance().mGetPlayerTransform());
 
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
@@ -62,15 +62,14 @@ bool SceneGame::Initialize(){
 	int count= 0;
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
 	for (auto& index : m_pCage){
-		const auto hoge = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->property._transform._translation;
-		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(hoge._x + 20, 0.0f, hoge._z), view);
+		const auto position = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->property._transform._translation;
+		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(position._x + 20, 0.0f, position._z), view);
 		count += 1;
 	}
 
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
-	m_pFieldPlayer->mSetTransform(GameManager::mGetInstance().mGetPlayerTransform());
-
+	
 	// ボスに勝っていたら完成の音楽を流す
 	auto bossState = GameManager::mGetInstance().mBossState();
 	if (bossState == GameManager::eBossState::eWin){
@@ -194,14 +193,14 @@ void SceneGame::Render(){
 	return;
 }
 
+//
 void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-
-
 	return;
 }
 
+//
 bool SceneGame::TransitionIn(){
 	if (!GameManager::mGetInstance().mfadeManager().In(1)){
 		return kTransitionning;
@@ -210,6 +209,7 @@ bool SceneGame::TransitionIn(){
 	return kTransitionEnd;
 }
 
+//
 bool SceneGame::TransitionOut(){
 	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
 		return kTransitionning;
