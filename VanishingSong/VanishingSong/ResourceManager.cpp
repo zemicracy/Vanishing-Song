@@ -261,7 +261,7 @@ void ResourceManager::mPlayerInitialize(eMusical type, std::string path, std::st
 	m_pPlayerHashes[type] = std::make_shared<FbxModel>();
 
 	// 体のパーツ
-	m_pPlayerHashes[type]->LoadFBX(path+"\\Player.fbx", eAxisSystem::eAxisOpenGL);
+	m_pPlayerHashes[type]->LoadFBX(path+"\\test.fbx", eAxisSystem::eAxisOpenGL);
 	m_pPlayerHashes[type]->SetTextureDirectoryName(tex);
 	return;
 }
@@ -286,13 +286,6 @@ void ResourceManager::mEnemyInitialize(eMusical type, std::string directry, std:
 	m_pEnemyHashes[type] = std::make_shared<FbxModel>();
 	m_pEnemyHashes[type]->LoadFBX(directry + "\\body.fbx", eAxisSystem::eAxisOpenGL);
 	m_pEnemyHashes[type]->SetTextureDirectoryName(directry+tex);
-
-		// 体のパーツ
-//	m_pEnemyHashes[type][enemyType] = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
-
-	
-		// それぞれのパーツとの親子関係構築
-	//m_charaEntity.mCreateRelationship(m_pEnemyHashes[type][enemyType]->m_pBody, m_pEnemyHashes[type][enemyType]->m_pWaist);
 }
 
 

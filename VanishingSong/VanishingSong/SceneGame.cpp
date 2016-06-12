@@ -33,7 +33,8 @@ SceneGame::~SceneGame()
 bool SceneGame::Initialize(){
 	_heapmin();
 	Finalize();
-
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
 	// ÉVÅ[ÉìÇÃìoò^
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
@@ -55,16 +56,9 @@ bool SceneGame::Initialize(){
 
 	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy,view);
 
-	int count= 0;
-	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
-	for (auto& index : m_pCage){
-		const auto position = m_pFieldEnemy->mEnemyGet(count)->mGetProperty()._penemy->property._transform._translation;
-		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(position._x + 20, 0.0f, position._z), view);
-		count += 1;
-	}
+	m_pCageManager = std::make_shared<CageManager>();
+	m_pCageManager->mInitialize(m_pFieldEnemy.get(),view);
 
-	// ÉQÅ[ÉÄÇÃèÛë‘Çìoò^
-	m_gameState = eState::eRun;
 	{
 		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
 			m_pBGMArray.push_back(std::make_shared<GameSound>());
@@ -78,6 +72,8 @@ bool SceneGame::Initialize(){
 
 	Updater();
 	_heapmin();
+	// ÉQÅ[ÉÄÇÃèÛë‘Çìoò^
+	m_gameState = eState::eRun;
 	return true;
 }
 
@@ -85,17 +81,14 @@ bool SceneGame::Initialize(){
 // ëSÇƒÇÃâï˙
 void SceneGame::Finalize(){
 	_heapmin();
+	if (m_pCageManager){
+		m_pCageManager.reset();
+		m_pCageManager = nullptr;
+	}
 
 	for (auto &itr : m_pBGMArray){
 		itr->Stop();
 		itr.reset();
-	}
-
-	if (!m_pCage.empty()){
-		for (auto& index : m_pCage){
-			if (!index)continue;
-			index.reset();
-		}
 	}
 	if (m_pMessageManager){
 		m_pMessageManager.reset();
@@ -151,14 +144,10 @@ bool SceneGame::Updater(){
 	}
 	
 	m_pFieldEnemy->mUpdater();
-
 	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView());
-
-	// ïﬂó∏Çå¸Ç©ÇπÇÈ
-	for (auto& index : m_pCage){
-		index->mUpdate(kScaleTime,m_pFieldPlayer->mGetBodyColldier()->property._transform._translation);
-	}
+	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
+	
 	return true;
 }
 
@@ -167,13 +156,8 @@ void SceneGame::Render(){
 	
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 
-	// ïﬂó∏ÇÃï\é¶
-	for (auto& index : m_pCage){
-		index->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	}
-
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-
+	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	

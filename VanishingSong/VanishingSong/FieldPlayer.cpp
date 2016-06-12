@@ -11,8 +11,8 @@
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
-	const float kCameraRotationMaxX = 15.0f;
-	const float kCameraRotationMinX = -15.0f;
+	const float kCameraRotationMaxX = -5.0f;
+	const float kCameraRotationMinX = -30.0f;
 	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
 	const float kDefaultMove = 100.0f;
 
@@ -96,14 +96,14 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// 壁に当たっているかの判定
 	if (m_isHitWall){
-
 		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
 		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
 		m_transform._translation += translation;
 		m_pBodyCollider->property._transform._translation = m_transform._translation;
 		if (m_hitObject&&CollideBoxOBB(*m_pBodyCollider, *m_hitObject)){
-			m_transform._translation = m_prevPosition - translation;
+			m_transform._translation = m_prevPosition-translation*2 + FLT_EPSILON;
 		}
+
 		m_isHitWall = false; //フラグをオフにする
 	}
 	else{
@@ -132,29 +132,35 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 	/* 奥行の移動(Z軸)	*/
 	if (GameController::GetKey().IsKeyDown('W')||GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
 		output.first._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		output.first._rotation._y += 0;
+		output.first._rotation._y = 0;
 	}
 	else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
 		output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		output.first._rotation._y += 180;
+		output.first._rotation._y = 180;
 	}
 	else
 	/* 横の移動(X軸)	*/
 	if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
 		output.first._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		output.first._rotation._y += 90;
+		output.first._rotation._y = 90;
 	}
 	else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
 		output.first._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		output.first._rotation._y += 270;
+		output.first._rotation._y = 270;
 	}
 
 	/*	カメラの回転	*/	
-	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRB1)){
+	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
 		output.second._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
-	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
+	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRLeft)){
 		output.second._y -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+	}else
+	if (GameController::GetKey().IsKeyDown(VK_UP) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRUp)){
+		output.second._x += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+	}
+	else if (GameController::GetKey().IsKeyDown(VK_DOWN) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRDown)){
+		output.second._x -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 
 	return output;
@@ -167,7 +173,6 @@ void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 	if (!m_model)return;
 
 	m_model->Render(modelShader);
-	m_pBodyCollider->Render(colliderShader);
 	return;
 }
 /*
@@ -217,7 +222,8 @@ void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookA
 	// カメラのリセット一応階といた
 	mCheckCameraRotation(rotation);
 	Matrix4x4 rotationMatrix;
-	rotationMatrix.PitchYawRoll(rotation*kAetherRadian);
+	Vector3 rotationY = Vector3(0,rotation._y,0);
+	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 	Vector3 position = m_cameraOffset._translation;
 	position = position.TransformCoordNormal(rotationMatrix);
 
@@ -229,6 +235,7 @@ void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookA
 
 //
 void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
+	Debug::mPrint(std::to_string(rotation._x));
 	// カメラ可動範囲の上限の確認
 	if (rotation._x > kCameraRotationMaxX){
 		rotation._x = kCameraRotationMaxX;

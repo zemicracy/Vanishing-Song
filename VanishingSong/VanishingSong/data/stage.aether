@@ -5,10 +5,10 @@
 350,0,-260,0,0,0,200,100,350,0,Cube,1,1,0,0.5,0,area3,null_path
 -200,0,-350,0,0,0,350,100,200,0,Cube,1,1,0,0.5,0,area4,null_path
 0,0,35,0,0,0,100,100,100,0,Cube,1,1,0,0.5,0,area5,null_path
-0,0,500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall1,null_path
-0,0,-500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall2,null_path
-500,0,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall3,null_path
--500,0,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall4,null_path
+0,10,500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall1,null_path
+0,10,-500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall2,null_path
+500,10,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall3,null_path
+-500,10,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall4,null_path
 [Material]
 [Texture]
 none

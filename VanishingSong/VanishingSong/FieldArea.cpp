@@ -54,19 +54,19 @@ void FieldArea::mInitialize(){
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
-			gInitalizer<Rectangle3D>(m_ground[0], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_ground[0], itr->_transform, itr->_color);
 		}
 		if (itr->_name == "wall1"){
-			gInitalizer<Rectangle3D>(m_wall[0], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_wall[0], itr->_transform, itr->_color);
 		}
 		if (itr->_name == "wall2"){
-			gInitalizer<Rectangle3D>(m_wall[1], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_wall[1], itr->_transform, itr->_color);
 		}
 		if (itr->_name == "wall3"){
-			gInitalizer<Rectangle3D>(m_wall[2], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_wall[2], itr->_transform, itr->_color);
 		}
 		if (itr->_name == "wall4"){
-			gInitalizer<Rectangle3D>(m_wall[3], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_wall[3], itr->_transform, itr->_color);
 		}
 
 		if (itr->_name == "area1"){

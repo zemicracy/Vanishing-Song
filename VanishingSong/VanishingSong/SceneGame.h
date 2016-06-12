@@ -8,7 +8,7 @@
 #include "CollideManager.h"
 #include "MessageManager.h"
 #include "AttackParticle.h"
-#include "Cage.h"
+#include "CageManager.h"
 #include<GameSound.h>
 class SceneGame :
 	public aetherClass::GameScene
@@ -20,8 +20,6 @@ private:
 		ePause,
 		eBattle,
 		eExit,
-		eFadeIn,
-		eFadeOut,
 		eNull
 	};
 	
@@ -62,7 +60,7 @@ private:
 	std::shared_ptr<FieldArea> m_pFieldArea;
 	std::shared_ptr<FieldEnemyManager> m_pFieldEnemy;
 	std::shared_ptr<MessageManager> m_pMessageManager;
-	std::array<std::shared_ptr<Cage>, 3> m_pCage;
+	std::shared_ptr<CageManager> m_pCageManager;
 	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
 
 };

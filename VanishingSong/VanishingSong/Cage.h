@@ -7,16 +7,16 @@
 class Cage
 {
 public:
-	Cage(std::shared_ptr<aetherClass::FbxModel>, aetherClass::Vector3 position, aetherClass::ViewCamera*);
+	Cage(std::shared_ptr<aetherClass::FbxModel>, aetherClass::Vector3 position, aetherClass::ViewCamera*, bool);
 	~Cage();
 
 	void mUpdate(const float timeScale,aetherClass::Vector3);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
-	
+	void mSetIsTought(bool);
 	std::shared_ptr < aetherClass::Cube> mGetCollider();
 private:
 
-	void mInitialize(std::shared_ptr<aetherClass::FbxModel>, aetherClass::Vector3 position, aetherClass::ViewCamera*);
+	void mInitialize(std::shared_ptr<aetherClass::FbxModel>, aetherClass::Vector3 position, aetherClass::ViewCamera*,bool);
 	void mFinalize();
 
 	void mCreatePrisoner();
@@ -26,6 +26,7 @@ private:
 	aetherClass::Vector3 m_initialPosition;
 	CharaEntity m_charaEntity;
 	std::shared_ptr < aetherClass::Cube> m_pCollider;
+	bool m_isTought;
 };
 
 #endif
