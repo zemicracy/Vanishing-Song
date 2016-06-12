@@ -4,16 +4,16 @@ using namespace aetherClass;
 namespace{
 	const Vector3 kCollideOffset = Vector3(0, -5, 0);
 }
-Cage::Cage(std::shared_ptr<FbxModel> gearframe, Vector3 position, ViewCamera* camera)
+Cage::Cage(std::shared_ptr<FbxModel> gearframe, Vector3 position, ViewCamera* camera, bool flg)
 {
-	mInitialize(gearframe,position, camera);
+	mInitialize(gearframe,position, camera,flg);
 
 }
 
 Cage::~Cage(){}
 
 //
-void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCamera* camera){
+void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCamera* camera, bool isTought){
 	m_model = model;
 	m_model->SetCamera(camera);
 	m_initialPosition = position;
@@ -26,6 +26,15 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_pCollider->property._color = Color(1.0, 0, 0, 0.3);
 	m_pCollider->property._transform._scale = 10;
 	m_pCollider->SetCamera(camera);
+
+	if (isTought){
+		m_cage = std::make_shared<FbxModel>();
+		m_cage->LoadFBX("ori", eAxisSystem::eAxisOpenGL);
+		m_cage->SetTextureDirectoryName("deirectory");
+		m_cage->SetCamera(camera);
+		m_cage->property._transform._translation = position;
+	}
+	m_isTought = isTought;
 	return;
 }
 
@@ -36,6 +45,9 @@ void Cage::mUpdate(const float timeScale, Vector3 position){
 
 //
 void Cage::mRender(ShaderBase* tex, ShaderBase* color){
+	if (m_isTought){
+		m_cage->Render(tex);
+	}
 	m_model->Render(tex);
 }
 
@@ -46,4 +58,8 @@ void Cage::mFinalize(){
 
 std::shared_ptr<Cube> Cage::mGetCollider(){
 	return m_pCollider;
+}
+
+void Cage::mSetIsTought(bool flg){
+	m_isTought = flg;
 }

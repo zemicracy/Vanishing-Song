@@ -286,13 +286,6 @@ void ResourceManager::mEnemyInitialize(eMusical type, std::string directry, std:
 	m_pEnemyHashes[type] = std::make_shared<FbxModel>();
 	m_pEnemyHashes[type]->LoadFBX(directry + "\\body.fbx", eAxisSystem::eAxisOpenGL);
 	m_pEnemyHashes[type]->SetTextureDirectoryName(directry+tex);
-
-		// 体のパーツ
-//	m_pEnemyHashes[type][enemyType] = m_charaEntity.mSetUpGear(directy + "\\body.fbx", Gear::eType::eBody, directy + tex);
-
-	
-		// それぞれのパーツとの親子関係構築
-	//m_charaEntity.mCreateRelationship(m_pEnemyHashes[type][enemyType]->m_pBody, m_pEnemyHashes[type][enemyType]->m_pWaist);
 }
 
 

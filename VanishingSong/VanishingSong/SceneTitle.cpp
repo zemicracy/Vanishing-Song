@@ -44,6 +44,7 @@ SceneTitle::~SceneTitle()
 
 bool SceneTitle::Initialize(){
 	_heapmin();
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "Model\\Player\\red");
 
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();

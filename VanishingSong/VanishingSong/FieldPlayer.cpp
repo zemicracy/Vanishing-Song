@@ -81,7 +81,6 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	// 移動があれば
 	FieldPlayer::eState state;
 	if (getKeyValues.first._translation == kVector3Zero){
-		
 		state = eState::eWait;
 	}
 	else{
@@ -97,14 +96,14 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// 壁に当たっているかの判定
 	if (m_isHitWall){
-
 		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
 		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
 		m_transform._translation += translation;
 		m_pBodyCollider->property._transform._translation = m_transform._translation;
 		if (m_hitObject&&CollideBoxOBB(*m_pBodyCollider, *m_hitObject)){
-			m_transform._translation = m_prevPosition - translation;
+			m_transform._translation = m_prevPosition-translation*2 + FLT_EPSILON;
 		}
+
 		m_isHitWall = false; //フラグをオフにする
 	}
 	else{
@@ -133,7 +132,7 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 	/* 奥行の移動(Z軸)	*/
 	if (GameController::GetKey().IsKeyDown('W')||GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
 		output.first._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		output.first._rotation._y += 0;
+		output.first._rotation._y = 0;
 	}
 	else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
 		output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
@@ -151,18 +150,17 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 	}
 
 	/*	カメラの回転	*/	
-	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRB1)){
+	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
 		output.second._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
-	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
+	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRLeft)){
 		output.second._y -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}else
-	if (GameController::GetKey().IsKeyDown(VK_UP) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRB1)){
+	if (GameController::GetKey().IsKeyDown(VK_UP) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRUp)){
 		output.second._x += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
-	else if (GameController::GetKey().IsKeyDown(VK_DOWN) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
+	else if (GameController::GetKey().IsKeyDown(VK_DOWN) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRDown)){
 		output.second._x -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		
 	}
 
 	return output;
@@ -175,7 +173,6 @@ void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 	if (!m_model)return;
 
 	m_model->Render(modelShader);
-	m_pBodyCollider->Render(colliderShader);
 	return;
 }
 /*
