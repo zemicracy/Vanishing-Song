@@ -17,6 +17,7 @@ const std::string SceneGame::Name = "Game";
 namespace{
 	const float kScaleTime = 1.0f; 
 	const bool kError = false;
+	
 }
 
 SceneGame::SceneGame():
@@ -88,6 +89,8 @@ bool SceneGame::Initialize(){
 		// ƒQ[ƒ€‚Ìó‘Ô‚ğ“o˜^
 		m_gameState = eState::eRun;
 	}
+
+	m_isTransitionEnd = false;
 	_heapmin();
 	return true;
 }
@@ -149,6 +152,7 @@ void SceneGame::mTutorial(){
 	if (m_gameState != eState::eTutorial)return;
 	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE);
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
+	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
 	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
 		if (m_pTutorialEnemy->mGetMessageEnd()){
 			m_gameState = eState::eBattle;
@@ -221,7 +225,9 @@ void SceneGame::Render(){
 void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-	m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get());
+	if (m_isTransitionEnd){
+		m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get());
+	}
 	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
 	return;
 }
@@ -240,7 +246,7 @@ bool SceneGame::TransitionOut(){
 	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
 		return kTransitionning;
 	}
-
+	m_isTransitionEnd = true;
 	return kTransitionEnd;
 }
 
