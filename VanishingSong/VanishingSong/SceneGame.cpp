@@ -148,7 +148,7 @@ bool SceneGame::Updater(){
 void SceneGame::mTutorial(){
 	if (m_gameState != eState::eTutorial)return;
 	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE);
-
+	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
 		if (m_pTutorialEnemy->mGetMessageEnd()){
 			m_gameState = eState::eBattle;
