@@ -9,6 +9,7 @@
 #include "MessageManager.h"
 #include "AttackParticle.h"
 #include "Cage.h"
+#include<GameSound.h>
 class SceneGame :
 	public aetherClass::GameScene
 {
@@ -60,5 +61,7 @@ private:
 	std::shared_ptr<FieldEnemyManager> m_pFieldEnemy;
 	std::shared_ptr<MessageManager> m_pMessageManager;
 	std::array<std::shared_ptr<Cage>, 3> m_pCage;
+	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
+
 };
 

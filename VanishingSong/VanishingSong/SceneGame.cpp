@@ -65,6 +65,7 @@ bool SceneGame::Initialize(){
 
 	// ゲームの状態を登録
 	m_gameState = eState::eRun;
+<<<<<<< HEAD
 	
 	// ボスに勝っていたら完成の音楽を流す
 	auto bossState = GameManager::mGetInstance().mBossState();
@@ -77,9 +78,16 @@ bool SceneGame::Initialize(){
 			for (auto index : GameManager::mGetInstance().mNote()){
 				ResourceManager::mGetInstance().mPlayBaseBGM(index);
 			}
+=======
+	{
+		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
+			m_pBGMArray.push_back(std::make_shared<GameSound>());
+			m_pBGMArray.back()->Load(itr.second.c_str());
+			m_pBGMArray.back()->SetValume(0);
+>>>>>>> develop
 		}
-		else{
-			ResourceManager::mGetInstance().mGetFirstBGM()->PlayToLoop();
+		for (auto &itr : m_pBGMArray){
+			itr->PlayToLoop();
 		}
 	}
 
@@ -92,11 +100,11 @@ bool SceneGame::Initialize(){
 // 全ての解放
 void SceneGame::Finalize(){
 	_heapmin();
-	for (auto index : GameManager::mGetInstance().mGetUsePlayer()){
-		ResourceManager::mGetInstance().mStopBaseBGM(index.second);
+
+	for (auto &itr : m_pBGMArray){
+		itr->Stop();
+		itr.reset();
 	}
-	ResourceManager::mGetInstance().mGetLastBGM()->Stop();
-	ResourceManager::mGetInstance().mGetFirstBGM()->Stop();
 
 	if (!m_pCage.empty()){
 		for (auto& index : m_pCage){

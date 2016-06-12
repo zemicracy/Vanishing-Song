@@ -28,15 +28,12 @@ public:
 	// 全体の解放
 	void Finalize();
 	
-	// 基本BGMを流すよう
-	void mPlayBaseBGM(eMusical);
-
-	void mStopBaseBGM(eMusical);
 	// テクスチャ取得用
 	std::shared_ptr<aetherClass::Texture> GetTexture(std::string);
 
 	std::shared_ptr<ActionSound> GetActionSound(eMusical);
-	std::shared_ptr<aetherClass::GameSound> mGetBGM(eMusical);
+	std::unordered_map<eMusical, std::string>& mGetBGMPath();
+	std::string& mSetBGMPath(eMusical);
 
 	// 基本的に使うシェーダーの取得用
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>>& mGetShaderHash();
@@ -49,7 +46,7 @@ public:
 
 
 	std::shared_ptr<aetherClass::GameSound> mGetLastBGM();
-	std::shared_ptr<aetherClass::GameSound> mGetFirstBGM();
+
 private:
 	ResourceManager();
 	~ResourceManager();
@@ -115,23 +112,15 @@ private:
 	*/
 	template<class Type>
 	std::shared_ptr<Type> RegisterShader(std::string registerName, aetherClass::ShaderDesc);
-private:
-	struct BGMType
-	{
-		std::string _path;
-		eMusical _type;
-	};
+
 private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>> m_pTextureHash;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::ShaderBase>> m_pShaderHash;
 
 	std::unordered_map<eMusical, std::shared_ptr<ActionSound>> m_pActionSoundHash;
-	std::unordered_map<eMusical, std::shared_ptr<aetherClass::GameSound>>m_pBaseBgmArray;
-	static const BGMType m_BgmPath[4];
+	std::unordered_map<eMusical, std::string>m_BgmPath;
 
 	std::shared_ptr<aetherClass::GameSound> m_pLastBGM;
-	std::shared_ptr<aetherClass::GameSound> m_pFirstBGM;
-	CharaEntity m_charaEntity;
 
 	CharaHash m_pPlayerHashes;
 	CharaHash m_pEnemyHashes;

@@ -86,6 +86,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 		}
 		else if (itr->_name == "EnemyHP"){
 			m_pDebug[1] = gInitializer<Cube>(itr->_transform, itr->_color);
+			m_EnemyLane[eMusical::eAdlib] = itr->_transform._translation;
 		}
 		else if (itr->_name == "lane_blue"){
 			m_pLane.insert(std::make_pair(eMusical::eBlue, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
