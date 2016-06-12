@@ -1,11 +1,21 @@
 #include "GameManager.h"
 #include "Const.h"
 #include <GameController.h>
-
+#include <WorldReader.h>
 using namespace aetherClass;
 GameManager::GameManager()
 {
-	m_prevPlayerTransform._translation._z = -20;
+	WorldReader read;
+	read.Load("data\\Field\\player_init.aether");
+	for (auto& index : read.GetInputWorldInfo()._object){
+		if (index->_name == "player_init"){
+
+			m_prevPlayerTransform._translation = index->_transform._translation;
+			m_prevPlayerTransform._translation._y = 0;
+			m_prevPlayerTransform._rotation = index->_transform._rotation;
+		}
+	}
+	read.UnLoad();
 	m_bossState = eBossState::eUnVisible;
 	m_fieldState = eFieldState::eTutorial;
 	m_canStageNumber = NULL;

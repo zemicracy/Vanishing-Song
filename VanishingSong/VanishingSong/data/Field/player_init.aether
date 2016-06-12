@@ -1,0 +1,15 @@
+[Object]
+-0.169758,9.99824,0.0887537,90,0,0,1000,1000,1,0,Rectangle3D,0,1,0,0.5,0,stage,null_path
+0,10,500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall1,null_path
+0,10,-500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall2,null_path
+500,10,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall3,null_path
+-500,10,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall4,null_path
+-470,15,120,0,90,0,5,5,5,0,Cube,1,1,0,1,0,player_init,null_path
+-430,15.007,120,0,-90,0,5,5,5,0,Cube,1,1,0,1,0,tutorial_enemy,null_path
+[Material]
+[Texture]
+none
+[Camera]
+-0.0979569,-3.55856,0,0,0,0
+[Light]
+0.377834,-2.95796,0

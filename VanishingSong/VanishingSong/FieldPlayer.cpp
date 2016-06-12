@@ -30,12 +30,14 @@ bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	// 初期位置の設定
 	m_model = model;
 	m_model->SetCamera(&m_playerView);
-	m_model->property._transform = trans;
+	m_transform = trans;
+	
 
 	WorldReader read;
 	read.Load("data\\Field\\field_camera.aether");
 	mInitialPlayerView(read.GetInputWorldInfo()._camera, m_model->property._transform._rotation);
 	read.UnLoad();
+	m_cameraRotation = trans._rotation;
 
 	// コライダーの初期化
 	mSetUpBodyCollider(m_pBodyCollider, m_model->property._transform._translation, kColliderOffset);
