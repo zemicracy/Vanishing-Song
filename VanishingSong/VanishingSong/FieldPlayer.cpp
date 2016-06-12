@@ -239,7 +239,7 @@ void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookA
 
 //
 void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
-	Debug::mPrint(std::to_string(rotation._x));
+
 	// ƒJƒƒ‰‰Â“®”ÍˆÍ‚ÌãŒÀ‚ÌŠm”F
 	if (rotation._x > kCameraRotationMaxX){
 		rotation._x = kCameraRotationMaxX;

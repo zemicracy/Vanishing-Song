@@ -148,22 +148,28 @@ bool SceneGame::Updater(){
 void SceneGame::mTutorial(){
 	if (m_gameState != eState::eTutorial)return;
 	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE);
+
 	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
-		if (button){
+		if (m_pTutorialEnemy->mGetMessageEnd()){
 			m_gameState = eState::eBattle;
+			m_pTutorialEnemy->mIsEnd(true);
 			GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
 			GameManager::mGetInstance().mBattleDataFile(m_pTutorialEnemy->mGetDataPath());
 			ChangeScene(SceneTutorial::Name, LoadState::eUse);
 			return;
 		}
+
+		m_pTutorialEnemy->mUpdate(false, false, button);
 	}
 	else{
 		// チュートリアル終了後
-		if (button){
+		if (m_pTutorialEnemy->mGetMessageEnd()){
 			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
 			m_gameState = eState::eRun;
+			m_pTutorialEnemy->mIsEnd(true);
 			return;
 		}
+		m_pTutorialEnemy->mUpdate(true, false, button);
 	}
 }
 
@@ -199,9 +205,9 @@ void SceneGame::mRun(){
 //
 void SceneGame::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
-	
+	m_pTutorialEnemy->mRender(shaderHash["texture"].get());
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-
+	
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
@@ -215,6 +221,7 @@ void SceneGame::Render(){
 void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+	m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get());
 	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
 	return;
 }

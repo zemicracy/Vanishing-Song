@@ -157,7 +157,6 @@ bool SceneTitle::Updater(){
 	mCursorState();
 	bool isUpdate = mMenuSelectState();
 	if (GameController::GetKey().KeyDownTrigger('T')){
-		Debug::mPrint("‚«‚½");
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
 	}
 
