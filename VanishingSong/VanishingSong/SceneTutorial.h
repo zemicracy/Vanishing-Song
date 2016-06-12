@@ -1,7 +1,7 @@
 //#pragma once
 
-#ifndef _SCENEBATTLE_H
-#define _SCENEBATTLE_H
+#ifndef _SCENETUTORIAL_H
+#define _SCENETUTORIAL_H
 #include <GameScene.h>
 #include <ModelBase.h>
 #include <ShaderBase.h>

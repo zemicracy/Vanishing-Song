@@ -92,7 +92,6 @@ bool SceneTutorial::Initialize(){
 			m_enemyVector.push_back(m_pActionBoard->mGetCommand(askey[i]));
 	}
 
-
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume * 100);
 	m_sound->PlayToLoop();

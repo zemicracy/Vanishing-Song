@@ -181,7 +181,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		if (itr.find(eMusical::eBlue) != itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
 		}
-		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
 	}
 	else if (stageID == 1){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
@@ -189,6 +189,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field2_1.wav";
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eSecoundStage);
 	}
 	else if (stageID == 2){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
@@ -196,6 +197,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eGreen) = "Sound\\BGM\\field2.wav";
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eThirdStage);
 	}
 	else if (stageID == 3){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
@@ -203,12 +205,14 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eRed) = "Sound\\BGM\\field3.wav";
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eForthStage);
 	}
 	else if (stageID == 4){
 		if (integer < noteBorder)return;
 		
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
+		GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
 	}
 	else if(stageID == 5){
 		if (integer < noteBorder)return;

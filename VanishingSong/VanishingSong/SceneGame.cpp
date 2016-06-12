@@ -7,6 +7,7 @@
 #include <Singleton.h>
 #include "SceneTitle.h"
 #include "SceneBattle.h"
+#include "SceneTutorial.h"
 #include "ResourceManager.h"
 #include "Debug.h"
 using namespace aetherClass;
@@ -35,9 +36,11 @@ bool SceneGame::Initialize(){
 	Finalize();
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
+
 	// シーンの登録
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
+	RegisterScene(new SceneTutorial());
 
 	//// フェードイン・アウトを行う
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
@@ -47,17 +50,17 @@ bool SceneGame::Initialize(){
 	m_pFieldArea = std::make_shared<FieldArea>();
 	m_pFieldArea->mInitialize();
 	m_pFieldArea->mSetCamera(view);
-	
+
 
 	m_pFieldEnemy = std::make_shared<FieldEnemyManager>();
 	m_pFieldEnemy->mInitilize(view);
 
-	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea,m_pFieldEnemy);
+	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea, m_pFieldEnemy);
 
-	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy,view);
+	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy, view);
 
 	m_pCageManager = std::make_shared<CageManager>();
-	m_pCageManager->mInitialize(m_pFieldEnemy.get(),view);
+	m_pCageManager->mInitialize(m_pFieldEnemy.get(), view);
 
 	{
 		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
@@ -70,10 +73,22 @@ bool SceneGame::Initialize(){
 		}
 	}
 
-	Updater();
+	// とりあえず一回呼んでおく
+	mRun();
+	
+	
+	const bool isTutorial = (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial)
+		|| (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd);
+	m_pTutorialEnemy = std::make_shared<TutorialEnemy>();
+	m_pTutorialEnemy->mInitalize(isTutorial);
+	if (isTutorial){
+		m_gameState = eState::eTutorial;
+	}
+	else{
+		// ゲームの状態を登録
+		m_gameState = eState::eRun;
+	}
 	_heapmin();
-	// ゲームの状態を登録
-	m_gameState = eState::eRun;
 	return true;
 }
 
@@ -123,11 +138,43 @@ void SceneGame::Finalize(){
 
 bool SceneGame::Updater(){
 
+	mTutorial();
+	mRun();
+	
+	return true;
+}
+
+// チュートリアル用
+void SceneGame::mTutorial(){
+	if (m_gameState != eState::eTutorial)return;
+	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE);
+	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
+		if (button){
+			m_gameState = eState::eBattle;
+			GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
+			GameManager::mGetInstance().mBattleDataFile(m_pTutorialEnemy->mGetDataPath());
+			ChangeScene(SceneTutorial::Name, LoadState::eUse);
+			return;
+		}
+	}
+	else{
+		// チュートリアル終了後
+		if (button){
+			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
+			m_gameState = eState::eRun;
+			return;
+		}
+	}
+}
+
+//
+void SceneGame::mRun(){
+	if (m_gameState != eState::eRun)return;
 	//// タイトルに戻る
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
 		m_gameState = eState::eExit;
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
-		return true;
+		return;
 	}
 
 	m_pCollideManager->mUpdate();
@@ -140,17 +187,16 @@ bool SceneGame::Updater(){
 		m_gameState = eState::eBattle;
 
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
-		return true;
+		return;
 	}
-	
+
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView());
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
-	
-	return true;
 }
 
+//
 void SceneGame::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	
@@ -213,3 +259,4 @@ bool SceneGame::mMessageUpdate(){
 	}
 	return false;
 }
+

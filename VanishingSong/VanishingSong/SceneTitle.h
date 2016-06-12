@@ -65,7 +65,7 @@ public:
 private:
 	SceneInfo mGetGameMode(const int index);
 	void mChangeSelect();
-	void mClickState();
+	void mCursorState();
 	bool mMenuSelectState();
 private:
 	std::unique_ptr<aetherClass::SpriteBase> m_pLogo;

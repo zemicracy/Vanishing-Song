@@ -86,6 +86,7 @@ void MessageWindow::mSetButton(aetherClass::Texture* tex){
 }
 
 void MessageWindow::mUpdate(const bool flg){
+	if (!m_button)return;
 	m_buttonTime += GameClock::GetDeltaTime();
 	if (m_buttonTime > kMaxButtonTime){
 		m_buttonChange = !m_buttonChange;

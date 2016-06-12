@@ -10,6 +10,7 @@
 #include "AttackParticle.h"
 #include "CageManager.h"
 #include<GameSound.h>
+#include "TutorialEnemy.h"
 class SceneGame :
 	public aetherClass::GameScene
 {
@@ -17,6 +18,7 @@ private:
 
 	enum class eState{
 		eRun,
+		eTutorial,
 		ePause,
 		eBattle,
 		eExit,
@@ -50,6 +52,8 @@ public:
 
 private:
 
+	void mTutorial();
+	void mRun();
 	bool mMessageUpdate();
 private:
 	aetherClass::DirectXEntity m_directX;	
@@ -61,6 +65,7 @@ private:
 	std::shared_ptr<FieldEnemyManager> m_pFieldEnemy;
 	std::shared_ptr<MessageManager> m_pMessageManager;
 	std::shared_ptr<CageManager> m_pCageManager;
+	std::shared_ptr<TutorialEnemy> m_pTutorialEnemy;
 	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
 
 };

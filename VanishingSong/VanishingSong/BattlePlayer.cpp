@@ -19,7 +19,6 @@ void BattlePlayer::mInitialize(eMusical type, aetherClass::Vector3 position, std
 	m_type = type;
 	m_model = model;
 	m_transform._translation = position;
-	m_transform._translation._y = 22.2f;
 	m_transform._rotation._y = 90;
 
 	
