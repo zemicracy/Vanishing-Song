@@ -22,7 +22,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	EnemySize = 1;
 
 	WorldReader reader;
-	reader.Load("data\\stage.aether");
+	reader.Load("data\\Field\\stage.aether");
 	//SpawnêŠ
 	for (auto index : reader.GetInputWorldInfo()._object){
 		if (index->_name == "area1"){

@@ -7,7 +7,7 @@ GameManager::GameManager()
 {
 	m_prevPlayerTransform._translation._z = -20;
 	m_bossState = eBossState::eUnVisible;
-	m_fieldState = eFieldState::eNull;
+	m_fieldState = eFieldState::eTutorial;
 	m_canStageNumber = NULL;
 }
 

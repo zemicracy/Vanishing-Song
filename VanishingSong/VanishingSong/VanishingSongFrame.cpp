@@ -27,7 +27,7 @@ bool VanishingSongFrame::InitializeBuffer(){
 	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
 
 	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
-//	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
+	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","Model\\Player\\blue");
 

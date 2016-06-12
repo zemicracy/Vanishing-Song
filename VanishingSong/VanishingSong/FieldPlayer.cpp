@@ -33,13 +33,15 @@ bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	m_model->property._transform = trans;
 
 	WorldReader read;
-	read.Load("data\\Player\\FieldCamera.aether");
+	read.Load("data\\Field\\field_camera.aether");
 	mInitialPlayerView(read.GetInputWorldInfo()._camera, m_model->property._transform._rotation);
 	read.UnLoad();
 
 	// コライダーの初期化
 	mSetUpBodyCollider(m_pBodyCollider, m_model->property._transform._translation, kColliderOffset);
-	
+
+	m_animationName.insert(std::make_pair(eState::eMove, "move"));
+	m_animationName.insert(std::make_pair(eState::eWait, "wait"));
 	m_isHitWall = false;
 	return true;
 }
@@ -89,6 +91,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 		state = eState::eMove;
 	}
 
+	m_prevState = state;
 	// 移動に使う値のを取得
 	Matrix4x4 rotationMatrix;
 	Vector3 rotationY = Vector3(0, m_cameraRotation._y, 0);
@@ -173,6 +176,7 @@ void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 	if (!m_model)return;
 
 	m_model->Render(modelShader);
+	//m_model->KeyFrameAnimation(modelShader, m_animationName.at(m_prevState), true);
 	return;
 }
 /*

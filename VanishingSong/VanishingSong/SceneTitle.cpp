@@ -153,9 +153,14 @@ void SceneTitle::Finalize(){
 }
 
 bool SceneTitle::Updater(){
-	
-	mClickState();
+
+	mCursorState();
 	bool isUpdate = mMenuSelectState();
+	if (GameController::GetKey().KeyDownTrigger('T')){
+		Debug::mPrint("Ç´ÇΩ");
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
+	}
+
 	// Ç‹Çæë±ÇØÇÈÇ©ÅH
 	if (!isUpdate)
 	{
@@ -214,7 +219,7 @@ void SceneTitle::mChangeSelect(){
 }
 
 
-void SceneTitle::mClickState(){
+void SceneTitle::mCursorState(){
 	if (m_pushState != kPleaseClick)return;
 
 	if (GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart)){

@@ -50,7 +50,7 @@ void gInitalizer(std::shared_ptr<ModelBase> &command, Transform transform, Color
 
 void FieldArea::mInitialize(){
 	WorldReader reader;
-	reader.Load("data/stage.aether");
+	reader.Load("data\\Field\\stage.aether");
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
