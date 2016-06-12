@@ -19,8 +19,6 @@ private:
 		ePause,
 		eBattle,
 		eExit,
-		eFadeIn,
-		eFadeOut,
 		eNull
 	};
 	

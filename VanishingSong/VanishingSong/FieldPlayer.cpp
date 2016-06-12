@@ -11,8 +11,8 @@
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
-	const float kCameraRotationMaxX = 15.0f;
-	const float kCameraRotationMinX = -15.0f;
+	const float kCameraRotationMaxX = -5.0f;
+	const float kCameraRotationMinX = -30.0f;
 	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
 	const float kDefaultMove = 100.0f;
 
@@ -81,6 +81,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	// 移動があれば
 	FieldPlayer::eState state;
 	if (getKeyValues.first._translation == kVector3Zero){
+		
 		state = eState::eWait;
 	}
 	else{
@@ -136,17 +137,17 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 	}
 	else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
 		output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		output.first._rotation._y += 180;
+		output.first._rotation._y = 180;
 	}
 	else
 	/* 横の移動(X軸)	*/
 	if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
 		output.first._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		output.first._rotation._y += 90;
+		output.first._rotation._y = 90;
 	}
 	else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
 		output.first._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		output.first._rotation._y += 270;
+		output.first._rotation._y = 270;
 	}
 
 	/*	カメラの回転	*/	
@@ -155,6 +156,13 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 	}
 	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
 		output.second._y -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+	}else
+	if (GameController::GetKey().IsKeyDown(VK_UP) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRB1)){
+		output.second._x += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+	}
+	else if (GameController::GetKey().IsKeyDown(VK_DOWN) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
+		output.second._x -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		
 	}
 
 	return output;
@@ -217,7 +225,8 @@ void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookA
 	// カメラのリセット一応階といた
 	mCheckCameraRotation(rotation);
 	Matrix4x4 rotationMatrix;
-	rotationMatrix.PitchYawRoll(rotation*kAetherRadian);
+	Vector3 rotationY = Vector3(0,rotation._y,0);
+	rotationMatrix.PitchYawRoll(rotationY*kAetherRadian);
 	Vector3 position = m_cameraOffset._translation;
 	position = position.TransformCoordNormal(rotationMatrix);
 
@@ -229,6 +238,7 @@ void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookA
 
 //
 void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
+	Debug::mPrint(std::to_string(rotation._x));
 	// カメラ可動範囲の上限の確認
 	if (rotation._x > kCameraRotationMaxX){
 		rotation._x = kCameraRotationMaxX;

@@ -68,7 +68,7 @@ bool SceneGame::Initialize(){
 	
 	// ƒ{ƒX‚ÉŸ‚Á‚Ä‚¢‚½‚çŠ®¬‚Ì‰¹Šy‚ğ—¬‚·
 	auto bossState = GameManager::mGetInstance().mBossState();
-	if (bossState == GameManager::eBossState::eWin){
+	if (bossState == GameManager::eBossState::eWin ){
 		ResourceManager::mGetInstance().mGetLastBGM()->PlayToLoop();
 	}
 	else{
@@ -231,7 +231,6 @@ bool SceneGame::mMessageUpdate(){
 	if (m_pMessageManager->mGetIsChangeScene()){
 		GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
 		GameManager::mGetInstance().mBattleDataFile(m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetBattleDataPath());
-
 		return true;
 	}
 	return false;

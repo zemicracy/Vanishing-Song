@@ -23,7 +23,6 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 
 	WorldReader reader;
 	reader.Load("data\\stage.aether");
-
 	//SpawnêŠ
 	for (auto index : reader.GetInputWorldInfo()._object){
 		if (index->_name == "area1"){
@@ -42,11 +41,9 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 			m_pEnemySpawner[4] = index->_transform._translation;
 		}
 	}
-
 	reader.UnLoad();
 
 	m_pEnemy.reserve(5);
-
 
 	//EnemyGround‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){

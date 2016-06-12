@@ -312,7 +312,7 @@ void ResourceManager::mPlayerInitialize(eMusical type, std::string path, std::st
 	m_pPlayerHashes[type] = std::make_shared<FbxModel>();
 
 	// ‘Ì‚Ìƒp[ƒc
-	m_pPlayerHashes[type]->LoadFBX(path+"\\Player.fbx", eAxisSystem::eAxisOpenGL);
+	m_pPlayerHashes[type]->LoadFBX(path+"\\test.fbx", eAxisSystem::eAxisOpenGL);
 	m_pPlayerHashes[type]->SetTextureDirectoryName(tex);
 	return;
 }
