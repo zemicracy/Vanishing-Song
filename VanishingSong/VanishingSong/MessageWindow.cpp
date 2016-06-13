@@ -111,5 +111,3 @@ void MessageWindow::mRender(ShaderBase *shader){
 	m_button->Render(shader);
 	
 }
-
-
