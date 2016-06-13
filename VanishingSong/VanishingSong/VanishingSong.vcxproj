@@ -23,6 +23,7 @@
     <ClCompile Include="BattlePlayer.cpp" />
     <ClCompile Include="BattlePlayerManager.cpp" />
     <ClCompile Include="Cage.cpp" />
+    <ClCompile Include="CageManager.cpp" />
     <ClCompile Include="CharaEntity.cpp" />
     <ClCompile Include="Cipher.cpp" />
     <ClCompile Include="ClearGauge.cpp" />
@@ -53,6 +54,7 @@
     <ClCompile Include="SceneGame.cpp" />
     <ClCompile Include="SceneTitle.cpp" />
     <ClCompile Include="SceneTutorial.cpp" />
+    <ClCompile Include="TutorialEnemy.cpp" />
     <ClCompile Include="TutorialMessage.cpp" />
     <ClCompile Include="VanishingSongFrame.cpp" />
   </ItemGroup>
@@ -76,6 +78,7 @@
     <ClInclude Include="BattlePlayer.h" />
     <ClInclude Include="BattlePlayerManager.h" />
     <ClInclude Include="Cage.h" />
+    <ClInclude Include="CageManager.h" />
     <ClInclude Include="CharaEntity.h" />
     <ClInclude Include="CharaStatus.h" />
     <ClInclude Include="Cipher.h" />
@@ -109,6 +112,7 @@
     <ClInclude Include="SceneGame.h" />
     <ClInclude Include="SceneTitle.h" />
     <ClInclude Include="SceneTutorial.h" />
+    <ClInclude Include="TutorialEnemy.h" />
     <ClInclude Include="TutorialMessage.h" />
     <ClInclude Include="VanishingSongFrame.h" />
   </ItemGroup>
