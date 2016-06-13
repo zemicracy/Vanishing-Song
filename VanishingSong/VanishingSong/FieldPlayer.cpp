@@ -155,7 +155,7 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 	}
 
 	/*	ÉJÉÅÉâÇÃâÒì]	*/	
-	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
+	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRRight)){
 		output.second._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRLeft)){

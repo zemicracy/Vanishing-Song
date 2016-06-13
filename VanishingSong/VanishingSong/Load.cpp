@@ -2,6 +2,7 @@
 #include <Rectangle2D.h>
 #include "Const.h"
 #include "ResourceManager.h"
+#include "GameManager.h"
 #include <GameClock.h>
 #include <WorldReader.h>
 #include <GameController.h>
@@ -57,14 +58,25 @@ void Load::Run(){
 
 	m_pLoadBar->Render(shader["texture"].get());
 	entity.GetDirect3DManager()->Change3DMode();
+	
 	m_changeBarTime += GameClock::GetDeltaTime();
 	
 	auto loadBarTexture = ResourceManager::mGetInstance().GetTexture("NowLoading" + std::to_string(m_barCount + 1)).get();
 	m_pLoadBar->SetTexture(loadBarTexture);
+	
 }
 
 bool Load::WaitRun(){
+	Run();
+	DirectXEntity entity;
+	entity.GetDirect3DManager()->Change2DMode();
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		entity.GetDirect3DManager()->Change3DMode();
+		return kWaitting;
+	}
+	entity.GetDirect3DManager()->Change3DMode();
 	return kWaitEnd;
+
 }
 
 void Load::mChangeBar(float& time){

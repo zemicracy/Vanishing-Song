@@ -23,27 +23,18 @@ void CageManager::mInitialize(FieldEnemyManager* enemyManager, ViewCamera* camer
 	int count = 0;
 	eMusical musical[3] = { eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
 
-
 	for (auto& index : m_pCage){
-		const auto position = enemyManager->mEnemyGet(count)->mGetProperty()._penemy->property._transform._translation;
-		bool isTought = false;
-		// 戦闘に使うプレイヤーはもう捕まっていないから檻を外す
-		for (auto& useIndex : GameManager::mGetInstance().mGetUsePlayer()){
-			if (musical[count] == useIndex.second){
-				isTought = true;
+		bool isThought = true;
+		for (auto& usePlayer : GameManager::mGetInstance().mGetUsePlayer()){
+			if (musical[count] == usePlayer.second){
+				isThought = false;
+				break;
 			}
 		}
-
-		// 捕まっていたら
-		if (isTought){
-			index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(position._x + 20, 0.0f, position._z), camera, false);
-		}
-		else{
-			index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(position._x + 20, 0.0f, position._z), camera, false);
-		}
+		const auto position = enemyManager->mEnemyGet(count)->mGetProperty()._penemy->property._transform._translation;
+		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(position._x + 30, 0.0f, position._z), camera, isThought);
 		count += 1;
 	}
-
 }
 
 

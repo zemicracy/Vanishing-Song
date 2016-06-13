@@ -51,6 +51,7 @@ void FieldEnemy::mUpdate(){
 void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	
 	m_property._penemy->Render(model_shader);
+	
 	m_property._pCollider->Render(colider_shader);
 }
 

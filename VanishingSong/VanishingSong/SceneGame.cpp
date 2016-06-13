@@ -38,6 +38,33 @@ bool SceneGame::Initialize(){
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
 
+
+
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	SecureZeroMemory(&depthStencilDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	// Set up the description of the stencil state.
+	depthStencilDesc.DepthEnable = false;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+
+	// Stencil operations if pixel is front-facing.
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing.
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	m_directEntity.GetDirect3DManager()->GetDevice()->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);
+
 	// シーンの登録
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
@@ -73,15 +100,13 @@ bool SceneGame::Initialize(){
 			itr->PlayToLoop();
 		}
 	}
-
-	// とりあえず一回呼んでおく
-	mRun();
-	
 	
 	const bool isTutorial = (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial)
 		|| (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd);
+
 	m_pTutorialEnemy = std::make_shared<TutorialEnemy>();
 	m_pTutorialEnemy->mInitalize(isTutorial);
+
 	if (isTutorial){
 		m_gameState = eState::eTutorial;
 	}
@@ -91,6 +116,8 @@ bool SceneGame::Initialize(){
 	}
 
 	m_isTransitionEnd = false;
+	// とりあえず一回呼んでおく
+	mRun();
 	_heapmin();
 	return true;
 }
@@ -131,7 +158,7 @@ void SceneGame::Finalize(){
 		m_pFieldEnemy.reset();
 		m_pFieldEnemy = nullptr;
 	}
-	
+
 	m_gameState = eState::eNull;
 	_heapmin();
 	return;
@@ -150,7 +177,7 @@ bool SceneGame::Updater(){
 // チュートリアル用
 void SceneGame::mTutorial(){
 	if (m_gameState != eState::eTutorial)return;
-	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE);
+	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
 	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
@@ -211,13 +238,13 @@ void SceneGame::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pTutorialEnemy->mRender(shaderHash["texture"].get());
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	
-	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	
-	
+
+	//m_directEntity.GetDirect3DManager()->GetDeviceContext()->OMSetDepthStencilState(m_depthStencilState, 1);
+	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	//m_directEntity.GetDirect3DManager()->Change3DMode();
 	return;
 }
 
