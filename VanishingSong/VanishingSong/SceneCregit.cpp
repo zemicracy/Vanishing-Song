@@ -1,4 +1,4 @@
-#include "SceneBattle.h"
+#include "SceneCregit.h"
 #include <iostream>
 #include<Skybox.h>
 #include<Rectangle3D.h>
@@ -8,26 +8,27 @@
 #include"SceneGame.h"
 #include"Cipher.h"
 #include"ModelUtility.h"
+
 //debug
 using namespace aetherClass;
-const std::string SceneBattle::Name = "Battle";
-SceneBattle::SceneBattle():
+const std::string SceneCregit::Name = "Cregit";
+SceneCregit::SceneCregit() :
 GameScene(Name, GetManager())
 {
 }
 
-SceneBattle::~SceneBattle()
+SceneCregit::~SceneCregit()
 {
 }
 
 
 //interim
-bool SceneBattle::Initialize(){
+bool SceneCregit::Initialize(){
 	_heapmin();
 
 	mLoadTextData();
 
-	
+
 	RegisterScene(new SceneGame());
 
 	m_pMessage = std::make_unique<BattleMessage>();
@@ -36,7 +37,7 @@ bool SceneBattle::Initialize(){
 	m_pActionBoard->mInitialize();
 
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view,m_rhythm.get());
+	m_pField->mInitialize(&m_view, m_rhythm.get());
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
 	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
@@ -44,25 +45,17 @@ bool SceneBattle::Initialize(){
 	//ウェーブ系
 	m_MaxWave = m_pBattleEnemyManager->mGetWaveAllCount();
 	m_waveID = 1;
-	m_pBattleEnemyManager->ResetEnemyList(m_waveID-1, &m_view);
-
-	m_pGauge = std::make_unique<GaugeManager>();
-	m_pGauge->mInitialize();
-
-	//hp
-	m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_waveID - 1);
-	m_pGauge->mSetHpAll(&m_charaHp, m_enemyHp);
+	m_pBattleEnemyManager->ResetEnemyList(m_waveID - 1, &m_view);
 
 
 	m_pOrderList = std::make_unique<OrderList>();
-	m_pOrderList->mInitialize(m_beatMode,m_battleState,m_pActionBoard.get(),m_pField.get(),m_rhythm.get());
+	m_pOrderList->mInitialize(m_beatMode, m_battleState, m_pActionBoard.get(), m_pField.get(), m_rhythm.get());
 
 	// プレイヤーの初期化
 	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
 		auto gearframe = ResourceManager::mGetInstance().mGetPlayerHash(index.second);
 		gearframe->SetCamera(&m_view);
-		m_players.mSetPlayer(index.second, m_pField->mGetPlayerLane(index.second),gearframe);
-		m_charaHp._maxHp = m_charaHp._hp += 8;
+		m_players.mSetPlayer(index.second, m_pField->mGetPlayerLane(index.second), gearframe);
 	}
 
 
@@ -86,13 +79,13 @@ bool SceneBattle::Initialize(){
 	m_particleDesc._endPoint._y += 100;
 
 	//最後に行う
-	m_sound->SetValume(-m_bgmVolume*100);
+	m_sound->SetValume(-m_bgmVolume * 100);
 	m_sound->PlayToLoop();
 	_heapmin();
 	return true;
 }
 
-void SceneBattle::Finalize(){
+void SceneCregit::Finalize(){
 	_heapmin();
 
 	if (m_pOrderList){
@@ -111,17 +104,9 @@ void SceneBattle::Finalize(){
 		m_pField.reset();
 		m_pField = nullptr;
 	}
-	if (m_pGauge){
-		m_pGauge.reset();
-		m_pGauge = nullptr;
-	}
 	if (m_pMessage){
 		m_pMessage.reset();
 		m_pMessage = nullptr;
-	}
-	if (m_pResult){
-		m_pResult.reset();
-		m_pResult = nullptr;
 	}
 	if (m_rhythm){
 		m_rhythm->mFinalize();
@@ -135,10 +120,10 @@ void SceneBattle::Finalize(){
 	_heapmin();
 	return;
 }
-void SceneBattle::mLoadTextData(){
+void SceneCregit::mLoadTextData(){
 	std::string file = GameManager::mGetInstance().mBattleDataFile();
 	Cipher cip(file);
-	
+
 	m_stageID = std::atoi(&cip.mGetSpriteArray("[Stage]").front().front());
 	int type = std::atoi(&cip.mGetSpriteArray("[Beat]").front().front());
 	if (type == 4){
@@ -166,17 +151,12 @@ void SceneBattle::mLoadTextData(){
 }
 
 
-bool SceneBattle::Updater(){
+bool SceneCregit::Updater(){
 	if (m_pBattleEnemyManager){
 		m_pBattleEnemyManager->mUpdate(1);
 	}
 	if (m_particle){
 		m_particle->mUpdate(0.8);
-	}
-	if (kCharaDebug){
-		if (GameController::GetKey().IsKeyDown('I')){
-			m_enemyHp->_hp -= 1;
-		}
 	}
 	if (m_rhythm){
 		m_rhythm->mAcquire();
@@ -202,7 +182,7 @@ bool SceneBattle::Updater(){
 			m_pOrderList->mSetOption(eAppendOption::eNone);
 		}
 		m_processState = eGameState::eCountIn;
-		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime()+0.1f);
+		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime() + 0.1f);
 	}
 	else if (m_processState == eGameState::eCountIn){
 		auto command = m_pActionBoard->mSelectType();
@@ -231,14 +211,11 @@ bool SceneBattle::Updater(){
 			mCheckBattle();
 			break;
 		case GameManager::eBattleState::eResult:
-			mOnResult();
 			break;
 		case GameManager::eBattleState::eNewWave:
 			if (m_rhythm->mIsQuarterBeat()){
 				m_processState = eGameState::ePreCountIn;
 				m_battleState = GameManager::eBattleState::eListen;
-				m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_waveID - 1);
-				m_pGauge->mSetHpAll(&m_charaHp, m_enemyHp);
 				m_pBattleEnemyManager->ResetEnemyList(m_waveID - 1, &m_view);
 
 			}
@@ -253,9 +230,6 @@ bool SceneBattle::Updater(){
 	}
 
 	m_pField->mRhythmicMotion();
-	if (m_pGauge){
-		m_pGauge->mUpdate(1);
-	}
 	if (m_pOrderList){
 		m_pOrderList->mUpdate();
 		m_pOrderList->mRhythmicMotion();
@@ -264,27 +238,27 @@ bool SceneBattle::Updater(){
 	return true;
 }
 
-void SceneBattle::Render(){
+void SceneCregit::Render(){
 	m_view.Render();
 	auto& shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	if (m_pField){
 		m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
-		m_players.mRender(shaderHash["texture"].get());
+	m_players.mRender(shaderHash["texture"].get());
 	if (m_pOrderList){
 		m_pOrderList->mRender3D(shaderHash["texture"].get());
 	}
 	if (m_pBattleEnemyManager){
 		m_pBattleEnemyManager->mRender(shaderHash["transparent"]);
 	}
+
 	if (m_particle){
 		m_particle->mRender(shaderHash["texture"].get());
 	}
-
 	return;
 }
 
-void SceneBattle::UIRender(){
+void SceneCregit::UIRender(){
 	auto& shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	if (m_pOrderList){
 		m_pOrderList->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
@@ -292,54 +266,20 @@ void SceneBattle::UIRender(){
 	if (m_pMessage){
 		m_pMessage->mRender(shaderHash["transparent"].get());
 	}
-	if (m_pGauge){
-		m_pGauge->mRender();
-	}
 
-	if (m_battleState == GameManager::eBattleState::eResult){
-		if (m_pResult){
-			m_pResult->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-		}
-	}
 	return;
 }
 
-bool SceneBattle::TransitionIn(){
+bool SceneCregit::TransitionIn(){
 	return kTransitionEnd;
 }
 
-bool SceneBattle::TransitionOut(){
+bool SceneCregit::TransitionOut(){
 	return kTransitionEnd;
-}
-
-void SceneBattle::mOnResult(){
-
-	if (!m_initUpdateProcess){
-		m_pGauge.reset();
-		m_pMessage.reset();
-		m_sound.reset();
-		m_rhythm->mFinalize();
-		m_rhythm.reset();
-		
-
-		m_pResult = std::make_unique<ResultBoard>();
-		m_pResult->mInitialize();
-
-		m_pResult->mSetResultData(m_pOrderList->mGetResult(),m_winner,m_stageID);
-		m_initUpdateProcess = true;
-
-		m_pOrderList.reset();
-	}
-
-	m_pResult->mUpdate();
-	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	if (isPress){
-		ChangeScene(SceneGame::Name, LoadState::eUse);
-	}
 }
 
 // 敵の演奏
-void SceneBattle::mOnListen(){
+void SceneCregit::mOnListen(){
 	if (m_battleState != GameManager::eBattleState::eListen)return;
 	// TODO: 敵の演奏をする処理＆スタックされる処理＆敵によってはオーダーリストに細工をする
 
@@ -361,7 +301,7 @@ void SceneBattle::mOnListen(){
 }
 
 // プレイヤーの演奏
-void SceneBattle::mOnPerform(){
+void SceneCregit::mOnPerform(){
 	if (m_battleState != GameManager::eBattleState::ePerform)return;
 	// TODO: プレイヤーの演奏する処理
 
@@ -382,7 +322,7 @@ void SceneBattle::mOnPerform(){
 }
 
 // 戦闘開始
-void SceneBattle::mOnBattle(){
+void SceneCregit::mOnBattle(){
 	if (m_battleState != GameManager::eBattleState::eBattle)return;
 	// TODO: OnListenとOnPerformの結果を反映する処理
 	if (!m_initUpdateProcess){
@@ -391,13 +331,6 @@ void SceneBattle::mOnBattle(){
 	}
 
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
-	auto i = m_pOrderList->mGetDamage();
-	if (i > 0){
-		m_enemyHp->_hp -= i;
-	}
-	else if (i < 0){
-		m_charaHp._hp += i;
-	}
 
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
@@ -407,55 +340,43 @@ void SceneBattle::mOnBattle(){
 }
 
 // 判定用
-void SceneBattle::mCheckBattle(){
+void SceneCregit::mCheckBattle(){
 	if (m_battleState != GameManager::eBattleState::eCheck)return;
 	// TODO: 勝負判定処理＆場合によってはWaveを進める処理
 	m_pOrderList->mEndReset();
 
-	if (m_enemyHp->_hp <= 0){
-		if (m_waveID < m_MaxWave){
-			m_waveID++;
+	if (m_waveID < m_MaxWave){
+		m_waveID++;
+		m_pBattleEnemyManager->misDie();
+		m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 
-			m_pBattleEnemyManager->misDie();
-			m_particle = std::make_shared<AttackParticle>(m_particleDesc,&m_view);
-
-
-			m_battleState = GameManager::eBattleState::eNewWave;
-			m_processState = eGameState::ePreCountIn;
-		}
-		else{
-			m_pBattleEnemyManager->misDie();
-			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
-
-			m_battleState = GameManager::eBattleState::eWin;
-			m_processState = eGameState::ePreCountIn;
-		}
-	}
-	else if (m_charaHp._hp <= 0){
-		m_battleState = GameManager::eBattleState::eLose;
+		m_battleState = GameManager::eBattleState::eNewWave;
 		m_processState = eGameState::ePreCountIn;
 	}
 	else{
-		m_battleState = GameManager::eBattleState::eListen;
+		m_pBattleEnemyManager->misDie();
+		m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
+
+		m_battleState = GameManager::eBattleState::eWin;
 		m_processState = eGameState::ePreCountIn;
 	}
-
 }
 
-void SceneBattle::mCountIn(){
+
+void SceneCregit::mCountIn(){
 	double Padding;
 	float exFrame = modf(m_rhythm->mWholeBeatTime(), &Padding);
-//	std::cout << m_rhythm->mWholeBeatTime() << "\tstate\t" << (int)m_battleState << std::endl;
+	//	std::cout << m_rhythm->mWholeBeatTime() << "\tstate\t" << (int)m_battleState << std::endl;
 
 	if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
 		if (int(m_rhythm->mWholeBeatTime()) != m_prevWholeBeatNo){
-				m_inCount = 0;
-				m_pMessage->mSetActive(false);
-				
-				m_preInitProcess = false;
-				m_winner = m_battleState;
-				m_battleState = GameManager::eBattleState::eResult;
-				m_sound->Stop();
+			m_inCount = 0;
+			m_pMessage->mSetActive(false);
+
+			m_preInitProcess = false;
+			m_winner = m_battleState;
+			m_battleState = GameManager::eBattleState::eResult;
+			m_sound->Stop();
 		}
 	}
 	else if (m_battleState == GameManager::eBattleState::ePerform){
@@ -483,16 +404,16 @@ void SceneBattle::mCountIn(){
 	}
 	if (m_rhythm->mIsQuarterBeat()){
 		m_inCount++;
-//		printf("%d\n", m_inCount);
+		//		printf("%d\n", m_inCount);
 	}
 
 	if (m_inCount >= 2){
 		if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
-			m_sound->SetValume(-m_bgmVolume*100);
+			m_sound->SetValume(-m_bgmVolume * 100);
 			m_bgmVolume++;
 			m_pMessage->mChangeTexture(m_battleState);
 		}
-		else if(m_battleState == GameManager::eBattleState::eNewWave){
+		else if (m_battleState == GameManager::eBattleState::eNewWave){
 			m_pMessage->mWaveMessageOpen(m_waveID);
 		}
 		else{
@@ -503,7 +424,6 @@ void SceneBattle::mCountIn(){
 			m_pMessage->mChangeTexture(m_battleState);
 		}
 		m_pMessage->mSetActive(true);
-		
 	}
 
 }

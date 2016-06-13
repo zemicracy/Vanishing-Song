@@ -79,8 +79,8 @@ private:
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
 	//パーティクル
-	AttackParticle::ParticleDesc m_perticleDesc;
-	std::unique_ptr<AttackParticle>m_pParticle;
+	/*AttackParticle::ParticleDesc m_perticleDesc;
+	std::unique_ptr<AttackParticle>m_pParticle;*/
 
 	//コマンド描画先
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;

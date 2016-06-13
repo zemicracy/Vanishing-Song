@@ -182,6 +182,9 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
 		}
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
+		m_TextureList["note"]->Load("Texture\\OrderList\\note_a.png");
+		m_pGeneral["noteImage"]->SetTexture(m_TextureList["note"].get());
+
 	}
 	else if (stageID == 1){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);

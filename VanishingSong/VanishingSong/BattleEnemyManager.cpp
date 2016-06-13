@@ -2,6 +2,7 @@
 #include <random>
 #include "Cipher.h"
 #include"ResourceManager.h"
+#include<ModelUtility.h>
 using namespace aetherClass;
 int cnt = 0;
 
@@ -23,7 +24,6 @@ void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	
 	flag = true;
 
-	
 }
 
 
@@ -59,9 +59,12 @@ int BattleEnemyManager::mGetRandom(){
 	return r;
 }
 
-void BattleEnemyManager::mUpadate(const float timeScale ){
-
+void BattleEnemyManager::mUpdate(const float timeScale ){
+	for (auto itr : m_pEnemy){
+		itr->mUpdate(1);
+	}
 }
+
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
 	Cipher chipher(path);

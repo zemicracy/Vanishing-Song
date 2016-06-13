@@ -1,7 +1,6 @@
-//#pragma once
 
-#ifndef _SCENEBATTLE_H
-#define _SCENEBATTLE_H
+#ifndef _SCENECREGIT_H
+#define _SCENECREGIT_H
 #include <GameScene.h>
 #include <ModelBase.h>
 #include <ShaderBase.h>
@@ -22,7 +21,7 @@
 #include"AttackParticle.h"
 
 
-class SceneBattle :
+class SceneCregit :
 	public aetherClass::GameScene
 {
 
@@ -30,11 +29,11 @@ public:
 	static const std::string Name;
 public:
 	enum class eGameState{
-		ePreCountIn,eCountIn,eUpdate,eFin
+		ePreCountIn, eCountIn, eUpdate, eFin
 	};
 
-	SceneBattle();
-	~SceneBattle();
+	SceneCregit();
+	~SceneCregit();
 
 	//初期化
 	bool Initialize()override;
@@ -56,7 +55,6 @@ public:
 private:
 	void mCountIn();
 
-	void mOnResult();
 	void mOnListen();    // 敵の演奏
 	void mOnPerform();   // プレイヤーの演奏
 	void mOnBattle();    // 戦闘開始
@@ -75,8 +73,6 @@ private:
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<BattleField>m_pField;
 	std::unique_ptr<BattleMessage>m_pMessage;
-	std::unique_ptr<GaugeManager>m_pGauge;
-	std::unique_ptr<ResultBoard>m_pResult;
 
 	aetherClass::ViewCamera m_view;
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
@@ -94,9 +90,6 @@ private:
 	int m_waveID;
 	int m_stageID;
 	GameManager::eGameMode m_beatMode;
-	//karikari
-	CharaStatus m_charaHp;
-	CharaStatus *m_enemyHp;
 
 	//パーティクル
 	std::shared_ptr<AttackParticle>m_particle;

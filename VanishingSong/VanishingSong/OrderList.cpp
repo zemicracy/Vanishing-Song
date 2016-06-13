@@ -47,7 +47,6 @@ void OrderList::mFinalize(){
 	m_pFlame->Finalize();
 	m_pFlame.reset();
 
-	m_pParticle.reset();
 	m_playedAction.reset();
 
 	for (auto itr : m_pSpriteList){
@@ -111,7 +110,6 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 			m_BackImageReverceOrigin._x = itr->_transform._translation._x + itr->_transform._scale._x + 80;
 			m_BackImageReverceOrigin._y = itr->_transform._translation._y;
-
 
 		}
 		if (itr->_name == "linepos"){
@@ -224,7 +222,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	mAppendOptionInit();
 
 //パーティクル
-	m_perticleDesc._size = 8;
+	/*m_perticleDesc._size = 8;
 	m_perticleDesc._scale = 5;
 	m_perticleDesc._texturePath = dir + "note_a.png";
 	m_perticleDesc._endPoint = Vector3(0, 50, 0);
@@ -232,7 +230,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_perticleDesc._rangeMax = Vector3(10, 0, 10);
 
 	m_pParticle = std::make_unique<AttackParticle>(m_perticleDesc, m_Field->mGetCamera());
-	m_pParticle->mReset(m_perticleDesc);
+	m_pParticle->mReset(m_perticleDesc);*/
 }
 
 
@@ -302,8 +300,8 @@ void OrderList::mListenUpdate(){
 		
 		m_playedAction = m_EnemyOrderList[m_processId];
 		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull && m_EnemyOrderList[m_processId]->mGetType() != eMusical::eAdlib){
-			m_perticleDesc._startPoint = m_Field->mGetEnemyLane(m_EnemyOrderList[m_processId]->mGetType());
-			m_pParticle->mReset(m_perticleDesc);
+			/*m_perticleDesc._startPoint = m_Field->mGetEnemyLane(m_EnemyOrderList[m_processId]->mGetType());
+			m_pParticle->mReset(m_perticleDesc);*/
 
 			auto sound = ResourceManager::mGetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
 			mPlaySound(sound);
@@ -457,8 +455,8 @@ void OrderList::mPerformUpdate(){
 	m_isPlaySound = false;
 
 	if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eMiss){
-		m_perticleDesc._startPoint = m_Field->mGetPlayerLane(m_PlayerOrderList[m_processId]->mGetType());
-		m_pParticle->mReset(m_perticleDesc);
+		/*m_perticleDesc._startPoint = m_Field->mGetPlayerLane(m_PlayerOrderList[m_processId]->mGetType());
+		m_pParticle->mReset(m_perticleDesc);*/
 	}
 }
 
@@ -545,9 +543,9 @@ void OrderList::mUpdate(){
 		break;
 	}
 
-	if (m_pParticle){
+	/*if (m_pParticle){
 		m_pParticle->mUpdate(3);
-	}
+	}*/
 }
 
 void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
@@ -814,9 +812,9 @@ int OrderList::mGetDamage(){
 }
 
 void OrderList::mRender3D(aetherClass::ShaderBase* shader){
-	if (m_pParticle){
+	/*if (m_pParticle){
 		m_pParticle->mRender(shader);
-	}
+	}*/
 }
 
 ResultData& OrderList::mGetResult(){

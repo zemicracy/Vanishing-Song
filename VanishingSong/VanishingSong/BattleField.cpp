@@ -170,19 +170,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 }
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
-
-	/*if (aetherClass::GameController::GetKey().IsKeyDown('X')){
-		m_pSkyBox->property._transform._rotation._x += 0.1;
-	}
-	else if (aetherClass::GameController::GetKey().IsKeyDown('C')){
-		m_pSkyBox->property._transform._rotation._x -= 0.1;
-	}
-	if (aetherClass::GameController::GetKey().IsKeyDown(VK_SPACE)){
-
-		Debug::mPrint(std::to_string(m_pSkyBox->property._transform._rotation._x));
-	}*/
-
-	//ƒ¿‚¯‚·‚æ
+	//ƒ¿‚¯‚·—p
 	for (auto itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){
 			itr.second->property._color._alpha -= 0.1;

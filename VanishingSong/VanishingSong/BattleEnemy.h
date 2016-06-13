@@ -61,6 +61,7 @@ private:
 	eMusical m_type;
 	Enemy m_enemy;
 	bool m_isDie;
+	float m_alpha;
 };
 
 #endif

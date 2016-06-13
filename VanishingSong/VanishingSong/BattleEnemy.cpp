@@ -24,16 +24,18 @@ void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* ca
 	m_enemy._model->property._transform._scale = 1.5;
 	m_enemy._model->property._transform._rotation._y = -90;
 
+	m_enemy._model->SetModelColor(Color(0, 0, 0, 1));
 }
 
 BattleEnemy::Enemy& BattleEnemy::mGetEnemy(){
-
 	return m_enemy;
-
 }
 
 void BattleEnemy::mUpdate(const float timescale){
-	
+	if (m_isDie){
+		m_alpha -= 0.05;
+		m_enemy._model->SetModelColor(Color(0,0,0,m_alpha));
+	}
 }
 
 
@@ -47,14 +49,12 @@ void BattleEnemy::mOnDamage(){
 
 void BattleEnemy::mRender(std::shared_ptr<ShaderBase> tex){
 
-	if (m_isDie){
-		return;
-	}
 	m_enemy._model->Render(tex.get());
 }
 
 void BattleEnemy::misDie(){
 	m_isDie = true;
+	m_alpha = 1;
 }
 
 void BattleEnemy::Finalize(){
