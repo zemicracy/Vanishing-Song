@@ -20,8 +20,6 @@ void BattlePlayer::mInitialize(eMusical type, aetherClass::Vector3 position, std
 	m_model = model;
 	m_transform._translation = Vector3(position._x, 0.0f, position._z);
 	m_transform._rotation._y = 90;
-
-	
 	return;
 }
 

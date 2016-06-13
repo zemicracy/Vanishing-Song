@@ -54,3 +54,13 @@ void CageManager::mUpdate(float scaleTime, Vector3 position){
 		index->mUpdate(scaleTime,position);
 	}
 }
+
+Vector3 CageManager::mGetPosition(const int number){
+	if (number >= m_pCage.size())return kVector3Zero;
+	return m_pCage.at(number)->mGetPosition();
+}
+
+void CageManager::mSetIsComment(const int number, const bool flg){
+	if (number >= m_pCage.size())return;
+	m_pCage.at(number)->mSetIsComment(flg);
+}

@@ -42,8 +42,6 @@ private:
 	eSelectType m_selectType;
 
 	std::shared_ptr<aetherClass::Rectangle3D>m_messageFlame;
-	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture;
-	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture2;
 	bool m_select;
 	bool m_isChangeScene;
 	bool m_viewMessageFlame;

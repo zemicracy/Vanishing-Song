@@ -100,7 +100,10 @@ bool ResourceManager::InitializeActionSound(){
 */
 bool ResourceManager::InitializeTexture(){
 	RegisterTexture("skybox", "Texture\\Game\\GameBack.jpg");
-	
+
+	RegisterTexture("comment", "Texture\\Message\\comment_flame.png");
+	RegisterTexture("comment2", "Texture\\Message\\comment_flame2.png");
+
 	std::string comPath = "Texture\\ActionCommand\\";
 	RegisterTexture("ActionBlue", comPath + "Blue.png");
 	RegisterTexture("ActionGreen", comPath + "Green.png");
