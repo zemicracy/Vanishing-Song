@@ -159,6 +159,10 @@ void SceneGame::Finalize(){
 		m_pFieldEnemy = nullptr;
 	}
 
+	if (m_pTutorialEnemy){
+		m_pTutorialEnemy.reset();
+		m_pTutorialEnemy = nullptr;
+	}
 	m_gameState = eState::eNull;
 	_heapmin();
 	return;

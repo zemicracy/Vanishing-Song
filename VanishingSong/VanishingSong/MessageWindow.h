@@ -12,11 +12,12 @@ public:
 	bool mInitialize();
 	void mSetText(aetherClass::Texture*);
 	
-	void mFinalize();
+	
 	void mRender(aetherClass::ShaderBase*);
 	void mSetButton(aetherClass::Texture*);
 	void mUpdate(const bool);
 private:
+	void mFinalize();
 	std::shared_ptr<aetherClass::Rectangle2D>m_window;
 	std::shared_ptr<aetherClass::Rectangle2D>m_text;
 	std::shared_ptr<aetherClass::Rectangle2D>m_button;

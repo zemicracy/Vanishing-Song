@@ -49,7 +49,6 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 
 MessageManager::~MessageManager()
 {
-	m_message.mFinalize();
 	if (m_messageFlame){
 		m_messageFlame->Finalize();
 		m_messageFlame.reset();
