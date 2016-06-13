@@ -18,7 +18,7 @@ public:
 	bool mGetMessageEnd();
 private:
 	std::string m_dataPath;
-	MessageWindow m_messageWindow;
+	std::shared_ptr<MessageWindow> m_messageWindow;
 	std::array<aetherClass::Texture, 4> m_tutorialMessage;
 	std::array<aetherClass::Texture, 4> m_tutorialClearMessage;
 	bool m_isEnd;

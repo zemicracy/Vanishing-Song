@@ -10,7 +10,12 @@ TutorialEnemy::TutorialEnemy()
 
 TutorialEnemy::~TutorialEnemy()
 {
-	m_messageWindow.mFinalize();
+	if (m_messageWindow){
+		m_messageWindow->mFinalize();
+		m_messageWindow.reset();
+		m_messageWindow = nullptr;
+
+	}
 }
 
 //
@@ -18,8 +23,8 @@ void TutorialEnemy::mInitalize(const bool flg){
 	m_isEnd = !flg;
 	if (m_isEnd)return;
 
-	m_messageWindow.mInitialize();
-
+	m_messageWindow = std::make_shared<MessageWindow>();
+	m_messageWindow->mInitialize();
 
 	int count = NULL;
 	for (auto& message : m_tutorialMessage){
@@ -51,7 +56,7 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 			m_messageEnd = true;
 		}
 
-		m_messageWindow.mSetText(&m_tutorialClearMessage.at(m_messageCount));
+		m_messageWindow->mSetText(&m_tutorialClearMessage.at(m_messageCount));
 	}
 	else{
 		if (m_tutorialClearMessage.size() <= m_messageCount){
@@ -59,7 +64,7 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 			m_messageEnd = true;
 		}
 
-		m_messageWindow.mSetText(&m_tutorialMessage.at(m_messageCount));
+		m_messageWindow->mSetText(&m_tutorialMessage.at(m_messageCount));
 	}
 }
 
@@ -70,7 +75,7 @@ void TutorialEnemy::mRender(ShaderBase*){
 
 void TutorialEnemy::mUIRender(ShaderBase* shader){
 	if (m_isEnd)return;
-	m_messageWindow.mRender(shader);
+	m_messageWindow->mRender(shader);
 }
 
 //

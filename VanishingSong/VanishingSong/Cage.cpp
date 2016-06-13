@@ -29,10 +29,11 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 
 	if (isTought){
 		m_cage = std::make_shared<FbxModel>();
-		m_cage->LoadFBX("ori", eAxisSystem::eAxisOpenGL);
-		m_cage->SetTextureDirectoryName("deirectory");
+		m_cage->LoadFBX("Model\\Object\\Field\\ori.fbx", eAxisSystem::eAxisOpenGL);
+		m_cage->SetTextureDirectoryName("Model\\Object\\Field\\tex");
 		m_cage->SetCamera(camera);
 		m_cage->property._transform._translation = position;
+		m_cage->property._transform._scale = 3;
 	}
 	m_isTought = isTought;
 	return;
