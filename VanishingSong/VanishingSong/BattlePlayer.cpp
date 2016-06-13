@@ -18,7 +18,7 @@ BattlePlayer::~BattlePlayer()
 void BattlePlayer::mInitialize(eMusical type, aetherClass::Vector3 position, std::shared_ptr<FbxModel> model){
 	m_type = type;
 	m_model = model;
-	m_transform._translation = position;
+	m_transform._translation = Vector3(position._x, 0.0f, position._z);
 	m_transform._rotation._y = 90;
 
 	

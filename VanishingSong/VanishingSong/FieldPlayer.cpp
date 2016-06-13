@@ -106,7 +106,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 		m_transform._translation += translation;
 		m_pBodyCollider->property._transform._translation = m_transform._translation;
 		if (m_hitObject&&CollideBoxOBB(*m_pBodyCollider, *m_hitObject)){
-			m_transform._translation = m_prevPosition-translation*2 + FLT_EPSILON;
+			m_transform._translation = m_prevPosition;
 		}
 
 		m_isHitWall = false; //フラグをオフにする
@@ -206,7 +206,7 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 	
 	collider->Initialize();
 	collider->property._transform._translation = original + offset;
-	collider->property._transform._scale = 10;
+	collider->property._transform._scale = Vector3(5,10,10);
 	collider->property._color = Color(1, 0, 0, 0.5);
 	collider->SetCamera(&m_playerView);
 	return;
