@@ -6,7 +6,6 @@
 #include"ActionSound.h"
 #include"Const.h"
 #include"GameClock.h"
-#include"RhythmManager.h"
 #include<iostream>
 
 
@@ -20,11 +19,12 @@ OrderList::OrderList()
 
 	m_isKeyDown = 0;
 	m_isPlaySound = 0;
+	m_isTutorialDemo = 0;
+	m_isLineStart = 0;
 
 	m_processId = 0;
 	m_MaxOrderSize = 0;
 
-	m_isLineStart = 0;
 	m_eighterCount = 0;
 	m_damagedValue = 0;
 }
@@ -38,13 +38,30 @@ void OrderList::mFinalize(){
 	m_pBackImage->Finalize();
 	m_pBackImage.reset();
 
+	m_pReadLine->Finalize();
+	m_pReadLine.reset();
+
+	m_pVolumeImage->Finalize();
+	m_pVolumeImage.reset();
+
+	m_pFlame->Finalize();
+	m_pFlame.reset();
+
+	m_pParticle.reset();
+	m_playedAction.reset();
+
 	for (auto itr : m_pSpriteList){
-		itr->Finalize();
-		itr.reset();
+		if (itr){
+			itr->Finalize();
+			itr.reset();
+		}
 	}
 
 	m_EnemyOrderList.clear();
 	m_PlayerOrderList.clear();
+	for (auto itr : m_pTextureList){
+		itr.second.reset();
+	}
 	m_pTextureList.clear();
 	GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
 }
@@ -63,7 +80,7 @@ std::shared_ptr<Texture> gLoadTexture(std::string key, std::string path){
 }
 
 //初期化
-void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,ActionBoard* board,BattleField* field){
+void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,ActionBoard* board,BattleField* field,RhythmManager*rhythm){
 	WorldReader reader;
 	std::string dir = "Texture\\OrderList\\";
 
@@ -79,9 +96,9 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	
 	m_pSpriteList.resize(8);
 	m_pSpriteOrigin.resize(8);
+	
 
-
-	for (auto itr : reader.GetInputWorldInfo()._object){
+	for (auto& itr : reader.GetInputWorldInfo()._object){
 		itr->_color = Color(0, 0, 0, 1);
 		if (itr->_name == "base"){
 			gInitializer(m_pBackImage, itr->_transform, itr->_color);
@@ -91,6 +108,11 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			m_BackImageOrigin._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
 			m_BackImageOrigin._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
 			m_BackImageScaleOrigin = itr->_transform._scale;
+
+			m_BackImageReverceOrigin._x = itr->_transform._translation._x + itr->_transform._scale._x + 80;
+			m_BackImageReverceOrigin._y = itr->_transform._translation._y;
+
+
 		}
 		if (itr->_name == "linepos"){
 			gInitializer(m_pReadLine, itr->_transform, Color(1,0,0,1));
@@ -146,18 +168,22 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			gInitializer(m_pVolumeImage, itr->_transform, itr->_color);
 			m_VolumeOrigin = itr->_transform._translation + itr->_transform._scale / 2;
 			m_VolumeOrigin._z = 0;
-			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note.png");
+
+
+
+			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note_a.png");
 			m_pVolumeImage->SetTexture(m_pTextureList[itr->_name].get());
 		}
 	}
-
-	//ちょうどいいから（
-	m_ReadLineOrigin._x = m_pSpriteOrigin[0]._x - (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x)*3;
 	reader.UnLoad();
+
+	//ライン開始位置
+	m_ReadLineOrigin._x = m_pSpriteOrigin[0]._x - (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x)*3;
+	m_ReadLineReverce._x = m_pSpriteOrigin[7]._x + (m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x) * 3;
 	m_MaxOrderSize = requestVal;
 
 
-
+	//画面の枠
 	m_pFlame = std::make_shared<Rectangle2D>();
 	m_pFlame->Initialize();
 	m_flameScaleOrigin = m_pFlame->property._transform._scale = Vector3(1280, 720, 1);
@@ -167,40 +193,72 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_flameScaleOrigin *= 1.2;
 	m_pFlame->property._transform._translation = m_flameScaleOrigin / 2 * -1 + m_flameScaleOrigin;
 
+	//位置補正
+	{
+		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (0 * 20);
+		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y + (0 * 20);
+		auto size = (m_pFlame->property._transform._scale);
+		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
+		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
+		m_pFlame->property._transform._translation._z = 0;
+	}
+
+
 
 
 	m_pTextureList["flame"] = gLoadTexture("",dir + "flame.png");
 	m_pFlame->SetTexture(m_pTextureList["flame"].get());
 
+	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 
+	m_rhythm = rhythm;
+//	m_rhythm->mInitializeRhythm(0, 110);
+
+	m_pEffect = std::make_shared<EffectGenerator2D>();
+	m_pEffect->mInitialize();
+
+	m_pEffect->mLoadEffect(9, "Break", "Effect\\BreakCommand\\");
+	m_pEffect->mLoadEffect(6, "In", "Effect\\InCommand\\");
+	m_effectTrans = Transform(Vector3(), Vector3(), Vector3( 16*10, 9*10,0));
+
+	mAppendOptionInit();
+
+//パーティクル
 	m_perticleDesc._size = 8;
 	m_perticleDesc._scale = 5;
-	m_perticleDesc._texturePath = dir + "note.png";
+	m_perticleDesc._texturePath = dir + "note_a.png";
 	m_perticleDesc._endPoint = Vector3(0, 50, 0);
 	m_perticleDesc._rangeMin = Vector3(5, 0, 5);
 	m_perticleDesc._rangeMax = Vector3(10, 0, 10);
 
 	m_pParticle = std::make_unique<AttackParticle>(m_perticleDesc, m_Field->mGetCamera());
 	m_pParticle->mReset(m_perticleDesc);
+}
 
-	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 
-	m_rhythm = &Singleton<RhythmManager>::GetInstance();
-//	m_rhythm->mInitializeRhythm(0, 110);
+void OrderList::mAppendOptionInit(){
+	m_option = eAppendOption::eNone;
+	m_pTextureList["Cover"] = gLoadTexture("", "Texture\\ActionCommand\\Cover.png");
 }
 
 void OrderList::mLineUpdate(){
 	if (!m_isLineStart) return;
-	if(m_rhythm->mIsQuarterBeat()){
+	if (m_rhythm->mIsQuarterBeat()){
 		m_eighterCount++;
 	}
-	{
+
+	if (m_option & eAppendOption::eReverce){
+		float oneWay = m_pSpriteOrigin[0]._x - m_pSpriteOrigin[2]._x;
+		float time;
+		time = modf(m_rhythm->mQuarterBeatTime(), &time);
+		m_pReadLine->property._transform._translation._x = m_ReadLineReverce._x + (m_eighterCount * oneWay) + (time * oneWay);
+	}
+	else{
 		float oneWay = m_pSpriteOrigin[2]._x - m_pSpriteOrigin[0]._x;
 		float time;
-		time = modf(m_rhythm->mQuarterBeatTime(),&time);
+		time = modf(m_rhythm->mQuarterBeatTime(), &time);
 		m_pReadLine->property._transform._translation._x = m_ReadLineOrigin._x + (m_eighterCount * oneWay) + (time * oneWay);
 	}
-	
 
 }
 
@@ -227,13 +285,27 @@ void OrderList::mListenUpdate(){
 			return;
 		};
 
+		//エフェクト関係
+		int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
+		if (m_option & eAppendOption::eReverce){
+			int id = (m_MaxOrderSize - 1) - m_processId;
+			m_effectTrans._translation._x = m_pSpriteOrigin[id*requestVal]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[id*requestVal]._y - m_effectTrans._scale._y / 2;
+			m_pEffect->mPlay("In", "In" + std::to_string(id), m_effectTrans);
+		}
+		else{
+			m_effectTrans._translation._x = m_pSpriteOrigin[m_processId*requestVal]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[m_processId*requestVal]._y - m_effectTrans._scale._y / 2;
+			m_pEffect->mPlay("In", "In" + std::to_string(m_processId), m_effectTrans);
+		}
+
 		
 		m_playedAction = m_EnemyOrderList[m_processId];
-		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull){
+		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull && m_EnemyOrderList[m_processId]->mGetType() != eMusical::eAdlib){
 			m_perticleDesc._startPoint = m_Field->mGetEnemyLane(m_EnemyOrderList[m_processId]->mGetType());
 			m_pParticle->mReset(m_perticleDesc);
 
-			auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
+			auto sound = ResourceManager::mGetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
 			mPlaySound(sound);
 		}
 		m_processId++;
@@ -248,6 +320,7 @@ void OrderList::mPerformUpdate(){
 	if (!m_isAlPlay){
 		//一回しか処理させたくないもの	
 		m_PlayerOrderList.clear();
+		m_PlayerOrderList.reserve(8);
 		m_isAlPlay = true;
 	}
 	float reducation = 0;
@@ -274,7 +347,7 @@ void OrderList::mPerformUpdate(){
 		(!m_rhythm->mIsEighterBeat() && m_rhythm->mIsSixteenthBeat()) ;
 
 	
-	//裏打ちのタイミングで毎回フラグをリセットし次を判定
+	//更に細かい符の裏打ちのタイミングで毎回フラグをリセットし次を判定
 	if (backBeat){
 			//std::cout << "Reset " << m_processId << std::endl;
 		if (m_isKeyDown){
@@ -284,6 +357,9 @@ void OrderList::mPerformUpdate(){
 			//Debug::mPrint("MISS");
 			if (m_processId < m_MaxOrderSize){
 				if (command->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
+				}
+				else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
+					command = m_ActionBoard->mGetCommand(eMusical::eNull);
 				}
 				else{
 					command = m_ActionBoard->mGetCommand(eMusical::eMiss);
@@ -303,12 +379,39 @@ void OrderList::mPerformUpdate(){
 			onCommand = true;
 		}
 	}
-	if (onCommand){
+	
+	if (m_processId > m_MaxOrderSize){
+		//停止場所	Debug::mPrint("Stop List");
+		mListStop();
+		return;
+	}
+
+	
+	//デモモードの時は入力はオート
+	if (m_isTutorialDemo){
+		if (m_isKeyDown) return;
+		if (m_processId >= m_MaxOrderSize)return;
+
+		command = m_EnemyOrderList[m_processId];
+
+		if (command->mGetType() == eMusical::eAdlib){
+			command = m_ActionBoard->mGetCommand(eMusical::eBlue);
+		}
+		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
+			m_playedAction = command;
+			m_isKeyDown = true;
+			m_isPlaySound = true;
+			m_PlayerOrderList.push_back(command);
+		}
+	}
+	else if (onCommand){
 		m_playedAction = command;
 		if (m_isKeyDown) return;
 		//間違ってたらミスを入れる
 		if (m_processId >= m_MaxOrderSize)return;
 		if (command->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
+		}
+		else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
 		}
 		else{
 			command = m_ActionBoard->mGetCommand(eMusical::eMiss);
@@ -316,26 +419,26 @@ void OrderList::mPerformUpdate(){
 
 
 		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
-				//Debug::mPrint("Great");
+			//Debug::mPrint("Great");
 			m_isKeyDown = true;
 			m_isPlaySound = true;
 			m_PlayerOrderList.push_back(command);
 		}
 		else {
-				//Debug::mPrint("DownMISS");
+			//Debug::mPrint("DownMISS");
 			m_isKeyDown = true;
-			m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eMiss));
+			if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
+				m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eNull));
+			}
+			else
+				m_PlayerOrderList.push_back(m_ActionBoard->mGetCommand(eMusical::eMiss));
 			return;
 		}
 	}
 
 
 
-	if (m_processId > m_MaxOrderSize){
-		//停止場所	Debug::mPrint("Stop List");
-		mListStop();
-		return;
-	}
+	
 
 	//１つ多く処理して時間調整
 	if (m_processId > m_MaxOrderSize - 1)return;
@@ -348,11 +451,15 @@ void OrderList::mPerformUpdate(){
 
 
 	//音があるやつは流す
-	auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
+	auto sound = ResourceManager::mGetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
 	sound->mStop();
 	sound->mPlaySoundAction(0);
 	m_isPlaySound = false;
 
+	if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eMiss){
+		m_perticleDesc._startPoint = m_Field->mGetPlayerLane(m_PlayerOrderList[m_processId]->mGetType());
+		m_pParticle->mReset(m_perticleDesc);
+	}
 }
 
 //バトル
@@ -381,11 +488,26 @@ void OrderList::mBattleUpdate(){
 			m_processId++;
 			return;
 		}
+		int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
 
+		if (m_option & eAppendOption::eReverce){
+			int id = (m_MaxOrderSize - 1) - m_processId;
+			m_effectTrans._translation._x = m_pSpriteOrigin[id*requestVal]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[id*requestVal]._y - m_effectTrans._scale._y / 2;
+			m_pEffect->mPlay("Break", "Break" + std::to_string(id), m_effectTrans);
+		}
+		else{
+			m_effectTrans._translation._x = m_pSpriteOrigin[m_processId*requestVal]._x - m_effectTrans._scale._x / 2;
+			m_effectTrans._translation._y = m_pSpriteOrigin[m_processId*requestVal]._y - m_effectTrans._scale._y / 2;
+			m_pEffect->mPlay("Break", "Break" + std::to_string(m_processId), m_effectTrans);
+		}
 
 		if (m_PlayerOrderList[m_processId]->mGetType() == eMusical::eMiss){
 			m_damagedValue = -1;
 			m_resultData._missCount++;
+		}
+		else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib && m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
+			m_damagedValue = 3;
 		}
 		else {
 			m_damagedValue = 1;
@@ -395,7 +517,7 @@ void OrderList::mBattleUpdate(){
 
 		//アドリブhantei投入場所
 		if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
-			auto sound = Singleton<ResourceManager>::GetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
+			auto sound = ResourceManager::mGetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
 			mPlaySound(sound);
 		}
 		m_processId++;
@@ -406,6 +528,7 @@ void OrderList::mBattleUpdate(){
 void OrderList::mUpdate(){
 
 	mLineUpdate();
+	m_pEffect->mUpdate(1);
 
 	switch (*m_faze)
 	{
@@ -422,7 +545,6 @@ void OrderList::mUpdate(){
 		break;
 	}
 
-	mRhythmicMotion();
 	if (m_pParticle){
 		m_pParticle->mUpdate(3);
 	}
@@ -432,6 +554,7 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 	m_pBackImage->Render(shader);
 	m_pFlame->Render(shader);
 	m_pVolumeImage->Render(shader);
+	m_pEffect->mRender(shader);
 	const float l_kalpha = 0.5f;
 
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
@@ -449,48 +572,87 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 			}
 
 			for (int i = 0; i < ifill; ++i){
-				m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
-				m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
+				//黒塗り
+				int id = i;
+				if (m_option & eAppendOption::eReverce){
+					id = (m_MaxOrderSize -1)- id;
+				}
+
+				if (m_option & eAppendOption::eBlack && m_EnemyOrderList[i]->mGetType() != eMusical::eAdlib){
+					m_pSpriteList[id*requestVal]->SetTexture(m_pTextureList["Cover"].get());
+				}
+				else{
+					m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+				}
+				m_pSpriteList[id*requestVal]->property._color._alpha = 1.0f;
 
 
 				//再生済み透明処理
 				if (m_isEnd){
-					m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+					m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
 				}
-				else if (m_processId > i + 1 && !m_isAlPlay){
-					m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
+				else{
+					if (m_option & eAppendOption::eReverce){
+						int revProcess = (m_MaxOrderSize-1) - m_processId;
+						if (revProcess < id && !m_isAlPlay){
+							m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
+						}
+					}
+					else{
+						if (m_processId > id + 1 && !m_isAlPlay){
+							m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
+						}
+					}
 				}
 
-				m_pSpriteList[i*requestVal]->Render(shader);
+				m_pSpriteList[id*requestVal]->Render(shader);
 			}
 		}
 	}
 	else if (*m_faze == GameManager::eBattleState::ePerform){
 		//enemyOrderRender
 		for (int i = m_processId; i < m_EnemyOrderList.size(); ++i){
+			int id = i;
+			if (m_option & eAppendOption::eReverce){
+				id = (m_MaxOrderSize - 1) - id;
+			}
+
 			if (i >= m_MaxOrderSize) break;
-			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
-			m_pSpriteList[i*requestVal]->property._color._alpha = l_kalpha;
-			m_pSpriteList[i*requestVal]->Render(shader);
+			if (m_option & 1 && m_EnemyOrderList[i]->mGetType() != eMusical::eAdlib){
+				m_pSpriteList[id*requestVal]->SetTexture(m_pTextureList["Cover"].get());
+			}
+			else{
+				m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
+			}
+			m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
+			m_pSpriteList[id*requestVal]->Render(shader);
 		}
 		
 
 		if (!m_PlayerOrderList.empty()){
 			for (int i = 0; i < m_PlayerOrderList.size(); ++i){
+				int id = i;
+				if (m_option & eAppendOption::eReverce){
+					id = (m_MaxOrderSize - 1) - id;
+				}
 				if (i >= m_MaxOrderSize) break;
-				m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
-				m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
-				m_pSpriteList[i*requestVal]->Render(shader);
+				m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
+				m_pSpriteList[id*requestVal]->property._color._alpha = 1.0f;
+				m_pSpriteList[id*requestVal]->Render(shader);
 			}
 		}
 
 	}
 	else if (*m_faze == GameManager::eBattleState::eBattle){
 		for (int i = m_processId; i < m_PlayerOrderList.size(); ++i){
+			int id = i;
+			if (m_option & eAppendOption::eReverce){
+				id = (m_MaxOrderSize - 1) - id;
+			}
 			if (i >= m_MaxOrderSize) break;
-			m_pSpriteList[i*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
-			m_pSpriteList[i*requestVal]->property._color._alpha = 1.0f;
-			m_pSpriteList[i*requestVal]->Render(shader);
+			m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_PlayerOrderList[i]->mGetType()).get());
+			m_pSpriteList[id*requestVal]->property._color._alpha = 1.0f;
+			m_pSpriteList[id*requestVal]->Render(shader);
 		}
 	}
 
@@ -540,7 +702,12 @@ void OrderList::mListStop(){
 }
 void OrderList::mLinePlay(){
 	m_isLineStart = true;
-	m_pReadLine->property._transform._translation = m_ReadLineOrigin;
+	if (m_option & eAppendOption::eReverce){
+		m_pReadLine->property._transform._translation = m_ReadLineReverce;
+	}
+	else{
+		m_pReadLine->property._transform._translation = m_ReadLineOrigin;
+	}
 	m_eighterCount = 0;
 }
 
@@ -548,7 +715,7 @@ void OrderList::mEndReset(){
 	mListStop();
 	m_EnemyOrderList.clear();
 	m_PlayerOrderList.clear();
-
+	m_option = eAppendOption::eNone;
 }
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
@@ -563,25 +730,36 @@ void OrderList::mRhythmicMotion(){
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
-	//拡大縮小をするために
-	m_pVolumeImage->property._transform._scale = 150 + (scale * 15);
-
+	
 	//音符
 	{
+		m_pVolumeImage->property._transform._scale = 150 + (scale * 15);
 		auto size = (m_pVolumeImage->property._transform._scale);
 		m_pVolumeImage->property._transform._translation = m_VolumeOrigin - (size / 2);
 		m_pVolumeImage->property._transform._translation._z = 0;
 	}
 	
 	//リスト
-	{
-		m_pBackImage->property._transform._scale._x = m_BackImageScaleOrigin._x + (scale*10);
-		m_pBackImage->property._transform._scale._y = m_BackImageScaleOrigin._y + (scale*10);
-		auto size = (m_pBackImage->property._transform._scale);
-		m_pBackImage->property._transform._translation._x = m_BackImageOrigin._x - (size._x / 2);
-		m_pBackImage->property._transform._translation._y = m_BackImageOrigin._y - (size._y / 2);
-		m_pBackImage->property._transform._translation._z = 0;
-	}
+		if (m_option & eAppendOption::eReverce){
+			m_pBackImage->property._transform._scale._x = m_BackImageScaleOrigin._x + (scale * 10);
+			m_pBackImage->property._transform._scale._y = m_BackImageScaleOrigin._y + (scale * 10);
+			auto size = (m_pBackImage->property._transform._scale);
+			m_pBackImage->property._transform._scale._x *= -1;
+
+			float reversive = m_BackImageReverceOrigin._x - (m_BackImageScaleOrigin._x / 2);
+			m_pBackImage->property._transform._translation._x = reversive + (size._x / 2);
+			m_pBackImage->property._transform._translation._y = m_BackImageOrigin._y - (size._y / 2);
+			m_pBackImage->property._transform._translation._z = 0;
+
+		}
+		else{
+			m_pBackImage->property._transform._scale._x = m_BackImageScaleOrigin._x + (scale * 10);
+			m_pBackImage->property._transform._scale._y = m_BackImageScaleOrigin._y + (scale * 10);
+			auto size = (m_pBackImage->property._transform._scale);
+			m_pBackImage->property._transform._translation._x = m_BackImageOrigin._x - (size._x / 2);
+			m_pBackImage->property._transform._translation._y = m_BackImageOrigin._y - (size._y / 2);
+			m_pBackImage->property._transform._translation._z = 0;
+		}
 	//フレーム
 	{
 		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (scale * 20);
@@ -619,7 +797,7 @@ void OrderList::mRhythmicMotion(){
 		power = 2;
 	}
 	if (framecnt < maxFrame){
-		GameController::GetJoypad().SetVibration(std::make_pair(15000 * power, 15000 * power));
+		GameController::GetJoypad().SetVibration(std::make_pair(20000 * power, 60000 * power));
 	}
 	else{
 		GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
@@ -641,6 +819,14 @@ void OrderList::mRender3D(aetherClass::ShaderBase* shader){
 	}
 }
 
-ResultData OrderList::mGetResult(){
+ResultData& OrderList::mGetResult(){
 	return m_resultData;
+}
+
+void OrderList::mSetOption(eAppendoption op){
+	m_option = op;
+}
+
+void OrderList::mSetTutorial(bool flg){
+	m_isTutorialDemo = flg;
 }

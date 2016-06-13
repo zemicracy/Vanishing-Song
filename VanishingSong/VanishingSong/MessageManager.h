@@ -8,6 +8,7 @@ class MessageManager
 	enum class eState{
 		eNext,
 		eSelect,
+		eCannotSelect,
 		eEnd,
 		eNull
 	};
@@ -17,9 +18,9 @@ class MessageManager
 		eNull
 	};
 public:
-	MessageManager(std::shared_ptr<FieldEnemyManager>&,aetherClass::ViewCamera*);
+	MessageManager(std::shared_ptr<FieldEnemyManager>,aetherClass::ViewCamera*);
 	~MessageManager();
-	void mUpdate(const std::pair<int, bool>, const bool isPressButton, const bool isCursor, aetherClass::Vector3 position, aetherClass::Vector3 enemy);
+	void mUpdate(const std::pair<int, bool>, const bool isPressButton, const bool isCursor, aetherClass::Vector3 position, aetherClass::Vector3 enemy,const int nowStage);
 	
 	void mChangeMessage(aetherClass::Texture*);
 	bool mGetIsChangeScene()const;
@@ -42,10 +43,13 @@ private:
 
 	std::shared_ptr<aetherClass::Rectangle3D>m_messageFlame;
 	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture;
+	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture2;
 	bool m_select;
 	bool m_isChangeScene;
 	bool m_viewMessageFlame;
 	aetherClass::ViewCamera* m_camera;
+	float m_messageFlameTime;
+	bool m_changeMessageFlame;
 };
 
 #endif

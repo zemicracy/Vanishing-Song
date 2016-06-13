@@ -4,6 +4,7 @@
 #include "Const.h"
 #include <unordered_map>
 #include <Transform.h>
+#include "FadeManager.h"
 class GameManager
 {
 public:
@@ -16,6 +17,7 @@ public:
 		eBattle,    // í“¬‚ÌÀsó‘Ô
 		eCheck,     // ¡‚Ìó‘Ô‚ğ”»’è‚·‚é
 		eResult,	// ƒŠƒUƒ‹ƒg
+		eNewWave,
 		eNull,
 	};
 
@@ -32,9 +34,22 @@ public:
 		eWin,
 		eNull
 	};
+
+	enum class eFieldState{
+		eTutorial,
+		eTutorialEnd,
+
+		eFirstStage,
+		eSecoundStage,
+		eThirdStage,
+		eForthStage,
+		
+		eBoss,
+		eNull
+	};
 public:
-	GameManager();
-	~GameManager();
+
+	static GameManager& mGetInstance();
 	void mInitialize();	
 
 	void mPushUsePlayer(eMusical);
@@ -45,14 +60,34 @@ public:
 	void mBattleDataFile(std::string);
 	std::string mBattleDataFile();
 
-	void mFieldBossState(eBossState);
-	eBossState mFieldBossState();
+	void mBossState(eBossState);
+	eBossState mBossState();
+
+	void mFieldState(eFieldState);
+	eFieldState mFieldState();
+
+	void mNote(eMusical);
+	std::vector<eMusical>& mNote();
+
+	void mGetCanStage(const int);
+	int  mGetCanStage()const;
+
+	FadeManager& mfadeManager();
+
+private:
+	GameManager();
+	~GameManager();
 private:
 	bool m_isPause;
 	std::unordered_map<eMusical,eMusical> m_players;
 	aetherClass::Transform m_prevPlayerTransform;
 	std::string m_battleDataFile;
-	eBossState m_fieldBossState;
+	eBossState m_bossState;
+	eFieldState m_fieldState;
+	std::vector<eMusical> m_noteArray;
+	int m_canStageNumber;
+
+	FadeManager m_fadeManager;
 };
 
 #endif

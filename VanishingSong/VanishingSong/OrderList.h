@@ -7,25 +7,34 @@
 #include"AttackParticle.h"
 #include"BattleField.h"
 #include"ResultBoard.h"
+#include"EffectGenerator2D.h"
 
 #include<array>
+namespace{
+	enum eAppendOption{
+		eNone = 0, eBlack = 1, eReverce = 2
+	};
+}
 class OrderList
 {
 public:
 
 	OrderList();
 	~OrderList();
-	//再生
+	//処理再生
 	void mPlay();
+	//ライン再生
 	void mLinePlay();
 
+	typedef int eAppendoption;	//フラグ int(BitFlgs) = eAppendOption
+
 	//Listen
+	void mSetOption(eAppendoption op);
 	void mAddEnemyOrder(std::vector<std::shared_ptr<ActionCommand>>&);	//敵からリストを受け取る
 
 	//Perform
 	std::shared_ptr<ActionCommand> mGetActionCommand();
 
-	//Check
 	//Battle
 	int mGetDamage();
 
@@ -33,13 +42,18 @@ public:
 	void mEndReset();
 
 	//Indispensable Method
-	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,ActionBoard*,BattleField*);
+	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,ActionBoard*,BattleField*,RhythmManager*);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUpdate();
 
 	//AccesserMethod
 	bool mIsEnd();
-	ResultData mGetResult();
+	ResultData& mGetResult();
+	void mSetTutorial(bool);
+
+	//リズムに合わせたモーション
+	void mRhythmicMotion();
+
 
 	//other
 	void mRender3D(aetherClass::ShaderBase*);
@@ -56,26 +70,26 @@ private:
 	void mPlaySound(std::shared_ptr<ActionSound>);
 	//停止
 	void mListStop();
-	//リズムに合わせたモーションはここで
-	void mRhythmicMotion();
-
+	//オプション
+	void mAppendOptionInit();
 private:
 
 	//敵とプレイヤーのリスト
 	std::vector<std::shared_ptr<ActionCommand>>m_PlayerOrderList;
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
+	//パーティクル
 	AttackParticle::ParticleDesc m_perticleDesc;
 	std::unique_ptr<AttackParticle>m_pParticle;
 
-	//描画先
+	//コマンド描画先
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;
 	std::vector<aetherClass::Vector3>m_pSpriteOrigin;
 
 	//一時補間場所（外に出す用）
 	std::shared_ptr<ActionCommand>m_playedAction;
 
-	//そのたモーション目的
+	//そのたモーション目的と本体
 	ActionBoard* m_ActionBoard;
 	BattleField* m_Field;
 	std::shared_ptr<aetherClass::SpriteBase>m_pVolumeImage;
@@ -83,10 +97,12 @@ private:
 
 	std::shared_ptr<aetherClass::SpriteBase>m_pBackImage;
 	aetherClass::Vector3 m_BackImageOrigin;
+	aetherClass::Vector3 m_BackImageReverceOrigin;
 	aetherClass::Vector3 m_BackImageScaleOrigin;
 
 	std::shared_ptr<aetherClass::SpriteBase>m_pReadLine;
 	aetherClass::Vector3 m_ReadLineOrigin;
+	aetherClass::Vector3 m_ReadLineReverce;
 
 	std::shared_ptr<aetherClass::Rectangle2D>m_pFlame;
 	aetherClass::Vector3 m_flamePosOrigin;
@@ -95,8 +111,16 @@ private:
 
 	//リズム
 	RhythmManager *m_rhythm;
+
+	//テクスチャ
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 
+	//option
+	eAppendoption m_option;
+
+	//エフェクト
+	std::shared_ptr<EffectGenerator2D> m_pEffect;
+	aetherClass::Transform m_effectTrans;
 
 	bool m_isLineStart;		//ライン再生
 	int m_eighterCount;		//カウント
@@ -107,11 +131,12 @@ private:
 
 	bool m_isKeyDown;		//その拍ににキーが押されたか
 	bool m_isPlaySound;		//コマンド再生dできるか
+	bool m_isTutorialDemo;	//デモモードか
 
 	int m_processId;		//処理中のID
 	int m_MaxOrderSize;
 	
-	int m_damagedValue;
+	int m_damagedValue;		//攻撃かダメージか
 	ResultData m_resultData;
 
 	//

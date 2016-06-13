@@ -30,11 +30,24 @@ void BattleMessage::mInitialize(){
 	m_textureList.at(GameManager::eBattleState::eWin)->Load(folder + "Win.png");
 	m_textureList.at(GameManager::eBattleState::eLose)->Load(folder + "Lose.png");
 
+
+	m_waveMessage.reserve(5);
+	for (int i = 1; i <= 4; ++i){
+		m_waveMessage.push_back(std::make_shared<Texture>());
+		m_waveMessage.back()->Load(folder + "wave" + std::to_string(i) + ".png");
+	}
+	m_waveMessage.push_back(std::make_shared<Texture>());
+	m_waveMessage.back()->Load(folder + "tutorial" + ".png");
+
 }
 void BattleMessage::mChangeTexture(GameManager::eBattleState state){
 	if (m_textureList.find(state) == m_textureList.end())return;
 	m_pSprite->SetTexture(m_textureList.at(state).get());
+}
 
+void BattleMessage::mWaveMessageOpen(UINT index){
+	if (index > m_waveMessage.size()-1)return;
+	m_pSprite->SetTexture(m_waveMessage.at(index).get());
 }
 
 void BattleMessage::mSetActive(bool flg){
@@ -54,5 +67,13 @@ void BattleMessage::mRender(aetherClass::ShaderBase* shader){
 }
 void BattleMessage::mFinalize(){
 	m_pSprite->Finalize();
+	for (auto &itr : m_textureList){
+		itr.second.reset();
+	}
+	for (auto &itr : m_waveMessage){
+		itr.reset();
+	}
+	m_textureList.clear();
+	m_waveMessage.clear();
 }
 

@@ -1,18 +1,18 @@
 #ifndef _BATTLEENEMY_H
 #define _BATTLEENEMY_H
 #include "Const.h"
-#include "GearFrame.h"
 #include "ActionBlue.h"
 #include "ShaderBase.h"
 #include "CharaEntity.h"
 #include <memory>
+#include<FbxModel.h>
 class BattleEnemy
 {
 
 public:
 	struct Enemy
 	{
-		std::shared_ptr<GearFrame> _gearFrame;
+		std::shared_ptr<aetherClass::FbxModel> _model;
 		eMusical _type;
 	};
 
@@ -23,11 +23,10 @@ public:
 	/*
 		‰Šú‰»ˆ—
 	*/
-	void mInitialize(eMusical type, aetherClass::ViewCamera*,aetherClass::Vector3&);
+	void mInitialize(eMusical type,eEnemyType enemytype, aetherClass::ViewCamera*,aetherClass::Vector3&);
 
 	Enemy &mGetEnemy();
 	eMusical mGetType();
-
 
 	/*
 		XVˆ—
@@ -45,6 +44,8 @@ public:
 	*/
 	void mOnDamage();
 
+	void misDie();
+
 	
 	/*
 		•`‰æˆ—
@@ -54,18 +55,12 @@ private:
 	// ‰ğ•úˆ—
 	// ‚½‚¾‚µGearFrame‚Í‰ğ•ú‚µ‚È‚¢
 	void Finalize();
-	bool mInitializeBlue(aetherClass::ViewCamera*, aetherClass::Vector3& pos);
-	bool mInitializeGreen(aetherClass::ViewCamera*, aetherClass::Vector3& pos);
-	void SetLoadModelValue(std::shared_ptr<Gear>&, ObjectInfo*);
 
 
 private:
 	eMusical m_type;
 	Enemy m_enemy;
-	CharaEntity m_charaEntity;;
-	std::shared_ptr<GearFrame> m_GearFrame;
-	std::shared_ptr<Gear> m_pTopGear;
-
+	bool m_isDie;
 };
 
 #endif

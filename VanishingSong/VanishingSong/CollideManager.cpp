@@ -20,6 +20,9 @@ CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_
 
 CollideManager::~CollideManager()
 {
+	m_enemy = nullptr;
+	m_filed = nullptr;
+	m_player = nullptr;
 }
 
 //
@@ -28,7 +31,6 @@ void CollideManager::mUpdate(){
 	const int playerNumber = mCheckPlayerFieldArea();
 	mCheckHitObject(playerNumber);
 	mCheckHitEnemy(playerNumber);
-
 	return;
 }
 
@@ -36,9 +38,10 @@ void CollideManager::mUpdate(){
 void CollideManager::mCheckHitObject(const int number){
 
 	// プレイヤーと壁
+	if (number > 3)return;
 	for (auto wall : m_filed->mGetPartitionWall(number)){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
-			m_player->mOnHitWall();
+			m_player->mOnHitWall(wall.get());
 			break;
 		}
 	}
@@ -47,12 +50,6 @@ void CollideManager::mCheckHitObject(const int number){
 }
 
 void CollideManager::mCheckHitEnemy(const int number){
-
-	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
-		m_player->mOnHitWall();
-		
-	}
-
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
 	if ((x*x) + (z*z) > kRange*kRange){
@@ -61,6 +58,11 @@ void CollideManager::mCheckHitEnemy(const int number){
 	}else{
 		m_messageInfo.second = false;
 	}
+
+	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
+		m_player->mOnHitWall(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
+	}
+	
 }
 
 std::pair<int,bool> CollideManager::GetMassageInfo(){
@@ -75,7 +77,7 @@ std::pair<int,bool> CollideManager::GetMassageInfo(){
 int CollideManager::mCheckPlayerFieldArea(){
 	
 	// 前回の番号からプラスしていく
-	for (int id = m_player->mGetFieldNumber(); id < kPartitionSize; ++id){
+	for (int id = m_player->mGetFieldNumber(); id <5; ++id){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_filed->mGetPartitionCube(id))){
 			m_player->mSetFieldNumber(id);
 			return id;

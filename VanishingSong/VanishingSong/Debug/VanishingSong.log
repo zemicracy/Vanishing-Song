@@ -1,18 +1,26 @@
-﻿2016/05/31 13:28:47 にビルドを開始しました。
+﻿2016/06/13 1:38:01 にビルドを開始しました。
      1>ノード 2 上のプロジェクト "C:\Users\nwuser.DA\Desktop\zemicracy\Vanishing-Song\VanishingSong\VanishingSong\VanishingSong.vcxproj" (Build ターゲット)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Aether\FBX\FBX SDK\2015.1\include" /IC:\Aether\Includes /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt SceneBattle.cpp SceneGame.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Aether\FBX\FBX SDK\2015.1\include" /IC:\Aether\Includes /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Entry.cpp SceneBattle.cpp SceneGame.cpp SceneTitle.cpp SceneTutorial.cpp
+         SceneTutorial.cpp
+         SceneTitle.cpp
+     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenetitle.cpp(84): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenetitle.cpp(91): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenetitle.cpp(208): warning C4018: '>' : signed と unsigned の数値を比較しようとしました。
+     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenetitle.cpp(240): warning C4305: '+=' : 'double' から 'float' へ切り詰めます。
+     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenetitle.cpp(243): warning C4305: '-=' : 'double' から 'float' へ切り詰めます。
          SceneGame.cpp
-     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenegame.cpp(46): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
          SceneBattle.cpp
-     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenebattle.cpp(81): warning C4244: '引数' : 'float' から 'const int' への変換です。データが失われる可能性があります。
-     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenebattle.cpp(257): warning C4244: '初期化中' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>c:\users\nwuser.da\desktop\zemicracy\vanishing-song\vanishingsong\vanishingsong\scenebattle.cpp(411): warning C4244: '初期化中' : 'double' から 'float' への変換です。データが失われる可能性があります。
          コードを生成中...
+         スキップ中... (関連する変更は検出されませんでした)
+         Entry.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\nwuser.DA\Desktop\zemicracy\Vanishing-Song\VanishingSong\Debug\VanishingSong.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Aether\Lib\Debug /LIBPATH:"C:\Aether\FBX\FBX SDK\2015.1\lib\vs2013\x86\debug" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\nwuser.DA\Desktop\zemicracy\Vanishing-Song\VanishingSong\Debug\VanishingSong.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\nwuser.DA\Desktop\zemicracy\Vanishing-Song\VanishingSong\Debug\VanishingSong.lib" /MACHINE:X86 Debug\ActionBoard.obj
          Debug\ActionCommand.obj
          Debug\ActionSound.obj
          Debug\AttackParticle.obj
+         Debug\BattleBoss.obj
          Debug\BattleEnemy.obj
          Debug\BattleEnemyManager.obj
          Debug\BattleField.obj
@@ -20,13 +28,16 @@
          Debug\BattlePlayer.obj
          Debug\BattlePlayerManager.obj
          Debug\Cage.obj
+         Debug\CageManager.obj
          Debug\CharaEntity.obj
          Debug\Cipher.obj
+         Debug\ClearGauge.obj
          Debug\CollideManager.obj
          Debug\Debug.obj
          Debug\EffectGenerator.obj
          Debug\EffectGenerator2D.obj
          Debug\Entry.obj
+         Debug\EntryScene.obj
          Debug\FieldArea.obj
          Debug\FieldEnemy.obj
          Debug\FieldEnemyManager.obj
@@ -34,24 +45,26 @@
          Debug\FragmentShader.obj
          Debug\GameManager.obj
          Debug\GaugeManager.obj
-         Debug\Gear.obj
-         Debug\GearFrame.obj
          Debug\HalfFillShader.obj
          Debug\Load.obj
          Debug\MessageManager.obj
          Debug\MessageWindow.obj
+         Debug\Opening.obj
          Debug\OrderList.obj
          Debug\PlayerHPGauge.obj
          Debug\ResourceManager.obj
-         Debug\ResultBord.obj
+         Debug\ResultBoard.obj
          Debug\RhythmManager.obj
          Debug\SceneBattle.obj
          Debug\SceneGame.obj
          Debug\SceneTitle.obj
+         Debug\SceneTutorial.obj
+         Debug\TutorialEnemy.obj
+         Debug\TutorialMessage.obj
          Debug\VanishingSongFrame.obj
          VanishingSong.vcxproj -> C:\Users\nwuser.DA\Desktop\zemicracy\Vanishing-Song\VanishingSong\Debug\VanishingSong.exe
      1>プロジェクト "C:\Users\nwuser.DA\Desktop\zemicracy\Vanishing-Song\VanishingSong\VanishingSong\VanishingSong.vcxproj" (Build ターゲット) のビルドが完了しました。
 
 ビルドに成功しました。
 
-経過時間 00:00:13.94
+経過時間 00:00:13.01

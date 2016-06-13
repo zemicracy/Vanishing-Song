@@ -4,8 +4,8 @@
 #include<Rectangle3D.h>
 #include<Cube.h>
 #include<Singleton.h>
-#include"RhythmManager.h"
 #include"ResourceManager.h"
+#include"GameController.h"
 
 BattleField::BattleField()
 {
@@ -18,21 +18,28 @@ BattleField::~BattleField()
 }
 
 void BattleField::mFinalize(){
-	for (auto itr : m_pLane){
+	for (auto& itr : m_pLane){
 		itr.second->Finalize();
 	}
 	m_pLane.clear();
 
 	m_pSkyBox->Finalize();
 	m_pPlane->Finalize();
-	for (auto itr : m_pDebug){
+	for (auto& itr : m_pDebug){
+		itr->Finalize();
+		itr.reset();
+	}
+	for (auto& itr : m_pCommand){
 		itr->Finalize();
 		itr.reset();
 	}
 
 	m_EnemyLane.clear();
 	m_PlayerLane.clear();
-
+	for (auto& itr : m_pTextureList){
+		itr.second.reset();
+	}
+	m_pTextureList.clear();
 }
 template<class T>
 std::shared_ptr<T> gInitializer(aetherClass::Transform transform, aetherClass::Color color){
@@ -49,11 +56,13 @@ std::shared_ptr<aetherClass::Texture> gCreateTexture(std::string path){
 	return tex;
 }
 
-void BattleField::mInitialize(aetherClass::ViewCamera* camera){
+void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhythm){
 	using namespace aetherClass;
 
 	WorldReader reader;
 	reader.Load("data\\BattleStage.aether");
+
+	m_rhythm = rhythm;
 
 	camera->property._translation = reader.GetInputWorldInfo()._camera._position;
 	camera->property._rotation = reader.GetInputWorldInfo()._camera._rotation;
@@ -63,7 +72,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 	Color WHITE(1, 1, 1, 0);
 	float normalScale = 9.9;
 
-	for (auto itr : reader.GetInputWorldInfo()._object){
+	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
 			m_pPlane->LoadFBX("Model\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisDirectX);
@@ -77,6 +86,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 		}
 		else if (itr->_name == "EnemyHP"){
 			m_pDebug[1] = gInitializer<Cube>(itr->_transform, itr->_color);
+			m_EnemyLane[eMusical::eAdlib] = itr->_transform._translation;
 		}
 		else if (itr->_name == "lane_blue"){
 			m_pLane.insert(std::make_pair(eMusical::eBlue, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
@@ -84,7 +94,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 		else if (itr->_name == "command_blue"){
 			m_pCommand[0] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[0]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[0]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionBlue").get());
+			m_pCommand[0]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionBlue").get());
 		}
 		else if (itr->_name == "lane_green"){
 			m_pLane.insert(std::make_pair(eMusical::eGreen, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
@@ -94,7 +104,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 
 			m_pCommand[1] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[1]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[1]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionGreen").get());
+			m_pCommand[1]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionGreen").get());
 		}
 		else if (itr->_name == "lane_red"){
 			m_pLane.insert(std::make_pair(eMusical::eRed, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
@@ -102,7 +112,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 		else if (itr->_name == "command_red"){
 			m_pCommand[2] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[2]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[2]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionRed").get());
+			m_pCommand[2]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionRed").get());
 		}
 		else if (itr->_name == "lane_yellow"){
 			m_pLane.insert(std::make_pair(eMusical::eYellow, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
@@ -110,7 +120,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 		else if (itr->_name == "command_yellow"){
 			m_pCommand[3] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
 			m_pCommand[3]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[3]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("ActionYellow").get());
+			m_pCommand[3]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionYellow").get());
 
 		}
 		else if (itr->_name == "enemy_blue"){
@@ -141,7 +151,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 
 	m_pSkyBox = std::make_shared<Skybox>();
 	m_pSkyBox->Initialize();
-	m_pTextureList.insert(std::make_pair("skybox", gCreateTexture("Texture\\Game\\GameBack.jpg")));
+	m_pTextureList.insert(std::make_pair("skybox", ResourceManager::mGetInstance().GetTexture("skybox")));
 	m_pSkyBox->SetTexture(m_pTextureList["skybox"].get());
 
 	for (auto itr : m_pDebug){
@@ -154,9 +164,24 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera){
 		itr->SetCamera(m_view);
 	}
 	m_pSkyBox->SetCamera(m_view);
+	m_pSkyBox->property._transform._rotation._x = 22.7f;
+
+	reader.UnLoad();
 }
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
+
+	/*if (aetherClass::GameController::GetKey().IsKeyDown('X')){
+		m_pSkyBox->property._transform._rotation._x += 0.1;
+	}
+	else if (aetherClass::GameController::GetKey().IsKeyDown('C')){
+		m_pSkyBox->property._transform._rotation._x -= 0.1;
+	}
+	if (aetherClass::GameController::GetKey().IsKeyDown(VK_SPACE)){
+
+		Debug::mPrint(std::to_string(m_pSkyBox->property._transform._rotation._x));
+	}*/
+
 	//ƒ¿‚¯‚·‚æ
 	for (auto itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){
@@ -167,6 +192,7 @@ void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 	if (m_pLane.find(command->mGetType()) == m_pLane.end())return;
 	m_pLane.at(command->mGetType())->property._color._alpha = 0.9;
 }
+
 void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug){
 	m_pSkyBox->Render(texture);
 	m_pPlane->Render(debug);
@@ -180,7 +206,6 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 	for (int i = m_pCommand.size()-1; i >= 0; --i){
 		m_pCommand.at(i)->Render(texture);
 	}
-
 }
 
 
@@ -197,7 +222,9 @@ aetherClass::ViewCamera* BattleField::mGetCamera(){
 }
 
 void BattleField::mRhythmicMotion(){
-	float note = 360 * Singleton<RhythmManager>::GetInstance().mQuarterBeatTime();
+	
+	if (!m_rhythm)return;
+	float note = 360 * m_rhythm->mQuarterBeatTime();
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 

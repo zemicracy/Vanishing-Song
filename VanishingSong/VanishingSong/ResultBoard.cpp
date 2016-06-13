@@ -1,6 +1,8 @@
 #include"ResultBoard.h"
 #include"WorldReader.h"
 #include"Rectangle2D.h"
+#include"GameClock.h"
+#include"ResourceManager.h"
 
 using namespace aetherClass;
 ResultBoard::ResultBoard(){
@@ -15,10 +17,20 @@ void ResultBoard::mFinalize(){
 	m_halfFill->Finalize();
 	m_pGauge.reset();
 	
-	for (auto itr : m_pGeneral){
+	for (auto &itr : m_pGeneral){
 		itr.second->Finalize();
 	}
 	m_pGeneral.clear();
+	m_pNumSprite->Finalize();
+
+	for (auto& itr : m_numberList){
+		itr.second.reset();
+	}
+	for (auto& itr : m_TextureList){
+		itr.second.reset();
+	}
+	m_numberList.clear();
+	m_TextureList.clear();
 }
 
 
@@ -43,7 +55,7 @@ void ResultBoard::mInitialize(){
 
 
 	Color BLACK(0, 0, 0, 1);
-	for (auto itr : reader.GetInputWorldInfo()._object){
+	for (auto& itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "correctGauge"){
 			m_pGauge = std::make_shared<ClearGauge>();
 			m_pGauge->mSetTransform(itr->_transform);
@@ -67,6 +79,7 @@ void ResultBoard::mInitialize(){
 	m_pNumSprite = std::make_shared<Rectangle2D>();
 	m_pNumSprite->Initialize();
 	m_pNumSprite->property._transform._scale = Vector3(25, 40, 1);
+	m_pNumSprite->property._color = Color(0, 0, 0, 1);
 
 	std::string path = "Texture\\Result\\";
 	m_TextureList["rankText"] = gLoadTexture(path + "rank.png");
@@ -80,6 +93,9 @@ void ResultBoard::mInitialize(){
 
 	m_TextureList["blank"] = gLoadTexture(path + "blank.png");
 	m_pGeneral["backboard"]->SetTexture(m_TextureList["blank"].get());
+
+	m_TextureList["return"] = gLoadTexture("Texture\\ActionCommand\\Red.png");
+	m_pGeneral["return"]->SetTexture(m_TextureList["return"].get());
 
 
 	ShaderDesc desc;
@@ -97,12 +113,19 @@ void ResultBoard::mInitialize(){
 	m_numberList["."] = gLoadTexture("Texture\\Number\\dot.png");
 	m_numberList["%"] = gLoadTexture("Texture\\Number\\%.png");
 
+	m_timer = 0;
 
-
+	reader.UnLoad();
 }
 
-void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state){
+void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state,UINT stageID){
 	m_resultData = result;
+
+	const float S_Border = 0.80;
+	const float A_Border = 0.65;
+	const float B_underBorder = 0.50;
+	const int noteBorder = 80;
+
 
 	float rate = (float)m_resultData._missCount / m_resultData._maxCount;
 	rate = 1 - rate;
@@ -110,6 +133,9 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 
 	if (state == GameManager::eBattleState::eWin){
 		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Win.png");
+		int stage = GameManager::mGetInstance().mGetCanStage();
+		stage = stage < stageID ? stageID : stage;
+		GameManager::mGetInstance().mGetCanStage(stage);
 	}
 	else{
 		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Lose.png");
@@ -117,22 +143,28 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_pGeneral["battleResult"]->SetTexture(m_TextureList["issue"].get());
 
 	std::string path = "Texture\\Result\\rank\\";
-	if (rate >= 0.90){
+	if (rate >= S_Border&& state == GameManager::eBattleState::eWin){
 		m_TextureList["rank"] = gLoadTexture(path + "S.png");
+		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note_a.png");
 	}
-	else if (rate >= 0.80){
-		m_TextureList["rank"] = gLoadTexture(path + "A.png");
-	}
-	else if (rate >= 0.70){
-		m_TextureList["rank"] = gLoadTexture(path + "B.png");
-	}
-	else if (rate >= 0.50){
-		m_TextureList["rank"] = gLoadTexture(path + "C.png");
-	}
-	else {
-		m_TextureList["rank"] = gLoadTexture(path + "D.png");
+	else{
+		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
+
+		if (rate >= A_Border && state == GameManager::eBattleState::eWin){
+			m_TextureList["rank"] = gLoadTexture(path + "A.png");
+		}
+		else if (rate >= B_underBorder && state == GameManager::eBattleState::eWin){
+			m_TextureList["rank"] = gLoadTexture(path + "B.png");
+		}
+		else if (rate >= B_underBorder){
+			m_TextureList["rank"] = gLoadTexture(path + "C.png");
+		}
+		else {
+			m_TextureList["rank"] = gLoadTexture(path + "D.png");
+		}
 	}
 	m_pGeneral["rankImage"]->SetTexture(m_TextureList["rank"].get());
+	m_pGeneral["noteImage"]->SetTexture(m_TextureList["note"].get());
 
 	float i = 0;
 	rate = modf(rate*100, &i);
@@ -142,10 +174,75 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate)+"%";
 //	Debug::mPrint(std::to_string(i) + "  " + std::to_string(dotrate) + "  " + std::to_string(rate));
 
+
+	auto& itr = ResourceManager::mGetInstance().mGetBGMPath();
+	//ステージ曲追加分
+	if (stageID == 0){
+		if (itr.find(eMusical::eBlue) != itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
+			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
+		}
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
+	}
+	else if (stageID == 1){
+		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
+		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
+
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field2_1.wav";
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eSecoundStage);
+	}
+	else if (stageID == 2){
+		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
+		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
+		
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eGreen) = "Sound\\BGM\\field2.wav";
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eThirdStage);
+	}
+	else if (stageID == 3){
+		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
+		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
+		
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eRed) = "Sound\\BGM\\field3.wav";
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eForthStage);
+	}
+	else if (stageID == 4){
+		if (integer < noteBorder)return;
+		
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
+		GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
+	}
+	else if(stageID == 5){
+		if (integer < noteBorder)return;
+		int cnt = 0;
+		for (auto &path : itr){
+			cnt++;
+		}		//ボスは音符全部で
+		if (cnt >= 4){
+			itr.clear();
+			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eAdlib) = "Sound\\BGM\\field5.wav";
+		}
+	}
+
 }
+
+
+void ResultBoard::mUpdate(){
+//	Debug::mPrint(std::to_string(m_timer));
+	if (m_timer > 1){
+		m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
+		m_timer = 0;
+	}
+	else{
+		m_timer += GameClock::GetDeltaTime();
+	}
+}
+
 void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
 
-	for (auto itr : m_pGeneral){
+	for (auto& itr : m_pGeneral){
 			itr.second->Render(shader);
 	}
 	m_pGauge->mRender(m_halfFill);

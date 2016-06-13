@@ -21,27 +21,29 @@ VanishingSongFrame::~VanishingSongFrame()
 */
 bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
-	result = Singleton<ResourceManager>::GetInstance().Initialize();
+	result = ResourceManager::mGetInstance().Initialize();
 	// 操作キャラクターのリソースを初期化
-	Singleton<GameManager>::GetInstance().mPushUsePlayer(eMusical::eBlue);
-	Singleton<GameManager>::GetInstance().mFieldBossState(GameManager::eBossState::eUnVisible);
 
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","\\blue");
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "\\red");
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "\\green");
-	Singleton<ResourceManager>::GetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "\\yellow");
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
 
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air","\\Green");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Ground", "\\Red");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air","\\Blue");
-	Singleton<ResourceManager>::GetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground","\\Yellow");
+	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
+	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
+
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","Model\\Player\\blue");
+
+
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Ground", "\\blue");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Air", "\\red");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air", "\\green");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground", "\\yellow");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Ground", "\\yellow");
 
 	return true;
 }
 
 //　１フレームごとに実行される
 bool VanishingSongFrame::FrameRunningBuffer(){
-
+	_heapmin();
 	
 	return true;
 }
@@ -49,6 +51,6 @@ bool VanishingSongFrame::FrameRunningBuffer(){
 // プログラムの終了時に実行される
 void VanishingSongFrame::FinalizeBuffer(){
 
-	Singleton<ResourceManager>::GetInstance().Finalize();
+	ResourceManager::mGetInstance().Finalize();
 	return;
 }

@@ -59,13 +59,16 @@ private:
 	void mOnPerform();   // プレイヤーの演奏
 	void mOnBattle();    // 戦闘開始
 	void mCheckBattle();
+
+	void mLoadTextData();
 private:
 	GameManager::eBattleState m_battleState;
 	GameManager::eBattleState m_winner;
-
+	std::shared_ptr<aetherClass::GameSound> m_sound;
 
 	BattlePlayerManager m_players;
 	CharaEntity m_charaEntity;
+
 	std::shared_ptr<ActionBoard>m_pActionBoard;
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<BattleField>m_pField;
@@ -76,20 +79,30 @@ private:
 	aetherClass::ViewCamera m_view;
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
 
+
+
 	int m_prevWholeBeatNo;
-	bool m_InitUpdateProcess;
-	bool m_PreInitProcess;
+	bool m_initUpdateProcess;
+
+	bool m_preInitProcess;
 	float m_bgmVolume;
 	int m_inCount;
+
+	//ウェーブ
+	int m_MaxWave;
+	int m_waveID;
+	int m_stageID;
+	GameManager::eGameMode m_beatMode;
 	//karikari
-	CharaStatus charaHp;
-	CharaStatus enemyHp;
+	CharaStatus m_charaHp;
+	CharaStatus *m_enemyHp;
 
 
 	eGameState m_processState;
+	std::vector<std::shared_ptr<ActionCommand>>m_enemyVector;
 
 	//ptr
-	RhythmManager *m_rhythm;
+	std::shared_ptr<RhythmManager>m_rhythm;
 };
 
 

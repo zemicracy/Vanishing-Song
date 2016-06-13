@@ -20,6 +20,8 @@ public:
 private:
 	void mFinalize()override;
 
+	std::shared_ptr<aetherClass::Texture>m_mainTexture;
+
 	aetherClass::Transform m_trans;
 	HalfFillShader::DirectionGaugeType m_direcType;
 

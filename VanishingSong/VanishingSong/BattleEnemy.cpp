@@ -9,64 +9,22 @@ BattleEnemy::BattleEnemy()
 
 BattleEnemy::~BattleEnemy()
 {
+	Finalize();
 }
 
-void BattleEnemy::mInitialize(eMusical type, ViewCamera* camera,Vector3& pos){
+void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* camera,Vector3& pos){
 
-	switch (type)
-	{
-	case eMusical::eBlue:
-		mInitializeBlue(camera,pos);
-		break;
-	case eMusical::eGreen:
-		mInitializeGreen(camera, pos);
-		break;
-
-	}
-}
-
-bool BattleEnemy::mInitializeBlue(ViewCamera* camera,Vector3& pos){
-
-	m_enemy._gearFrame = std::make_shared<GearFrame>();
-
-	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eBlue);
-
-	m_enemy._gearFrame = gearframe;
-
-	// 最上位に当たるパーツの設定
-	m_pTopGear = m_enemy._gearFrame->m_pBody;
-
-	m_charaEntity.SetCamera(m_pTopGear, camera);
-
-	m_enemy._gearFrame->m_pBody->_pGear->property._transform._scale = 2;
-
-	m_charaEntity.mGearMove(m_pTopGear, pos, "+=");
+	m_isDie = false;
 	
-	return true;
+	m_enemy._model= std::make_shared<FbxModel>();
+
+	m_enemy._model = ResourceManager::mGetInstance().mGetEnemyHash(type);
+	m_enemy._model->SetCamera(camera);
+	m_enemy._model->property._transform._translation = pos;
+	m_enemy._model->property._transform._scale = 1.5;
+	m_enemy._model->property._transform._rotation._y = -90;
 
 }
-
-bool BattleEnemy::mInitializeGreen(ViewCamera* camera, Vector3& pos){
-
-	m_enemy._gearFrame = std::make_shared<GearFrame>();
-
-	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eGreen);
-
-	m_enemy._gearFrame = gearframe;
-
-	// 最上位に当たるパーツの設定
-	m_pTopGear = m_enemy._gearFrame->m_pBody;
-
-	m_charaEntity.SetCamera(m_pTopGear, camera);
-
-	m_enemy._gearFrame->m_pBody->_pGear->property._transform._scale = 2;
-
-	m_charaEntity.mGearMove(m_pTopGear, pos, "+=");
-
-	return true;
-
-}
-
 
 BattleEnemy::Enemy& BattleEnemy::mGetEnemy(){
 
@@ -88,10 +46,19 @@ void BattleEnemy::mOnDamage(){
 }
 
 void BattleEnemy::mRender(std::shared_ptr<ShaderBase> tex){
-	m_charaEntity.mGearRender(m_pTopGear, tex.get(), tex.get());
+
+	if (m_isDie){
+		return;
+	}
+	m_enemy._model->Render(tex.get());
 }
 
-//GearFrameは解放しない
-void BattleEnemy::Finalize(){
+void BattleEnemy::misDie(){
+	m_isDie = true;
+}
 
+void BattleEnemy::Finalize(){
+	if (m_enemy._model){
+		m_enemy._model.reset();
+	}
 }

@@ -8,7 +8,9 @@
 #include "CollideManager.h"
 #include "MessageManager.h"
 #include "AttackParticle.h"
-#include "Cage.h"
+#include "CageManager.h"
+#include<GameSound.h>
+#include "TutorialEnemy.h"
 class SceneGame :
 	public aetherClass::GameScene
 {
@@ -16,11 +18,10 @@ private:
 
 	enum class eState{
 		eRun,
+		eTutorial,
 		ePause,
 		eBattle,
 		eExit,
-		eFadeIn,
-		eFadeOut,
 		eNull
 	};
 	
@@ -50,21 +51,22 @@ public:
 	static const std::string Name;
 
 private:
-	bool mFadeState(eState);
+
+	void mTutorial();
+	void mRun();
 	bool mMessageUpdate();
 private:
 	aetherClass::DirectXEntity m_directX;	
 	eState m_gameState;
 	
 	std::unique_ptr<CollideManager> m_pCollideManager;
-	std::unique_ptr<FadeManager> m_pFadeObject;
 	std::shared_ptr<FieldPlayer> m_pFieldPlayer;
 	std::shared_ptr<FieldArea> m_pFieldArea;
 	std::shared_ptr<FieldEnemyManager> m_pFieldEnemy;
 	std::shared_ptr<MessageManager> m_pMessageManager;
-
-	std::shared_ptr<AttackParticle> m_pPaticle;
-
-	std::array<std::shared_ptr<Cage>, 3> m_pCage;
+	std::shared_ptr<CageManager> m_pCageManager;
+	std::shared_ptr<TutorialEnemy> m_pTutorialEnemy;
+	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
+	bool m_isTransitionEnd;
 };
 

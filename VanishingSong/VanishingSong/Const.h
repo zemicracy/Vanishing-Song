@@ -29,7 +29,7 @@ namespace{
 	const int kPartition3 = 2;
 	const int kPartition4 = 3;
 
-	const int kPartitionSize = 4;
+	const int kPartitionSize = 5;
 
 	// ÉQÅ[ÉÄÇ…Ç©Ç©ÇÌÇÈíËêî
 	const signed char kFirstDay = 1;
@@ -42,6 +42,15 @@ enum class eMusical{
 	eBlue,
 	eYellow,
 	eGreen,
+	eAdlib,
 	eMiss
 };
+
+enum class eEnemyType{
+	eGround,
+	eAir,
+	eBoss,
+	eNull
+};
+
 #endif

@@ -14,6 +14,7 @@ FieldEnemyManager::FieldEnemyManager()
 
 FieldEnemyManager::~FieldEnemyManager()
 {
+	mFinalize();
 }
 
 bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
@@ -21,11 +22,9 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	EnemySize = 1;
 
 	WorldReader reader;
-	reader.Load("data\\stage.aether");
-
+	reader.Load("data\\Field\\stage.aether");
 	//Spawn場所
 	for (auto index : reader.GetInputWorldInfo()._object){
-
 		if (index->_name == "area1"){
 			m_pEnemySpawner[0] = index->_transform._translation;
 		}
@@ -38,47 +37,59 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		if (index->_name == "area4"){
 			m_pEnemySpawner[3] = index->_transform._translation;
 		}
+		if (index->_name == "area5"){
+			m_pEnemySpawner[4] = index->_transform._translation;
+		}
 	}
-
 	reader.UnLoad();
 
+	m_pEnemy.reserve(5);
 
 	//EnemyGroundの生成
 	for (int i = 0; i < EnemySize; i++){
-		m_pEnemy.insert(m_pEnemy.begin(),std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Ground,camera,"data\\test");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(eMusical::eRed,camera,"data\\Battle\\Stage1");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//EnemyAirの生成
 	for (int i = 0; i < EnemySize; i++){
-		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Air, camera, "data\\test");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(eMusical::eGreen, camera, "data\\Battle\\Stage2");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(仮)
 	for (int i = 0; i < EnemySize; i++){
-		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Blue, camera, "data\\test");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(eMusical::eBlue, camera, "data\\Battle\\Stage3");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(仮)
 	for (int i = 0; i < EnemySize; i++){
-		m_pEnemy.insert(m_pEnemy.begin(), std::make_shared<FieldEnemy>());
-		m_pEnemy.begin()->get()->mInitialize(FieldEnemy::eType::Yellow, camera, "data\\test");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.begin()->get()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(eMusical::eYellow, camera, "data\\Battle\\Stage4");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 	}
+
+	//Enemy(仮)
+	for (int i = 0; i < EnemySize; i++){
+		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
+		m_pEnemy.back()->mInitialize(eMusical::eAdlib, camera, "data\\Battle\\Stage5");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+	}
+
 
 	//敵の初期位置
 	mSetPosion();
@@ -114,19 +125,25 @@ void FieldEnemyManager::mUpdater(){
 
 //解放処理(コライダーはしなくていい)
 void FieldEnemyManager::mFinalize(){
-	
-	for (auto itr:m_pEnemy){
-	itr->mFinalize();
-	}
 
+
+	for (auto &itr : m_pEnemy){
+		itr.reset();
+	}
+	for (auto &itr : m_enemyArray){
+		if (itr){
+			itr->mFinalize();
+			itr.reset();
+		}
+	}	
 }
 
 void FieldEnemyManager::mSetPosion(){
 
 	//敵の出現位置
 	for (int i = 0; i <m_pEnemy.size(); i++){
-		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation = m_pEnemySpawner[i];
-		m_pEnemy[i]->mGetProperty()._penemy->m_pBody->_pGear->property._transform._translation._y = +20;
+		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation = m_pEnemySpawner[i];
+		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation._y = +20;
 		m_pEnemy[i]->mGetProperty()._enemyAreaNo = i;
 		m_enemyArray[i]=m_pEnemy[i];
 	}

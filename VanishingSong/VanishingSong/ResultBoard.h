@@ -35,8 +35,8 @@ public:
 	ResultBoard();
 	~ResultBoard();
 	void mInitialize();
-
-	void mSetResultData(ResultData,GameManager::eBattleState);
+	void mUpdate();
+	void mSetResultData(ResultData,GameManager::eBattleState,UINT);
 	void mRender(aetherClass::ShaderBase*,aetherClass::ShaderBase*);
 
 private:
@@ -52,13 +52,14 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_numberList;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_TextureList;
 
-
 	std::string m_rateString;
 	std::shared_ptr<HalfFillShader>m_halfFill;
 	ResultData m_resultData;
 	bool m_isSetup;
 	bool m_callFadeIn;
 	bool m_callFadeOut;
+	float m_timer;
+
 };
 
 #endif

@@ -1,0 +1,8 @@
+[Object]
+[Material]
+[Texture]
+none
+[Camera]
+0,30,-80,10,0,0
+[Light]
+0,10,0

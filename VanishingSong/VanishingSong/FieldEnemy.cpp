@@ -3,7 +3,8 @@
 #include "ResourceManager.h"
 #include <Singleton.h>
 #include "Debug.h"
-
+#include <Sphere.h>
+#include"GameManager.h"
 using namespace aetherClass;
 
 FieldEnemy::FieldEnemy(){
@@ -12,124 +13,31 @@ FieldEnemy::FieldEnemy(){
 
 FieldEnemy::~FieldEnemy()
 {
-	m_message.clear();
+	mFinalize();
 }
 
-bool FieldEnemy::mInitialize(eType type, ViewCamera* camera, std::string dataPath){
+bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string dataPath){
 	m_dataPath = dataPath;
-	switch (type)
-	{
-	case eType::Ground:
-		mInitializeGround(camera);
-		mInitializeEnemyColider(camera);
-		break;
-	case eType::Air:
-		mInitializeAir(camera);
-		mInitializeEnemyColider(camera);
-		break;
-	case eType::Blue:
-		mInitializeBlue(camera);
-		mInitializeEnemyColider(camera);
-		break;
-	case eType::Yellow:
-		mInitializeYellow(camera);
-		mInitializeEnemyColider(camera);
-		break;
-	case eType::Null:
-
-	default:
-		break;
-	}
-
-	return true;
-}
-
-//Enemy地上
-bool FieldEnemy::mInitializeGround(ViewCamera* camera){
-
-		m_property._penemy = std::make_shared<GearFrame>();
+	mInitializeEnemy(type, camera);
+	mInitializeEnemyColider(camera);
 	
-		auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eRed);
-
-		m_property._penemy = gearframe;
-
-		m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-
-		// 最上位に当たるパーツの設定
-		m_pTopGear = m_property._penemy->m_pBody;
-
-		// 体にパーツとの親子関係
-		m_charaEntity.SetCamera(m_pTopGear,camera);
-
-		return true;
-}
-
-//Enemy空中
-bool FieldEnemy::mInitializeAir(ViewCamera* camera){
-
-	m_property._penemy = std::make_shared<GearFrame>();
-
-	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eGreen);
-	m_property._penemy = gearframe;
-	
-	m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-
-	// 最上位に当たるパーツの設定
-	m_pTopGear = m_property._penemy->m_pBody;
-
-	// 体にパーツとの親子関係
-	m_charaEntity.SetCamera(m_pTopGear, camera);
-
 	return true;
-
 }
-
-//仮用敵
-bool FieldEnemy::mInitializeBlue(ViewCamera* camera){
-
-	m_property._penemy = std::make_shared<GearFrame>();
-
-	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eBlue);
-
-	m_property._penemy = gearframe;
-
-	m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-
-	// 最上位に当たるパーツの設定
-	m_pTopGear = m_property._penemy->m_pBody;
-
-	// 体にパーツとの親子関係
-	m_charaEntity.SetCamera(m_pTopGear, camera);
-
+bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
+	m_property._penemy = ResourceManager::mGetInstance().mGetEnemyHash(type);
+	m_property._penemy->property._transform._scale = 2;
+	m_property._penemy->SetCamera(camera);
 	return true;
 }
 
-//仮用敵
-bool FieldEnemy::mInitializeYellow(ViewCamera* camera){
-
-	m_property._penemy = std::make_shared<GearFrame>();
-
-	auto gearframe = Singleton<ResourceManager>::GetInstance().mGetEnemyHash(eMusical::eYellow);
-
-	m_property._penemy = gearframe;
-
-	m_property._penemy->m_pBody->_pGear->property._transform._scale = 2;
-
-	// 最上位に当たるパーツの設定
-	m_pTopGear = m_property._penemy->m_pBody;
-
-	m_charaEntity.SetCamera(m_pTopGear, camera);
-
-	return true;
-}
 
 
 //コライダーの初期化
 void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 	m_property._pCollider = std::make_shared<Cube>();
 	m_property._pCollider->Initialize();
-	m_property._pCollider->property._transform._translation = m_pTopGear->_pGear->property._transform._translation;
-	m_property._pCollider->property._transform._scale = Vector3(9, 12, 4);
+	m_property._pCollider->property._transform._translation = m_property._penemy->property._transform._translation;
+	m_property._pCollider->property._transform._scale = Vector3(10, 10, 10);
 	m_property._pCollider->property._color = Color(1, 1, 1, 0.5);
 	m_property._pCollider->SetCamera(camera);
 
@@ -137,14 +45,12 @@ void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 
 //更新処理
 void FieldEnemy::mUpdate(){
-	m_property._pCollider->property._transform._translation = m_property._penemy->m_pBody->_pGear->property._transform._translation;
+	m_property._pCollider->property._transform._translation = m_property._penemy->property._transform._translation;
 }
 
 void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	
-	// 全ての親は体のパーツなので、必ず体のパーツから始める
-	m_charaEntity.mGearRender(m_pTopGear, model_shader, colider_shader);
-
+	m_property._penemy->Render(model_shader);
 	m_property._pCollider->Render(colider_shader);
 }
 
@@ -153,11 +59,8 @@ FieldEnemy::Property& FieldEnemy::mGetProperty(){
 	return m_property;
 }
 
-void FieldEnemy::mEnemyOnHit(){
-	
-}
 void FieldEnemy::mFaceToPlayer(aetherClass::Vector3 position){
-	m_charaEntity.mFaceToObject(m_pTopGear, position,"=");
+//	m_charaEntity.mFaceToObject(m_pTopGear, position,"=");
 }
 void FieldEnemy::mFinalize(){
 
@@ -167,6 +70,10 @@ void FieldEnemy::mFinalize(){
 		m_property._pCollider = nullptr;
 	}
 
+	if (m_property._penemy){
+		m_property._penemy.reset();
+	}
+	
 	for (auto index : m_message){
 		index.reset();
 		index = nullptr;

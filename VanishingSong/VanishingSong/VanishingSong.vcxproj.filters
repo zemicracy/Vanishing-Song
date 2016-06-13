@@ -69,12 +69,6 @@
     <ClCompile Include="Entry.cpp">
       <Filter>zFrame</Filter>
     </ClCompile>
-    <ClCompile Include="Gear.cpp">
-      <Filter>Property</Filter>
-    </ClCompile>
-    <ClCompile Include="GearFrame.cpp">
-      <Filter>Property</Filter>
-    </ClCompile>
     <ClCompile Include="FieldArea.cpp">
       <Filter>Other</Filter>
     </ClCompile>
@@ -132,12 +126,6 @@
     <ClCompile Include="PlayerHPGauge.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerMPGauge.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="ResultBord.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="RhythmManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -154,6 +142,39 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="BattleMessage.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Opening.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultBoard.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="EntryScene.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Cipher.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ClearGauge.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleEnemyManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialMessage.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneTutorial.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleBoss.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="CageManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialEnemy.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -185,9 +206,6 @@
     <ClInclude Include="Debug.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="Utility.h">
-      <Filter>System</Filter>
-    </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>System</Filter>
     </ClInclude>
@@ -197,17 +215,8 @@
     <ClInclude Include="VanishingSongFrame.h">
       <Filter>zFrame</Filter>
     </ClInclude>
-    <ClInclude Include="Gear.h">
-      <Filter>Property</Filter>
-    </ClInclude>
-    <ClInclude Include="GearFrame.h">
-      <Filter>Property</Filter>
-    </ClInclude>
     <ClInclude Include="FieldArea.h">
       <Filter>Other</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="HalfFillShader.h">
       <Filter>UI</Filter>
@@ -281,12 +290,6 @@
     <ClInclude Include="PlayerHPGauge.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerMPGauge.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ResultBord.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="RhythmManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -306,6 +309,42 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="BattleMessage.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Opening.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultBoard.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="EntryScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Cipher.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ClearGauge.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleEnemyManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionAdlib.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialMessage.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneTutorial.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleBoss.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="CageManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialEnemy.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

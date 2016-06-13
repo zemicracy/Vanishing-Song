@@ -18,17 +18,23 @@ FieldArea::~FieldArea()
 	mFinalize();
 }
 void FieldArea::mFinalize(){
-	for (auto itr : m_ground){
+	for (auto& itr : m_ground){
 		itr->Finalize();
 		itr.reset();
 	}
-	for (auto itr : m_wall){
+	for (auto& itr : m_wall){
 		itr->Finalize();
 		itr.reset();
 	}
-	for (auto itr : m_partitionCube){
+	for (auto& itr : m_partitionCube){
 		itr->Finalize();
 		itr.reset();
+	}
+	for (auto& itr : m_partitionWall){
+		for (auto& itr2 : itr){
+			itr2->Finalize();
+			itr2.reset();
+		}
 	}
 
 }
@@ -44,23 +50,23 @@ void gInitalizer(std::shared_ptr<ModelBase> &command, Transform transform, Color
 
 void FieldArea::mInitialize(){
 	WorldReader reader;
-	reader.Load("data/stage.aether");
+	reader.Load("data\\Field\\stage.aether");
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
-			gInitalizer<Rectangle3D>(m_ground[0], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_ground[0], itr->_transform, itr->_color);
 		}
 		if (itr->_name == "wall1"){
-			gInitalizer<Rectangle3D>(m_wall[0], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_wall[0], itr->_transform, itr->_color);
 		}
 		if (itr->_name == "wall2"){
-			gInitalizer<Rectangle3D>(m_wall[1], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_wall[1], itr->_transform, itr->_color);
 		}
 		if (itr->_name == "wall3"){
-			gInitalizer<Rectangle3D>(m_wall[2], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_wall[2], itr->_transform, itr->_color);
 		}
 		if (itr->_name == "wall4"){
-			gInitalizer<Rectangle3D>(m_wall[3], itr->_transform, itr->_color);
+			gInitalizer<Cube>(m_wall[3], itr->_transform, itr->_color);
 		}
 
 		if (itr->_name == "area1"){
@@ -75,19 +81,21 @@ void FieldArea::mInitialize(){
 		if (itr->_name == "area4"){
 			gInitalizer<Cube>(m_partitionCube[3], itr->_transform, itr->_color);
 		}
+		if (itr->_name == "area5"){
+			gInitalizer<Cube>(m_partitionCube[4], itr->_transform, itr->_color);
+		}
 	}
 	reader.UnLoad();
 
 	m_ground[1] = std::make_shared<Skybox>();
 	m_ground[1]->Initialize();
-	m_ground[1]->SetTexture(Singleton<ResourceManager>::GetInstance().GetTexture("skybox").get());
+	m_ground[1]->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
 	// 先にコライダーの検出をする
 	int nextNumber = NULL;
-	for (int i = 0; i < m_partitionCube.size(); ++i){
+	for (int i = 0; i < 4; ++i){
 		for (auto& wall : m_partitionWall[i]){
-
-			for (int j = nextNumber; j < m_partitionCube.size(); ++j){
+			for (int j = nextNumber; j < 4; ++j){
 				if (CollideBoxOBB(*m_wall[j], *m_partitionCube[i])){
 					wall = m_wall[j];
 					nextNumber = j + 1;

@@ -16,6 +16,8 @@ void GaugeManager::mFinalize(){
 	if (m_shader){
 		m_shader->Finalize();
 	}
+	m_playerHpGauge.reset();
+	m_enemyHpGauge.reset();
 }
 
 
@@ -43,14 +45,10 @@ bool GaugeManager::mInitialize(){
 			m_enemyHpGauge->mSetProperty(pp);
 			m_enemyHpGauge->mInitialize();
 		}
-		
+
 	}
 
-
-
-
-	
-
+	reader.UnLoad();
 
 	ShaderDesc desc;
 	desc._pixel._srcFile = L"Shader/HalfFiller.hlsl";

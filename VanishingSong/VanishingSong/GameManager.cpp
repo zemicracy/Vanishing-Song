@@ -1,17 +1,33 @@
 #include "GameManager.h"
 #include "Const.h"
 #include <GameController.h>
-
+#include <WorldReader.h>
 using namespace aetherClass;
 GameManager::GameManager()
 {
-	m_prevPlayerTransform._translation._y = 22.2f;
-	m_fieldBossState = eBossState::eUnVisible;
+	WorldReader read;
+	read.Load("data\\Field\\player_init.aether");
+	for (auto& index : read.GetInputWorldInfo()._object){
+		if (index->_name == "player_init"){
+
+			m_prevPlayerTransform._translation = index->_transform._translation;
+			m_prevPlayerTransform._translation._y = 0;
+			m_prevPlayerTransform._rotation = index->_transform._rotation;
+		}
+	}
+	read.UnLoad();
+	m_bossState = eBossState::eUnVisible;
+	m_fieldState = eFieldState::eTutorial;
+	m_canStageNumber = NULL;
 }
 
 
 GameManager::~GameManager()
 {
+	m_prevPlayerTransform._translation = kVector3Zero;
+	m_bossState = eBossState::eUnVisible;
+	m_fieldState = eFieldState::eNull;
+	m_canStageNumber = NULL;
 }
 
 //
@@ -19,14 +35,17 @@ void GameManager::mPushUsePlayer(eMusical type){
 	if (m_players.find(type) != m_players.end() || type == eMusical::eNull)return;
 	m_players.insert(std::make_pair(type, type));
 }
-
+GameManager& GameManager::mGetInstance(){
+	static GameManager instance;
+	return instance;
+}
 //
 std::unordered_map<eMusical, eMusical>& GameManager::mGetUsePlayer(){
 	return m_players;
 }
 
 //
-aetherClass::Transform GameManager::mGetPlayerTransform(){
+Transform GameManager::mGetPlayerTransform(){
 	return m_prevPlayerTransform;
 }
 
@@ -45,11 +64,48 @@ std::string GameManager::mBattleDataFile(){
 }
 
 //
-void GameManager::mFieldBossState(GameManager::eBossState state){
-	m_fieldBossState = state;
+void GameManager::mBossState(GameManager::eBossState state){
+	m_bossState = state;
 }
 
 //
-GameManager::eBossState GameManager::mFieldBossState(){
-	return m_fieldBossState;
+GameManager::eBossState GameManager::mBossState(){
+	return m_bossState;
+}
+
+//
+void GameManager::mFieldState(GameManager::eFieldState state){
+	m_fieldState = state;
+}
+
+//
+GameManager::eFieldState GameManager::mFieldState(){
+	return m_fieldState;
+}
+
+//
+void GameManager::mNote(eMusical type){
+	for (auto index : m_noteArray){
+		if (index == type)return;
+	}
+	m_noteArray.push_back(type);
+}
+
+//
+std::vector<eMusical>& GameManager::mNote(){
+	return m_noteArray;
+}
+
+//
+void GameManager::mGetCanStage(const int stage){
+	m_canStageNumber = stage;
+}
+
+//
+int  GameManager::mGetCanStage()const{
+	return m_canStageNumber;
+}
+
+FadeManager& GameManager::mfadeManager(){
+	return m_fadeManager;
 }

@@ -29,6 +29,9 @@ void ClearGauge::mFinalize(){
 	if (m_maskTexture){
 		m_maskTexture.reset();
 	}
+	if (m_mainTexture){
+		m_mainTexture.reset();
+	}
 }
 bool ClearGauge::mInitialize(){
 	bool result = false;
@@ -41,13 +44,16 @@ bool ClearGauge::mInitialize(){
 	result = m_maskTexture->Load("Texture\\Result\\blank.png");
 	if (!result)return false;
 
+	m_mainTexture = std::make_shared<Texture>();
+	m_mainTexture->Load("Texture\\Result\\clearGauge.png");
 
 	m_pMainSprite->property._transform = m_trans;
-	m_pMainSprite->SetTexture(m_maskTexture.get());
-	m_pMainSprite->property._color = Color(1, 1, 0, 1);
+	m_pMainSprite->SetTexture(m_mainTexture.get());
+	m_pMainSprite->property._color = Color(0, 0, 0, 1);
 
 	m_pMaskSprite = std::make_shared<Rectangle2D>();
 	*m_pMaskSprite.get() = *m_pMainSprite.get();
+	m_pMaskSprite->SetTexture(m_maskTexture.get());
 	m_pMaskSprite->property._color = Color(0, 0, 0, 1);
 
 

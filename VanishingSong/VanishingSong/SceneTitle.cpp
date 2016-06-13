@@ -43,6 +43,8 @@ SceneTitle::~SceneTitle()
 }
 
 bool SceneTitle::Initialize(){
+	_heapmin();
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "Model\\Player\\red");
 
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
@@ -98,26 +100,28 @@ bool SceneTitle::Initialize(){
 	m_nowSelectMode = NULL;
 	m_nowCursor = NULL;
 	
+	_heapmin();
 	return true;
 }
 
 void SceneTitle::Finalize(){
-	
+	_heapmin();
+
 	if (m_pLogo){
 		m_pLogo->Finalize();
-		m_pLogo.release();
+		m_pLogo.reset();
 		m_pLogo = nullptr;
 	}
 
 	if (m_pCursor){
 		m_pCursor->Finalize();
-		m_pCursor.release();
+		m_pCursor.reset();
 		m_pCursor = nullptr;
 	}
 
 	if (m_pMenu){
 		m_pMenu->Finalize();
-		m_pMenu.release();
+		m_pMenu.reset();
 		m_pMenu = nullptr;
 	}
 
@@ -143,13 +147,19 @@ void SceneTitle::Finalize(){
 
 	// NULLで初期化
 	m_cursorArray.fill(ModeSelect(NULL));
+
+	_heapmin();
 	return;
 }
 
 bool SceneTitle::Updater(){
-	
-	mClickState();
+
+	mCursorState();
 	bool isUpdate = mMenuSelectState();
+	if (GameController::GetKey().KeyDownTrigger('T')){
+		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
+	}
+
 	// まだ続けるか？
 	if (!isUpdate)
 	{
@@ -165,7 +175,7 @@ void SceneTitle::Render(){
 }
 
 void SceneTitle::UIRender(){
-	auto shaderHash = Singleton<ResourceManager>::GetInstance().mGetShaderHash();
+	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pLogo->Render(shaderHash["transparent"].get());
 	m_pMenu->Render(shaderHash["transparent"].get());
 
@@ -208,7 +218,7 @@ void SceneTitle::mChangeSelect(){
 }
 
 
-void SceneTitle::mClickState(){
+void SceneTitle::mCursorState(){
 	if (m_pushState != kPleaseClick)return;
 
 	if (GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart)){
