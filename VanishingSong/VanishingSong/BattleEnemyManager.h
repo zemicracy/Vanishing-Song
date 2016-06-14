@@ -26,7 +26,7 @@ public:
 
 	
 
-	void mUpadate(const float timeScale);
+	void mUpdate(const float timeScale);
 
 	std::vector<eMusical> GetList();
 

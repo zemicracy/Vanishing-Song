@@ -58,8 +58,10 @@ int BattleEnemyManager::mGetRandom(){
 	return r;
 }
 
-void BattleEnemyManager::mUpadate(const float timeScale ){
-
+void BattleEnemyManager::mUpdate(const float timeScale ){
+	for (auto itr : m_pEnemy){
+		itr->mUpdate(1);
+	}
 }
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
