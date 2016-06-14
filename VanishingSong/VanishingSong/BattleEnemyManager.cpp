@@ -2,7 +2,6 @@
 #include <random>
 #include "Cipher.h"
 #include"ResourceManager.h"
-#include<ModelUtility.h>
 using namespace aetherClass;
 int cnt = 0;
 
@@ -59,12 +58,9 @@ int BattleEnemyManager::mGetRandom(){
 	return r;
 }
 
-void BattleEnemyManager::mUpdate(const float timeScale ){
-	for (auto itr : m_pEnemy){
-		itr->mUpdate(1);
-	}
-}
+void BattleEnemyManager::mUpadate(const float timeScale ){
 
+}
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
 	Cipher chipher(path);
@@ -149,9 +145,14 @@ void BattleEnemyManager::misDie(){
 
 int BattleEnemyManager::mGetAppendOption(){
 
+
+	Debug::mPrint(std::to_string(m_hp[m_waveID]._hp/m_hp[m_waveID]._maxHp));
+
+
 	if (m_stageID < 3){
 		return eAppendOption::eNone;
 	}
+
 	if (m_stageID == 4){
 		if (m_waveID == 2){
 			return eAppendOption::eReverce;
@@ -160,10 +161,16 @@ int BattleEnemyManager::mGetAppendOption(){
 
 	if (m_stageID == 5){
 		if (m_waveID == 2){
-			return eAppendOption::eBlack;
+			if (0.15 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
+				return eAppendOption::eBlack | eAppendOption::eReverce;
+			}
+			else if (0.25 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
+				return eAppendOption::eBlack;
+			}
+			else if (0.5 >  m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp);
+			return eAppendOption::eReverce;
 		}
 	}
-	
 	return eAppendOption::eNone;
 }
 
