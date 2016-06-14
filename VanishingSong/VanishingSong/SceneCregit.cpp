@@ -85,7 +85,6 @@ bool SceneCregit::Initialize(){
 
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume * 100);
-	m_sound->PlayToLoop();
 	_heapmin();
 	return true;
 }
@@ -181,6 +180,10 @@ void SceneCregit::mLoadTextData(){
 
 
 bool SceneCregit::Updater(){
+	if (m_isEndTransition){
+		m_sound->PlayToLoop();
+	}
+
 
 	if (m_pBattleEnemyManager){
 		m_pBattleEnemyManager->mUpdate(1);
@@ -317,6 +320,7 @@ bool SceneCregit::TransitionOut(){
 	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
 		return kTransitionning;
 	}
+	m_isEndTransition = true;
 	return kTransitionEnd;
 }
 

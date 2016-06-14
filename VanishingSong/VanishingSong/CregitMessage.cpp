@@ -35,8 +35,6 @@ void CregitMessage::mInitialize(){
 	m_waveMessage.push_back(gCreateTexture(folder + "soundcreater.png"));
 	m_waveMessage.push_back(gCreateTexture(folder + "specialthunks.png"));
 
-
-
 }
 void CregitMessage::mChangeTexture(std::string path){
 	if (m_textureList.find(path) == m_textureList.end())return;

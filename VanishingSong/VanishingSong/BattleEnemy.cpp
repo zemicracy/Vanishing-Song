@@ -36,6 +36,10 @@ void BattleEnemy::mUpdate(const float timescale){
 		m_alpha -= 0.05;
 		m_enemy._model->SetModelColor(Color(0,0,0,m_alpha));
 	}
+	else{
+		m_enemy._model->SetModelColor(Color(0, 0, 0, 1));
+	}
+	
 }
 
 
@@ -58,6 +62,7 @@ void BattleEnemy::misDie(){
 }
 
 void BattleEnemy::Finalize(){
+	m_enemy._model->SetModelColor(Color(0, 0, 0, 1));
 	if (m_enemy._model){
 		m_enemy._model.reset();
 	}

@@ -200,7 +200,7 @@ bool SceneBattle::Updater(){
 				m_enemyVector.push_back(m_pActionBoard->mGetCommand(itr));
 			}
 			m_pOrderList->mAddEnemyOrder(m_enemyVector);
-			m_pOrderList->mSetOption(eAppendOption::eNone);
+			m_pOrderList->mSetOption(m_pBattleEnemyManager->mGetAppendOption());
 		}
 		m_processState = eGameState::eCountIn;
 		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime()+0.1f);
