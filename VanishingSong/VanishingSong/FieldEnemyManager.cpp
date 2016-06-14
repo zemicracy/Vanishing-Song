@@ -21,6 +21,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	
 	EnemySize = 1;
 
+	m_bossFlag = false;
+
 	WorldReader reader;
 	reader.Load("data\\Field\\stage.aether");
 	//SpawnêŠ
@@ -83,6 +85,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
+		m_bossFlag = true;
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemy.back()->mInitialize(eMusical::eAdlib, camera, "data\\Battle\\Stage5");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
@@ -103,9 +106,15 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 //•`‰æˆ—
 void FieldEnemyManager::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	
-		for (int i = 0; i < m_pEnemy.size(); i++){
+		for (int i = 0; i < 4; i++){
 			m_pEnemy[i]->mRender(model_shader, colider_shader);
 		}
+
+		if (m_bossFlag){
+			m_pEnemy[4]->mRender(model_shader, colider_shader);
+		}
+
+		
 }
 
 bool FieldEnemyManager::mGetIsJudge(){
