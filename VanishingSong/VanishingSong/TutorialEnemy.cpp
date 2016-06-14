@@ -1,5 +1,5 @@
 #include "TutorialEnemy.h"
-
+#include "Debug.h"
 using namespace aetherClass;
 TutorialEnemy::TutorialEnemy()
 {
@@ -18,43 +18,104 @@ void TutorialEnemy::mInitalize(const bool flg){
 	
 	int count = NULL;
 	for (auto& message : m_tutorialMessage){
-		message.Load("Texture\\Message\\tmplate.png");
+		message = std::make_shared<Texture>();
+		message->Load("Texture\\Message\\tmplate.png");
 		count += 1;
 	}
 
 	//
 	count = 0;
 	for (auto& message : m_tutorialClearMessage){
-		message.Load("Texture\\Message\\tmplate.png");
+		message = std::make_shared<Texture>();
+		message->Load("Texture\\Message\\tmplate.png");
 		count += 1;
 	}
 
+	m_pCursor = std::make_shared<Rectangle2D>();
+	m_pCursor->Initialize();
+	m_pCursor->property._transform._translation._y = 630;
+	m_pCursor->property._transform._scale = Vector3(120, 50, 0);
+	m_pCursor->property._color = Color(1.f, 1.f, 1.f, 0.3f);
+
+	m_cursorPosition[true] = 400.f;
+	m_cursorPosition[false] = 730.f;
+
+
+	m_pCursor->property._transform._translation._x = m_cursorPosition[m_isYes];
+
 	m_messageCount = NULL;
 	m_messageEnd = false;
+	m_select = eSelect::eNull;
+	m_state = eState::eNext;
+	m_isYes = true;
+	m_texture[eState::eSelect] = std::make_shared<Texture>();
+	m_texture[eState::eSelect]->Load("Texture\\Message\\yesno.png");
+	m_texture[eState::eNext] = std::make_shared<Texture>();
+	m_texture[eState::eNext]->Load("Texture\\Message\\nextButton.png");
+
+	if (m_isEnd){
+		Finalize();
+	}
 }
 
 
 //
 void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, const bool pushButton){
-	if (m_isEnd)return;
-	if (pushButton){
-		m_messageCount += 1;
+	if (m_isEnd){
+		if (m_pCursor){
+			m_pCursor->Finalize();
+			m_pCursor.reset();
+		}
+		return;
 	}
+
+	if (selectButton){
+		m_isYes = !m_isYes;
+	}
+	m_pCursor->property._transform._translation._x = m_cursorPosition[m_isYes];
+	if (pushButton){
+
+		switch (m_state)
+		{
+		case eState::eSelect:
+			if (m_isYes){
+				m_select = eSelect::eYes;
+
+			}
+			else{
+				m_select = eSelect::eNo;
+				m_messageCount += 1;
+			}
+			m_state = eState::eNext;
+			break;
+
+		case eState::eNext:
+			m_messageCount += 1;
+			break;
+		default:
+			break;
+		}
+	}
+
+
 	if (isTutorialEnd){
 		if (m_tutorialClearMessage.size() <= m_messageCount){
 			m_messageCount = m_tutorialClearMessage.size() - 1;
 			m_messageEnd = true;
 		}
-
-		m_messageWindow.mSetText(&m_tutorialClearMessage.at(m_messageCount));
+		m_messageWindow.mSetText(m_tutorialClearMessage.at(m_messageCount).get());
 	}
 	else{
-		if (m_tutorialClearMessage.size() <= m_messageCount){
+		if (m_tutorialMessage.size() <= m_messageCount){
 			m_messageCount = m_tutorialClearMessage.size() - 1;
 			m_messageEnd = true;
 		}
 
-		m_messageWindow.mSetText(&m_tutorialMessage.at(m_messageCount));
+		if (m_messageCount == m_tutorialMessage.size() - 2){
+			m_state = eState::eSelect;
+		}
+
+		m_messageWindow.mSetText(m_tutorialMessage.at(m_messageCount).get());
 	}
 }
 
@@ -63,9 +124,18 @@ void TutorialEnemy::mRender(ShaderBase*){
 	if (m_isEnd)return;
 }
 
-void TutorialEnemy::mUIRender(ShaderBase* shader){
+void TutorialEnemy::mUIRender(ShaderBase* shader, ShaderBase* color){
 	if (m_isEnd)return;
+	m_messageWindow.mSetButton(m_texture[m_state].get());
 	m_messageWindow.mRender(shader);
+	
+	if (m_state == eState::eSelect){
+		m_messageWindow.mUpdate(true);
+		m_pCursor->Render(color);
+	}
+	else{
+		m_messageWindow.mUpdate(false);
+	}
 }
 
 //
@@ -79,4 +149,33 @@ void TutorialEnemy::mIsEnd(const bool flg){
 
 bool TutorialEnemy::mGetMessageEnd(){
 	return m_messageEnd;
+}
+
+TutorialEnemy::eSelect TutorialEnemy::mGetSelectType(){
+	return m_select;
+}
+
+void TutorialEnemy::Finalize(){
+	for (auto& index : m_tutorialMessage){
+		if (!index)continue;
+		index.reset();
+		index = nullptr;
+	}
+
+	for (auto& index : m_tutorialClearMessage){
+		if (!index)continue;
+		index.reset();
+		index = nullptr;
+	}
+	if (m_pCursor){
+		m_pCursor->Finalize();
+		m_pCursor.reset();
+	}
+
+	for (auto& index : m_texture){
+		if (!index.second)continue;
+		index.second.reset();
+		index.second = nullptr;
+	}
+	std::unordered_map<eState, std::shared_ptr<aetherClass::Texture>> m_texture;
 }

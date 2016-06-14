@@ -83,12 +83,13 @@ bool SceneGame::Initialize(){
 	m_pFieldEnemy = std::make_shared<FieldEnemyManager>();
 	m_pFieldEnemy->mInitilize(view);
 
-	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea, m_pFieldEnemy);
+	m_pCageManager = std::make_shared<CageManager>();
+	m_pCageManager->mInitialize(m_pFieldEnemy.get(), view);
+
+	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea, m_pFieldEnemy,m_pCageManager);
 
 	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy, view);
 
-	m_pCageManager = std::make_shared<CageManager>();
-	m_pCageManager->mInitialize(m_pFieldEnemy.get(), view);
 
 	{
 		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
@@ -182,10 +183,13 @@ bool SceneGame::Updater(){
 void SceneGame::mTutorial(){
 	if (m_gameState != eState::eTutorial)return;
 	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
+	bool select = GameController::GetKey().KeyDownTrigger(VK_LEFT) || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft)||
+		GameController::GetKey().KeyDownTrigger(VK_RIGHT) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
+
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
 	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
-		if (m_pTutorialEnemy->mGetMessageEnd()){
+		if (m_pTutorialEnemy->mGetSelectType()== TutorialEnemy::eSelect::eYes){
 			m_gameState = eState::eBattle;
 			m_pTutorialEnemy->mIsEnd(true);
 			GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
@@ -193,8 +197,15 @@ void SceneGame::mTutorial(){
 			ChangeScene(SceneTutorial::Name, LoadState::eUse);
 			return;
 		}
+		else if (m_pTutorialEnemy->mGetSelectType() == TutorialEnemy::eSelect::eNo){
+			if (m_pTutorialEnemy->mGetMessageEnd()){
+				GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
+				m_gameState = eState::eRun;
+				m_pTutorialEnemy->mIsEnd(true);
+			}
+		}
 
-		m_pTutorialEnemy->mUpdate(false, false, button);
+		m_pTutorialEnemy->mUpdate(false, select, button);
 	}
 	else{
 		// チュートリアル終了後
@@ -242,13 +253,10 @@ void SceneGame::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pTutorialEnemy->mRender(shaderHash["texture"].get());
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
-
-	//m_directEntity.GetDirect3DManager()->GetDeviceContext()->OMSetDepthStencilState(m_depthStencilState, 1);
+	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	//m_directEntity.GetDirect3DManager()->Change3DMode();
 	return;
 }
 
@@ -257,7 +265,7 @@ void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	if (m_isTransitionEnd){
-		m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get());
+		m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
 	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
 	return;

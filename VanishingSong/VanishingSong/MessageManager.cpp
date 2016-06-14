@@ -1,4 +1,5 @@
 #include "MessageManager.h"
+#include "ResourceManager.h"
 #include "GameController.h"
 namespace{
 	const int kFirst = 0;
@@ -22,12 +23,6 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 	m_buttonTexture[eState::eCannotSelect].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eEnd].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eSelect].Load("Texture\\Message\\yesno.png");
-
-	m_messageFlameTexture = std::make_shared<Texture>();
-	m_messageFlameTexture->Load("Texture\\Message\\message_flame2.png");
-
-	m_messageFlameTexture2 = std::make_shared<Texture>();
-	m_messageFlameTexture2->Load("Texture\\Message\\message_flame.png");
 
 	m_messageFlame = std::make_shared<Rectangle3D>();
 	m_messageFlame->Initialize();
@@ -60,16 +55,6 @@ MessageManager::~MessageManager()
 		m_pCursor = nullptr;
 	}
 
-	if (m_messageFlameTexture){
-		m_messageFlameTexture.reset();
-		m_messageFlameTexture = nullptr;
-	}
-
-	if (m_messageFlameTexture2){
-		m_messageFlameTexture2.reset();
-		m_messageFlameTexture2 = nullptr;
-	}
-
 	m_buttonTexture.clear();
 }
 
@@ -97,10 +82,10 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	}
 
 	if (m_changeMessageFlame){
-		m_messageFlame->SetTexture(m_messageFlameTexture.get());
+		m_messageFlame->SetTexture(ResourceManager::mGetInstance().GetTexture("comment").get());
 	}
 	else{
-		m_messageFlame->SetTexture(m_messageFlameTexture2.get());
+		m_messageFlame->SetTexture(ResourceManager::mGetInstance().GetTexture("comment2").get());
 	}
 
 	if (isPressButton){
