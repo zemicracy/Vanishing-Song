@@ -19,7 +19,7 @@
 #include"GaugeManager.h"
 #include"ResultBoard.h"
 #include"AttackParticle.h"
-
+#include"CregitMessage.h"
 
 class SceneCregit :
 	public aetherClass::GameScene
@@ -59,6 +59,7 @@ private:
 	void mOnPerform();   // プレイヤーの演奏
 	void mOnBattle();    // 戦闘開始
 	void mCheckBattle();
+	void mOnResult();
 
 	void mLoadTextData();
 private:
@@ -73,6 +74,7 @@ private:
 	std::unique_ptr<OrderList> m_pOrderList;
 	std::unique_ptr<BattleField>m_pField;
 	std::unique_ptr<BattleMessage>m_pMessage;
+	std::unique_ptr<CregitMessage>m_pCregitMessage;
 
 	aetherClass::ViewCamera m_view;
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
@@ -80,6 +82,7 @@ private:
 
 	int m_prevWholeBeatNo;
 	bool m_initUpdateProcess;
+	bool m_isEndTransition;
 
 	bool m_preInitProcess;
 	float m_bgmVolume;
@@ -98,7 +101,11 @@ private:
 
 	eGameState m_processState;
 	std::vector<std::shared_ptr<ActionCommand>>m_enemyVector;
+	
+	std::shared_ptr<aetherClass::SpriteBase>m_pBackCover;
+	std::shared_ptr<aetherClass::Texture>m_pBackTexture;
 
+	
 	//ptr
 	std::shared_ptr<RhythmManager>m_rhythm;
 };

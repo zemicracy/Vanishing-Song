@@ -8,6 +8,7 @@
 #include"SceneGame.h"
 #include"Cipher.h"
 #include"ModelUtility.h"
+#include"SceneTitle.h"
 
 //debug
 using namespace aetherClass;
@@ -27,14 +28,17 @@ bool SceneCregit::Initialize(){
 	_heapmin();
 
 	mLoadTextData();
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
 
 
-	RegisterScene(new SceneGame());
+	RegisterScene(new SceneTitle());
 
 	m_pMessage = std::make_unique<BattleMessage>();
+	m_pCregitMessage = std::make_unique<CregitMessage>();
 
 	m_pActionBoard = std::make_shared<ActionBoard>();
-	m_pActionBoard->mInitialize();
+	m_pActionBoard->mInitialize(true);
 
 	m_pField = std::make_unique<BattleField>();
 	m_pField->mInitialize(&m_view, m_rhythm.get());
@@ -52,10 +56,11 @@ bool SceneCregit::Initialize(){
 	m_pOrderList->mInitialize(m_beatMode, m_battleState, m_pActionBoard.get(), m_pField.get(), m_rhythm.get());
 
 	// プレイヤーの初期化
-	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
-		auto gearframe = ResourceManager::mGetInstance().mGetPlayerHash(index.second);
+	eMusical key[4] = { eMusical::eBlue, eMusical::eGreen, eMusical::eRed, eMusical::eYellow };
+	for (int i = 0; i < 4; ++i){
+		auto gearframe = ResourceManager::mGetInstance().mGetPlayerHash(key[i]);
 		gearframe->SetCamera(&m_view);
-		m_players.mSetPlayer(index.second, m_pField->mGetPlayerLane(index.second), gearframe);
+		m_players.mSetPlayer(key[i], m_pField->mGetPlayerLane(key[i]), gearframe);
 	}
 
 
@@ -80,7 +85,6 @@ bool SceneCregit::Initialize(){
 
 	//最後に行う
 	m_sound->SetValume(-m_bgmVolume * 100);
-	m_sound->PlayToLoop();
 	_heapmin();
 	return true;
 }
@@ -104,6 +108,10 @@ void SceneCregit::Finalize(){
 		m_pField.reset();
 		m_pField = nullptr;
 	}
+	if (m_pCregitMessage){
+		m_pCregitMessage.reset();
+		m_pCregitMessage = nullptr;
+	}
 	if (m_pMessage){
 		m_pMessage.reset();
 		m_pMessage = nullptr;
@@ -117,11 +125,16 @@ void SceneCregit::Finalize(){
 		m_pBattleEnemyManager = nullptr;
 	}
 
+	m_pBackCover->Finalize();
+	m_pBackCover.reset();
+	m_pBackCover = nullptr;
+
 	_heapmin();
 	return;
 }
 void SceneCregit::mLoadTextData(){
-	std::string file = GameManager::mGetInstance().mBattleDataFile();
+	std::string file = "data\\Battle\\Cregit";
+	GameManager::mGetInstance().mBattleDataFile(file);
 	Cipher cip(file);
 
 	m_stageID = std::atoi(&cip.mGetSpriteArray("[Stage]").front().front());
@@ -135,23 +148,43 @@ void SceneCregit::mLoadTextData(){
 
 	//サウンドのデータも読み込む
 	m_sound = std::make_shared<GameSound>();
-	if (m_stageID != 5){
-		m_sound->Load("Sound\\Battle\\normal.wav");
-	}
-	else{
-		m_sound->Load("Sound\\Battle\\boss.wav");
-	}
+	m_sound->Load("Sound\\BGM\\field1.wav");
 
 	m_rhythm = std::make_shared<RhythmManager>();
-	m_rhythm->mInitializeRhythm(m_sound, 120);
+	m_rhythm->mInitializeRhythm(m_sound, 128);
 	m_rhythm->mAcquire();
 
+
+	m_pBackCover = std::make_shared<Rectangle2D>();
+	m_pBackCover->Initialize();
+	WorldReader reader;
+	reader.Load("data\\Result.aether");
+
+	for (auto itr : reader.GetInputWorldInfo()._object){
+		if (itr->_name == "backboard"){
+			m_pBackCover->property._color = itr->_color;
+			m_pBackCover->property._transform = itr->_transform;
+			break;
+		}
+	}
+	m_pBackCover->property._color = Color(0,0,0,0);
+	m_pBackCover->property._transform._translation = 0;
+	m_pBackCover->property._transform._scale += 40;
+
+	m_pBackTexture = std::make_shared<Texture>();
+	m_pBackTexture->Load("Texture\\Result\\blank.png");
+	m_pBackCover->SetTexture(m_pBackTexture.get());
 
 	cip.mUnLoad();
 }
 
 
 bool SceneCregit::Updater(){
+	if (m_isEndTransition){
+		m_sound->PlayToLoop();
+	}
+
+
 	if (m_pBattleEnemyManager){
 		m_pBattleEnemyManager->mUpdate(1);
 	}
@@ -211,6 +244,7 @@ bool SceneCregit::Updater(){
 			mCheckBattle();
 			break;
 		case GameManager::eBattleState::eResult:
+			mOnResult();
 			break;
 		case GameManager::eBattleState::eNewWave:
 			if (m_rhythm->mIsQuarterBeat()){
@@ -245,9 +279,6 @@ void SceneCregit::Render(){
 		m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
 	m_players.mRender(shaderHash["texture"].get());
-	if (m_pOrderList){
-		m_pOrderList->mRender3D(shaderHash["texture"].get());
-	}
 	if (m_pBattleEnemyManager){
 		m_pBattleEnemyManager->mRender(shaderHash["transparent"]);
 	}
@@ -255,6 +286,7 @@ void SceneCregit::Render(){
 	if (m_particle){
 		m_particle->mRender(shaderHash["texture"].get());
 	}
+	
 	return;
 }
 
@@ -264,19 +296,34 @@ void SceneCregit::UIRender(){
 		m_pOrderList->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
 	if (m_pMessage){
-		m_pMessage->mRender(shaderHash["transparent"].get());
+//		m_pMessage->mRender(shaderHash["transparent"].get());
 	}
 
+	m_pBackCover->Render(shaderHash["transparent"].get());
+	if (m_pCregitMessage){
+		m_pCregitMessage->mRender(shaderHash["transparent"].get());
+	}
+
+	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
 
 bool SceneCregit::TransitionIn(){
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		return kTransitionning;
+	}
 	return kTransitionEnd;
 }
 
+//
 bool SceneCregit::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+		return kTransitionning;
+	}
+	m_isEndTransition = true;
 	return kTransitionEnd;
 }
+
 
 // 敵の演奏
 void SceneCregit::mOnListen(){
@@ -290,6 +337,8 @@ void SceneCregit::mOnListen(){
 
 	//光る奴
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+
+	m_pCregitMessage->mUpdate(0.5f);
 
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
@@ -362,6 +411,25 @@ void SceneCregit::mCheckBattle(){
 	}
 }
 
+void SceneCregit::mOnResult(){
+
+	if (m_pBackCover->property._color._alpha > 0.9){
+		m_pCregitMessage->mChangeTexture("End");
+		m_pCregitMessage->mSetActive(true);
+		m_pCregitMessage->mUpdate(0.2f);
+	}
+	else{
+		m_pBackCover->property._color._alpha += 0.02;
+	}
+
+	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
+	if (isPress){
+		ChangeScene(SceneTitle::Name, LoadState::eUse);
+	}
+
+
+}
+
 
 void SceneCregit::mCountIn(){
 	double Padding;
@@ -372,6 +440,7 @@ void SceneCregit::mCountIn(){
 		if (int(m_rhythm->mWholeBeatTime()) != m_prevWholeBeatNo){
 			m_inCount = 0;
 			m_pMessage->mSetActive(false);
+			m_pCregitMessage->mSetActive(false);
 
 			m_preInitProcess = false;
 			m_winner = m_battleState;
@@ -384,6 +453,7 @@ void SceneCregit::mCountIn(){
 			m_inCount = 0;
 			m_processState = eGameState::eUpdate;
 			m_pMessage->mSetActive(false);
+			m_pCregitMessage->mSetActive(false);
 			m_preInitProcess = false;
 
 			return;
@@ -392,16 +462,20 @@ void SceneCregit::mCountIn(){
 	else if (m_battleState == GameManager::eBattleState::eResult){
 		m_processState = eGameState::eUpdate;
 		m_inCount = 0;
+		return;
 	}
 	else {		//普段はこっち
 		if (int(m_rhythm->mWholeBeatTime() + 0.1f) != m_prevWholeBeatNo){
 			m_inCount = 0;
 			m_pMessage->mSetActive(false);
+			m_pCregitMessage->mSetActive(false);
 			m_processState = eGameState::eUpdate;
 			m_preInitProcess = false;
 			return;
 		}
 	}
+	m_pCregitMessage->mUpdate(1.0f);
+
 	if (m_rhythm->mIsQuarterBeat()){
 		m_inCount++;
 		//		printf("%d\n", m_inCount);
@@ -411,10 +485,10 @@ void SceneCregit::mCountIn(){
 		if (m_battleState == GameManager::eBattleState::eWin || m_battleState == GameManager::eBattleState::eLose){
 			m_sound->SetValume(-m_bgmVolume * 100);
 			m_bgmVolume++;
-			m_pMessage->mChangeTexture(m_battleState);
 		}
 		else if (m_battleState == GameManager::eBattleState::eNewWave){
-			m_pMessage->mWaveMessageOpen(m_waveID);
+			m_pCregitMessage->mWaveMessageOpen(m_waveID-1);
+			m_pCregitMessage->mSetActive(true);
 		}
 		else{
 			if (!m_preInitProcess){
@@ -422,8 +496,8 @@ void SceneCregit::mCountIn(){
 				m_preInitProcess = true;
 			}
 			m_pMessage->mChangeTexture(m_battleState);
+			m_pMessage->mSetActive(true);
 		}
-		m_pMessage->mSetActive(true);
 	}
 
 }

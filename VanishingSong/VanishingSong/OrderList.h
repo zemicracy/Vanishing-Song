@@ -4,7 +4,6 @@
 #include"GameManager.h"
 #include"ActionSound.h"
 #include"RhythmManager.h"
-#include"AttackParticle.h"
 #include"BattleField.h"
 #include"ResultBoard.h"
 #include"EffectGenerator2D.h"
@@ -55,8 +54,6 @@ public:
 	void mRhythmicMotion();
 
 
-	//other
-	void mRender3D(aetherClass::ShaderBase*);
 
 private:
 	void mBattleUpdate();
@@ -78,9 +75,6 @@ private:
 	std::vector<std::shared_ptr<ActionCommand>>m_PlayerOrderList;
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
-	//パーティクル
-	/*AttackParticle::ParticleDesc m_perticleDesc;
-	std::unique_ptr<AttackParticle>m_pParticle;*/
 
 	//コマンド描画先
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;

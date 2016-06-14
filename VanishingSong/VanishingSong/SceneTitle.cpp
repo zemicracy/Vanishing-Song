@@ -9,6 +9,7 @@
 #include "Const.h"
 #include "ResourceManager.h"
 #include "SceneGame.h"
+#include"SceneCregit.h"
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
@@ -94,6 +95,7 @@ bool SceneTitle::Initialize(){
 	}
 	//Ÿ‚ÌƒV[ƒ“
 	RegisterScene(new SceneGame());
+	RegisterScene(new SceneCregit());
 
 	m_pushState = false;
 	m_alphaState = false;
@@ -275,6 +277,8 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 		break;
 	case eNextMode::eCredit:
 		// ‚±‚±‚Í‚È‚ç‚·‚×‚ÄI—¹
+		info._nextSceneName = SceneCregit::Name;
+		break;
 	case eNextMode::eNull:
 	case eNextMode::eExit:
 		info._nextSceneName = kExit;

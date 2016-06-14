@@ -150,15 +150,16 @@ void SceneBattle::mLoadTextData(){
 
 	//サウンドのデータも読み込む
 	m_sound = std::make_shared<GameSound>();
+	m_rhythm = std::make_shared<RhythmManager>();
 	if (m_stageID != 5){
 		m_sound->Load("Sound\\Battle\\normal.wav");
+		m_rhythm->mInitializeRhythm(m_sound, 120);
 	}
 	else{
 		m_sound->Load("Sound\\Battle\\boss.wav");
+		m_rhythm->mInitializeRhythm(m_sound, 117);
 	}
 
-	m_rhythm = std::make_shared<RhythmManager>();
-	m_rhythm->mInitializeRhythm(m_sound, 120);
 	m_rhythm->mAcquire();
 
 
@@ -167,16 +168,16 @@ void SceneBattle::mLoadTextData(){
 
 
 bool SceneBattle::Updater(){
-	if (m_pBattleEnemyManager){
-		m_pBattleEnemyManager->mUpdate(1);
-	}
-	if (m_particle){
-		m_particle->mUpdate(0.8);
-	}
 	if (kCharaDebug){
 		if (GameController::GetKey().IsKeyDown('I')){
 			m_enemyHp->_hp -= 1;
 		}
+	}
+	if (m_particle){
+		m_particle->mUpdate(0.8);
+	}
+	if (m_pBattleEnemyManager){
+		m_pBattleEnemyManager->mUpdate(1);
 	}
 	if (m_rhythm){
 		m_rhythm->mAcquire();
@@ -199,7 +200,7 @@ bool SceneBattle::Updater(){
 				m_enemyVector.push_back(m_pActionBoard->mGetCommand(itr));
 			}
 			m_pOrderList->mAddEnemyOrder(m_enemyVector);
-			m_pOrderList->mSetOption(eAppendOption::eNone);
+			m_pOrderList->mSetOption(m_pBattleEnemyManager->mGetAppendOption());
 		}
 		m_processState = eGameState::eCountIn;
 		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime()+0.1f);
@@ -271,9 +272,6 @@ void SceneBattle::Render(){
 		m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
 		m_players.mRender(shaderHash["texture"].get());
-	if (m_pOrderList){
-		m_pOrderList->mRender3D(shaderHash["texture"].get());
-	}
 	if (m_pBattleEnemyManager){
 		m_pBattleEnemyManager->mRender(shaderHash["transparent"]);
 	}
@@ -301,14 +299,23 @@ void SceneBattle::UIRender(){
 			m_pResult->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 		}
 	}
+	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
 
 bool SceneBattle::TransitionIn(){
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		return kTransitionning;
+	}
+
 	return kTransitionEnd;
 }
 
+//
 bool SceneBattle::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+		return kTransitionning;
+	}
 	return kTransitionEnd;
 }
 
