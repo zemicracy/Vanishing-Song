@@ -47,20 +47,28 @@ void CageManager::mRender(ShaderBase* tex, ShaderBase* color){
 	return;
 }
 
-
-void CageManager::mUpdate(float scaleTime, Vector3 position){
+//
+void CageManager::mUpdate(float scaleTime, Vector3 position, const bool button){
 	// •ß—¸‚ğŒü‚©‚¹‚é
 	for (auto& index : m_pCage){
-		index->mUpdate(scaleTime,position);
+		index->mUpdate(scaleTime,position,button);
 	}
 }
 
+//
 Vector3 CageManager::mGetPosition(const int number){
 	if (number >= m_pCage.size())return kVector3Zero;
 	return m_pCage.at(number)->mGetPosition();
 }
 
+//
 void CageManager::mSetIsComment(const int number, const bool flg){
 	if (number >= m_pCage.size())return;
 	m_pCage.at(number)->mSetIsComment(flg);
+}
+
+//
+bool CageManager::mGetIsMessageRun(const int number){
+	if (number >= m_pCage.size())return false;
+	return m_pCage.at(number)->mGetMessageRun();
 }

@@ -62,6 +62,7 @@ void CollideManager::mCheckHitEnemy(const int number){
 		m_messageInfo.second = false;
 	}
 
+	if (!m_messageInfo.second)return;
 	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
 		m_player->mOnHitWall(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
 	}
@@ -74,11 +75,8 @@ void CollideManager::mCheckHitCage(const int number){
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_cage->mGetPosition(number)._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_cage->mGetPosition(number)._z;
 
-	system("cls");
 	if ((x*x) + (z*z) < kRange*kRange&&m_messageInfo.second){
 		m_cage->mSetIsComment(number, true);
-		
-		Debug::mPrint("‚«‚½");
 	}
 	else{
 		m_cage->mSetIsComment(number, false);

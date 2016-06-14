@@ -81,7 +81,7 @@ void MessageWindow::mSetText(aetherClass::Texture *tex){
 	m_text->SetTexture(tex);
 }
 
-void MessageWindow::mSetButton(aetherClass::Texture* tex){
+void MessageWindow::mSetButton(Texture* tex){
 	m_button->SetTexture(tex);
 }
 
@@ -92,6 +92,7 @@ void MessageWindow::mUpdate(const bool flg){
 		m_buttonChange = !m_buttonChange;
 		m_buttonTime = NULL;
 	}
+
 	if (flg){
 		m_button->property._color._alpha = 1.0f;
 	}

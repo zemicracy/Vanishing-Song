@@ -68,7 +68,6 @@ private:
 	std::shared_ptr<TutorialEnemy> m_pTutorialEnemy;
 	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
 	bool m_isTransitionEnd;
-	ID3D11DepthStencilState *m_depthStencilState;
 	aetherClass::DirectXEntity m_directEntity;
 };
 

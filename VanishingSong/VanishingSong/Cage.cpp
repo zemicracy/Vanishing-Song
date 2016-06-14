@@ -11,6 +11,7 @@ Cage::Cage(std::shared_ptr<FbxModel> gearframe, Vector3 position, ViewCamera* ca
 {
 	mInitialize(gearframe,position, camera,flg);
 	m_camera = camera;
+	m_isMessage = false;
 }
 
 Cage::~Cage(){}
@@ -53,7 +54,7 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 }
 
 //
-void Cage::mUpdate(const float timeScale, Vector3 position){
+void Cage::mUpdate(const float timeScale, Vector3 position, const bool button){
 	m_charaEntity.mFaceToObject(m_model, position);
 	if (m_isComment){
 		m_changeCommentCount += GameClock::GetDeltaTime();
@@ -69,6 +70,10 @@ void Cage::mUpdate(const float timeScale, Vector3 position){
 		else{
 			m_commentFlame->SetTexture(ResourceManager::mGetInstance().GetTexture("comment2").get());
 		}
+
+		if (button){
+			m_isMessage = !m_isMessage;
+		}
 	}
 }
 
@@ -79,7 +84,7 @@ void Cage::mRender(ShaderBase* tex, ShaderBase* color){
 	}
 	m_model->Render(tex);
 
-	if (m_isComment){
+	if (m_isComment&&!m_isMessage){
 		m_commentFlame->property._transform._rotation = m_camera->property._rotation;
 		
 			m_commentFlame->Render(tex);
@@ -99,10 +104,17 @@ void Cage::mSetIsTought(bool flg){
 	m_isTought = flg;
 }
 
+//
 void Cage::mSetIsComment(bool flg){
 	m_isComment = flg;
 }
 
+//
 Vector3 Cage::mGetPosition(){
 	return m_model->property._transform._translation;
+}
+
+//
+bool Cage::mGetMessageRun(){
+	return m_isMessage;
 }
