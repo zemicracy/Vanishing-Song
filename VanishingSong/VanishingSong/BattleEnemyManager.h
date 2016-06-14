@@ -26,7 +26,7 @@ public:
 
 	
 
-	void mUpdate(const float timeScale);
+	void mUpadate(const float timeScale);
 
 	std::vector<eMusical> GetList();
 
@@ -73,6 +73,7 @@ private:
 	std::vector<std::vector<eMusical>> m_enemyAttackList;
 	std::vector<CharaStatus> m_hp;
 
+	bool m_bossFlag;
 	int m_waveID;
 	bool m_isEnd;
 	int m_waveAllCount;
