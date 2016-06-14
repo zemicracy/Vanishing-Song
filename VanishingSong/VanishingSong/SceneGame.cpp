@@ -38,33 +38,6 @@ bool SceneGame::Initialize(){
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
 
-
-
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	SecureZeroMemory(&depthStencilDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
-	// Set up the description of the stencil state.
-	depthStencilDesc.DepthEnable = false;
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-
-	depthStencilDesc.StencilEnable = true;
-	depthStencilDesc.StencilReadMask = 0xFF;
-	depthStencilDesc.StencilWriteMask = 0xFF;
-
-	// Stencil operations if pixel is front-facing.
-	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Stencil operations if pixel is back-facing.
-	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	m_directEntity.GetDirect3DManager()->GetDevice()->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);
-
 	// ƒV[ƒ“‚Ì“o˜^
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
@@ -187,7 +160,7 @@ void SceneGame::mTutorial(){
 		GameController::GetKey().KeyDownTrigger(VK_RIGHT) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
 
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
-	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
+	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation,false);
 	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
 		if (m_pTutorialEnemy->mGetSelectType()== TutorialEnemy::eSelect::eYes){
 			m_gameState = eState::eBattle;
@@ -237,15 +210,15 @@ void SceneGame::mRun(){
 		// í“¬‚És‚­ˆ—
 		// í“¬‚És‚­‘O‚ÉÝ’è‚·‚é“z‚à‚±‚±‚Å‚·‚é
 		m_gameState = eState::eBattle;
-
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return;
 	}
 
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
-	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView());
-	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
+	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();
+	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView()||m_pCageManager->mGetIsMessageRun(fieldNumber));
+	
 }
 
 //
@@ -309,6 +282,8 @@ bool SceneGame::mMessageUpdate(){
 
 		return true;
 	}
+
+	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation, isPress);
 	return false;
 }
 

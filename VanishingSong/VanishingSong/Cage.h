@@ -10,7 +10,7 @@ public:
 	Cage(std::shared_ptr<aetherClass::FbxModel>, aetherClass::Vector3 position, aetherClass::ViewCamera*, bool);
 	~Cage();
 
-	void mUpdate(const float timeScale,aetherClass::Vector3);
+	void mUpdate(const float timeScale,aetherClass::Vector3,const bool button);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	
 	void mSetIsTought(bool);
@@ -18,6 +18,7 @@ public:
 	void mSetIsComment(bool);
 
 	aetherClass::Vector3 mGetPosition();
+	bool mGetMessageRun();
 private:
 
 	void mInitialize(std::shared_ptr<aetherClass::FbxModel>, aetherClass::Vector3 position, aetherClass::ViewCamera*,bool);
@@ -35,8 +36,10 @@ private:
 	std::shared_ptr < aetherClass::Cube> m_pCollider;
 	bool m_isTought;
 	bool m_isComment;
+	bool m_isMessage;
 	float m_changeCommentCount;
 	bool m_changeComment;
+
 };
 
 #endif
