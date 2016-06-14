@@ -78,6 +78,16 @@ bool SceneTutorial::Initialize(){
 	m_textReadCnt = 1;
 	
 
+	m_particleDesc._spawnRate = 10;
+	m_particleDesc._scale = 5;
+	m_particleDesc._texturePath = "Texture\\OrderList\\note_a.png";
+	m_particleDesc._rangeMin = Vector3(0, 0, 0);
+	m_particleDesc._rangeMax = Vector3(20, 0, 20);
+	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
+	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
+	m_particleDesc._endPoint._y += 100;
+
+
 	m_bgmVolume = 30;
 	m_inCount = 0;
 
@@ -259,10 +269,11 @@ void SceneTutorial::mTimeEngagerForTuto(){
 
 
 bool SceneTutorial::Updater(){
-	if (kCharaDebug){
-		if (GameController::GetKey().IsKeyDown('I')){
-			m_enemyHp->_hp -= 1;
-		}
+	if (m_particle){
+		m_particle->mUpdate(0.8);
+	}
+	if (m_pBattleEnemyManager){
+		m_pBattleEnemyManager->mUpdate(1);
 	}
 
 	if (m_rhythm){
@@ -361,12 +372,13 @@ void SceneTutorial::Render(){
 		m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
 	m_players.mRender(shaderHash["texture"].get());
-	if (m_pOrderList){
-		m_pOrderList->mRender3D(shaderHash["texture"].get());
-	}
 	if (m_pBattleEnemyManager){
 		m_pBattleEnemyManager->mRender(shaderHash["texture"]);
 	}
+	if (m_particle){
+		m_particle->mRender(shaderHash["texture"].get());
+	}
+
 	return;
 }
 
@@ -390,14 +402,23 @@ void SceneTutorial::UIRender(){
 		if (m_pTutorial){
 			m_pTutorial->mRender(shaderHash["transparent"].get(),shaderHash["color"].get());
 		}
+		GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
 
 bool SceneTutorial::TransitionIn(){
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		return kTransitionning;
+	}
+
 	return kTransitionEnd;
 }
 
+//
 bool SceneTutorial::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+		return kTransitionning;
+	}
 	return kTransitionEnd;
 }
 
@@ -545,6 +566,7 @@ void SceneTutorial::mCheckBattle(){
 			m_waveID++;
 
 			m_pBattleEnemyManager->misDie();
+			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eNewWave;
 			m_processState = eGameState::ePreCountIn;
 		}

@@ -20,6 +20,7 @@
 #include"GaugeManager.h"
 #include"ResultBoard.h"
 #include"TutorialMessage.h"
+#include"AttackParticle.h"
 
 class SceneTutorial :
 	public aetherClass::GameScene
@@ -112,6 +113,10 @@ private:
 	//Tutorial用
 	eTutorialState m_tutorialState;
 	std::vector<std::shared_ptr<ActionCommand>>m_enemyVector;
+
+	//パーティクル
+	std::shared_ptr<AttackParticle>m_particle;
+	AttackParticle::ParticleDesc m_particleDesc;
 
 
 	//ptr

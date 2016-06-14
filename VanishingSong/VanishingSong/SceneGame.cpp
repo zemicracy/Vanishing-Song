@@ -259,7 +259,7 @@ void SceneGame::UIRender(){
 	if (m_isTransitionEnd){
 		m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get());
 	}
-	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
+	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
 
@@ -268,7 +268,6 @@ bool SceneGame::TransitionIn(){
 	if (!GameManager::mGetInstance().mfadeManager().In(1)){
 		return kTransitionning;
 	}
-
 	return kTransitionEnd;
 }
 
