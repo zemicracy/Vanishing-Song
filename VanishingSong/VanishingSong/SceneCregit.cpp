@@ -9,6 +9,7 @@
 #include"Cipher.h"
 #include"ModelUtility.h"
 #include"SceneTitle.h"
+#include"GameClock.h"
 
 //debug
 using namespace aetherClass;
@@ -72,7 +73,7 @@ bool SceneCregit::Initialize(){
 
 	m_bgmVolume = 30;
 	m_inCount = 0;
-
+	m_endTime = 0;
 
 	m_particleDesc._spawnRate = 10;
 	m_particleDesc._scale = 5;
@@ -422,11 +423,10 @@ void SceneCregit::mOnResult(){
 		m_pBackCover->property._color._alpha += 0.02;
 	}
 
-	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	if (isPress){
+	m_endTime += GameClock::GetDeltaTime();
+	if (m_endTime >= 5){
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 	}
-
 
 }
 

@@ -25,10 +25,8 @@ void BattleField::mFinalize(){
 
 	m_pSkyBox->Finalize();
 	m_pPlane->Finalize();
-	for (auto& itr : m_pDebug){
-		itr->Finalize();
-		itr.reset();
-	}
+	m_pTank->Finalize();
+
 	for (auto& itr : m_pCommand){
 		itr->Finalize();
 		itr.reset();
@@ -75,17 +73,22 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
-			m_pPlane->LoadFBX("Model\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisDirectX);
+			m_pPlane->LoadFBX("Model\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
 			m_pPlane->SetCamera(m_view);
 			m_pPlane->property._transform = itr->_transform;
+			m_pPlane->property._transform._scale._z = 2;
 			//m_pPlane->SetTexture()
 		}
 		else if (itr->_name == "PlayerHP"){
-			m_pDebug[0] = gInitializer<Cube>(itr->_transform, itr->_color);
-			m_tankScaleOrigin = itr->_transform._scale;
+			m_tankScaleOrigin = 1.8;
 		}
 		else if (itr->_name == "EnemyHP"){
-			m_pDebug[1] = gInitializer<Cube>(itr->_transform, itr->_color);
+			m_pTank	= std::make_shared<FbxModel>();
+			m_pTank->LoadFBX("Model\\Battle\\capsule.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pTank->SetTextureDirectoryName("Model\\Battle");
+			m_pTank->SetCamera(m_view);
+			m_pTank->property._transform = itr->_transform;
+			m_pTank->property._transform._rotation._y = -90;
 			m_EnemyLane[eMusical::eAdlib] = itr->_transform._translation;
 		}
 		else if (itr->_name == "lane_blue"){
@@ -154,9 +157,6 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	m_pTextureList.insert(std::make_pair("skybox", ResourceManager::mGetInstance().GetTexture("skybox")));
 	m_pSkyBox->SetTexture(m_pTextureList["skybox"].get());
 
-	for (auto itr : m_pDebug){
-		itr->SetCamera(m_view);
-	}
 	for (auto itr : m_pLane){
 		itr.second->SetCamera(m_view);
 	}
@@ -188,9 +188,7 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 	for (auto itr : m_pLane){
 		itr.second->Render(debug);
 	}
-	for (auto itr : m_pDebug){
-		itr->Render(debug);
-	}
+	m_pTank->Render(texture);
 	for (int i = m_pCommand.size()-1; i >= 0; --i){
 		m_pCommand.at(i)->Render(texture);
 	}
@@ -216,10 +214,8 @@ void BattleField::mRhythmicMotion(){
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
+	m_pTank->property._transform._scale = m_tankScaleOrigin + (scale/10);
 
-	for (auto itr : m_pDebug){
-		itr->property._transform._scale = m_tankScaleOrigin + (2 * scale);
-	}
 	for (auto itr : m_pCommand)
 	{
 		itr->property._transform._scale = m_commandScale + (2*scale);

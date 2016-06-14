@@ -87,6 +87,7 @@ private:
 	bool m_preInitProcess;
 	float m_bgmVolume;
 	int m_inCount;
+	float m_endTime;
 
 	//ウェーブ
 	int m_MaxWave;
