@@ -54,7 +54,7 @@ void ResultBoard::mInitialize(){
 	reader.Load("data\\Result.aether");
 
 
-	Color BLACK(0, 0, 0, 1);
+	Color BLACK(0, 0, 0, 0);
 	for (auto& itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "correctGauge"){
 			m_pGauge = std::make_shared<ClearGauge>();
@@ -68,7 +68,7 @@ void ResultBoard::mInitialize(){
 		else if (itr->_name == "missValue"){
 			m_missCountPosision = itr->_transform._translation;
 		}
-		else if (itr->_name != "backBoard"){
+		else if (itr->_name == "backboard"){
 			m_pGeneral.insert(std::make_pair(itr->_name, gInitializer<Rectangle2D>(itr->_transform, itr->_color)));
 		}
 		else if (itr->_name != ""){
@@ -116,6 +116,7 @@ void ResultBoard::mInitialize(){
 	m_timer = 0;
 
 	reader.UnLoad();
+	m_state = eNone;
 }
 
 void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state,UINT stageID){
@@ -180,8 +181,8 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	if (stageID == 0){
 		if (itr.find(eMusical::eBlue) != itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
+			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
 		}
-		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
 		m_TextureList["note"]->Load("Texture\\OrderList\\note_a.png");
 		m_pGeneral["noteImage"]->SetTexture(m_TextureList["note"].get());
 
@@ -215,7 +216,9 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
-		GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
+		if (GameManager::mGetInstance().mBossState() != GameManager::eBossState::eWin){
+			GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
+		}
 	}
 	else if(stageID == 5){
 		if (integer < noteBorder)return;
@@ -228,19 +231,42 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eAdlib) = "Sound\\BGM\\field5.wav";
 		}
 	}
-
+	m_state = eInit;
 }
 
 
 void ResultBoard::mUpdate(){
-//	Debug::mPrint(std::to_string(m_timer));
-	if (m_timer > 1){
-		m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
-		m_timer = 0;
+	switch (m_state){
+	case ResultBoard::eNone:
+		return;
+	case ResultBoard::eInit:
+		if (m_pGeneral["backBoard"])
+		break;
+	case ResultBoard::eResultTitle:
+		break;
+	case ResultBoard::eMissCnt:
+		break;
+	case ResultBoard::eClearGauge:
+		break;
+	case ResultBoard::eRate:
+		break;
+	case ResultBoard::eNote:
+		break;
+	case ResultBoard::eEnd:
+	{
+		if (m_timer > 0.8){
+			m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
+			m_timer = 0;
+		}
+		else{
+			m_timer += GameClock::GetDeltaTime();
+		}
 	}
-	else{
-		m_timer += GameClock::GetDeltaTime();
+		break;
+	default:
+		break;
 	}
+
 }
 
 void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
@@ -250,29 +276,31 @@ void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBa
 	}
 	m_pGauge->mRender(m_halfFill);
 
-	//missCount
-	m_pNumSprite->property._transform._translation = m_missCountPosision;
-	for (int i = 0; i < std::to_string(m_resultData._missCount).length(); ++i){
-		char c = std::to_string(m_resultData._missCount).at(i);
-		std::string st;
-		st.push_back(c);
+	if (m_state >= eResultState::eMissCnt){
+		//missCount
+		m_pNumSprite->property._transform._translation = m_missCountPosision;
+		for (int i = 0; i < std::to_string(m_resultData._missCount).length(); ++i){
+			char c = std::to_string(m_resultData._missCount).at(i);
+			std::string st;
+			st.push_back(c);
 
-		m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
-		m_pNumSprite->SetTexture(m_numberList[st].get());
-		m_pNumSprite->Render(shader);
+			m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
+			m_pNumSprite->SetTexture(m_numberList[st].get());
+			m_pNumSprite->Render(shader);
+		}
 	}
+	if (m_state >= eResultState::eRate){
+		//ClearRate
+		m_pNumSprite->property._transform._translation = m_rankRatePosision;
+		for (int i = 0; i < m_rateString.length(); ++i){
+			char c = m_rateString.at(i);
+			std::string st;
+			st.push_back(c);
 
-	//ClearRate
-	m_pNumSprite->property._transform._translation = m_rankRatePosision;
-	for (int i = 0; i < m_rateString.length(); ++i){
-		char c = m_rateString.at(i);
-		std::string st;
-		st.push_back(c);
-
-		m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
-		m_pNumSprite->SetTexture(m_numberList[st].get());
-		m_pNumSprite->Render(shader);
+			m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
+			m_pNumSprite->SetTexture(m_numberList[st].get());
+			m_pNumSprite->Render(shader);
+		}
 	}
-
 
 }

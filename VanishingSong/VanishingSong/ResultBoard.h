@@ -25,10 +25,8 @@ struct ResultData{
 class ResultBoard
 {
 public:
-	enum class eClickState{
-		eNextDay,
-		eExit,
-		eNull
+	enum eResultState{
+		eNone,eInit, eResultTitle, eMissCnt, eClearGauge, eRate, eNote, eEnd
 	};
 
 public:
@@ -59,6 +57,7 @@ private:
 	bool m_callFadeIn;
 	bool m_callFadeOut;
 	float m_timer;
+	eResultState m_state;
 
 };
 

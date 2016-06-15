@@ -92,6 +92,7 @@ private:
 	bool m_preInitProcess;
 	bool m_timeEngage;
 	bool m_isTutorialPlay;
+	bool m_isEndTransition;
 
 	float m_bgmVolume;
 	int m_inCount;

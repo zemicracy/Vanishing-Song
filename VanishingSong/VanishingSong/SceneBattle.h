@@ -84,6 +84,7 @@ private:
 
 	int m_prevWholeBeatNo;
 	bool m_initUpdateProcess;
+	bool m_isEndTransition;
 
 	bool m_preInitProcess;
 	float m_bgmVolume;

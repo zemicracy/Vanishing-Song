@@ -94,6 +94,7 @@ bool SceneTutorial::Initialize(){
 	m_tutorialState = eTutorialState::eInit;
 	m_isTutorialPlay = false;
 	m_timeEngage = false;
+	m_isEndTransition = false;
 	
 	//チュートリアルWave１
 	m_enemyVector.reserve(4);
@@ -104,7 +105,6 @@ bool SceneTutorial::Initialize(){
 
 	//最後に行う
 	m_sound->SetValume(-m_bgmVolume * 100);
-	m_sound->PlayToLoop();
 	_heapmin();
 	return true;
 }
@@ -269,6 +269,9 @@ void SceneTutorial::mTimeEngagerForTuto(){
 
 
 bool SceneTutorial::Updater(){
+	if (m_isEndTransition){
+		m_sound->PlayToLoop();
+	}
 	if (m_particle){
 		m_particle->mUpdate(0.8);
 	}
@@ -419,6 +422,7 @@ bool SceneTutorial::TransitionOut(){
 	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
 		return kTransitionning;
 	}
+	m_isEndTransition = true;
 	return kTransitionEnd;
 }
 
