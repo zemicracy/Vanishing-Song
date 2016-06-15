@@ -214,11 +214,12 @@ void BattleField::mRhythmicMotion(){
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
-	m_pTank->property._transform._scale = m_tankScaleOrigin + (scale/10);
+	m_pTank->property._transform._scale = m_tankScaleOrigin + (scale / 10);
 
 	for (auto itr : m_pCommand)
 	{
-		itr->property._transform._scale = m_commandScale + (2*scale);
+		itr->property._transform._scale = m_commandScale + (2 * scale);
 	}
+
 
 }

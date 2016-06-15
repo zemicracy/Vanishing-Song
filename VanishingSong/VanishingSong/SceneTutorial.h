@@ -97,6 +97,7 @@ private:
 	float m_bgmVolume;
 	int m_inCount;
 	int m_prevWholeBeatNo;
+	float m_resultUpdateTime;
 
 	int m_textReadCnt;
 	//ウェーブ

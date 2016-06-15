@@ -76,6 +76,10 @@ void ResultBoard::mInitialize(){
 		}
 	}
 
+
+	m_noteTransOrigin = m_pGeneral["noteImage"]->property._transform._translation;
+	m_noteScaleOrigin = m_pGeneral["noteImage"]->property._transform._scale._x;
+
 	m_pNumSprite = std::make_shared<Rectangle2D>();
 	m_pNumSprite->Initialize();
 	m_pNumSprite->property._transform._scale = Vector3(25, 40, 1);
@@ -116,6 +120,7 @@ void ResultBoard::mInitialize(){
 	m_timer = 0;
 
 	reader.UnLoad();
+	m_isEnd = false;
 	m_state = eNone;
 }
 
@@ -130,8 +135,8 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 
 	float rate = (float)m_resultData._missCount / m_resultData._maxCount;
 	rate = 1 - rate;
-	m_pGauge->mSetRate(rate);
-
+	m_pGauge->mSetRate(0);
+	m_MaxRate = rate;
 	if (state == GameManager::eBattleState::eWin){
 		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Win.png");
 		int stage = GameManager::mGetInstance().mGetCanStage();
@@ -232,35 +237,100 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		}
 	}
 	m_state = eInit;
+	m_isEnd = false;
+}
+bool ResultBoard::mIsEnd(){
+	return m_isEnd;
 }
 
 
-void ResultBoard::mUpdate(){
+void ResultBoard::mUpdate(float timeScale){
 	switch (m_state){
 	case ResultBoard::eNone:
 		return;
 	case ResultBoard::eInit:
-		if (m_pGeneral["backBoard"])
+		if (m_pGeneral["backboard"]->property._color._alpha > 0.85){
+			m_pGeneral["backboard"]->property._color._alpha = 0.85;
+			m_state++;
+		}
+		else{
+			m_pGeneral["backboard"]->property._color._alpha += 0.1 * timeScale;
+		}
 		break;
 	case ResultBoard::eResultTitle:
-		break;
+	{
+		if (m_timer > 0.5){
+			m_pGeneral["battleResult"]->property._color._alpha = 1;
+			m_timer = 0;
+			m_state++;
+		}
+		else
+			m_timer += GameClock::GetDeltaTime() * timeScale;
+	}
+	break;
 	case ResultBoard::eMissCnt:
-		break;
+	{
+		if (m_timer > 0.5){
+			m_pGeneral["missText"]->property._color._alpha = 1;
+			m_timer = 0;
+			m_state++;
+		}
+		else
+			m_timer += GameClock::GetDeltaTime() * timeScale;
+	}
+	break;
 	case ResultBoard::eClearGauge:
-		break;
-	case ResultBoard::eRate:
-		break;
+	{
+			m_pGeneral["correctRateText"]->property._color._alpha = 1;
+			if (m_MaxRate > m_timer){
+				m_timer = 0;
+				m_state++;
+				m_pGauge->mSetRate(m_MaxRate);
+			}
+			else{
+				m_timer += 0.02 * timeScale;
+			}
+			m_pGauge->mSetRate(m_timer);
+	}
+	break;
+	case ResultBoard::eRank:
+	{
+		m_pGeneral["rankText"]->property._color._alpha = 1;
+		m_pGeneral["rankFrame"]->property._color._alpha = 1;
+		m_pGeneral["rankImage"]->property._color._alpha = 1;
+		if (m_timer > 0.5){
+			m_timer = 1000;
+			m_acceleration = 1.0;
+			m_state++;
+		}
+		else{
+			m_timer += GameClock::GetDeltaTime() * timeScale;
+		}
+	}
+	break;
 	case ResultBoard::eNote:
+		m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin; //(m_noteScaleOrigin * 15);
+		if (m_timer < 0){
+			m_pGeneral["noteImage"]->property._transform._scale = m_noteScaleOrigin;
+			m_state++;
+			m_timer = 0;
+		}else{
+			auto size = (m_pGeneral["noteImage"]->property._transform._scale);
+			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (size / 2);
+			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
+			m_timer -= 10 * m_acceleration * timeScale ;
+			m_acceleration += 0.02;
+		}
 		break;
 	case ResultBoard::eEnd:
 	{
 		if (m_timer > 0.8){
 			m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
 			m_timer = 0;
-		}
-		else{
+			m_isEnd = true;
+		}else
 			m_timer += GameClock::GetDeltaTime();
-		}
+
 	}
 		break;
 	default:
@@ -274,9 +344,8 @@ void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBa
 	for (auto& itr : m_pGeneral){
 			itr.second->Render(shader);
 	}
-	m_pGauge->mRender(m_halfFill);
 
-	if (m_state >= eResultState::eMissCnt){
+	if (m_state > eResultState::eMissCnt){
 		//missCount
 		m_pNumSprite->property._transform._translation = m_missCountPosision;
 		for (int i = 0; i < std::to_string(m_resultData._missCount).length(); ++i){
@@ -289,8 +358,9 @@ void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBa
 			m_pNumSprite->Render(shader);
 		}
 	}
-	if (m_state >= eResultState::eRate){
+	if (m_state >= eResultState::eClearGauge){
 		//ClearRate
+		m_pGauge->mRender(m_halfFill);
 		m_pNumSprite->property._transform._translation = m_rankRatePosision;
 		for (int i = 0; i < m_rateString.length(); ++i){
 			char c = m_rateString.at(i);

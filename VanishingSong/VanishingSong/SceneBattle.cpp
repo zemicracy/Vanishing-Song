@@ -168,8 +168,8 @@ void SceneBattle::mLoadTextData(){
 
 
 bool SceneBattle::Updater(){
-	if (m_isEndTransition){
-		m_sound->PlayToLoop();
+	if (m_isEndTransition && m_sound){
+			m_sound->PlayToLoop();
 	}
 	if (kCharaDebug){
 		if (GameController::GetKey().IsKeyDown('I')){
@@ -340,12 +340,19 @@ void SceneBattle::mOnResult(){
 		m_initUpdateProcess = true;
 
 		m_pOrderList.reset();
+		m_resultUpdateTime = 1.0f;
 	}
 
-	m_pResult->mUpdate();
-	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	if (isPress){
-		ChangeScene(SceneGame::Name, LoadState::eUse);
+	m_pResult->mUpdate(m_resultUpdateTime);
+	if (m_pResult->mIsEnd()){
+		const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
+		if (isPress){
+			ChangeScene(SceneGame::Name, LoadState::eUse);
+		}
+	}
+	else{
+		const bool isPress = GameController::GetJoypad().IsButtonDown(eJoyButton::eB) || GameController::GetKey().IsKeyDown(VK_SPACE);
+		m_resultUpdateTime += 0.1f;
 	}
 }
 

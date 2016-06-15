@@ -269,7 +269,7 @@ void SceneTutorial::mTimeEngagerForTuto(){
 
 
 bool SceneTutorial::Updater(){
-	if (m_isEndTransition){
+	if (m_isEndTransition && m_sound){
 		m_sound->PlayToLoop();
 	}
 	if (m_particle){
@@ -282,7 +282,7 @@ bool SceneTutorial::Updater(){
 	if (m_rhythm){
 		m_rhythm->mAcquire();
 	}
-	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
+	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
 		if (m_bgmVolume > 8){
 			m_sound->SetValume(-m_bgmVolume * 100);
 			m_bgmVolume--;
@@ -431,7 +431,10 @@ void SceneTutorial::mOnResult(){
 	if (!m_initUpdateProcess){
 		m_pGauge.reset();
 		m_pMessage.reset();
-		
+
+		m_sound = std::make_shared<GameSound>();
+		m_sound->Load("Sound\\Result\\result.wav");
+		m_rhythm->mInitializeRhythm(m_sound, 110);
 
 		m_isTutorialPlay = true;
 		m_tutorialState = eTutorialState::eFin;
@@ -444,12 +447,20 @@ void SceneTutorial::mOnResult(){
 		m_initUpdateProcess = true;
 
 		m_pOrderList.reset();
+		m_resultUpdateTime = 1.0f;
+		m_sound->SetValume(-m_bgmVolume * 100);
 	}
 
-	m_pResult->mUpdate();
-	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	if (isPress){
-		ChangeScene(SceneGame::Name, LoadState::eUse);
+	m_pResult->mUpdate(m_resultUpdateTime);
+	if (m_pResult->mIsEnd()){
+		const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
+		if (isPress){
+			ChangeScene(SceneGame::Name, LoadState::eUse);
+		}
+	}
+	else{
+		const bool isPress = GameController::GetJoypad().IsButtonDown(eJoyButton::eB) || GameController::GetKey().IsKeyDown(VK_SPACE);
+		m_resultUpdateTime += 0.1f;
 	}
 }
 
@@ -661,7 +672,7 @@ void SceneTutorial::mCountIn(){
 		else if (m_battleState == GameManager::eBattleState::eNewWave){
 			if (m_waveID == 1){
 				//tutorial
-				m_pMessage->mWaveMessageOpen(4);
+				m_pMessage->mWaveMessageOpen(0);
 			}else{
 				m_pMessage->mWaveMessageOpen(m_waveID - 1);
 			}
