@@ -70,6 +70,7 @@ bool SceneBattle::Initialize(){
 	m_processState = eGameState::ePreCountIn;
 	m_initUpdateProcess = false;
 	m_preInitProcess = false;
+	m_isEndTransition = false;
 	m_prevWholeBeatNo = 0;
 
 	m_bgmVolume = 30;
@@ -87,7 +88,6 @@ bool SceneBattle::Initialize(){
 
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume*100);
-	m_sound->PlayToLoop();
 	_heapmin();
 	return true;
 }
@@ -168,6 +168,9 @@ void SceneBattle::mLoadTextData(){
 
 
 bool SceneBattle::Updater(){
+	if (m_isEndTransition && m_sound){
+			m_sound->PlayToLoop();
+	}
 	if (kCharaDebug){
 		if (GameController::GetKey().IsKeyDown('I')){
 			m_enemyHp->_hp -= 1;
@@ -302,6 +305,7 @@ bool SceneBattle::TransitionOut(){
 	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
 		return kTransitionning;
 	}
+	m_isEndTransition = true;
 	return kTransitionEnd;
 }
 
@@ -322,12 +326,19 @@ void SceneBattle::mOnResult(){
 		m_initUpdateProcess = true;
 
 		m_pOrderList.reset();
+		m_resultUpdateTime = 1.0f;
 	}
 
-	m_pResult->mUpdate();
-	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	if (isPress){
-		ChangeScene(SceneGame::Name, LoadState::eUse);
+	m_pResult->mUpdate(m_resultUpdateTime);
+	if (m_pResult->mIsEnd()){
+		const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
+		if (isPress){
+			ChangeScene(SceneGame::Name, LoadState::eUse);
+		}
+	}
+	else{
+		const bool isPress = GameController::GetJoypad().IsButtonDown(eJoyButton::eB) || GameController::GetKey().IsKeyDown(VK_SPACE);
+		m_resultUpdateTime += 0.1f;
 	}
 }
 

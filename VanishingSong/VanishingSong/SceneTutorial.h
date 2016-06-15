@@ -92,10 +92,12 @@ private:
 	bool m_preInitProcess;
 	bool m_timeEngage;
 	bool m_isTutorialPlay;
+	bool m_isEndTransition;
 
 	float m_bgmVolume;
 	int m_inCount;
 	int m_prevWholeBeatNo;
+	float m_resultUpdateTime;
 
 	int m_textReadCnt;
 	//ウェーブ
