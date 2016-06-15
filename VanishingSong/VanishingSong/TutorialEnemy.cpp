@@ -8,7 +8,9 @@ TutorialEnemy::TutorialEnemy()
 }
 
 
-TutorialEnemy::~TutorialEnemy(){}
+TutorialEnemy::~TutorialEnemy(){
+	Finalize();
+}
 
 //
 void TutorialEnemy::mInitalize(const bool flg){
@@ -177,5 +179,4 @@ void TutorialEnemy::Finalize(){
 		index.second.reset();
 		index.second = nullptr;
 	}
-	std::unordered_map<eState, std::shared_ptr<aetherClass::Texture>> m_texture;
 }

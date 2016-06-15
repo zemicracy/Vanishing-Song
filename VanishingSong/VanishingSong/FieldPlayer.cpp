@@ -123,6 +123,9 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_transform);
+
+	// アニメーションの更新
+	m_model->KeyframeUpdate(m_model->GetKeyframeNameList(0), true);
 	return;
 }
 
@@ -177,8 +180,8 @@ void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 	m_playerView.Render();
 	if (!m_model)return;
 
-	m_model->Render(modelShader);
-	//m_model->KeyFrameAnimation(modelShader, m_animationName.at(m_prevState), true);
+	//m_model->Render(modelShader);
+	m_model->KeyframeAnimationRender(modelShader);
 	return;
 }
 /*

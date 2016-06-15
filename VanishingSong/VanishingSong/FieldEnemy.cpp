@@ -61,7 +61,7 @@ FieldEnemy::Property& FieldEnemy::mGetProperty(){
 }
 
 void FieldEnemy::mFaceToPlayer(aetherClass::Vector3 position){
-//	m_charaEntity.mFaceToObject(m_pTopGear, position,"=");
+	m_charaEntity.mFaceToObject(m_property._penemy, position);
 }
 void FieldEnemy::mFinalize(){
 
