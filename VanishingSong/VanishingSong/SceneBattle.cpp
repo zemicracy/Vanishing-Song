@@ -170,6 +170,12 @@ void SceneBattle::mLoadTextData(){
 bool SceneBattle::Updater(){
 	if (m_isEndTransition && m_sound){
 			m_sound->PlayToLoop();
+		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
+			if (m_bgmVolume > 8){
+				m_sound->SetValume(-m_bgmVolume * 100);
+				m_bgmVolume--;
+			}
+		}
 	}
 	if (kCharaDebug){
 		if (GameController::GetKey().IsKeyDown('I')){
@@ -187,12 +193,6 @@ bool SceneBattle::Updater(){
 	}
 	if (m_pOrderList){
 		m_pOrderList->mRhythmicMotion();
-	}
-	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
-		if (m_bgmVolume > 8){
-			m_sound->SetValume(-m_bgmVolume * 100);
-			m_bgmVolume--;
-		}
 	}
 
 	if (m_processState == eGameState::ePreCountIn){
@@ -315,9 +315,10 @@ void SceneBattle::mOnResult(){
 		m_pGauge.reset();
 		m_pMessage.reset();
 		m_sound.reset();
-		m_rhythm->mFinalize();
-		m_rhythm.reset();
 		
+		m_sound = std::make_shared<GameSound>();
+		m_sound->Load("Sound\\Result\\result.wav");
+		m_rhythm->mInitializeRhythm(m_sound, 110);
 
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();
@@ -327,6 +328,9 @@ void SceneBattle::mOnResult(){
 
 		m_pOrderList.reset();
 		m_resultUpdateTime = 1.0f;
+
+
+		m_bgmVolume = 30;
 	}
 
 	m_pResult->mUpdate(m_resultUpdateTime);
@@ -338,7 +342,9 @@ void SceneBattle::mOnResult(){
 	}
 	else{
 		const bool isPress = GameController::GetJoypad().IsButtonDown(eJoyButton::eB) || GameController::GetKey().IsKeyDown(VK_SPACE);
-		m_resultUpdateTime += 0.1f;
+		if (isPress){
+			m_resultUpdateTime += 0.1f;
+		}
 	}
 }
 
@@ -457,6 +463,7 @@ void SceneBattle::mCountIn(){
 				m_pMessage->mSetActive(false);
 				
 				m_preInitProcess = false;
+				m_initUpdateProcess = false;
 				m_winner = m_battleState;
 				m_battleState = GameManager::eBattleState::eResult;
 				m_sound->Stop();

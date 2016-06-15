@@ -188,13 +188,13 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_flamePosOrigin._x = m_flameScaleOrigin._x / 2;
 	m_flamePosOrigin._y = m_flameScaleOrigin._y / 2;
 
-	m_flameScaleOrigin *= 1.2;
+	m_flameScaleOrigin *= 1.05;
 	m_pFlame->property._transform._translation = m_flameScaleOrigin / 2 * -1 + m_flameScaleOrigin;
 
 	//ˆÊ’u•â³
 	{
-		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (0 * 20);
-		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y + (0 * 20);
+		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x;
+		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y;
 		auto size = (m_pFlame->property._transform._scale);
 		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
 		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
@@ -738,8 +738,8 @@ void OrderList::mRhythmicMotion(){
 		}
 	//ƒtƒŒ[ƒ€
 	{
-		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (scale * 20);
-		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y + (scale * 20);
+		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (scale * 40);
+		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y + (scale * 40);
 		auto size = (m_pFlame->property._transform._scale);
 		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
 		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
