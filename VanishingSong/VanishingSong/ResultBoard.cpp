@@ -77,8 +77,10 @@ void ResultBoard::mInitialize(){
 	}
 
 
-	m_noteTransOrigin = m_pGeneral["noteImage"]->property._transform._translation;
 	m_noteScaleOrigin = m_pGeneral["noteImage"]->property._transform._scale._x;
+	m_noteTransOrigin = m_pGeneral["noteImage"]->property._transform._translation + m_noteScaleOrigin / 2;
+
+	m_pGeneral["backboard"]->property._color._alpha = 0;
 
 	m_pNumSprite = std::make_shared<Rectangle2D>();
 	m_pNumSprite->Initialize();
@@ -252,6 +254,7 @@ void ResultBoard::mUpdate(float timeScale){
 		if (m_pGeneral["backboard"]->property._color._alpha > 0.85){
 			m_pGeneral["backboard"]->property._color._alpha = 0.85;
 			m_state++;
+			m_timer = 0;
 		}
 		else{
 			m_pGeneral["backboard"]->property._color._alpha += 0.1 * timeScale;
@@ -259,38 +262,40 @@ void ResultBoard::mUpdate(float timeScale){
 		break;
 	case ResultBoard::eResultTitle:
 	{
-		if (m_timer > 0.5){
+		if (m_timer > 1){
 			m_pGeneral["battleResult"]->property._color._alpha = 1;
 			m_timer = 0;
 			m_state++;
 		}
-		else
+		else{
 			m_timer += GameClock::GetDeltaTime() * timeScale;
+		}
 	}
 	break;
 	case ResultBoard::eMissCnt:
 	{
-		if (m_timer > 0.5){
+		if (m_timer > 1){
 			m_pGeneral["missText"]->property._color._alpha = 1;
 			m_timer = 0;
 			m_state++;
 		}
-		else
+		else{
 			m_timer += GameClock::GetDeltaTime() * timeScale;
+		}
 	}
 	break;
 	case ResultBoard::eClearGauge:
 	{
 			m_pGeneral["correctRateText"]->property._color._alpha = 1;
-			if (m_MaxRate > m_timer){
+			if (m_MaxRate <= m_timer){
 				m_timer = 0;
 				m_state++;
 				m_pGauge->mSetRate(m_MaxRate);
 			}
 			else{
-				m_timer += 0.02 * timeScale;
+				m_timer += 0.01 * timeScale;
+				m_pGauge->mSetRate(m_timer);
 			}
-			m_pGauge->mSetRate(m_timer);
 	}
 	break;
 	case ResultBoard::eRank:
@@ -298,7 +303,7 @@ void ResultBoard::mUpdate(float timeScale){
 		m_pGeneral["rankText"]->property._color._alpha = 1;
 		m_pGeneral["rankFrame"]->property._color._alpha = 1;
 		m_pGeneral["rankImage"]->property._color._alpha = 1;
-		if (m_timer > 0.5){
+		if (m_timer > 1){
 			m_timer = 1000;
 			m_acceleration = 1.0;
 			m_state++;
@@ -309,27 +314,33 @@ void ResultBoard::mUpdate(float timeScale){
 	}
 	break;
 	case ResultBoard::eNote:
+	{
 		m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin; //(m_noteScaleOrigin * 15);
+		m_pGeneral["noteImage"]->property._color._alpha = 1;
 		if (m_timer < 0){
 			m_pGeneral["noteImage"]->property._transform._scale = m_noteScaleOrigin;
+			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (m_noteScaleOrigin / 2);
+			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
 			m_state++;
 			m_timer = 0;
-		}else{
+		}
+		else{
 			auto size = (m_pGeneral["noteImage"]->property._transform._scale);
 			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (size / 2);
 			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
-			m_timer -= 10 * m_acceleration * timeScale ;
-			m_acceleration += 0.02;
+			m_timer -= 10 * m_acceleration * timeScale;
+			m_acceleration += 0.2;
 		}
-		break;
+	}
+	break;
 	case ResultBoard::eEnd:
 	{
-		if (m_timer > 0.8){
+		if (m_timer > 0.5){
 			m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
 			m_timer = 0;
 			m_isEnd = true;
 		}else
-			m_timer += GameClock::GetDeltaTime();
+			m_timer += GameClock::GetDeltaTime() * timeScale;
 
 	}
 		break;

@@ -271,6 +271,12 @@ void SceneTutorial::mTimeEngagerForTuto(){
 bool SceneTutorial::Updater(){
 	if (m_isEndTransition && m_sound){
 		m_sound->PlayToLoop();
+		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
+			if (m_bgmVolume > 8){
+				m_sound->SetValume(-m_bgmVolume * 100);
+				m_bgmVolume--;
+			}
+		}
 	}
 	if (m_particle){
 		m_particle->mUpdate(0.8);
@@ -281,12 +287,6 @@ bool SceneTutorial::Updater(){
 
 	if (m_rhythm){
 		m_rhythm->mAcquire();
-	}
-	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
-		if (m_bgmVolume > 8){
-			m_sound->SetValume(-m_bgmVolume * 100);
-			m_bgmVolume--;
-		}
 	}
 	bool result = false;
 
@@ -448,7 +448,7 @@ void SceneTutorial::mOnResult(){
 
 		m_pOrderList.reset();
 		m_resultUpdateTime = 1.0f;
-		m_sound->SetValume(-m_bgmVolume * 100);
+		m_bgmVolume = 30;
 	}
 
 	m_pResult->mUpdate(m_resultUpdateTime);
@@ -460,7 +460,9 @@ void SceneTutorial::mOnResult(){
 	}
 	else{
 		const bool isPress = GameController::GetJoypad().IsButtonDown(eJoyButton::eB) || GameController::GetKey().IsKeyDown(VK_SPACE);
-		m_resultUpdateTime += 0.1f;
+		if (isPress){
+			m_resultUpdateTime += 0.1f;
+		}
 	}
 }
 

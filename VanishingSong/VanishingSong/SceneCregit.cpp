@@ -183,6 +183,12 @@ void SceneCregit::mLoadTextData(){
 bool SceneCregit::Updater(){
 	if (m_isEndTransition){
 		m_sound->PlayToLoop();
+		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
+			if (m_bgmVolume > 8){
+				m_sound->SetValume(-m_bgmVolume * 100);
+				m_bgmVolume--;
+			}
+		}
 	}
 
 
@@ -197,12 +203,6 @@ bool SceneCregit::Updater(){
 	}
 	if (m_pOrderList){
 		m_pOrderList->mRhythmicMotion();
-	}
-	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
-		if (m_bgmVolume > 8){
-			m_sound->SetValume(-m_bgmVolume * 100);
-			m_bgmVolume--;
-		}
 	}
 
 	if (m_processState == eGameState::ePreCountIn){
