@@ -16,13 +16,6 @@ ResourceManager::ResourceManager()
 ResourceManager::~ResourceManager()
 {
 }
-
-/*
-	BGMのパス情報配列
-	BGMを変えたい場合はここをいじってね
-*/
-
-
 /*
 	リソース系の初期化処理
 */
@@ -47,7 +40,7 @@ void ResourceManager::Finalize(){
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
-	InitializeShader();
+	FinalizeSahder();
 	mFinalizeLoad();
 	return;
 }
@@ -264,7 +257,7 @@ void ResourceManager::mPlayerInitialize(eMusical type, std::string path, std::st
 	m_pPlayerHashes[type] = std::make_shared<FbxModel>();
 
 	// 体のパーツ
-	m_pPlayerHashes[type]->LoadFBX(path+"\\keyframeTest.fbx", eAxisSystem::eAxisOpenGL);
+	m_pPlayerHashes[type]->LoadFBX(path+"\\test.fbx", eAxisSystem::eAxisOpenGL);
 	m_pPlayerHashes[type]->SetTextureDirectoryName(tex);
 	return;
 }

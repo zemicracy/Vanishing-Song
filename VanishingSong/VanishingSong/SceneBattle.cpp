@@ -284,21 +284,7 @@ void SceneBattle::Render(){
 
 void SceneBattle::UIRender(){
 	auto& shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
-	if (m_pOrderList){
-		m_pOrderList->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-	}
-	if (m_pMessage){
-		m_pMessage->mRender(shaderHash["transparent"].get());
-	}
-	if (m_pGauge){
-		m_pGauge->mRender();
-	}
-
-	if (m_battleState == GameManager::eBattleState::eResult){
-		if (m_pResult){
-			m_pResult->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
-		}
-	}
+	
 	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
