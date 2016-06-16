@@ -27,8 +27,10 @@ public:
 	Property &mGetProperty();
 	void mFaceToPlayer(aetherClass::Vector3);
 	void mRegisterMessage(std::string);
+	void mRegisterCannnotMessage(std::string);
 	int mGetMessageNum()const;
-	std::shared_ptr<aetherClass::Texture> mGetMessage(const int id);
+	std::string mGetMessage(const int id);
+	std::string mGetCannotMessga();
 	std::string mGetBattleDataPath();
 private:
 	bool mInitializeEnemy(eMusical,aetherClass::ViewCamera*);	//“G‚Ì‰Šú‰»
@@ -36,7 +38,8 @@ private:
 
 	CharaEntity m_charaEntity;
 	Property m_property;
-	std::vector<std::shared_ptr<aetherClass::Texture>> m_message;
+	std::vector<std::string> m_messagePath;
+	std::string m_cannotMessagePath;
 	std::string m_dataPath;
 };
 #endif

@@ -32,6 +32,7 @@ private:
 	void mCursorUpdate(const bool);
 private:
 	std::shared_ptr<aetherClass::Rectangle2D> m_pCursor;
+	std::shared_ptr<aetherClass::Texture> m_messageBuffer;
 	MessageWindow m_message;
 	bool m_isView;
 	int m_counter;

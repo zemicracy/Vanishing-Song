@@ -5,7 +5,7 @@
 #include "ResourceManager.h"
 using namespace aetherClass;
 namespace{
-	const Vector3 kCollideOffset = Vector3(0, -5, 0);
+	const Vector3 kCollideOffset = Vector3(0, 5, 0);
 }
 Cage::Cage(std::shared_ptr<FbxModel> gearframe, Vector3 position, ViewCamera* camera, bool flg)
 {
@@ -28,7 +28,7 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 
 	m_pCollider->property._transform._translation = m_initialPosition + kCollideOffset;
 	m_pCollider->property._color = Color(1.0, 0, 0, 0.3);
-	m_pCollider->property._transform._scale = 10;
+	m_pCollider->property._transform._scale = 15;
 	m_pCollider->SetCamera(camera);
 
 	m_commentFlame = std::make_shared<Rectangle3D>();
@@ -38,6 +38,8 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_commentFlame->property._transform._translation = position + Vector3(0, 50, 0);
 	m_commentFlame->property._transform._scale = Vector3(16, 12, 0);
 
+	m_messageWindow.mInitialize();
+	
 	if (isTought){
 		m_cage = std::make_shared<FbxModel>();
 		m_cage->LoadFBX("Model\\Object\\Field\\ori.fbx", eAxisSystem::eAxisOpenGL);
@@ -50,6 +52,7 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_isComment = false;
 	m_changeComment = false;
 	m_changeCommentCount = NULL;
+	m_messagePath.fill("null");
 	return;
 }
 
@@ -73,6 +76,18 @@ void Cage::mUpdate(const float timeScale, Vector3 position, const bool button){
 
 		if (button){
 			m_isMessage = !m_isMessage;
+			if (m_isMessage){
+				if (m_isTought){
+					m_pMessage = std::make_shared<Texture>();
+					m_pMessage->Load(m_messagePath.at(0));
+					m_messageWindow.mSetText(m_pMessage.get());
+				}
+				else{
+					m_pMessage = std::make_shared<Texture>();
+					m_pMessage->Load(m_messagePath.at(1));
+					m_messageWindow.mSetText(m_pMessage.get());
+				}
+			}
 		}
 	}
 }
@@ -86,8 +101,16 @@ void Cage::mRender(ShaderBase* tex, ShaderBase* color){
 
 	if (m_isComment&&!m_isMessage){
 		m_commentFlame->property._transform._rotation = m_camera->property._rotation;
-		
-			m_commentFlame->Render(tex);
+		m_commentFlame->Render(tex);
+	}
+	m_pCollider->Render(color);
+}
+
+
+//
+void Cage::mUIRender(aetherClass::ShaderBase* tex){
+	if (m_isMessage){
+		m_messageWindow.mRender(tex);
 	}
 }
 
@@ -96,7 +119,7 @@ void Cage::mFinalize(){
 	m_pCollider->Finalize();
 }
 
-std::shared_ptr<Cube> Cage::mGetCollider(){
+std::shared_ptr<Cube>& Cage::mGetCollider(){
 	return m_pCollider;
 }
 
@@ -117,4 +140,9 @@ Vector3 Cage::mGetPosition(){
 //
 bool Cage::mGetMessageRun(){
 	return m_isMessage;
+}
+
+void Cage::mSetMessagePath(int id,std::string path){
+	m_messagePath[id] = path;
+	
 }

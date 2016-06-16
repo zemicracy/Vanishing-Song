@@ -20,16 +20,15 @@ void TutorialEnemy::mInitalize(const bool flg){
 	
 	int count = NULL;
 	for (auto& message : m_tutorialMessage){
-		message = std::make_shared<Texture>();
-		message->Load("Texture\\Message\\tmplate.png");
+		
+		message = "Texture\\Message\\tmplate.png";
 		count += 1;
 	}
 
 	//
 	count = 0;
 	for (auto& message : m_tutorialClearMessage){
-		message = std::make_shared<Texture>();
-		message->Load("Texture\\Message\\tmplate.png");
+		message="Texture\\Message\\tmplate.png";
 		count += 1;
 	}
 
@@ -105,7 +104,9 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 			m_messageCount = m_tutorialClearMessage.size() - 1;
 			m_messageEnd = true;
 		}
-		m_messageWindow.mSetText(m_tutorialClearMessage.at(m_messageCount).get());
+		m_message = std::make_shared<Texture>();
+		m_message->Load(m_tutorialClearMessage.at(m_messageCount));
+		m_messageWindow.mSetText(m_message.get());
 	}
 	else{
 		if (m_tutorialMessage.size() <= m_messageCount){
@@ -117,7 +118,9 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 			m_state = eState::eSelect;
 		}
 
-		m_messageWindow.mSetText(m_tutorialMessage.at(m_messageCount).get());
+		m_message = std::make_shared<Texture>();
+		m_message->Load(m_tutorialMessage.at(m_messageCount));
+		m_messageWindow.mSetText(m_message.get());
 	}
 }
 
@@ -158,17 +161,6 @@ TutorialEnemy::eSelect TutorialEnemy::mGetSelectType(){
 }
 
 void TutorialEnemy::Finalize(){
-	for (auto& index : m_tutorialMessage){
-		if (!index)continue;
-		index.reset();
-		index = nullptr;
-	}
-
-	for (auto& index : m_tutorialClearMessage){
-		if (!index)continue;
-		index.reset();
-		index = nullptr;
-	}
 	if (m_pCursor){
 		m_pCursor->Finalize();
 		m_pCursor.reset();
