@@ -208,14 +208,22 @@ void SceneTitle::UIRender(){
 
 		m_pCursor->Render(shaderHash["color"].get());
 	}
+	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
 
 bool SceneTitle::TransitionIn(){
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		return kTransitionning;
+	}
 	return kTransitionEnd;
 }
 
+//
 bool SceneTitle::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+		return kTransitionning;
+	}
 	return kTransitionEnd;
 }
 

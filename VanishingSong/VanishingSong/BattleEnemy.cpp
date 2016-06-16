@@ -24,7 +24,7 @@ void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* ca
 	m_enemy._model->property._transform._scale = 1.5;
 	m_enemy._model->property._transform._rotation._y = -90;
 
-	m_enemy._model->SetModelColor(Color(0, 0, 0, 1));
+	m_enemy._model->SetColor(Color(0, 0, 0, 1));
 }
 
 BattleEnemy::Enemy& BattleEnemy::mGetEnemy(){
@@ -34,10 +34,10 @@ BattleEnemy::Enemy& BattleEnemy::mGetEnemy(){
 void BattleEnemy::mUpdate(const float timescale){
 	if (m_isDie){
 		m_alpha -= 0.05;
-		m_enemy._model->SetModelColor(Color(0,0,0,m_alpha));
+		m_enemy._model->SetColor(Color(0, 0, 0, m_alpha));
 	}
 	else{
-		m_enemy._model->SetModelColor(Color(0, 0, 0, 1));
+		m_enemy._model->SetColor(Color(0, 0, 0, 1));
 	}
 	
 }
@@ -62,7 +62,7 @@ void BattleEnemy::misDie(){
 }
 
 void BattleEnemy::Finalize(){
-	m_enemy._model->SetModelColor(Color(0, 0, 0, 1));
+	m_enemy._model->SetColor(Color(0, 0, 0, 1));
 	if (m_enemy._model){
 		m_enemy._model.reset();
 	}

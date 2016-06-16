@@ -181,6 +181,12 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 
 	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate)+"%";
 //	Debug::mPrint(std::to_string(i) + "  " + std::to_string(dotrate) + "  " + std::to_string(rate));
+	m_state = eInit;
+	m_isEnd = false;
+
+	if (state == GameManager::eBattleState::eLose){
+		return;
+	}
 
 
 	auto& itr = ResourceManager::mGetInstance().mGetBGMPath();
@@ -237,9 +243,8 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 			itr.clear();
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eAdlib) = "Sound\\BGM\\field5.wav";
 		}
+		GameManager::mGetInstance().mBossState(GameManager::eBossState::eWin);
 	}
-	m_state = eInit;
-	m_isEnd = false;
 }
 bool ResultBoard::mIsEnd(){
 	return m_isEnd;
