@@ -34,8 +34,9 @@ public:
 private:
 	std::string m_dataPath;
 	MessageWindow m_messageWindow;
-	std::array<std::shared_ptr<aetherClass::Texture>, 4> m_tutorialMessage;
-	std::array<std::shared_ptr<aetherClass::Texture>, 4> m_tutorialClearMessage;
+	std::shared_ptr<aetherClass::Texture> m_message;
+	std::array<std::string, 4> m_tutorialMessage;
+	std::array<std::string, 4> m_tutorialClearMessage;
 
 	bool m_isEnd;
 	int m_messageCount;
