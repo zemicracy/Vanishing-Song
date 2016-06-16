@@ -10,7 +10,7 @@ class BattleField
 {
 public:
 
-	void mInitialize(aetherClass::ViewCamera* view,RhythmManager*);
+	void mInitialize(aetherClass::ViewCamera* view,RhythmManager*,bool bossStage);
 	void mUpdate(std::shared_ptr<ActionCommand>command);
 	void mRhythmicMotion();
 
@@ -24,6 +24,7 @@ public:
 private:
 	void mFinalize();
 private:
+	bool m_isBossStage;
 	
 	float m_commandScale;
 	aetherClass::Vector3 m_tankScaleOrigin;

@@ -22,6 +22,7 @@ void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	mLoadInfo(GameManager::mGetInstance().mBattleDataFile(),lane,camera);
 	
 	flag = true;
+	m_fieldState = GameManager::mGetInstance().mFieldState();
 
 }
 
@@ -38,7 +39,28 @@ std::vector<eMusical>  BattleEnemyManager::GetList(){
 
 	int random = mGetRandom();
 
-	return m_enemyAttackList[random];
+	std::vector<eMusical>vec;
+	vec.reserve(m_enemyAttackList[random].size());
+
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<> rand100(0, m_enemyAttackList[random].size());
+	int adlib = rand100(rnd);
+	std::uniform_int_distribution<> randDevice(0, 100);
+	int makeAdlib = randDevice(rnd);
+
+
+	for (int i = 0; i < m_enemyAttackList[random].size(); ++i){
+		auto itr = m_enemyAttackList[random][i];
+		if (m_fieldState != GameManager::eFieldState::eTutorial){
+			if (i == adlib){
+				Debug::mPrint(std::to_string(makeAdlib));
+				if (makeAdlib >= 50) itr = eMusical::eAdlib;
+			}
+		}
+		vec.push_back(itr);
+	}
+	return vec;
 }
 
 int BattleEnemyManager::mGetRandom(){
@@ -148,10 +170,19 @@ void BattleEnemyManager::misDie(){
 int BattleEnemyManager::mGetAppendOption(){
 
 
-	Debug::mPrint(std::to_string(m_hp[m_waveID]._hp/m_hp[m_waveID]._maxHp));
+	//Debug::mPrint(std::to_string(m_hp[m_waveID]._hp/m_hp[m_waveID]._maxHp));
 
-
-	if (m_stageID < 3){
+	if (m_stageID == 1){
+		if (m_waveID == 2){
+			return eAppendOption::eBlack;
+		}
+	}
+	if (m_stageID == 2){
+		if (m_waveID == 1){
+			return eAppendOption::eReverce;
+		}
+	}
+	if (m_stageID == 3){
 		return eAppendOption::eNone;
 	}
 
@@ -169,8 +200,9 @@ int BattleEnemyManager::mGetAppendOption(){
 			else if (0.25 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
 				return eAppendOption::eBlack;
 			}
-			else if (0.5 >  m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp);
-			return eAppendOption::eReverce;
+			else if (0.5 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
+				return eAppendOption::eReverce;
+			}
 		}
 	}
 	return eAppendOption::eNone;

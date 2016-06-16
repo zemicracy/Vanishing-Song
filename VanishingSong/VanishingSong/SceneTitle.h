@@ -75,6 +75,7 @@ private:
 	std::shared_ptr<aetherClass::Texture> m_pLogoTexture;
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
+	std::shared_ptr<aetherClass::GameSound>m_pSound;
 	std::array<ModeSelect, 3> m_cursorArray;
 	std::unique_ptr<aetherClass::Skybox> m_pSkybox;
 	bool m_pushState;

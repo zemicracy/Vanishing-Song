@@ -36,7 +36,7 @@ bool SceneTutorial::Initialize(){
 
 
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view, m_rhythm.get());
+	m_pField->mInitialize(&m_view, m_rhythm.get(),false);
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
 	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
@@ -47,7 +47,7 @@ bool SceneTutorial::Initialize(){
 	m_pBattleEnemyManager->ResetEnemyList(m_waveID - 1, &m_view);
 
 	m_pGauge = std::make_unique<GaugeManager>();
-	m_pGauge->mInitialize();
+	m_pGauge->mInitialize(m_rhythm.get());
 
 	//hp
 	m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_waveID - 1);
@@ -292,6 +292,10 @@ bool SceneTutorial::Updater(){
 	if (m_rhythm){
 		m_rhythm->mAcquire();
 	}
+	if (m_pGauge){
+		m_pGauge->mUpdate(1);
+	}
+
 	bool result = false;
 
 	result = mTutorialUpdater();
@@ -362,9 +366,6 @@ bool SceneTutorial::Updater(){
 
 	mRhythmicMotion();
 
-	if (m_pGauge){
-		m_pGauge->mUpdate(1);
-	}
 	if (m_pOrderList){
 		m_pOrderList->mUpdate();
 	}

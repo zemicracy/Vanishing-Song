@@ -42,7 +42,7 @@ bool SceneCregit::Initialize(){
 	m_pActionBoard->mInitialize(true);
 
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view, m_rhythm.get());
+	m_pField->mInitialize(&m_view, m_rhythm.get(),false);
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
 	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());

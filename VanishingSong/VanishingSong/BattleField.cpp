@@ -54,14 +54,14 @@ std::shared_ptr<aetherClass::Texture> gCreateTexture(std::string path){
 	return tex;
 }
 
-void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhythm){
+void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhythm,bool boss){
 	using namespace aetherClass;
 
 	WorldReader reader;
 	reader.Load("data\\BattleStage.aether");
 
 	m_rhythm = rhythm;
-
+	m_isBossStage = boss;
 	camera->property._translation = reader.GetInputWorldInfo()._camera._position;
 	camera->property._rotation = reader.GetInputWorldInfo()._camera._rotation;
 	m_view = camera;
@@ -89,6 +89,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 			m_pTank->SetCamera(m_view);
 			m_pTank->property._transform = itr->_transform;
 			m_pTank->property._transform._rotation._y = -90;
+			m_pTank->property._transform._scale = 1;
 			m_EnemyLane[eMusical::eAdlib] = itr->_transform._translation;
 		}
 		else if (itr->_name == "lane_blue"){
@@ -188,7 +189,9 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 	for (auto itr : m_pLane){
 		itr.second->Render(debug);
 	}
-	m_pTank->Render(texture);
+	if (m_isBossStage){
+		m_pTank->Render(texture);
+	}
 	for (int i = m_pCommand.size()-1; i >= 0; --i){
 		m_pCommand.at(i)->Render(texture);
 	}
