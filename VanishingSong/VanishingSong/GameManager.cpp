@@ -13,6 +13,7 @@ GameManager::GameManager()
 			m_prevPlayerTransform._translation = index->_transform._translation;
 			m_prevPlayerTransform._translation._y = 0;
 			m_prevPlayerTransform._rotation = index->_transform._rotation;
+			m_prevPlayerTransform._scale._x = -1;
 		}
 	}
 	read.UnLoad();

@@ -92,6 +92,7 @@ bool SceneGame::Initialize(){
 	m_isTransitionEnd = false;
 	// ‚Æ‚è‚ ‚¦‚¸ˆê‰ñŒÄ‚ñ‚Å‚¨‚­
 	mRun();
+	mTutorial();
 	_heapmin();
 	return true;
 }
@@ -237,6 +238,7 @@ void SceneGame::Render(){
 void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+	m_pCageManager->mUIRender(shaderHash["transparent"].get());
 	if (m_isTransitionEnd){
 		m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}

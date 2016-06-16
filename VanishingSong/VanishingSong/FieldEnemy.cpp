@@ -25,7 +25,8 @@ bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string data
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
 	m_property._penemy = ResourceManager::mGetInstance().mGetEnemyHash(type);
-	m_property._penemy->property._transform._scale = 2;
+	m_property._penemy->property._transform._scale._x = -1;
+
 	m_property._penemy->SetCamera(camera);
 	return true;
 }
