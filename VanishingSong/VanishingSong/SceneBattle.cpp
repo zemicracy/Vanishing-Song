@@ -86,6 +86,9 @@ bool SceneBattle::Initialize(){
 	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
 	m_particleDesc._endPoint._y += 100;
 
+	m_players.mUpdate(0, eMusical::eNull);
+	m_pOrderList->mUpdate();
+
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume*100);
 	_heapmin();

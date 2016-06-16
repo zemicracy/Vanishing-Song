@@ -96,6 +96,10 @@ bool SceneTutorial::Initialize(){
 	m_timeEngage = false;
 	m_isEndTransition = false;
 	
+	m_players.mUpdate(0, eMusical::eNull);
+	m_pOrderList->mUpdate();
+
+
 	//チュートリアルWave１
 	m_enemyVector.reserve(4);
 	eMusical askey[4] = { eMusical::eBlue, eMusical::eNull, eMusical::eBlue, eMusical::eNull };
