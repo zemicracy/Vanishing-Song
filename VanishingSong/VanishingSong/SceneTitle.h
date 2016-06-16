@@ -10,6 +10,7 @@
 #include <SpriteBase.h>
 #include <Skybox.h>
 #include "GameManager.h"
+#include"GameSound.h"
 class SceneTitle :
 	public aetherClass::GameScene
 {
