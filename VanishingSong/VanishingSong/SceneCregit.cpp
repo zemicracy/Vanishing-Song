@@ -75,6 +75,9 @@ bool SceneCregit::Initialize(){
 	m_inCount = 0;
 	m_endTime = 0;
 
+	m_players.mUpdate(0, eMusical::eNull);
+	m_pOrderList->mUpdate();
+
 	m_particleDesc._spawnRate = 10;
 	m_particleDesc._scale = 5;
 	m_particleDesc._texturePath = "Texture\\OrderList\\note_a.png";

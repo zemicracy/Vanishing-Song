@@ -1,4 +1,4 @@
-#include "VanishingSongFrame.h"
+ï»¿#include "VanishingSongFrame.h"
 #include "Debug.h"
 #include <Singleton.h>
 #include "ResourceManager.h"
@@ -17,37 +17,41 @@ VanishingSongFrame::~VanishingSongFrame()
 
 
 /*
-	ƒvƒƒOƒ‰ƒ€‚ÌŠJn‚Ì‚İÀs‚³‚ê‚é
+	ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®é–‹å§‹æ™‚ã®ã¿å®Ÿè¡Œã•ã‚Œã‚‹
 */
 bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
 	result = ResourceManager::mGetInstance().Initialize();
-	// ‘€ìƒLƒƒƒ‰ƒNƒ^[‚ÌƒŠƒ\[ƒX‚ğ‰Šú‰»
+	// æ“ä½œã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒªã‚½ãƒ¼ã‚¹ã‚’åˆæœŸåŒ–
 
 	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
 
-	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
+	GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
 	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","Model\\Player\\blue");
 
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air\\model.fbx", "Model\\Enemy\\Air\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Air\\body.fbx", "Model\\Enemy\\Air\\red");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Ground\\model.fbx", "Model\\Enemy\\Ground\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground\\body.fbx", "Model\\Enemy\\Ground\\yellow");
+
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Ground\\model.fbx", "Model\\Enemy\\Ground\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Air\\body.fbx", "Model\\Enemy\\Air\\Red");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air\\model.fbx", "Model\\Enemy\\Air\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground\\body.fbx", "Model\\Enemy\\Ground\\Yellow");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\model.fbx", "Model\\Enemy\\Boss\\tex");
+
+	GameManager::mGetInstance().mGetCanStage(5);
 
 	return true;
 }
 
-//@‚PƒtƒŒ[ƒ€‚²‚Æ‚ÉÀs‚³‚ê‚é
+//ã€€ï¼‘ãƒ•ãƒ¬ãƒ¼ãƒ ã”ã¨ã«å®Ÿè¡Œã•ã‚Œã‚‹Â‡		ResourceManager::mGetInstance ãŒè¿”ã•ã‚Œã¾ã—ãŸ	{m_pTextureHash=??? m_pShaderHash=??? m_pActionSoundHash=??? ...}	ResourceManager &
+
 bool VanishingSongFrame::FrameRunningBuffer(){
 	_heapmin();
 	
 	return true;
 }
 
-// ƒvƒƒOƒ‰ƒ€‚ÌI—¹‚ÉÀs‚³‚ê‚é
+// ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®çµ‚äº†æ™‚ã«å®Ÿè¡Œã•ã‚Œã‚‹
 void VanishingSongFrame::FinalizeBuffer(){
 
 	ResourceManager::mGetInstance().Finalize();
