@@ -215,6 +215,8 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_pEffect->mLoadEffect(6, "In", "Effect\\InCommand\\");
 	m_pEffect->mLoadEffect(7, "Miss", "Effect\\Miss\\");
 	m_pEffect->mLoadEffect(7, "Good", "Effect\\Good\\");
+	m_pEffect->mLoadEffect(7, "Great", "Effect\\Great\\");
+
 
 	m_effectTrans = Transform(Vector3(), Vector3(), Vector3( 16*10, 9*10,0));
 
@@ -310,6 +312,11 @@ void OrderList::mPerformUpdate(){
 	bool onCommand = false;
 	m_playedAction = command;
 
+	//一番最初だけ判定時間のばす
+	if (m_processId == 0){
+		reducation = 1.7f;
+	}
+
 	//タイミング判定
 	bool backBeat = m_mode == GameManager::eGameMode::eQuarter ?
 		(!m_rhythm->mIsQuarterBeat() && m_rhythm->mIsEighterBeat()) :
@@ -325,7 +332,6 @@ void OrderList::mPerformUpdate(){
 			//Debug::mPrint("MISS");
 			if (m_processId < m_MaxOrderSize){
 				if (command->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
-					mPlayEffect("Good");
 				}
 				else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
 					command = m_ActionBoard->mGetCommand(eMusical::eNull);
@@ -366,7 +372,7 @@ void OrderList::mPerformUpdate(){
 
 		if (command->mGetType() == eMusical::eAdlib){
 			command = m_ActionBoard->mGetCommand(eMusical::eBlue);
-			mPlayEffect("Good");
+			mPlayEffect("Great");
 		}
 		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
 			m_playedAction = command;
@@ -401,6 +407,9 @@ void OrderList::mPerformUpdate(){
 
 			if (command->mGetType() == eMusical::eMiss){
 				mPlayEffect("Miss");
+			}
+			else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
+				mPlayEffect("Great");
 			}
 			else{
 				mPlayEffect("Good");
@@ -469,16 +478,22 @@ void OrderList::mBattleUpdate(){
 		}
 		int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
 
-		mPlayEffect("Break");
+		if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
+			mPlayEffect("Break");
+		}
 
 		if (m_PlayerOrderList[m_processId]->mGetType() == eMusical::eMiss){
 			m_damagedValue = -1;
 			m_resultData._missCount++;
 		}
 		else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib && m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
-			m_damagedValue = 3;
+			m_damagedValue = 2;
+			if (m_mode == GameManager::eGameMode::eEighter){
+				m_damagedValue *= 2;
+			}
+
 		}
-		else {
+		else if(m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
 			m_damagedValue = 1;
 		}
 
@@ -745,7 +760,7 @@ void OrderList::mRhythmicMotion(){
 		power = 2;
 	}
 	if (framecnt < maxFrame){
-		GameController::GetJoypad().SetVibration(std::make_pair(20000 * power, 60000 * power));
+		GameController::GetJoypad().SetVibration(std::make_pair(60000 * power, 60000 * power));
 	}
 	else{
 		GameController::GetJoypad().SetVibration(std::make_pair(0, 0));

@@ -23,7 +23,7 @@ void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	
 	flag = true;
 	m_fieldState = GameManager::mGetInstance().mFieldState();
-
+	m_optionCount = 0;
 }
 
 
@@ -46,17 +46,13 @@ std::vector<eMusical>  BattleEnemyManager::GetList(){
 	std::mt19937 mt(rnd());
 	std::uniform_int_distribution<> rand100(0, m_enemyAttackList[random].size());
 	int adlib = rand100(rnd);
-	std::uniform_int_distribution<> randDevice(0, 100);
-	int makeAdlib = randDevice(rnd);
-
 
 	for (int i = 0; i < m_enemyAttackList[random].size(); ++i){
 		auto itr = m_enemyAttackList[random][i];
-		if (m_fieldState != GameManager::eFieldState::eTutorial){
 			if (i == adlib){
-				Debug::mPrint(std::to_string(makeAdlib));
+				std::uniform_int_distribution<> randDevice(0, 100);
+				int makeAdlib = randDevice(rnd);
 				if (makeAdlib >= 50) itr = eMusical::eAdlib;
-			}
 		}
 		vec.push_back(itr);
 	}
@@ -169,33 +165,90 @@ void BattleEnemyManager::misDie(){
 
 int BattleEnemyManager::mGetAppendOption(){
 
-
-	//Debug::mPrint(std::to_string(m_hp[m_waveID]._hp/m_hp[m_waveID]._maxHp));
-
 	if (m_stageID == 1){
 		if (m_waveID == 1){
+			if (m_optionCount >= 3){
+				m_optionCount = 0;
+				return eAppendOption::eBlack;
+			}
+			else{
+				m_optionCount++;
+			}
+		}
+	}
+	else if (m_stageID == 2){
+		if (m_waveID == 1){
+			if (m_optionCount >= 2){
+				m_optionCount = 0;
+				return eAppendOption::eBlack;
+			}
+			else{
+				m_optionCount++;
+			}	
+		}
+		else if (m_waveID == 2){
 			return eAppendOption::eBlack;
 		}
 	}
 	else if (m_stageID == 3){
-		return eAppendOption::eNone;
-	}
-
-	else if (m_stageID == 4){
 		if (m_waveID == 1){
 			return eAppendOption::eReverce;
 		}
+		else if (m_waveID == 2){
+			if (m_optionCount >= 3){
+				m_optionCount = 0;
+				return eAppendOption::eReverce;
+			}
+			else{
+				m_optionCount++;
+			}
+		}
+	}
+	else if (m_stageID == 4){
+			std::random_device rnd;
+			std::mt19937 mt(rnd());
+			std::uniform_int_distribution<> rand100(0, 100);
+			int rand = rand100(rnd);
+			if (m_waveID == 1){
+				if (rand > 50){
+					return eAppendOption::eBlack;
+				}
+			}
+		else if (m_waveID == 2){
+			int returnOption = eAppendOption::eReverce;
+			if (rand > 70){
+				returnOption |= eAppendOption::eBlack;
+			}
+			return returnOption;
+		}
 	}
 	else if (m_stageID == 5){
+		std::random_device rnd;
+		std::mt19937 mt(rnd());
+		std::uniform_int_distribution<> rand100(0, 100);
+		int rand = rand100(rnd);
+
+		if (m_waveID == 1){
+			return eAppendOption::eBlack;
+		}
 		if (m_waveID == 2){
-			if (0.15 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
-				return eAppendOption::eBlack | eAppendOption::eReverce;
+			if (0.25 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
+				int returnOption = eAppendOption::eBlack;
+				if (rand > 40){
+					returnOption |= eAppendOption::eReverce;
+				}
+				return returnOption;
 			}
-			else if (0.25 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
+			else if (0.50 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
 				return eAppendOption::eBlack;
 			}
-			else if (0.5 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
-				return eAppendOption::eReverce;
+			else {
+				if (rand > 70){
+					return eAppendOption::eBlack;
+				}
+				else if (rand > 40){
+					return eAppendOption::eReverce;
+				}
 			}
 		}
 	}

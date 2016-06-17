@@ -80,6 +80,7 @@ private:
 	int m_waveAllCount;
 	int m_attackAllCount;
 	int m_stageID;
+	int m_optionCount;
 	
 
 };

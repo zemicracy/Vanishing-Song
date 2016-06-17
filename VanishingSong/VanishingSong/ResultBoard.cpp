@@ -224,13 +224,13 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eForthStage);
 	}
 	else if (stageID == 4){
+		if (GameManager::mGetInstance().mBossState() != GameManager::eBossState::eWin){
+			GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
+		}
 		if (integer < noteBorder)return;
 		
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
-		if (GameManager::mGetInstance().mBossState() != GameManager::eBossState::eWin){
-			GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
-		}
 	}
 	else if(stageID == 5){
 		if (integer < noteBorder)return;
