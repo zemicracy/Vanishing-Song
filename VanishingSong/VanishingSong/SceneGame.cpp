@@ -181,7 +181,7 @@ void SceneGame::mTutorial(){
 
 		m_pTutorialEnemy->mUpdate(false, select, button);
 	}
-	else{
+	else if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd){
 		// チュートリアル終了後
 		if (m_pTutorialEnemy->mGetMessageEnd()){
 			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
