@@ -101,3 +101,11 @@ void FieldEnemy::mRegisterCannnotMessage(std::string path){
 std::string FieldEnemy::mGetCannotMessga(){
 	return m_cannotMessagePath;
 }
+
+void FieldEnemy::mResetTransform(){
+	m_property._penemy->property._transform = m_initTransform;
+}
+
+void FieldEnemy::mSetTransform(aetherClass::Transform tras){
+	m_initTransform = tras;
+}

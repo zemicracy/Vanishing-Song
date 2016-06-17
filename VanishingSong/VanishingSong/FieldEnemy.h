@@ -24,6 +24,8 @@ public:
 	void mUpdate();
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mFinalize();	//ŠJ•úˆ—
+	void mResetTransform();
+	void mSetTransform(aetherClass::Transform);
 	Property &mGetProperty();
 	void mFaceToPlayer(aetherClass::Vector3);
 	void mRegisterMessage(std::string);
@@ -39,6 +41,7 @@ private:
 	CharaEntity m_charaEntity;
 	Property m_property;
 	std::vector<std::string> m_messagePath;
+	aetherClass::Transform m_initTransform;
 	std::string m_cannotMessagePath;
 	std::string m_dataPath;
 };

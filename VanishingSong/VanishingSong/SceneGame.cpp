@@ -151,7 +151,6 @@ bool SceneGame::Updater(){
 
 	mTutorial();
 	mRun();
-	
 	return true;
 }
 
@@ -165,6 +164,8 @@ void SceneGame::mTutorial(){
 		}
 		m_isFade = false;
 		m_isFade2 = true;
+		m_pFieldEnemy->mResetEnemysTransform();
+		return;
 	}
 
 	if (m_isFade2){
@@ -216,6 +217,7 @@ void SceneGame::mTutorial(){
 //
 void SceneGame::mRun(){
 	if (m_gameState != eState::eRun)return;
+	
 	//// ƒ^ƒCƒgƒ‹‚É–ß‚é
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
 		m_gameState = eState::eExit;
