@@ -10,7 +10,7 @@ public:
 	CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field, std::shared_ptr<FieldEnemyManager> enemy, std::shared_ptr<CageManager> cageManager);
 	~CollideManager();
 	void mUpdate();
-	std::pair<int,bool> GetMassageInfo();
+	std::pair<int,bool>& GetMassageInfo();
 
 private:
 	int mCheckPlayerFieldArea();

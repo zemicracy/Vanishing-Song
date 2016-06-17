@@ -134,11 +134,19 @@ bool FieldEnemyManager::mGetIsJudge(){
 
 //XVˆ—
 void FieldEnemyManager::mUpdater(){
-
-	for (auto itr : m_pEnemy){
-	itr->mUpdate();
+	mSetPosion();
+	for (int i = 0; i < 4; i++){
+		m_pEnemy[i]->mUpdate();
 	}
 
+	if (m_bossFlag){
+		m_pEnemy[4]->mUpdate();
+	}
+
+}
+
+bool FieldEnemyManager::mGetBossFlg(){
+	return m_bossFlag;
 }
 
 

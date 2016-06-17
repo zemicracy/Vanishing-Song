@@ -62,6 +62,8 @@ private:
 	Enemy m_enemy;
 	bool m_isDie;
 	float m_alpha;
+
+
 };
 
 #endif
