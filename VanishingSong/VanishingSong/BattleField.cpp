@@ -189,7 +189,7 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 	for (auto itr : m_pLane){
 		itr.second->Render(debug);
 	}
-	if (m_isBossStage){
+	if (!m_isBossStage){
 		m_pTank->Render(texture);
 	}
 	for (int i = m_pCommand.size()-1; i >= 0; --i){
