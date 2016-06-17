@@ -56,6 +56,7 @@ private:
 	eEnemyType mGetEnemyType(const char);
 	eMusical mGetEnemyAttack(const char);
 	
+	GameManager::eFieldState m_fieldState;
 
 
 private:

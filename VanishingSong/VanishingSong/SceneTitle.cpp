@@ -108,12 +108,21 @@ bool SceneTitle::Initialize(){
 	m_pSkybox->Initialize();
 	m_pSkybox->SetCamera(&m_view);
 	m_pSkybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
+
+	m_pSound = std::make_shared<GameSound>();
+	m_pSound->Load("Sound\\Result\\title.wav");
+	m_pSound->SetValume(-100);
+
 	_heapmin();
 	return true;
 }
 
 void SceneTitle::Finalize(){
 	_heapmin();
+	if (m_pSound){
+		m_pSound.reset();
+		m_pSound = nullptr;
+	}
 
 	if (m_pLogo){
 		m_pLogo->Finalize();
@@ -168,6 +177,7 @@ void SceneTitle::Finalize(){
 
 //
 bool SceneTitle::Updater(){
+	m_pSound->PlayToLoop();
 
 	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);

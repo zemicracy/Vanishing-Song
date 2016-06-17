@@ -249,7 +249,6 @@ void SceneGame::UIRender(){
 //
 bool SceneGame::TransitionIn(){
 	if (!GameManager::mGetInstance().mfadeManager().In(1)){
-		std::cout << "%d,%d", m_isTransitionEnd, m_isTransitionEnd;
 		return kTransitionning;
 	}
 	return kTransitionEnd;

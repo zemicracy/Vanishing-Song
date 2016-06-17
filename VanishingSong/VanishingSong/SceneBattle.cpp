@@ -35,8 +35,9 @@ bool SceneBattle::Initialize(){
 	m_pActionBoard = std::make_shared<ActionBoard>();
 	m_pActionBoard->mInitialize();
 
+	bool bossStage = m_stageID == 5 ? true : false;
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view,m_rhythm.get());
+	m_pField->mInitialize(&m_view,m_rhythm.get(),bossStage);
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
 	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
@@ -47,7 +48,7 @@ bool SceneBattle::Initialize(){
 	m_pBattleEnemyManager->ResetEnemyList(m_waveID-1, &m_view);
 
 	m_pGauge = std::make_unique<GaugeManager>();
-	m_pGauge->mInitialize();
+	m_pGauge->mInitialize(m_rhythm.get());
 
 	//hp
 	m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_waveID - 1);

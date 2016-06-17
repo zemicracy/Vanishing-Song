@@ -6,6 +6,7 @@
 #include "WorldReader.h"
 #include "Singleton.h"
 #include "ResourceManager.h"
+#include"GameManager.h"
 
 using namespace aetherClass;
 FieldEnemyManager::FieldEnemyManager()
@@ -21,7 +22,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	
 	EnemySize = 1;
 
-	m_bossFlag = false;
+	m_bossFlag = GameManager::mGetInstance().mBossState() != GameManager::eBossState::eUnVisible ? true : false;
 
 	WorldReader reader;
 	reader.Load("data\\Field\\stage.aether");
@@ -90,7 +91,6 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 
 	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
-		m_bossFlag = true;
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemy.back()->mInitialize(eMusical::eAdlib, camera, "data\\Battle\\Stage5");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
