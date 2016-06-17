@@ -125,7 +125,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	mUpdateBodyCollider(m_transform);
 
 	// アニメーションの更新
-	m_model->KeyframeUpdate(m_model->GetAnimationName(0), true);
+	m_model->KeyframeUpdate(m_model->GetKeyframeNameList(0), true);
 	return;
 }
 

@@ -259,6 +259,7 @@ void ResourceManager::mPlayerInitialize(eMusical type, std::string path, std::st
 	// ‘Ì‚Ìƒp[ƒc
 	m_pPlayerHashes[type]->LoadFBX(path+"\\keyframeTest.fbx", eAxisSystem::eAxisOpenGL);
 	m_pPlayerHashes[type]->SetTextureDirectoryName(tex);
+	m_pPlayerHashes[type]->property._transform._scale._x = -1;
 	return;
 }
 

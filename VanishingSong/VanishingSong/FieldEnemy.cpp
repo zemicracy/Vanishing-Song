@@ -8,7 +8,7 @@
 using namespace aetherClass;
 
 FieldEnemy::FieldEnemy(){
-	m_message.clear();
+	m_messagePath.clear();
 }
 
 FieldEnemy::~FieldEnemy()
@@ -25,7 +25,8 @@ bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string data
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
 	m_property._penemy = ResourceManager::mGetInstance().mGetEnemyHash(type);
-	m_property._penemy->property._transform._scale = 2;
+	m_property._penemy->property._transform._scale._x = -1;
+
 	m_property._penemy->SetCamera(camera);
 	return true;
 }
@@ -75,29 +76,30 @@ void FieldEnemy::mFinalize(){
 		m_property._penemy.reset();
 	}
 	
-	for (auto index : m_message){
-		index.reset();
-		index = nullptr;
-	}
-	m_message.clear();
 }
 
 
 //Å@ìoò^óp
 void FieldEnemy::mRegisterMessage(std::string path){
-	m_message.resize(m_message.size() + 1);
-	const int id = m_message.size() - 1;
-	m_message[id] = std::make_shared<Texture>();
-	m_message[id]->Load(path);
+	m_messagePath.push_back(path);
+	m_messagePath.shrink_to_fit();
 }
 int FieldEnemy::mGetMessageNum()const{
-	return m_message.size();
+	return m_messagePath.size();
 }
 
-std::shared_ptr<aetherClass::Texture> FieldEnemy::mGetMessage(const int id){
-	return m_message[id];
+std::string FieldEnemy::mGetMessage(const int id){
+	return m_messagePath[id];
 }
 
 std::string FieldEnemy::mGetBattleDataPath(){
 	return m_dataPath;
+}
+
+void FieldEnemy::mRegisterCannnotMessage(std::string path){
+	m_cannotMessagePath = path;
+}
+
+std::string FieldEnemy::mGetCannotMessga(){
+	return m_cannotMessagePath;
 }

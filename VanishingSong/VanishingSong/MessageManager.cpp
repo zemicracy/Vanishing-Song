@@ -102,10 +102,14 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		else{
 			// メッセージの切り替え
 			if (m_state == eState::eCannotSelect){
-				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());
+				m_messageBuffer = std::make_shared<Texture>();
+				m_messageBuffer->Load(m_enemy->mEnemyGet(pair.first)->mGetCannotMessga());
+				mChangeMessage(m_messageBuffer.get());
 			}
 			else{
-				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());
+				m_messageBuffer = std::make_shared<Texture>();
+				m_messageBuffer->Load(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter));
+				mChangeMessage(m_messageBuffer.get());
 			}
 		}
 

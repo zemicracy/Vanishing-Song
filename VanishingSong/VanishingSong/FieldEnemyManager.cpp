@@ -55,6 +55,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+
 	}
 
 	//EnemyAir‚Ì¶¬
@@ -64,6 +66,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(‰¼)
@@ -73,6 +76,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(‰¼)
@@ -82,6 +86,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 	}
 
 	//Enemy(‰¼)
@@ -91,6 +96,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 	}
 
 

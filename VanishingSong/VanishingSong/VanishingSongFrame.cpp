@@ -32,10 +32,10 @@ bool VanishingSongFrame::InitializeBuffer(){
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","Model\\Player\\blue");
 
 
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Ground\\model.fbx", "Model\\Enemy\\Ground\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Air\\body.fbx", "Model\\Enemy\\Air\\Red");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air\\model.fbx", "Model\\Enemy\\Air\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground\\body.fbx", "Model\\Enemy\\Ground\\Yellow");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air\\Air.fbx", "Model\\Enemy\\Air\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\annon\\annon.fbx", "Model\\Enemy\\annon\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Ground\\Gro.fbx", "Model\\Enemy\\Ground\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Ground\\body.fbx", "Model\\Enemy\\Ground\\yellow");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\model.fbx", "Model\\Enemy\\Boss\\tex");
 
 	GameManager::mGetInstance().mGetCanStage(5);
@@ -44,7 +44,6 @@ bool VanishingSongFrame::InitializeBuffer(){
 }
 
 //　１フレームごとに実行される		ResourceManager::mGetInstance が返されました	{m_pTextureHash=??? m_pShaderHash=??? m_pActionSoundHash=??? ...}	ResourceManager &
-
 bool VanishingSongFrame::FrameRunningBuffer(){
 	_heapmin();
 	

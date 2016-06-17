@@ -28,6 +28,7 @@
     <ClCompile Include="Cipher.cpp" />
     <ClCompile Include="ClearGauge.cpp" />
     <ClCompile Include="CollideManager.cpp" />
+    <ClCompile Include="CregitMessage.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="EffectGenerator.cpp" />
     <ClCompile Include="EffectGenerator2D.cpp" />
@@ -51,6 +52,7 @@
     <ClCompile Include="ResultBoard.cpp" />
     <ClCompile Include="RhythmManager.cpp" />
     <ClCompile Include="SceneBattle.cpp" />
+    <ClCompile Include="SceneCregit.cpp" />
     <ClCompile Include="SceneGame.cpp" />
     <ClCompile Include="SceneTitle.cpp" />
     <ClCompile Include="SceneTutorial.cpp" />
@@ -85,6 +87,7 @@
     <ClInclude Include="ClearGauge.h" />
     <ClInclude Include="CollideManager.h" />
     <ClInclude Include="Const.h" />
+    <ClInclude Include="CregitMessage.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="EffectGenerator.h" />
     <ClInclude Include="EffectGenerator2D.h" />
@@ -109,6 +112,7 @@
     <ClInclude Include="ResultBoard.h" />
     <ClInclude Include="RhythmManager.h" />
     <ClInclude Include="SceneBattle.h" />
+    <ClInclude Include="SceneCregit.h" />
     <ClInclude Include="SceneGame.h" />
     <ClInclude Include="SceneTitle.h" />
     <ClInclude Include="SceneTutorial.h" />

@@ -3,7 +3,8 @@
 #include <ShaderBase.h>
 #include <Cube.h>
 #include "CharaEntity.h"
-
+#include <array>
+#include "MessageWindow.h"
 class Cage
 {
 public:
@@ -12,11 +13,12 @@ public:
 
 	void mUpdate(const float timeScale,aetherClass::Vector3,const bool button);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
-	
+	void mUIRender(aetherClass::ShaderBase*);
 	void mSetIsTought(bool);
-	std::shared_ptr < aetherClass::Cube> mGetCollider();
+	std::shared_ptr < aetherClass::Cube>& mGetCollider();
 	void mSetIsComment(bool);
 
+	void mSetMessagePath(int,std::string);
 	aetherClass::Vector3 mGetPosition();
 	bool mGetMessageRun();
 private:
@@ -29,11 +31,13 @@ private:
 	std::shared_ptr<aetherClass::FbxModel> m_model;
 	std::shared_ptr<aetherClass::FbxModel> m_cage;
 	std::shared_ptr<aetherClass::ModelBase> m_commentFlame;
-	
+	std::shared_ptr<aetherClass::Texture> m_pMessage;
+	MessageWindow m_messageWindow;
 	aetherClass::ViewCamera* m_camera;
 	aetherClass::Vector3 m_initialPosition;
 	CharaEntity m_charaEntity;
 	std::shared_ptr < aetherClass::Cube> m_pCollider;
+	std::array<std::string,2> m_messagePath;
 	bool m_isTought;
 	bool m_isComment;
 	bool m_isMessage;
