@@ -192,13 +192,12 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	auto& itr = ResourceManager::mGetInstance().mGetBGMPath();
 	//ステージ曲追加分
 	if (stageID == 0){
-		if (itr.find(eMusical::eBlue) != itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
+		if (itr.find(eMusical::eBlue) == itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
 			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
 		}
 		m_TextureList["note"]->Load("Texture\\OrderList\\note_a.png");
 		m_pGeneral["noteImage"]->SetTexture(m_TextureList["note"].get());
-
 	}
 	else if (stageID == 1){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
@@ -345,7 +344,7 @@ void ResultBoard::mUpdate(float timeScale){
 			m_timer = 0;
 			m_isEnd = true;
 		}else
-			m_timer += GameClock::GetDeltaTime() * timeScale;
+			m_timer += GameClock::GetDeltaTime();
 
 	}
 		break;
