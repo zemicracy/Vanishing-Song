@@ -60,6 +60,7 @@ private:
 	void mListenUpdate();
 	void mPerformUpdate();
 	void mLineUpdate();
+	void mPlayEffect(std::string Name);
 
 	void mFinalize();
 	

@@ -138,8 +138,6 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			m_pSpriteOrigin[6]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
 			m_pSpriteOrigin[6]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
 		}
-		if (m_mode == GameManager::eGameMode::eEighter){
-			//8の時使うよ
 			if (itr->_name == "list2"){
 				gInitializer(m_pSpriteList[1], itr->_transform, itr->_color);
 				m_pSpriteOrigin[1]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
@@ -160,8 +158,6 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 				m_pSpriteOrigin[7]._x = itr->_transform._translation._x + itr->_transform._scale._x / 2;
 				m_pSpriteOrigin[7]._y = itr->_transform._translation._y + itr->_transform._scale._y / 2;
 			}
-		}
-
 		if (itr->_name == "volume"){
 			gInitializer(m_pVolumeImage, itr->_transform, itr->_color);
 			m_VolumeOrigin = itr->_transform._translation + itr->_transform._scale / 2;
@@ -217,6 +213,9 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	m_pEffect->mLoadEffect(9, "Break", "Effect\\BreakCommand\\");
 	m_pEffect->mLoadEffect(6, "In", "Effect\\InCommand\\");
+	m_pEffect->mLoadEffect(7, "Miss", "Effect\\Miss\\");
+	m_pEffect->mLoadEffect(7, "Good", "Effect\\Good\\");
+
 	m_effectTrans = Transform(Vector3(), Vector3(), Vector3( 16*10, 9*10,0));
 
 	mAppendOptionInit();
@@ -263,30 +262,17 @@ void OrderList::mListenUpdate(){
 
 	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 
-	//タイミング	４分と８分
 	bool timing = m_mode == GameManager::eGameMode::eQuarter ? m_rhythm->mIsQuarterBeat() : m_rhythm->mIsEighterBeat();
-
 	if (timing){
 		if (m_processId >= m_MaxOrderSize){
 			m_processId++;
 			return;
-		};
-
-		//エフェクト関係
-		int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
-		if (m_option & eAppendOption::eReverce){
-			int id = (m_MaxOrderSize - 1) - m_processId;
-			m_effectTrans._translation._x = m_pSpriteOrigin[id*requestVal]._x - m_effectTrans._scale._x / 2;
-			m_effectTrans._translation._y = m_pSpriteOrigin[id*requestVal]._y - m_effectTrans._scale._y / 2;
-			m_pEffect->mPlay("In", "In" + std::to_string(id), m_effectTrans);
-		}
-		else{
-			m_effectTrans._translation._x = m_pSpriteOrigin[m_processId*requestVal]._x - m_effectTrans._scale._x / 2;
-			m_effectTrans._translation._y = m_pSpriteOrigin[m_processId*requestVal]._y - m_effectTrans._scale._y / 2;
-			m_pEffect->mPlay("In", "In" + std::to_string(m_processId), m_effectTrans);
 		}
 
+		//エフェクト
+		mPlayEffect("In");
 		
+		//行動済みとして登録し音があれば再生する
 		m_playedAction = m_EnemyOrderList[m_processId];
 		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull && m_EnemyOrderList[m_processId]->mGetType() != eMusical::eAdlib){
 			auto sound = ResourceManager::mGetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
@@ -317,7 +303,6 @@ void OrderList::mPerformUpdate(){
 		reducation = 1.2f;
 	}
 
-//	printf("time%.2f\n", playtime);
 
 	double magen;
 	double exFrame = modf(playtime, &magen);
@@ -333,7 +318,6 @@ void OrderList::mPerformUpdate(){
 	
 	//更に細かい符の裏打ちのタイミングで毎回フラグをリセットし次を判定
 	if (backBeat){
-			//std::cout << "Reset " << m_processId << std::endl;
 		if (m_isKeyDown){
 			m_isKeyDown = m_isPlaySound = false;
 		}
@@ -341,12 +325,14 @@ void OrderList::mPerformUpdate(){
 			//Debug::mPrint("MISS");
 			if (m_processId < m_MaxOrderSize){
 				if (command->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
+					mPlayEffect("Good");
 				}
 				else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
 					command = m_ActionBoard->mGetCommand(eMusical::eNull);
 				}
 				else{
 					command = m_ActionBoard->mGetCommand(eMusical::eMiss);
+					mPlayEffect("Miss");
 				}
 			}
 
@@ -380,12 +366,16 @@ void OrderList::mPerformUpdate(){
 
 		if (command->mGetType() == eMusical::eAdlib){
 			command = m_ActionBoard->mGetCommand(eMusical::eBlue);
+			mPlayEffect("Good");
 		}
 		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
 			m_playedAction = command;
 			m_isKeyDown = true;
 			m_isPlaySound = true;
 			m_PlayerOrderList.push_back(command);
+			if (command->mGetType() != eMusical::eNull){
+				mPlayEffect("Good");
+			}
 		}
 	}
 	else if (onCommand){
@@ -399,6 +389,7 @@ void OrderList::mPerformUpdate(){
 		}
 		else{
 			command = m_ActionBoard->mGetCommand(eMusical::eMiss);
+			mPlayEffect("Miss");
 		}
 
 
@@ -407,6 +398,14 @@ void OrderList::mPerformUpdate(){
 			m_isKeyDown = true;
 			m_isPlaySound = true;
 			m_PlayerOrderList.push_back(command);
+
+			if (command->mGetType() == eMusical::eMiss){
+				mPlayEffect("Miss");
+			}
+			else{
+				mPlayEffect("Good");
+			}
+
 		}
 		else {
 			//Debug::mPrint("DownMISS");
@@ -470,17 +469,7 @@ void OrderList::mBattleUpdate(){
 		}
 		int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
 
-		if (m_option & eAppendOption::eReverce){
-			int id = (m_MaxOrderSize - 1) - m_processId;
-			m_effectTrans._translation._x = m_pSpriteOrigin[id*requestVal]._x - m_effectTrans._scale._x / 2;
-			m_effectTrans._translation._y = m_pSpriteOrigin[id*requestVal]._y - m_effectTrans._scale._y / 2;
-			m_pEffect->mPlay("Break", "Break" + std::to_string(id), m_effectTrans);
-		}
-		else{
-			m_effectTrans._translation._x = m_pSpriteOrigin[m_processId*requestVal]._x - m_effectTrans._scale._x / 2;
-			m_effectTrans._translation._y = m_pSpriteOrigin[m_processId*requestVal]._y - m_effectTrans._scale._y / 2;
-			m_pEffect->mPlay("Break", "Break" + std::to_string(m_processId), m_effectTrans);
-		}
+		mPlayEffect("Break");
 
 		if (m_PlayerOrderList[m_processId]->mGetType() == eMusical::eMiss){
 			m_damagedValue = -1;
@@ -531,7 +520,6 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 	m_pBackImage->Render(shader);
 	m_pFlame->Render(shader);
 	m_pVolumeImage->Render(shader);
-	m_pEffect->mRender(shader);
 	const float l_kalpha = 0.5f;
 
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
@@ -561,27 +549,9 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 				else{
 					m_pSpriteList[id*requestVal]->SetTexture(m_ActionBoard->mGetCommandTexture(m_EnemyOrderList[i]->mGetType()).get());
 				}
-				m_pSpriteList[id*requestVal]->property._color._alpha = 1.0f;
 
-
-				//再生済み透明処理
-				if (m_isEnd){
-					m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
-				}
-				else{
-					if (m_option & eAppendOption::eReverce){
-						int revProcess = (m_MaxOrderSize-1) - m_processId;
-						if (revProcess < id && !m_isAlPlay){
-							m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
-						}
-					}
-					else{
-						if (m_processId > id + 1 && !m_isAlPlay){
-							m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
-						}
-					}
-				}
-
+				//透明処理
+				m_pSpriteList[id*requestVal]->property._color._alpha = l_kalpha;
 				m_pSpriteList[id*requestVal]->Render(shader);
 			}
 		}
@@ -636,6 +606,8 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 	if (m_isLineStart){
 		m_pReadLine->Render(debug);
 	}
+	m_pEffect->mRender(shader);
+
 }
 
 std::shared_ptr<ActionCommand> OrderList::mGetActionCommand(){
@@ -800,4 +772,19 @@ void OrderList::mSetOption(eAppendoption op){
 
 void OrderList::mSetTutorial(bool flg){
 	m_isTutorialDemo = flg;
+}
+
+void OrderList::mPlayEffect(std::string Name){
+	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
+	if (m_option & eAppendOption::eReverce){
+		int id = (m_MaxOrderSize - 1) - m_processId;
+		m_effectTrans._translation._x = m_pSpriteOrigin[id*requestVal]._x - m_effectTrans._scale._x / 2;
+		m_effectTrans._translation._y = m_pSpriteOrigin[id*requestVal]._y - m_effectTrans._scale._y / 2;
+		m_pEffect->mPlay(Name, Name + std::to_string(id), m_effectTrans);
+	}
+	else{
+		m_effectTrans._translation._x = m_pSpriteOrigin[m_processId*requestVal]._x - m_effectTrans._scale._x / 2;
+		m_effectTrans._translation._y = m_pSpriteOrigin[m_processId*requestVal]._y - m_effectTrans._scale._y / 2;
+		m_pEffect->mPlay(Name, Name + std::to_string(m_processId), m_effectTrans);
+	}
 }
