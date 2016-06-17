@@ -21,7 +21,7 @@ public:
 public:
 	TutorialEnemy();
 	~TutorialEnemy();
-	void mInitalize(const bool);
+	void mInitalize(const bool,std::shared_ptr<aetherClass::FbxModel>& model);
 	void Finalize();
 	void mUpdate(const bool isTutorialEnd, const bool selectButton, const bool pushButton);
 	void mRender(aetherClass::ShaderBase*);
@@ -34,6 +34,7 @@ public:
 private:
 	std::string m_dataPath;
 	MessageWindow m_messageWindow;
+	std::shared_ptr<aetherClass::FbxModel> m_model;
 	std::shared_ptr<aetherClass::Texture> m_message;
 	std::array<std::string, 4> m_tutorialMessage;
 	std::array<std::string, 4> m_tutorialClearMessage;

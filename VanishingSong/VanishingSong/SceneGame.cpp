@@ -79,7 +79,7 @@ bool SceneGame::Initialize(){
 		|| (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd);
 
 	m_pTutorialEnemy = std::make_shared<TutorialEnemy>();
-	m_pTutorialEnemy->mInitalize(isTutorial);
+	m_pTutorialEnemy->mInitalize(isTutorial,ResourceManager::mGetInstance().mGetEnemyHash(eMusical::eBlue));
 
 	if (isTutorial){
 		m_gameState = eState::eTutorial;

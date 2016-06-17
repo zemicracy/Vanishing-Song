@@ -20,7 +20,7 @@ public:
 	void mSetPosion();
 	bool mGetIsJudge();
 	std::shared_ptr<FieldEnemy> mEnemyGet(int);
-
+	bool mGetBossFlg();
 private:
 
 	std::vector<std::shared_ptr<FieldEnemy>> m_pEnemy;

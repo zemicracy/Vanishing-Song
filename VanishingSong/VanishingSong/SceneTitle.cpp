@@ -111,7 +111,7 @@ bool SceneTitle::Initialize(){
 
 	m_pSound = std::make_shared<GameSound>();
 	m_pSound->Load("Sound\\Result\\title.wav");
-	m_pSound->SetValume(-100);
+	m_pSound->SetValume(-3000);
 
 	_heapmin();
 	return true;

@@ -1,5 +1,6 @@
 #include "TutorialEnemy.h"
 #include "Debug.h"
+#include <WorldReader.h>
 using namespace aetherClass;
 TutorialEnemy::TutorialEnemy()
 {
@@ -13,9 +14,18 @@ TutorialEnemy::~TutorialEnemy(){
 }
 
 //
-void TutorialEnemy::mInitalize(const bool flg){
+void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_isEnd = !flg;
-
+	m_model = model;
+	WorldReader reader;
+	reader.Load("data\\Field\\player_init.aether");
+	for (auto& index : reader.GetInputWorldInfo()._object){
+		if (index->_name == "tutorial_enemy"){
+			m_model->property._transform._translation = index->_transform._translation;
+			m_model->property._transform._rotation = index->_transform._rotation;
+		}
+	}
+	reader.UnLoad();
 	m_messageWindow.mInitialize();
 	
 	int count = NULL;
@@ -125,8 +135,9 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 }
 
 //
-void TutorialEnemy::mRender(ShaderBase*){
+void TutorialEnemy::mRender(ShaderBase* tex){
 	if (m_isEnd)return;
+	m_model->Render(tex);
 }
 
 void TutorialEnemy::mUIRender(ShaderBase* shader, ShaderBase* color){
@@ -161,6 +172,9 @@ TutorialEnemy::eSelect TutorialEnemy::mGetSelectType(){
 }
 
 void TutorialEnemy::Finalize(){
+	if (m_model){
+		m_model.reset();
+	}
 	if (m_pCursor){
 		m_pCursor->Finalize();
 		m_pCursor.reset();
