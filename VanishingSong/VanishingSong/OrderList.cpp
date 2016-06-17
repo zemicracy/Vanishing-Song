@@ -325,7 +325,6 @@ void OrderList::mPerformUpdate(){
 			//Debug::mPrint("MISS");
 			if (m_processId < m_MaxOrderSize){
 				if (command->mGetType() == m_EnemyOrderList[m_processId]->mGetType()){
-					mPlayEffect("Good");
 				}
 				else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib){
 					command = m_ActionBoard->mGetCommand(eMusical::eNull);
@@ -469,7 +468,9 @@ void OrderList::mBattleUpdate(){
 		}
 		int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
 
-		mPlayEffect("Break");
+		if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
+			mPlayEffect("Break");
+		}
 
 		if (m_PlayerOrderList[m_processId]->mGetType() == eMusical::eMiss){
 			m_damagedValue = -1;
@@ -478,7 +479,7 @@ void OrderList::mBattleUpdate(){
 		else if (m_EnemyOrderList[m_processId]->mGetType() == eMusical::eAdlib && m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
 			m_damagedValue = 3;
 		}
-		else {
+		else if(m_PlayerOrderList[m_processId]->mGetType() != eMusical::eNull){
 			m_damagedValue = 1;
 		}
 
