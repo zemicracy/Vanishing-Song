@@ -88,7 +88,7 @@ bool SceneTutorial::Initialize(){
 	m_particleDesc._endPoint._y += 100;
 
 
-	m_bgmVolume = 30;
+	m_bgmVolume = 60;
 	m_inCount = 0;
 
 	m_tutorialState = eTutorialState::eInit;
@@ -276,7 +276,7 @@ bool SceneTutorial::Updater(){
 	if (m_isEndTransition && m_sound){
 		m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
-			if (m_bgmVolume > 8){
+			if (m_bgmVolume > 30){
 				m_sound->SetValume(-m_bgmVolume * 100);
 				m_bgmVolume--;
 			}
@@ -453,7 +453,8 @@ void SceneTutorial::mOnResult(){
 
 		m_pOrderList.reset();
 		m_resultUpdateTime = 1.0f;
-		m_bgmVolume = 30;
+		m_bgmVolume = 60;
+
 	}
 
 	m_pResult->mUpdate(m_resultUpdateTime);

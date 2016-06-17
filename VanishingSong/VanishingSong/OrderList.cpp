@@ -684,7 +684,7 @@ void OrderList::mEndReset(){
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
 	sound->mStop();
-	sound->mPlaySoundAction(-100);
+	sound->mPlaySoundAction(-3000);
 }
 
 void OrderList::mRhythmicMotion(){

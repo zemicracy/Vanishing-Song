@@ -68,7 +68,7 @@ bool SceneGame::Initialize(){
 		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
 			m_pBGMArray.push_back(std::make_shared<GameSound>());
 			m_pBGMArray.back()->Load(itr.second.c_str());
-			m_pBGMArray.back()->SetValume(0);
+			m_pBGMArray.back()->SetValume(-3000);
 		}
 		for (auto &itr : m_pBGMArray){
 			itr->PlayToLoop();
