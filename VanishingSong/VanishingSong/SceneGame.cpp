@@ -90,6 +90,8 @@ bool SceneGame::Initialize(){
 	}
 
 	m_isTransitionEnd = false;
+	m_isFade = false;
+	m_isFade2 = false;
 	// とりあえず一回呼んでおく
 	mRun();
 	mTutorial();
@@ -156,6 +158,24 @@ bool SceneGame::Updater(){
 // チュートリアル用
 void SceneGame::mTutorial(){
 	if (m_gameState != eState::eTutorial)return;
+
+	if (m_isFade){
+		if (!GameManager::mGetInstance().mfadeManager().In(1)){
+			return;
+		}
+		m_isFade = false;
+		m_isFade2 = true;
+	}
+
+	if (m_isFade2){
+		if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+			return;
+		}
+		m_gameState = eState::eRun;
+		m_isFade2 = false;
+		return;
+	}
+
 	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	bool select = GameController::GetKey().KeyDownTrigger(VK_LEFT) || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft)||
 		GameController::GetKey().KeyDownTrigger(VK_RIGHT) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
@@ -174,7 +194,7 @@ void SceneGame::mTutorial(){
 		else if (m_pTutorialEnemy->mGetSelectType() == TutorialEnemy::eSelect::eNo){
 			if (m_pTutorialEnemy->mGetMessageEnd()){
 				GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
-				m_gameState = eState::eRun;
+				m_isFade = true;
 				m_pTutorialEnemy->mIsEnd(true);
 			}
 		}
@@ -185,7 +205,7 @@ void SceneGame::mTutorial(){
 		// チュートリアル終了後
 		if (m_pTutorialEnemy->mGetMessageEnd()){
 			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
-			m_gameState = eState::eRun;
+			m_isFade = true;
 			m_pTutorialEnemy->mIsEnd(true);
 			return;
 		}
