@@ -173,26 +173,20 @@ int BattleEnemyManager::mGetAppendOption(){
 	//Debug::mPrint(std::to_string(m_hp[m_waveID]._hp/m_hp[m_waveID]._maxHp));
 
 	if (m_stageID == 1){
-		if (m_waveID == 2){
+		if (m_waveID == 1){
 			return eAppendOption::eBlack;
 		}
 	}
-	if (m_stageID == 2){
+	else if (m_stageID == 3){
+		return eAppendOption::eNone;
+	}
+
+	else if (m_stageID == 4){
 		if (m_waveID == 1){
 			return eAppendOption::eReverce;
 		}
 	}
-	if (m_stageID == 3){
-		return eAppendOption::eNone;
-	}
-
-	if (m_stageID == 4){
-		if (m_waveID == 2){
-			return eAppendOption::eReverce;
-		}
-	}
-
-	if (m_stageID == 5){
+	else if (m_stageID == 5){
 		if (m_waveID == 2){
 			if (0.15 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
 				return eAppendOption::eBlack | eAppendOption::eReverce;
