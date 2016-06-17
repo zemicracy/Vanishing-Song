@@ -27,7 +27,7 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 	m_messageFlame = std::make_shared<Rectangle3D>();
 	m_messageFlame->Initialize();
 	m_messageFlame->SetCamera(camera);
-	m_messageFlame->property._transform._scale = Vector3(16, 12, 0);
+	m_messageFlame->property._transform._scale = Vector3(10, 6, 0);
 
 	// カーソルの位値
 	m_cursorPosition[eSelectType::eYes] = 400.f;
@@ -65,7 +65,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum()-1;
 	m_viewMessageFlame = true;
 	m_messageFlame->property._transform._translation = enemyPosition;
-	m_messageFlame->property._transform._translation._y = enemyPosition._y+35;
+	m_messageFlame->property._transform._translation._y = enemyPosition._y+45;
 
 	// 話してるときは何もしない
 	if (m_isView){
