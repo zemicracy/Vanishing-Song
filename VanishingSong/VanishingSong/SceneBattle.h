@@ -19,6 +19,8 @@
 #include"BattleMessage.h"
 #include"GaugeManager.h"
 #include"ResultBoard.h"
+#include"AttackParticle.h"
+
 
 class SceneBattle :
 	public aetherClass::GameScene
@@ -80,13 +82,14 @@ private:
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
 
 
-
 	int m_prevWholeBeatNo;
 	bool m_initUpdateProcess;
+	bool m_isEndTransition;
 
 	bool m_preInitProcess;
 	float m_bgmVolume;
 	int m_inCount;
+	float m_resultUpdateTime;
 
 	//ウェーブ
 	int m_MaxWave;
@@ -96,6 +99,10 @@ private:
 	//karikari
 	CharaStatus m_charaHp;
 	CharaStatus *m_enemyHp;
+
+	//パーティクル
+	std::shared_ptr<AttackParticle>m_particle;
+	AttackParticle::ParticleDesc m_particleDesc;
 
 
 	eGameState m_processState;

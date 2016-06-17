@@ -12,7 +12,7 @@ using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
 	const float kCameraRotationMaxX = -5.0f;
-	const float kCameraRotationMinX = -30.0f;
+	const float kCameraRotationMinX = -20.0f;
 	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
 	const float kDefaultMove = 100.0f;
 
@@ -106,7 +106,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 		m_transform._translation += translation;
 		m_pBodyCollider->property._transform._translation = m_transform._translation;
 		if (m_hitObject&&CollideBoxOBB(*m_pBodyCollider, *m_hitObject)){
-			m_transform._translation = m_prevPosition-translation*2 + FLT_EPSILON;
+			m_transform._translation = m_prevPosition;
 		}
 
 		m_isHitWall = false; //フラグをオフにする
@@ -123,6 +123,9 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_transform);
+
+	// アニメーションの更新
+	m_model->KeyframeUpdate(m_model->GetKeyframeNameList(0), true);
 	return;
 }
 
@@ -155,7 +158,7 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 	}
 
 	/*	カメラの回転	*/	
-	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
+	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRRight)){
 		output.second._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
 	}
 	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRLeft)){
@@ -177,8 +180,8 @@ void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 	m_playerView.Render();
 	if (!m_model)return;
 
-	m_model->Render(modelShader);
-	//m_model->KeyFrameAnimation(modelShader, m_animationName.at(m_prevState), true);
+	//m_model->Render(modelShader);
+	m_model->KeyframeAnimationRender(modelShader);
 	return;
 }
 /*
@@ -206,7 +209,7 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 	
 	collider->Initialize();
 	collider->property._transform._translation = original + offset;
-	collider->property._transform._scale = 10;
+	collider->property._transform._scale = Vector3(5,10,10);
 	collider->property._color = Color(1, 0, 0, 0.5);
 	collider->SetCamera(&m_playerView);
 	return;

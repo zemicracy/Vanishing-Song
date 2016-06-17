@@ -56,12 +56,13 @@ bool SceneGame::Initialize(){
 	m_pFieldEnemy = std::make_shared<FieldEnemyManager>();
 	m_pFieldEnemy->mInitilize(view);
 
-	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea, m_pFieldEnemy);
+	m_pCageManager = std::make_shared<CageManager>();
+	m_pCageManager->mInitialize(m_pFieldEnemy.get(), view);
+
+	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea, m_pFieldEnemy,m_pCageManager);
 
 	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy, view);
 
-	m_pCageManager = std::make_shared<CageManager>();
-	m_pCageManager->mInitialize(m_pFieldEnemy.get(), view);
 
 	{
 		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
@@ -73,15 +74,13 @@ bool SceneGame::Initialize(){
 			itr->PlayToLoop();
 		}
 	}
-
-	// とりあえず一回呼んでおく
-	mRun();
-	
 	
 	const bool isTutorial = (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial)
 		|| (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd);
+
 	m_pTutorialEnemy = std::make_shared<TutorialEnemy>();
 	m_pTutorialEnemy->mInitalize(isTutorial);
+
 	if (isTutorial){
 		m_gameState = eState::eTutorial;
 	}
@@ -91,6 +90,9 @@ bool SceneGame::Initialize(){
 	}
 
 	m_isTransitionEnd = false;
+	// とりあえず一回呼んでおく
+	mRun();
+	mTutorial();
 	_heapmin();
 	return true;
 }
@@ -131,7 +133,11 @@ void SceneGame::Finalize(){
 		m_pFieldEnemy.reset();
 		m_pFieldEnemy = nullptr;
 	}
-	
+
+	if (m_pTutorialEnemy){
+		m_pTutorialEnemy.reset();
+		m_pTutorialEnemy = nullptr;
+	}
 	m_gameState = eState::eNull;
 	_heapmin();
 	return;
@@ -150,11 +156,14 @@ bool SceneGame::Updater(){
 // チュートリアル用
 void SceneGame::mTutorial(){
 	if (m_gameState != eState::eTutorial)return;
-	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE);
+	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
+	bool select = GameController::GetKey().KeyDownTrigger(VK_LEFT) || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft)||
+		GameController::GetKey().KeyDownTrigger(VK_RIGHT) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
+
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
-	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
+	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation,false);
 	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
-		if (m_pTutorialEnemy->mGetMessageEnd()){
+		if (m_pTutorialEnemy->mGetSelectType()== TutorialEnemy::eSelect::eYes){
 			m_gameState = eState::eBattle;
 			m_pTutorialEnemy->mIsEnd(true);
 			GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
@@ -162,8 +171,15 @@ void SceneGame::mTutorial(){
 			ChangeScene(SceneTutorial::Name, LoadState::eUse);
 			return;
 		}
+		else if (m_pTutorialEnemy->mGetSelectType() == TutorialEnemy::eSelect::eNo){
+			if (m_pTutorialEnemy->mGetMessageEnd()){
+				GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
+				m_gameState = eState::eRun;
+				m_pTutorialEnemy->mIsEnd(true);
+			}
+		}
 
-		m_pTutorialEnemy->mUpdate(false, false, button);
+		m_pTutorialEnemy->mUpdate(false, select, button);
 	}
 	else{
 		// チュートリアル終了後
@@ -195,15 +211,15 @@ void SceneGame::mRun(){
 		// 戦闘に行く処理
 		// 戦闘に行く前に設定する奴もここでする
 		m_gameState = eState::eBattle;
-
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return;
 	}
 
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
-	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView());
-	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation);
+	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();
+	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView()||m_pCageManager->mGetIsMessageRun(fieldNumber));
+	
 }
 
 //
@@ -211,13 +227,10 @@ void SceneGame::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pTutorialEnemy->mRender(shaderHash["texture"].get());
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	
-	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	
-	
+	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	return;
 }
 
@@ -225,19 +238,20 @@ void SceneGame::Render(){
 void SceneGame::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pMessageManager->m2DRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+	m_pCageManager->mUIRender(shaderHash["transparent"].get());
 	if (m_isTransitionEnd){
-		m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get());
+		m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
-	GameManager::mGetInstance().mfadeManager().mRedner(shaderHash["color"].get());
+	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
 
 //
 bool SceneGame::TransitionIn(){
 	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		std::cout << "%d,%d", m_isTransitionEnd, m_isTransitionEnd;
 		return kTransitionning;
 	}
-
 	return kTransitionEnd;
 }
 
@@ -270,6 +284,8 @@ bool SceneGame::mMessageUpdate(){
 
 		return true;
 	}
+
+	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation, isPress);
 	return false;
 }
 

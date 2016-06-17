@@ -8,11 +8,12 @@ namespace{
 	const int kWallCount = 2;
 	const float kRange = 40.f;
 }
-CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field, std::shared_ptr<FieldEnemyManager> enemy)
+CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field, std::shared_ptr<FieldEnemyManager> enemy, std::shared_ptr<CageManager> cage)
 { 
 	m_player = player;
 	m_filed = field;
 	m_enemy = enemy;
+	m_cage = cage;
 	m_messageInfo.first = NULL;
 	m_messageInfo.second = false;
 }
@@ -29,8 +30,10 @@ CollideManager::~CollideManager()
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	const int playerNumber = mCheckPlayerFieldArea();
+	
 	mCheckHitObject(playerNumber);
 	mCheckHitEnemy(playerNumber);
+	mCheckHitCage(playerNumber);
 	return;
 }
 
@@ -59,10 +62,29 @@ void CollideManager::mCheckHitEnemy(const int number){
 		m_messageInfo.second = false;
 	}
 
+	if (m_messageInfo.second)return;
 	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
 		m_player->mOnHitWall(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
 	}
 	
+}
+
+//
+void CollideManager::mCheckHitCage(const int number){
+	if (number >= 3)return;
+	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_cage->mGetPosition(number)._x;
+	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_cage->mGetPosition(number)._z;
+
+	if ((x*x) + (z*z) < kRange*kRange&&m_messageInfo.second){
+		m_cage->mSetIsComment(number, true);
+	}
+	else{
+		m_cage->mSetIsComment(number, false);
+	}
+
+	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_cage->mGetColldier(number).get())){
+		m_player->mOnHitWall(m_cage->mGetColldier(number).get());
+	}
 }
 
 std::pair<int,bool> CollideManager::GetMassageInfo(){

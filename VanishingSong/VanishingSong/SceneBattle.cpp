@@ -7,6 +7,7 @@
 #include "ResourceManager.h"
 #include"SceneGame.h"
 #include"Cipher.h"
+#include"ModelUtility.h"
 //debug
 using namespace aetherClass;
 const std::string SceneBattle::Name = "Battle";
@@ -69,47 +70,69 @@ bool SceneBattle::Initialize(){
 	m_processState = eGameState::ePreCountIn;
 	m_initUpdateProcess = false;
 	m_preInitProcess = false;
+	m_isEndTransition = false;
 	m_prevWholeBeatNo = 0;
 
 	m_bgmVolume = 30;
 	m_inCount = 0;
-	
-		
+
+
+	m_particleDesc._spawnRate = 10;
+	m_particleDesc._scale = 5;
+	m_particleDesc._texturePath = "Texture\\OrderList\\note_a.png";
+	m_particleDesc._rangeMin = Vector3(0, 0, 0);
+	m_particleDesc._rangeMax = Vector3(20, 0, 20);
+	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
+	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
+	m_particleDesc._endPoint._y += 100;
+
+	m_players.mUpdate(0, eMusical::eNull);
+	m_pOrderList->mUpdate();
+
 	//最後に行う
 	m_sound->SetValume(-m_bgmVolume*100);
-	m_sound->PlayToLoop();
 	_heapmin();
 	return true;
 }
 
 void SceneBattle::Finalize(){
 	_heapmin();
+
 	if (m_pOrderList){
 		m_pOrderList.reset();
+		m_pOrderList = nullptr;
 	}
 	if (m_sound){
 		m_sound.reset();
+		m_sound = nullptr;
 	}
 	if (m_pActionBoard){
 		m_pActionBoard.reset();
+		m_pActionBoard = nullptr;
 	}
 	if (m_pField){
 		m_pField.reset();
+		m_pField = nullptr;
 	}
 	if (m_pGauge){
 		m_pGauge.reset();
+		m_pGauge = nullptr;
 	}
 	if (m_pMessage){
 		m_pMessage.reset();
+		m_pMessage = nullptr;
 	}
 	if (m_pResult){
 		m_pResult.reset();
+		m_pResult = nullptr;
 	}
 	if (m_rhythm){
 		m_rhythm->mFinalize();
+		m_rhythm = nullptr;
 	}
 	if (m_pBattleEnemyManager){
 		m_pBattleEnemyManager.reset();
+		m_pBattleEnemyManager = nullptr;
 	}
 
 	_heapmin();
@@ -130,15 +153,16 @@ void SceneBattle::mLoadTextData(){
 
 	//サウンドのデータも読み込む
 	m_sound = std::make_shared<GameSound>();
+	m_rhythm = std::make_shared<RhythmManager>();
 	if (m_stageID != 5){
 		m_sound->Load("Sound\\Battle\\normal.wav");
+		m_rhythm->mInitializeRhythm(m_sound, 120);
 	}
 	else{
-		m_sound->Load("Sound\\Battle\\normal.wav");
+		m_sound->Load("Sound\\Battle\\boss.wav");
+		m_rhythm->mInitializeRhythm(m_sound, 117);
 	}
 
-	m_rhythm = std::make_shared<RhythmManager>();
-	m_rhythm->mInitializeRhythm(m_sound, 120);
 	m_rhythm->mAcquire();
 
 
@@ -147,22 +171,31 @@ void SceneBattle::mLoadTextData(){
 
 
 bool SceneBattle::Updater(){
+	if (m_isEndTransition && m_sound){
+			m_sound->PlayToLoop();
+		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
+			if (m_bgmVolume > 8){
+				m_sound->SetValume(-m_bgmVolume * 100);
+				m_bgmVolume--;
+			}
+		}
+	}
 	if (kCharaDebug){
 		if (GameController::GetKey().IsKeyDown('I')){
 			m_enemyHp->_hp -= 1;
 		}
+	}
+	if (m_particle){
+		m_particle->mUpdate(0.8);
+	}
+	if (m_pBattleEnemyManager){
+		m_pBattleEnemyManager->mUpdate(1);
 	}
 	if (m_rhythm){
 		m_rhythm->mAcquire();
 	}
 	if (m_pOrderList){
 		m_pOrderList->mRhythmicMotion();
-	}
-	if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
-		if (m_bgmVolume > 8){
-			m_sound->SetValume(-m_bgmVolume * 100);
-			m_bgmVolume--;
-		}
 	}
 
 	if (m_processState == eGameState::ePreCountIn){
@@ -173,7 +206,7 @@ bool SceneBattle::Updater(){
 				m_enemyVector.push_back(m_pActionBoard->mGetCommand(itr));
 			}
 			m_pOrderList->mAddEnemyOrder(m_enemyVector);
-			m_pOrderList->mSetOption(eAppendOption::eNone);
+			m_pOrderList->mSetOption(m_pBattleEnemyManager->mGetAppendOption());
 		}
 		m_processState = eGameState::eCountIn;
 		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime()+0.1f);
@@ -245,12 +278,13 @@ void SceneBattle::Render(){
 		m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
 		m_players.mRender(shaderHash["texture"].get());
-	if (m_pOrderList){
-		m_pOrderList->mRender3D(shaderHash["texture"].get());
-	}
 	if (m_pBattleEnemyManager){
-		m_pBattleEnemyManager->mRender(shaderHash["texture"]);
+		m_pBattleEnemyManager->mRender(shaderHash["transparent"]);
 	}
+	if (m_particle){
+		m_particle->mRender(shaderHash["texture"].get());
+	}
+
 	return;
 }
 
@@ -271,14 +305,24 @@ void SceneBattle::UIRender(){
 			m_pResult->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 		}
 	}
+	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
 
 bool SceneBattle::TransitionIn(){
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		return kTransitionning;
+	}
+
 	return kTransitionEnd;
 }
 
+//
 bool SceneBattle::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+		return kTransitionning;
+	}
+	m_isEndTransition = true;
 	return kTransitionEnd;
 }
 
@@ -288,9 +332,10 @@ void SceneBattle::mOnResult(){
 		m_pGauge.reset();
 		m_pMessage.reset();
 		m_sound.reset();
-		m_rhythm->mFinalize();
-		m_rhythm.reset();
 		
+		m_sound = std::make_shared<GameSound>();
+		m_sound->Load("Sound\\Result\\result.wav");
+		m_rhythm->mInitializeRhythm(m_sound, 110);
 
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();
@@ -299,12 +344,24 @@ void SceneBattle::mOnResult(){
 		m_initUpdateProcess = true;
 
 		m_pOrderList.reset();
+		m_resultUpdateTime = 1.0f;
+
+
+		m_bgmVolume = 30;
 	}
 
-	m_pResult->mUpdate();
-	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	if (isPress){
-		ChangeScene(SceneGame::Name, LoadState::eUse);
+	m_pResult->mUpdate(m_resultUpdateTime);
+	if (m_pResult->mIsEnd()){
+		const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
+		if (isPress){
+			ChangeScene(SceneGame::Name, LoadState::eUse);
+		}
+	}
+	else{
+		const bool isPress = GameController::GetJoypad().IsButtonDown(eJoyButton::eB) || GameController::GetKey().IsKeyDown(VK_SPACE);
+		if (isPress){
+			m_resultUpdateTime += 0.1f;
+		}
 	}
 }
 
@@ -387,10 +444,16 @@ void SceneBattle::mCheckBattle(){
 			m_waveID++;
 
 			m_pBattleEnemyManager->misDie();
+			m_particle = std::make_shared<AttackParticle>(m_particleDesc,&m_view);
+
+
 			m_battleState = GameManager::eBattleState::eNewWave;
 			m_processState = eGameState::ePreCountIn;
 		}
 		else{
+			m_pBattleEnemyManager->misDie();
+			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
+
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;
 		}
@@ -417,6 +480,7 @@ void SceneBattle::mCountIn(){
 				m_pMessage->mSetActive(false);
 				
 				m_preInitProcess = false;
+				m_initUpdateProcess = false;
 				m_winner = m_battleState;
 				m_battleState = GameManager::eBattleState::eResult;
 				m_sound->Stop();
@@ -457,7 +521,7 @@ void SceneBattle::mCountIn(){
 			m_pMessage->mChangeTexture(m_battleState);
 		}
 		else if(m_battleState == GameManager::eBattleState::eNewWave){
-			m_pMessage->mWaveMessageOpen(m_waveID-1);
+			m_pMessage->mWaveMessageOpen(m_waveID);
 		}
 		else{
 			if (!m_preInitProcess){

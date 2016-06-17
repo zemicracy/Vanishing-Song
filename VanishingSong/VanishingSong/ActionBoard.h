@@ -10,7 +10,7 @@ public:
 	ActionBoard();
 	~ActionBoard();
 
-	bool mInitialize();
+	bool mInitialize(bool flg = false);
 
 	/*void mRender(aetherClass::ShaderBase*);
 	void mUpdate(float);*/
@@ -42,7 +42,7 @@ private:
 
 	void mFinalize();
 private:
-
+	bool m_openKey;
 	std::unordered_map<eMusical, bool>m_playerOrder;
 	std::unordered_map<eMusical, ActionCommandType>m_actionList;
 

@@ -38,7 +38,7 @@ private:
 	std::shared_ptr<aetherClass::ModelBase>m_pSkyBox;
 	std::shared_ptr<aetherClass::FbxModel>m_pPlane;
 
-	std::array < std::shared_ptr<aetherClass::ModelBase>, 2>m_pDebug;
+	std::shared_ptr<aetherClass::FbxModel>m_pTank;
 	RhythmManager *m_rhythm;
 
 };

@@ -47,7 +47,6 @@ void OrderList::mFinalize(){
 	m_pFlame->Finalize();
 	m_pFlame.reset();
 
-	m_pParticle.reset();
 	m_playedAction.reset();
 
 	for (auto itr : m_pSpriteList){
@@ -111,7 +110,6 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 			m_BackImageReverceOrigin._x = itr->_transform._translation._x + itr->_transform._scale._x + 80;
 			m_BackImageReverceOrigin._y = itr->_transform._translation._y;
-
 
 		}
 		if (itr->_name == "linepos"){
@@ -190,13 +188,13 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_flamePosOrigin._x = m_flameScaleOrigin._x / 2;
 	m_flamePosOrigin._y = m_flameScaleOrigin._y / 2;
 
-	m_flameScaleOrigin *= 1.2;
+	m_flameScaleOrigin *= 1.05;
 	m_pFlame->property._transform._translation = m_flameScaleOrigin / 2 * -1 + m_flameScaleOrigin;
 
 	//位置補正
 	{
-		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (0 * 20);
-		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y + (0 * 20);
+		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x;
+		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y;
 		auto size = (m_pFlame->property._transform._scale);
 		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
 		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
@@ -222,17 +220,6 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_effectTrans = Transform(Vector3(), Vector3(), Vector3( 16*10, 9*10,0));
 
 	mAppendOptionInit();
-
-//パーティクル
-	m_perticleDesc._size = 8;
-	m_perticleDesc._scale = 5;
-	m_perticleDesc._texturePath = dir + "note_a.png";
-	m_perticleDesc._endPoint = Vector3(0, 50, 0);
-	m_perticleDesc._rangeMin = Vector3(5, 0, 5);
-	m_perticleDesc._rangeMax = Vector3(10, 0, 10);
-
-	m_pParticle = std::make_unique<AttackParticle>(m_perticleDesc, m_Field->mGetCamera());
-	m_pParticle->mReset(m_perticleDesc);
 }
 
 
@@ -302,9 +289,6 @@ void OrderList::mListenUpdate(){
 		
 		m_playedAction = m_EnemyOrderList[m_processId];
 		if (m_EnemyOrderList[m_processId]->mGetType() != eMusical::eNull && m_EnemyOrderList[m_processId]->mGetType() != eMusical::eAdlib){
-			m_perticleDesc._startPoint = m_Field->mGetEnemyLane(m_EnemyOrderList[m_processId]->mGetType());
-			m_pParticle->mReset(m_perticleDesc);
-
 			auto sound = ResourceManager::mGetInstance().GetActionSound(m_EnemyOrderList[m_processId]->mGetType());
 			mPlaySound(sound);
 		}
@@ -456,10 +440,6 @@ void OrderList::mPerformUpdate(){
 	sound->mPlaySoundAction(0);
 	m_isPlaySound = false;
 
-	if (m_PlayerOrderList[m_processId]->mGetType() != eMusical::eMiss){
-		m_perticleDesc._startPoint = m_Field->mGetPlayerLane(m_PlayerOrderList[m_processId]->mGetType());
-		m_pParticle->mReset(m_perticleDesc);
-	}
 }
 
 //バトル
@@ -545,9 +525,6 @@ void OrderList::mUpdate(){
 		break;
 	}
 
-	if (m_pParticle){
-		m_pParticle->mUpdate(3);
-	}
 }
 
 void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
@@ -725,7 +702,6 @@ void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
 
 void OrderList::mRhythmicMotion(){
 	//BPMから1フレームの変化量を計算
-	//float note = m_mode == GameManager::eGameMode::eQuarter ? 360 * m_rhythm->mQuarterBeatTime() : 360 * m_rhythm->mEighterBeatTime();
 	float note = 360 * m_rhythm->mQuarterBeatTime();
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
@@ -762,8 +738,8 @@ void OrderList::mRhythmicMotion(){
 		}
 	//フレーム
 	{
-		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (scale * 20);
-		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y + (scale * 20);
+		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x + (scale * 40);
+		m_pFlame->property._transform._scale._y = m_flameScaleOrigin._y + (scale * 40);
 		auto size = (m_pFlame->property._transform._scale);
 		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
 		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
@@ -810,13 +786,8 @@ bool OrderList::mIsEnd(){
 }
 
 int OrderList::mGetDamage(){
-	return m_damagedValue;
-}
 
-void OrderList::mRender3D(aetherClass::ShaderBase* shader){
-	if (m_pParticle){
-		m_pParticle->mRender(shader);
-	}
+	return m_damagedValue;
 }
 
 ResultData& OrderList::mGetResult(){

@@ -32,6 +32,7 @@ private:
 	void mCursorUpdate(const bool);
 private:
 	std::shared_ptr<aetherClass::Rectangle2D> m_pCursor;
+	std::shared_ptr<aetherClass::Texture> m_messageBuffer;
 	MessageWindow m_message;
 	bool m_isView;
 	int m_counter;
@@ -42,8 +43,6 @@ private:
 	eSelectType m_selectType;
 
 	std::shared_ptr<aetherClass::Rectangle3D>m_messageFlame;
-	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture;
-	std::shared_ptr<aetherClass::Texture>m_messageFlameTexture2;
 	bool m_select;
 	bool m_isChangeScene;
 	bool m_viewMessageFlame;

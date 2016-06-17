@@ -68,5 +68,6 @@ private:
 	std::shared_ptr<TutorialEnemy> m_pTutorialEnemy;
 	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
 	bool m_isTransitionEnd;
+	aetherClass::DirectXEntity m_directEntity;
 };
 

@@ -20,6 +20,7 @@
 #include"GaugeManager.h"
 #include"ResultBoard.h"
 #include"TutorialMessage.h"
+#include"AttackParticle.h"
 
 class SceneTutorial :
 	public aetherClass::GameScene
@@ -91,10 +92,12 @@ private:
 	bool m_preInitProcess;
 	bool m_timeEngage;
 	bool m_isTutorialPlay;
+	bool m_isEndTransition;
 
 	float m_bgmVolume;
 	int m_inCount;
 	int m_prevWholeBeatNo;
+	float m_resultUpdateTime;
 
 	int m_textReadCnt;
 	//ウェーブ
@@ -112,6 +115,10 @@ private:
 	//Tutorial用
 	eTutorialState m_tutorialState;
 	std::vector<std::shared_ptr<ActionCommand>>m_enemyVector;
+
+	//パーティクル
+	std::shared_ptr<AttackParticle>m_particle;
+	AttackParticle::ParticleDesc m_particleDesc;
 
 
 	//ptr

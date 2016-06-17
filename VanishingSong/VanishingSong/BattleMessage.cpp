@@ -32,12 +32,13 @@ void BattleMessage::mInitialize(){
 
 
 	m_waveMessage.reserve(5);
+	m_waveMessage.push_back(std::make_shared<Texture>());
+	m_waveMessage.back()->Load(folder + "tutorial" + ".png");
+
 	for (int i = 1; i <= 4; ++i){
 		m_waveMessage.push_back(std::make_shared<Texture>());
 		m_waveMessage.back()->Load(folder + "wave" + std::to_string(i) + ".png");
 	}
-	m_waveMessage.push_back(std::make_shared<Texture>());
-	m_waveMessage.back()->Load(folder + "tutorial" + ".png");
 
 }
 void BattleMessage::mChangeTexture(GameManager::eBattleState state){

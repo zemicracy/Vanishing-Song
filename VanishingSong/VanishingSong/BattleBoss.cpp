@@ -15,6 +15,8 @@ BattleBoss::~BattleBoss()
 
 void BattleBoss::mInitialize(eMusical type, aetherClass::ViewCamera* camera, aetherClass::Vector3& pos)
 {
+	m_bossFlag = false;
+
 	m_pModel = std::make_shared<FbxModel>();
 	m_pModel = ResourceManager::mGetInstance().mGetEnemyHash(type);
 
@@ -30,7 +32,9 @@ void BattleBoss::mUpdate(const float timescale){
 }
 
 void BattleBoss::mRender(std::shared_ptr<ShaderBase> tex){
+	
 	m_pModel->Render(tex.get());
+	
 }
 
 void BattleBoss::mFinalize(){

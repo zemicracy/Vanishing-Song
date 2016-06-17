@@ -25,20 +25,18 @@ struct ResultData{
 class ResultBoard
 {
 public:
-	enum class eClickState{
-		eNextDay,
-		eExit,
-		eNull
+	enum eResultState{
+		eNone,eInit, eResultTitle, eMissCnt, eClearGauge, eRank, eNote, eEnd
 	};
 
 public:
 	ResultBoard();
 	~ResultBoard();
 	void mInitialize();
-	void mUpdate();
+	void mUpdate(float);
 	void mSetResultData(ResultData,GameManager::eBattleState,UINT);
 	void mRender(aetherClass::ShaderBase*,aetherClass::ShaderBase*);
-
+	bool mIsEnd();
 private:
 	void mFinalize();
 
@@ -48,6 +46,8 @@ private:
 
 	aetherClass::Vector3 m_rankRatePosision;
 	aetherClass::Vector3 m_missCountPosision;
+	aetherClass::Vector3 m_noteTransOrigin;
+	float m_noteScaleOrigin;
 
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_numberList;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_TextureList;
@@ -56,9 +56,11 @@ private:
 	std::shared_ptr<HalfFillShader>m_halfFill;
 	ResultData m_resultData;
 	bool m_isSetup;
-	bool m_callFadeIn;
-	bool m_callFadeOut;
+	bool m_isEnd;
 	float m_timer;
+	float m_MaxRate;
+	int m_state;
+	float m_acceleration;
 
 };
 

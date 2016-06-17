@@ -19,6 +19,7 @@ public:
 
 private:
 	std::shared_ptr<aetherClass::FbxModel> m_pModel;
+	bool m_bossFlag;
 
 };
 

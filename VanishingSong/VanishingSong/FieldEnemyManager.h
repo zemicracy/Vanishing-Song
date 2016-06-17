@@ -27,6 +27,7 @@ private:
 	std::array<std::shared_ptr<FieldEnemy>,5> m_enemyArray;
 	std::array<aetherClass::Vector3, 5>	m_pEnemySpawner;	//oŒ»êŠ
 	
+	bool m_bossFlag;
 	int EnemySize;	//Enemy”
 	int EnemyMaxSize;
 	bool m_isRender;

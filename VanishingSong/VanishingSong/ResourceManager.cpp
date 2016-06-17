@@ -16,13 +16,6 @@ ResourceManager::ResourceManager()
 ResourceManager::~ResourceManager()
 {
 }
-
-/*
-	BGMのパス情報配列
-	BGMを変えたい場合はここをいじってね
-*/
-
-
 /*
 	リソース系の初期化処理
 */
@@ -47,7 +40,7 @@ void ResourceManager::Finalize(){
 	FinalizeTexture();
 	FinalizeSound();
 	FinalizeBGM();
-	InitializeShader();
+	FinalizeSahder();
 	mFinalizeLoad();
 	return;
 }
@@ -100,7 +93,10 @@ bool ResourceManager::InitializeActionSound(){
 */
 bool ResourceManager::InitializeTexture(){
 	RegisterTexture("skybox", "Texture\\Game\\GameBack.jpg");
-	
+
+	RegisterTexture("comment", "Texture\\Message\\comment_flame.png");
+	RegisterTexture("comment2", "Texture\\Message\\comment_flame2.png");
+
 	std::string comPath = "Texture\\ActionCommand\\";
 	RegisterTexture("ActionBlue", comPath + "Blue.png");
 	RegisterTexture("ActionGreen", comPath + "Green.png");
@@ -261,8 +257,9 @@ void ResourceManager::mPlayerInitialize(eMusical type, std::string path, std::st
 	m_pPlayerHashes[type] = std::make_shared<FbxModel>();
 
 	// 体のパーツ
-	m_pPlayerHashes[type]->LoadFBX(path+"\\test.fbx", eAxisSystem::eAxisOpenGL);
+	m_pPlayerHashes[type]->LoadFBX(path+"\\keyframeTest.fbx", eAxisSystem::eAxisOpenGL);
 	m_pPlayerHashes[type]->SetTextureDirectoryName(tex);
+	m_pPlayerHashes[type]->property._transform._scale._x = -1;
 	return;
 }
 
@@ -284,8 +281,8 @@ void ResourceManager::mEnemyInitialize(eMusical type, std::string directry, std:
 	if (type == eMusical::eNull)return;
 	
 	m_pEnemyHashes[type] = std::make_shared<FbxModel>();
-	m_pEnemyHashes[type]->LoadFBX(directry + "\\body.fbx", eAxisSystem::eAxisOpenGL);
-	m_pEnemyHashes[type]->SetTextureDirectoryName(directry+tex);
+	m_pEnemyHashes[type]->LoadFBX(directry, eAxisSystem::eAxisOpenGL);
+	m_pEnemyHashes[type]->SetTextureDirectoryName(tex);
 }
 
 

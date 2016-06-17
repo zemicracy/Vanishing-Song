@@ -54,7 +54,7 @@ void ResultBoard::mInitialize(){
 	reader.Load("data\\Result.aether");
 
 
-	Color BLACK(0, 0, 0, 1);
+	Color BLACK(0, 0, 0, 0);
 	for (auto& itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "correctGauge"){
 			m_pGauge = std::make_shared<ClearGauge>();
@@ -68,13 +68,19 @@ void ResultBoard::mInitialize(){
 		else if (itr->_name == "missValue"){
 			m_missCountPosision = itr->_transform._translation;
 		}
-		else if (itr->_name != "backBoard"){
+		else if (itr->_name == "backboard"){
 			m_pGeneral.insert(std::make_pair(itr->_name, gInitializer<Rectangle2D>(itr->_transform, itr->_color)));
 		}
 		else if (itr->_name != ""){
 			m_pGeneral.insert(std::make_pair(itr->_name, gInitializer<Rectangle2D>(itr->_transform, BLACK)));
 		}
 	}
+
+
+	m_noteScaleOrigin = m_pGeneral["noteImage"]->property._transform._scale._x;
+	m_noteTransOrigin = m_pGeneral["noteImage"]->property._transform._translation + m_noteScaleOrigin / 2;
+
+	m_pGeneral["backboard"]->property._color._alpha = 0;
 
 	m_pNumSprite = std::make_shared<Rectangle2D>();
 	m_pNumSprite->Initialize();
@@ -116,6 +122,8 @@ void ResultBoard::mInitialize(){
 	m_timer = 0;
 
 	reader.UnLoad();
+	m_isEnd = false;
+	m_state = eNone;
 }
 
 void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state,UINT stageID){
@@ -129,8 +137,8 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 
 	float rate = (float)m_resultData._missCount / m_resultData._maxCount;
 	rate = 1 - rate;
-	m_pGauge->mSetRate(rate);
-
+	m_pGauge->mSetRate(0);
+	m_MaxRate = rate;
 	if (state == GameManager::eBattleState::eWin){
 		m_TextureList["issue"] = gLoadTexture("Texture\\Result\\Win.png");
 		int stage = GameManager::mGetInstance().mGetCanStage();
@@ -173,6 +181,12 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 
 	m_rateString = std::to_string(integer) + "." + std::to_string(dotrate)+"%";
 //	Debug::mPrint(std::to_string(i) + "  " + std::to_string(dotrate) + "  " + std::to_string(rate));
+	m_state = eInit;
+	m_isEnd = false;
+
+	if (state == GameManager::eBattleState::eLose){
+		return;
+	}
 
 
 	auto& itr = ResourceManager::mGetInstance().mGetBGMPath();
@@ -180,8 +194,11 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	if (stageID == 0){
 		if (itr.find(eMusical::eBlue) != itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
+			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
 		}
-		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
+		m_TextureList["note"]->Load("Texture\\OrderList\\note_a.png");
+		m_pGeneral["noteImage"]->SetTexture(m_TextureList["note"].get());
+
 	}
 	else if (stageID == 1){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
@@ -212,7 +229,9 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
-		GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
+		if (GameManager::mGetInstance().mBossState() != GameManager::eBossState::eWin){
+			GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
+		}
 	}
 	else if(stageID == 5){
 		if (integer < noteBorder)return;
@@ -224,20 +243,116 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 			itr.clear();
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eAdlib) = "Sound\\BGM\\field5.wav";
 		}
+		GameManager::mGetInstance().mBossState(GameManager::eBossState::eWin);
 	}
-
+}
+bool ResultBoard::mIsEnd(){
+	return m_isEnd;
 }
 
 
-void ResultBoard::mUpdate(){
-//	Debug::mPrint(std::to_string(m_timer));
-	if (m_timer > 1){
-		m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
-		m_timer = 0;
+void ResultBoard::mUpdate(float timeScale){
+	switch (m_state){
+	case ResultBoard::eNone:
+		return;
+	case ResultBoard::eInit:
+		if (m_pGeneral["backboard"]->property._color._alpha > 0.85){
+			m_pGeneral["backboard"]->property._color._alpha = 0.85;
+			m_state++;
+			m_timer = 0;
+		}
+		else{
+			m_pGeneral["backboard"]->property._color._alpha += 0.1 * timeScale;
+		}
+		break;
+	case ResultBoard::eResultTitle:
+	{
+		if (m_timer > 1){
+			m_pGeneral["battleResult"]->property._color._alpha = 1;
+			m_timer = 0;
+			m_state++;
+		}
+		else{
+			m_timer += GameClock::GetDeltaTime() * timeScale;
+		}
 	}
-	else{
-		m_timer += GameClock::GetDeltaTime();
+	break;
+	case ResultBoard::eMissCnt:
+	{
+		if (m_timer > 1){
+			m_pGeneral["missText"]->property._color._alpha = 1;
+			m_timer = 0;
+			m_state++;
+		}
+		else{
+			m_timer += GameClock::GetDeltaTime() * timeScale;
+		}
 	}
+	break;
+	case ResultBoard::eClearGauge:
+	{
+			m_pGeneral["correctRateText"]->property._color._alpha = 1;
+			if (m_MaxRate <= m_timer){
+				m_timer = 0;
+				m_state++;
+				m_pGauge->mSetRate(m_MaxRate);
+			}
+			else{
+				m_timer += 0.01 * timeScale;
+				m_pGauge->mSetRate(m_timer);
+			}
+	}
+	break;
+	case ResultBoard::eRank:
+	{
+		m_pGeneral["rankText"]->property._color._alpha = 1;
+		m_pGeneral["rankFrame"]->property._color._alpha = 1;
+		m_pGeneral["rankImage"]->property._color._alpha = 1;
+		if (m_timer > 1){
+			m_timer = 1000;
+			m_acceleration = 1.0;
+			m_state++;
+		}
+		else{
+			m_timer += GameClock::GetDeltaTime() * timeScale;
+		}
+	}
+	break;
+	case ResultBoard::eNote:
+	{
+		m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin; //(m_noteScaleOrigin * 15);
+		m_pGeneral["noteImage"]->property._color._alpha = 1;
+		if (m_timer < 0){
+			m_pGeneral["noteImage"]->property._transform._scale = m_noteScaleOrigin;
+			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (m_noteScaleOrigin / 2);
+			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
+			m_state++;
+			m_timer = 0;
+		}
+		else{
+			auto size = (m_pGeneral["noteImage"]->property._transform._scale);
+			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (size / 2);
+			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
+			m_timer -= 10 * m_acceleration * timeScale;
+			m_acceleration += 0.2;
+		}
+	}
+	break;
+	case ResultBoard::eEnd:
+	{
+		if (m_timer > 0.5){
+			m_pGeneral["return"]->property._color._alpha = 1 - m_pGeneral["return"]->property._color._alpha;
+			m_timer = 0;
+			m_isEnd = true;
+		}else
+			m_timer += GameClock::GetDeltaTime() * timeScale;
+
+	}
+		break;
+	default:
+		break;
+	}
+
 }
 
 void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase* debug){
@@ -245,31 +360,33 @@ void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBa
 	for (auto& itr : m_pGeneral){
 			itr.second->Render(shader);
 	}
-	m_pGauge->mRender(m_halfFill);
 
-	//missCount
-	m_pNumSprite->property._transform._translation = m_missCountPosision;
-	for (int i = 0; i < std::to_string(m_resultData._missCount).length(); ++i){
-		char c = std::to_string(m_resultData._missCount).at(i);
-		std::string st;
-		st.push_back(c);
+	if (m_state > eResultState::eMissCnt){
+		//missCount
+		m_pNumSprite->property._transform._translation = m_missCountPosision;
+		for (int i = 0; i < std::to_string(m_resultData._missCount).length(); ++i){
+			char c = std::to_string(m_resultData._missCount).at(i);
+			std::string st;
+			st.push_back(c);
 
-		m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
-		m_pNumSprite->SetTexture(m_numberList[st].get());
-		m_pNumSprite->Render(shader);
+			m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
+			m_pNumSprite->SetTexture(m_numberList[st].get());
+			m_pNumSprite->Render(shader);
+		}
 	}
+	if (m_state >= eResultState::eClearGauge){
+		//ClearRate
+		m_pGauge->mRender(m_halfFill);
+		m_pNumSprite->property._transform._translation = m_rankRatePosision;
+		for (int i = 0; i < m_rateString.length(); ++i){
+			char c = m_rateString.at(i);
+			std::string st;
+			st.push_back(c);
 
-	//ClearRate
-	m_pNumSprite->property._transform._translation = m_rankRatePosision;
-	for (int i = 0; i < m_rateString.length(); ++i){
-		char c = m_rateString.at(i);
-		std::string st;
-		st.push_back(c);
-
-		m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
-		m_pNumSprite->SetTexture(m_numberList[st].get());
-		m_pNumSprite->Render(shader);
+			m_pNumSprite->property._transform._translation._x += m_pNumSprite->property._transform._scale._x;
+			m_pNumSprite->SetTexture(m_numberList[st].get());
+			m_pNumSprite->Render(shader);
+		}
 	}
-
 
 }

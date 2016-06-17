@@ -48,9 +48,9 @@ void gInitializer(std::unordered_map<eMusical,ActionBoard::ActionCommandType>& t
 	tree.insert(std::make_pair(command->mGetType(),act));
 }
 
-bool ActionBoard::mInitialize(){
+bool ActionBoard::mInitialize(bool flg){
 	bool result = false;
-	
+	m_openKey = flg;
 	gInitializer<ActionGreen>(m_actionList, Color(0, 1, 0, 1),"ActionGreen");
 	gInitializer<ActionBlue>(m_actionList, Color(0, 0, 1, 1), "ActionBlue");
 	gInitializer<ActionRed>(m_actionList, Color(1, 0, 0, 1), "ActionRed");
@@ -76,36 +76,22 @@ bool ActionBoard::mInitialize(){
 
 
 std::shared_ptr<ActionCommand> ActionBoard::mSelectType(){
-	if (kCharaDebug){
-		if (GameController::GetKey().KeyDownTrigger('1') && m_playerOrder[eMusical::eBlue]){
+	if ((GameController::GetJoypad().ButtonPress(eJoyButton::eX) || GameController::GetKey().KeyDownTrigger('1'))
+		&& (m_playerOrder[eMusical::eBlue] || m_openKey)){
 			return m_actionList[eMusical::eBlue]._command;
 		}
-		else if (GameController::GetKey().KeyDownTrigger('2') && m_playerOrder[eMusical::eGreen]){
+		else if ((GameController::GetJoypad().ButtonPress(eJoyButton::eA) || GameController::GetKey().KeyDownTrigger('2')) 
+			&& (m_playerOrder[eMusical::eGreen] || m_openKey)){
 			return m_actionList[eMusical::eGreen]._command;
 		}
-		else if (GameController::GetKey().KeyDownTrigger('3') && m_playerOrder[eMusical::eRed]){
+		else if ((GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger('3'))
+			&& (m_playerOrder[eMusical::eRed] || m_openKey)){
 			return m_actionList[eMusical::eRed]._command;
 		}
-		else if (GameController::GetKey().KeyDownTrigger('4') && m_playerOrder[eMusical::eYellow]){
+		else if ((GameController::GetJoypad().ButtonPress(eJoyButton::eY) || GameController::GetKey().KeyDownTrigger('4'))
+			&& (m_playerOrder[eMusical::eYellow] || m_openKey)){
 			return m_actionList[eMusical::eYellow]._command;
 		}
-	}
-
-
-
-	if (GameController::GetJoypad().ButtonPress(eJoyButton::eA) && m_playerOrder[eMusical::eGreen]){
-		return m_actionList[eMusical::eGreen]._command;
-	}
-	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eB) && m_playerOrder[eMusical::eRed]){
-		return m_actionList[eMusical::eRed]._command;
-	}
-	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eX) && m_playerOrder[eMusical::eBlue]){
-		return m_actionList[eMusical::eBlue]._command;
-	}
-	else if (GameController::GetJoypad().ButtonPress(eJoyButton::eY) && m_playerOrder[eMusical::eYellow]){
-		return m_actionList[eMusical::eYellow]._command;
-	}
-
 	return nullptr;
 }
 
