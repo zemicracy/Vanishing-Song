@@ -50,11 +50,12 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//EnemyGroundÇÃê∂ê¨
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
-		m_pEnemy.back()->mInitialize(eMusical::eRed,camera,"data\\Battle\\Stage1");
+		m_pEnemy.back()->mInitialize(eMusical::eBlue,camera,"data\\Battle\\Stage1");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 180;
 
 	}
 
@@ -66,16 +67,18 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 180;
 	}
 
 	//Enemy(âº)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
-		m_pEnemy.back()->mInitialize(eMusical::eBlue, camera, "data\\Battle\\Stage3");
+		m_pEnemy.back()->mInitialize(eMusical::eRed, camera, "data\\Battle\\Stage3");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 0;
 	}
 
 	//Enemy(âº)
@@ -86,6 +89,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 0;
 	}
 
 	//Enemy(âº)
@@ -158,7 +162,7 @@ void FieldEnemyManager::mSetPosion(){
 	//ìGÇÃèoåªà íu
 	for (int i = 0; i <m_pEnemy.size(); i++){
 		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation = m_pEnemySpawner[i];
-		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation._y = +20;
+		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation._y = 20;
 		m_pEnemy[i]->mGetProperty()._enemyAreaNo = i;
 		m_enemyArray[i]=m_pEnemy[i];
 	}

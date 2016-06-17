@@ -18,10 +18,18 @@ FieldArea::~FieldArea()
 	mFinalize();
 }
 void FieldArea::mFinalize(){
-	for (auto& itr : m_ground){
-		itr->Finalize();
-		itr.reset();
+	if (m_skybox){
+		m_skybox->Finalize();
+		m_skybox.reset();
+		m_skybox = nullptr;
 	}
+
+	if (m_pGround){
+		m_pGround->Finalize();
+		m_pGround.reset();
+		m_pGround = nullptr;
+	}
+
 	for (auto& itr : m_wall){
 		itr->Finalize();
 		itr.reset();
@@ -54,7 +62,13 @@ void FieldArea::mInitialize(){
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
-			gInitalizer<Cube>(m_ground[0], itr->_transform, itr->_color);
+			m_pGround = std::make_shared<FbxModel>();
+			m_pGround->LoadFBX("Model\\Field\\Stage.fbx", eAxisSystem::eAxisOpenGL);
+			m_pGround->SetTextureDirectoryName("Model\\Field\\tex");
+			m_pGround->property._transform = itr->_transform;
+			m_pGround->property._transform._scale._x = -1;
+			m_pGround->property._transform._rotation._x = 180;
+
 		}
 		if (itr->_name == "wall1"){
 			gInitalizer<Cube>(m_wall[0], itr->_transform, itr->_color);
@@ -87,9 +101,9 @@ void FieldArea::mInitialize(){
 	}
 	reader.UnLoad();
 
-	m_ground[1] = std::make_shared<Skybox>();
-	m_ground[1]->Initialize();
-	m_ground[1]->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
+	m_skybox = std::make_shared<Skybox>();
+	m_skybox->Initialize();
+	m_skybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
 	// 先にコライダーの検出をする
 	int nextNumber = NULL;
@@ -108,9 +122,8 @@ void FieldArea::mInitialize(){
 }
 
 void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
-	for (auto itr : m_ground){
-		itr->SetCamera(camera);
-	}
+	m_pGround->SetCamera(camera);
+	m_skybox->SetCamera(camera);
 	for (auto itr : m_wall){
 		itr->SetCamera(camera);
 	}
@@ -118,11 +131,11 @@ void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
 
 
 void FieldArea::mRender(aetherClass::ShaderBase* texture, aetherClass::ShaderBase*shader){
+	m_pGround->Render(texture);
+	m_skybox->Render(texture);
 	for (auto itr : m_wall){
 		itr->Render(shader);
 	}
-	m_ground[1]->Render(texture);
-	m_ground[0]->Render(shader);
 }
 
 void FieldArea::mUpdate(float){

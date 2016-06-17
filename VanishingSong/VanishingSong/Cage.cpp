@@ -36,7 +36,7 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_commentFlame->SetCamera(camera);
 	m_commentFlame->SetTexture(ResourceManager::mGetInstance().GetTexture("commet").get());
 	m_commentFlame->property._transform._translation = position + Vector3(0, 50, 0);
-	m_commentFlame->property._transform._scale = Vector3(16, 12, 0);
+	m_commentFlame->property._transform._scale = Vector3(10, 6, 0);
 
 	m_messageWindow.mInitialize();
 	
@@ -103,7 +103,6 @@ void Cage::mRender(ShaderBase* tex, ShaderBase* color){
 		m_commentFlame->property._transform._rotation = m_camera->property._rotation;
 		m_commentFlame->Render(tex);
 	}
-	m_pCollider->Render(color);
 }
 
 

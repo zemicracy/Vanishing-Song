@@ -12,7 +12,7 @@ using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
 	const float kCameraRotationMaxX = -5.0f;
-	const float kCameraRotationMinX = -30.0f;
+	const float kCameraRotationMinX = -20.0f;
 	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
 	const float kDefaultMove = 100.0f;
 

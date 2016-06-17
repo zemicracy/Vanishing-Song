@@ -205,7 +205,6 @@ void SceneTitle::UIRender(){
 	m_pMenu->Render(shaderHash["transparent"].get());
 
 	if (m_pushState == kMenuSelect){
-
 		m_pCursor->Render(shaderHash["color"].get());
 	}
 	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());

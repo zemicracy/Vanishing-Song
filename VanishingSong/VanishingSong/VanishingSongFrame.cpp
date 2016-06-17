@@ -26,16 +26,16 @@ bool VanishingSongFrame::InitializeBuffer(){
 
 	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
 
-	GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
+	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
 	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","Model\\Player\\blue");
 
 
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air\\Air.fbx", "Model\\Enemy\\Air\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\annon\\annon.fbx", "Model\\Enemy\\annon\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Annon\\annon.fbx", "Model\\Enemy\\annon\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Ground\\Gro.fbx", "Model\\Enemy\\Ground\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Ground\\body.fbx", "Model\\Enemy\\Ground\\yellow");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Danbal\\danbal.fbx", "Model\\Enemy\\Danbal\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\model.fbx", "Model\\Enemy\\Boss\\tex");
 
 	GameManager::mGetInstance().mGetCanStage(5);
