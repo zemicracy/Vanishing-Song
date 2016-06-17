@@ -57,6 +57,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 180;
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._scale._x = -1;
+		
 
 	}
 
@@ -69,6 +71,9 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 180;
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._scale._x = -1;
+		
+
 	}
 
 	//Enemy(‰¼)
@@ -80,6 +85,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 0;
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._scale._x = -1;
+		
 	}
 
 	//Enemy(‰¼)
@@ -91,6 +98,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 0;
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._scale._x = -1;
+
 	}
 
 	//Enemy(‰¼)
@@ -101,6 +110,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mGetProperty()._penemy->property._transform._scale._x = -1;
+
 	}
 
 
@@ -172,10 +183,20 @@ void FieldEnemyManager::mSetPosion(){
 		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation = m_pEnemySpawner[i];
 		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation._y = 20;
 		m_pEnemy[i]->mGetProperty()._enemyAreaNo = i;
+		m_pEnemy[i]->mSetTransform(m_pEnemy[i]->mGetProperty()._penemy->property._transform);
 		m_enemyArray[i]=m_pEnemy[i];
+
 	}
 }
 
-std::shared_ptr<FieldEnemy> FieldEnemyManager::mEnemyGet(int enemy){
+//
+std::shared_ptr<FieldEnemy>& FieldEnemyManager::mEnemyGet(int enemy){
 	return  m_enemyArray[enemy];
+}
+
+//
+void FieldEnemyManager::mResetEnemysTransform(){
+	for (auto &itr : m_pEnemy){
+		itr->mResetTransform();
+	}
 }
