@@ -54,7 +54,7 @@ bool SceneTitle::Initialize(){
 	
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
-	m_pLogoTexture->Load("Texture\\Title\\TitleImage.png");
+	m_pLogoTexture->Load("Texture\\Title\\Logo.png");
 
 	m_pMenuTexture = std::make_shared<Texture>();
 	m_pMenuTexture->Load("Texture\\Title\\Select.png");
@@ -66,10 +66,10 @@ bool SceneTitle::Initialize(){
 	m_pLogo = std::make_unique<Rectangle2D>();
 	m_pLogo->Initialize();
 	m_pLogo->SetTexture(m_pLogoTexture.get());
-	m_pLogo->property._transform._scale = Vector3(600, 300, 0);
+	m_pLogo->property._transform._scale = Vector3(600, 500, 0);
 
 	const float logoX = (kWindowWidth / 2) - (m_pLogo->property._transform._scale._x / 2);
-	const float logoY = (kWindowHeight / 2) - (m_pLogo->property._transform._scale._y);
+	const float logoY = (kWindowHeight / 2) - (m_pLogo->property._transform._scale._y) + 100;
 	m_pLogo->property._transform._translation = Vector3(logoX, logoY, 0);
 	m_pLogo->property._color = Color(0, 0, 0, 1);
 
