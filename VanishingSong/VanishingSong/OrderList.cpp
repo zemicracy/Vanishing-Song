@@ -113,7 +113,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 		}
 		if (itr->_name == "linepos"){
-			gInitializer(m_pReadLine, itr->_transform, Color(1,0,0,1));
+			gInitializer(m_pReadLine, itr->_transform, Color(0,0,0,1));
 			m_ReadLineOrigin = itr->_transform._translation;
 		}
 
@@ -199,6 +199,8 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 
 
+	m_pTextureList["line"] = gLoadTexture("", dir + "line.png");
+	m_pReadLine->SetTexture(m_pTextureList["line"].get());
 
 	m_pTextureList["flame"] = gLoadTexture("",dir + "flame.png");
 	m_pFlame->SetTexture(m_pTextureList["flame"].get());
@@ -444,8 +446,8 @@ void OrderList::mPerformUpdate(){
 
 	//‰¹‚ª‚ ‚é‚â‚Â‚Í—¬‚·
 	auto sound = ResourceManager::mGetInstance().GetActionSound(m_PlayerOrderList[m_processId]->mGetType());
-	sound->mStop();
-	sound->mPlaySoundAction(0);
+	mPlaySound(sound);
+	
 	m_isPlaySound = false;
 
 }
@@ -619,7 +621,7 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 	}
 
 	if (m_isLineStart){
-		m_pReadLine->Render(debug);
+		m_pReadLine->Render(shader);
 	}
 	m_pEffect->mRender(shader);
 

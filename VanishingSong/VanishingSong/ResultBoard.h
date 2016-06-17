@@ -6,6 +6,7 @@
 #include <array>
 #include <memory>
 #include"ClearGauge.h"
+#include"GameSound.h"
 // 
 struct ResultData{
 	ResultData(){
@@ -43,6 +44,7 @@ private:
 	std::unordered_map < std::string, std::shared_ptr<aetherClass::SpriteBase>>m_pGeneral;
 	std::shared_ptr<ClearGauge>m_pGauge;
 	std::shared_ptr<aetherClass::SpriteBase>m_pNumSprite;
+	std::shared_ptr<aetherClass::GameSound>m_pSoundDevice;
 
 	aetherClass::Vector3 m_rankRatePosision;
 	aetherClass::Vector3 m_missCountPosision;

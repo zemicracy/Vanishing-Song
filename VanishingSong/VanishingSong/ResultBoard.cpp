@@ -282,6 +282,10 @@ void ResultBoard::mUpdate(float timeScale){
 			m_pGeneral["missText"]->property._color._alpha = 1;
 			m_timer = 0;
 			m_state++;
+
+			m_pSoundDevice = std::make_shared<GameSound>();
+			m_pSoundDevice->Load("Sound\\Result\\gauge.wav");
+			m_pSoundDevice->SetValume(-2000);
 		}
 		else{
 			m_timer += GameClock::GetDeltaTime() * timeScale;
@@ -290,11 +294,15 @@ void ResultBoard::mUpdate(float timeScale){
 	break;
 	case ResultBoard::eClearGauge:
 	{
+		m_pSoundDevice->PlayToLoop();
 			m_pGeneral["correctRateText"]->property._color._alpha = 1;
 			if (m_MaxRate <= m_timer){
 				m_timer = 0;
 				m_state++;
 				m_pGauge->mSetRate(m_MaxRate);
+
+				m_pSoundDevice->Stop();
+				m_pSoundDevice.reset();
 			}
 			else{
 				m_timer += 0.01 * timeScale;

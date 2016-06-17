@@ -348,7 +348,7 @@ void SceneBattle::mOnResult(){
 		m_resultUpdateTime = 1.0f;
 
 
-		m_bgmVolume = 30;
+		m_bgmVolume = 60;
 	}
 
 	m_pResult->mUpdate(m_resultUpdateTime);
