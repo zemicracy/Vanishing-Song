@@ -167,7 +167,7 @@ int BattleEnemyManager::mGetAppendOption(){
 
 	if (m_stageID == 1){
 		if (m_waveID == 1){
-			if (m_optionCount >= 3){
+			if (m_optionCount >= 2){
 				m_optionCount = 0;
 				return eAppendOption::eBlack;
 			}
@@ -178,7 +178,7 @@ int BattleEnemyManager::mGetAppendOption(){
 	}
 	else if (m_stageID == 2){
 		if (m_waveID == 1){
-			if (m_optionCount >= 2){
+			if (m_optionCount >= 1){
 				m_optionCount = 0;
 				return eAppendOption::eBlack;
 			}
@@ -195,7 +195,7 @@ int BattleEnemyManager::mGetAppendOption(){
 			return eAppendOption::eReverce;
 		}
 		else if (m_waveID == 2){
-			if (m_optionCount >= 3){
+			if (m_optionCount >= 2){
 				m_optionCount = 0;
 				return eAppendOption::eReverce;
 			}
@@ -229,12 +229,18 @@ int BattleEnemyManager::mGetAppendOption(){
 		int rand = rand100(rnd);
 
 		if (m_waveID == 1){
-			return eAppendOption::eBlack;
+			if (m_optionCount >= 1){
+				m_optionCount = 0;
+				return eAppendOption::eBlack;
+			}
+			else{
+				m_optionCount++;
+			}
 		}
 		if (m_waveID == 2){
 			if (0.25 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
 				int returnOption = eAppendOption::eBlack;
-				if (rand > 40){
+				if (rand > 50){
 					returnOption |= eAppendOption::eReverce;
 				}
 				return returnOption;
