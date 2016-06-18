@@ -98,12 +98,10 @@ bool SceneTitle::Initialize(){
 		m_cursorArray[i]._cursorY = cursorPosition + (i * (35 + cursorSize));
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
-	
-	m_pStage = std::make_shared<FbxModel>();
-	m_pStage->LoadFBX("Model\\Field\\Stage.fbx", eAxisSystem::eAxisOpenGL);
-	m_pStage->SetTextureDirectoryName("Model\\Field\\title_tex");
-	m_pStage->SetCamera(&m_view);
-	m_pStage->property._transform._scale._x = -1;
+
+	m_field.mInitialize("Model\\Field\\title_tex");
+	m_field.mSetCamera(&m_view);
+
 
 	m_pSkybox = std::make_unique<Skybox>();
 	m_pSkybox->Initialize();
@@ -167,12 +165,6 @@ void SceneTitle::Finalize(){
 		m_pPushTexture = nullptr;
 	}
 
-	if (m_pStage){
-		m_pStage->Finalize();
-		m_pStage.reset();
-		m_pStage = nullptr;
-	}
-
 	if (m_pSkybox){
 		m_pSkybox->Finalize();
 		m_pSkybox.reset();
@@ -194,7 +186,7 @@ void SceneTitle::Finalize(){
 //
 bool SceneTitle::Updater(){
 	m_bgm.PlayToLoop();
-
+	m_field.mUpdate(1.0);
 	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	std::pair<bool, bool> UpOrDown;
@@ -221,7 +213,7 @@ void SceneTitle::Render(){
 	m_view.Render();
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pSkybox->Render(shaderHash["texture"].get());
-	m_pStage->Render(shaderHash["texture"].get());
+	m_field.mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	return;
 }
 
