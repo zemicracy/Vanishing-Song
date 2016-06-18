@@ -81,10 +81,13 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
-			m_pPlane->LoadFBX("Model\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
-			m_pPlane->SetCamera(m_view);
-			m_pPlane->property._transform = itr->_transform;
-			m_pPlane->property._transform._scale._z = 2;
+			m_pPlane->LoadFBX("Model\\Battle\\stage\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pPlane->SetTextureDirectoryName("Model\\Battle\\stage");
+			m_pPlane->SetCamera(camera);
+		//	m_pPlane->property._transform._translation = itr->_transform._translation;
+			m_pPlane->property._transform._scale._x = -1;
+			m_pPlane->property._transform._rotation._x = 180;
+			m_pPlane->property._transform._rotation._y = 90;
 			//m_pPlane->SetTexture()
 		}
 		else if (itr->_name == "PlayerHP"){
@@ -198,6 +201,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 }
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
+	m_view->Controller();
 	//ƒ¿‚¯‚·—p
 	for (auto itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){
@@ -211,7 +215,7 @@ void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 
 void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug){
 	m_pSkyBox->Render(texture);
-	m_pPlane->Render(debug);
+	m_pPlane->Render(texture);
 
 	for (auto itr : m_pLane){
 		itr.second->Render(debug);

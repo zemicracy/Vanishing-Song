@@ -31,7 +31,7 @@ CollideManager::~CollideManager()
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	const int playerNumber = mCheckPlayerFieldArea();
-	
+	Debug::mPrint(std::to_string(playerNumber));
 	mCheckHitObject(playerNumber);
 	mCheckHitEnemy(playerNumber);
 	mCheckHitCage(playerNumber);
@@ -40,6 +40,14 @@ void CollideManager::mUpdate(){
 
 // 障害物と当たったら止まる処理
 void CollideManager::mCheckHitObject(const int number){
+
+	for (auto& objects : m_filed->mGetObjectList()){
+		if (ColliderBoxSphere(*m_player->mGetSphereColldier(), *objects)){
+			m_player->mOnHitObject(objects.get());
+			break;
+		}
+	}
+	
 
 	// プレイヤーと壁
 	if (number > 3)return;

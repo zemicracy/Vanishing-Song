@@ -38,7 +38,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 			m_pEnemySpawner[2] = index->_transform._translation;
 		}
 		if (index->_name == "area4"){
-			m_pEnemySpawner[3] = index->_transform._translation;
+			m_pEnemySpawner[3] = index->_transform._translation+Vector3(100,0,50);
 		}
 		if (index->_name == "area5"){
 			m_pEnemySpawner[4] = index->_transform._translation;

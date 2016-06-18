@@ -55,10 +55,12 @@ public:
 	/*
 		コライダーの取得用
 	*/
-	std::shared_ptr<aetherClass::Cube> mGetBodyColldier();
+	std::shared_ptr<aetherClass::Cube>& mGetBodyColldier();
+
+	std::shared_ptr<aetherClass::Sphere>& mGetSphereColldier();
 	// 壁に当たった時の処理
 	void mOnHitWall(aetherClass::ModelBase*);
-	
+	void mOnHitObject(aetherClass::Sphere*);
 	void mSetFieldNumber(const int);
 	int mGetFieldNumber()const; 
 	aetherClass::Transform mGetTransform();
@@ -97,14 +99,17 @@ private:
 private:
 	
 	std::shared_ptr<aetherClass::FbxModel> m_model;
-	aetherClass::ModelBase* m_hitObject;
+	aetherClass::ModelBase* m_hitWall;
+	aetherClass::Sphere* m_hitObject;
 	bool m_isHitWall;
+	bool m_isHitObject;
 	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
 	aetherClass::Vector3 m_prevPosition;     // 前回のトランスフォーム情報
 	aetherClass::Vector3 m_cameraRotation;		//　カメラの回転を管理
 	CharaEntity m_charaEntity;					// 便利関数のあるクラスオブジェクト
 	Offset m_cameraOffset;						//　カメラのオフセット
 	std::shared_ptr<aetherClass::Cube> m_pBodyCollider;   // 基本的なコライダー
+	std::shared_ptr<aetherClass::Sphere> m_pSphereCollider;   // 基本的なコライダー
 	std::unordered_map<eState, std::string> m_animationName;
 	eState m_prevState;
 	aetherClass::Transform m_transform;

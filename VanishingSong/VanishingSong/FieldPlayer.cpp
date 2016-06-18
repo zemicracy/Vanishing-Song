@@ -42,9 +42,17 @@ bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	// コライダーの初期化
 	mSetUpBodyCollider(m_pBodyCollider, m_model->property._transform._translation, kColliderOffset);
 
+	m_pSphereCollider = std::make_shared<Sphere>(10, 10);
+	m_pSphereCollider->Initialize();
+	m_pSphereCollider->property._transform._translation = m_model->property._transform._translation + kColliderOffset;
+	m_pSphereCollider->property._transform._scale = Vector3(10, 10, 10);
+	m_pSphereCollider->property._color = Color(1, 0, 0, 0.5);
+	m_pSphereCollider->SetCamera(&m_playerView);
+
 	m_animationName.insert(std::make_pair(eState::eMove, "move"));
 	m_animationName.insert(std::make_pair(eState::eWait, "wait"));
 	m_isHitWall = false;
+	m_isHitObject = false;
 	return true;
 }
 
@@ -105,11 +113,22 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 		Vector3 translation = getKeyValues.first._translation.TransformCoordNormal(rotationMatrix);
 		m_transform._translation += translation;
 		m_pBodyCollider->property._transform._translation = m_transform._translation;
-		if (m_hitObject&&CollideBoxOBB(*m_pBodyCollider, *m_hitObject)){
-			m_transform._translation = m_prevPosition;
+		m_pSphereCollider->property._transform._translation = m_transform._translation;
+		if (m_isHitObject){
+			Vector3 hitPos;
+			if (m_hitObject&&ColliderBoxSphere(*m_pSphereCollider, *m_hitObject, &hitPos)){
+				m_transform._translation = m_prevPosition - hitPos;
+			}
 		}
-
-		m_isHitWall = false; //フラグをオフにする
+		else{
+			if (m_hitWall&&CollideBoxOBB(*m_pBodyCollider, *m_hitWall)){
+				m_transform._translation = m_prevPosition;
+			}
+		}
+		
+		//フラグをオフにする
+		m_isHitObject = false;
+		m_isHitWall = false; 
 	}
 	else{
 		// カメラの回転行列を掛け合わせて、カメラの向きと進行方向を一致させる
@@ -120,7 +139,9 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	m_model->property._transform._translation = m_transform._translation;
 	m_model->property._transform._rotation = m_transform._rotation;
-	
+	Debug::mPrint("X :"+std::to_string(m_transform._translation._x));
+	Debug::mPrint("Y :" + std::to_string(m_transform._translation._y));
+	Debug::mPrint("Z :" + std::to_string(m_transform._translation._z));
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_transform);
 
@@ -180,7 +201,6 @@ void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 	m_playerView.Render();
 	if (!m_model)return;
 
-	//m_model->Render(modelShader);
 	m_model->KeyframeAnimationRender(modelShader);
 	return;
 }
@@ -222,6 +242,10 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 	m_pBodyCollider->property._transform._translation = transform._translation + kColliderOffset;
 	m_pBodyCollider->property._transform._rotation = transform._rotation;
+
+	m_pSphereCollider->property._transform._translation = transform._translation + kColliderOffset;
+	m_pSphereCollider->property._transform._rotation = transform._rotation;
+
 	return;
 }
 
@@ -258,11 +282,20 @@ void FieldPlayer::mCheckCameraRotation(Vector3& rotation){
 // 壁に当たった時の処理
 void FieldPlayer::mOnHitWall(aetherClass::ModelBase* hitObject){
 	m_prevPosition = m_transform._translation;
-	m_hitObject = hitObject;
+	m_hitWall = hitObject;
 	m_isHitWall = true;
+	m_isHitObject = false;
 	return;
 }
 
+//
+void FieldPlayer::mOnHitObject(aetherClass::Sphere* hitObject){
+	m_prevPosition = m_transform._translation;
+	m_hitObject = hitObject;
+	m_isHitWall = true;
+	m_isHitObject = true;
+
+}
 //
 void FieldPlayer::mSetFieldNumber(const int number){
 	m_fieldNumber = number;
@@ -282,6 +315,11 @@ ViewCamera* FieldPlayer::mGetView(){
 	return &m_playerView;
 }
 
-std::shared_ptr<Cube> FieldPlayer::mGetBodyColldier(){
+std::shared_ptr<Cube>& FieldPlayer::mGetBodyColldier(){
 	return m_pBodyCollider;
+}
+
+//
+std::shared_ptr<Sphere>& FieldPlayer::mGetSphereColldier(){
+	return m_pSphereCollider;
 }
