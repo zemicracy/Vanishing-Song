@@ -101,7 +101,7 @@ bool SceneTitle::Initialize(){
 	
 	m_pStage = std::make_shared<FbxModel>();
 	m_pStage->LoadFBX("Model\\Field\\Stage.fbx", eAxisSystem::eAxisOpenGL);
-	m_pStage->SetTextureDirectoryName("Model\\Field\\tex");
+	m_pStage->SetTextureDirectoryName("Model\\Field\\title_tex");
 	m_pStage->SetCamera(&m_view);
 	m_pStage->property._transform._scale._x = -1;
 
@@ -194,7 +194,7 @@ void SceneTitle::Finalize(){
 //
 bool SceneTitle::Updater(){
 	m_bgm.PlayToLoop();
-	m_view.Controller();
+
 	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	std::pair<bool, bool> UpOrDown;

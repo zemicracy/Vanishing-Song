@@ -84,11 +84,9 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 			m_pPlane->LoadFBX("Model\\Battle\\stage\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
 			m_pPlane->SetTextureDirectoryName("Model\\Battle\\stage");
 			m_pPlane->SetCamera(camera);
-		//	m_pPlane->property._transform._translation = itr->_transform._translation;
 			m_pPlane->property._transform._scale._x = -1;
 			m_pPlane->property._transform._rotation._x = 180;
 			m_pPlane->property._transform._rotation._y = 90;
-			//m_pPlane->SetTexture()
 		}
 		else if (itr->_name == "PlayerHP"){
 			m_tankScaleOrigin = 1.8;
@@ -203,10 +201,11 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 	m_view->Controller();
 	//ƒ¿‚¯‚·—p
-	for (auto itr : m_pLane){
+	for (auto& itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){
 			itr.second->property._color._alpha -= 0.1;
 		}
+		itr.second->property._transform._translation._y = 3;
 	}
 	//‘Î‰ž‚µ‚½ƒŒ[ƒ“‚ð@ƒ¿‚P
 	if (m_pLane.find(command->mGetType()) == m_pLane.end())return;

@@ -1,12 +1,14 @@
 #include "MessageManager.h"
 #include "ResourceManager.h"
 #include "GameController.h"
+
+using namespace aetherClass;
 namespace{
 	const int kFirst = 0;
 	const int kCounterNull = 0;
 	const float kMessageFlameTime = 1.0f;
+	const Vector3 kMessageFlameOffset = Vector3(0,40,0);
 }
-using namespace aetherClass;
 MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherClass::ViewCamera* camera)
 {
 	m_message.mInitialize();
@@ -64,8 +66,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	if (pair.second)return;
 	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum()-1;
 	m_viewMessageFlame = true;
-	m_messageFlame->property._transform._translation = enemyPosition;
-	m_messageFlame->property._transform._translation._y = enemyPosition._y+45;
+	m_messageFlame->property._transform._translation = enemyPosition + kMessageFlameOffset;
 
 	// ˜b‚µ‚Ä‚é‚Æ‚«‚Í‰½‚à‚µ‚È‚¢
 	if (m_isView){

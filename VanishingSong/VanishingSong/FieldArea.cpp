@@ -69,7 +69,7 @@ void FieldArea::mInitialize(){
 		if (itr->_name == "stage"){
 			m_pGround = std::make_shared<FbxModel>();
 			m_pGround->LoadFBX("Model\\Field\\Stage.fbx", eAxisSystem::eAxisOpenGL);
-			m_pGround->SetTextureDirectoryName("Model\\Field\\tex");
+			m_pGround->SetTextureDirectoryName("Model\\Field\\game_tex");
 			m_pGround->property._transform._translation = itr->_transform._translation;
 			m_pGround->property._transform._scale._x = -1;
 		}
@@ -144,9 +144,7 @@ void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
 void FieldArea::mRender(ShaderBase* texture, ShaderBase*shader){
 	m_pGround->Render(texture);
 	m_skybox->Render(texture);
-	for (auto& itr : m_wall){
-		itr->Render(shader);
-	}
+
 }
 
 void FieldArea::mUpdate(float){
