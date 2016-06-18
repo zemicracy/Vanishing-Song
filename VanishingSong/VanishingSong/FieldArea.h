@@ -26,5 +26,6 @@ private:
 	std::shared_ptr<aetherClass::FbxModel> m_pGround;
 	std::array<std::array<std::shared_ptr<aetherClass::ModelBase>, 2>, 4> m_partitionWall;
 	std::array<std::shared_ptr<aetherClass::Sphere>, 4> m_pObject;
+	std::shared_ptr<aetherClass::FbxModel> m_pObejctNote;
 };
 

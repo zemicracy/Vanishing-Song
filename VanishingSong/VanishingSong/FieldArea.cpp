@@ -69,7 +69,7 @@ void FieldArea::mInitialize(){
 		if (itr->_name == "stage"){
 			m_pGround = std::make_shared<FbxModel>();
 			m_pGround->LoadFBX("Model\\Field\\Stage.fbx", eAxisSystem::eAxisOpenGL);
-			m_pGround->SetTextureDirectoryName("Model\\Field\\tex");
+			m_pGround->SetTextureDirectoryName("Model\\Field\\game_tex");
 			m_pGround->property._transform._translation = itr->_transform._translation;
 			m_pGround->property._transform._scale._x = -1;
 		}
@@ -108,6 +108,11 @@ void FieldArea::mInitialize(){
 
 	mInitializeObject();
 
+	m_pObejctNote = std::make_shared<FbxModel>();
+	m_pObejctNote->LoadFBX("Model\\Object\\Note\\note1.fbx", eAxisSystem::eAxisOpenGL);
+	m_pObejctNote->SetTextureDirectoryName("Model\\Object\\Note\\tex");
+	m_pObejctNote->property._transform._translation._y = 230;
+	m_pObejctNote->property._transform._scale = 25;
 	m_skybox = std::make_shared<Skybox>();
 	m_skybox->Initialize();
 	m_skybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
@@ -138,19 +143,19 @@ void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
 	for (auto& itr : m_pObject){
 		itr->SetCamera(camera);
 	}
+
+	m_pObejctNote->SetCamera(camera);
 }
 
 
 void FieldArea::mRender(ShaderBase* texture, ShaderBase*shader){
 	m_pGround->Render(texture);
 	m_skybox->Render(texture);
-	for (auto& itr : m_wall){
-		itr->Render(shader);
-	}
+	m_pObejctNote->Render(texture);
 }
 
-void FieldArea::mUpdate(float){
-		
+void FieldArea::mUpdate(float time){
+	m_pObejctNote->property._transform._rotation._y -= time * 1;
 }
 
 std::shared_ptr<aetherClass::ModelBase>& FieldArea::mGetPartitionCube(const int number){

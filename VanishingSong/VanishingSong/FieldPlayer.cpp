@@ -139,9 +139,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	m_model->property._transform._translation = m_transform._translation;
 	m_model->property._transform._rotation = m_transform._rotation;
-	Debug::mPrint("X :"+std::to_string(m_transform._translation._x));
-	Debug::mPrint("Y :" + std::to_string(m_transform._translation._y));
-	Debug::mPrint("Z :" + std::to_string(m_transform._translation._z));
+
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_transform);
 
