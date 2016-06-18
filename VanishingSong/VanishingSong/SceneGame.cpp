@@ -49,7 +49,7 @@ bool SceneGame::Initialize(){
 
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
-	m_pFieldArea->mInitialize();
+	m_pFieldArea->mInitialize("Model\\Field\\title_tex");
 	m_pFieldArea->mSetCamera(view);
 
 
