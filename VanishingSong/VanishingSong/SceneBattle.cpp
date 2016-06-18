@@ -276,7 +276,7 @@ void SceneBattle::Render(){
 	m_view.Render();
 	auto& shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	if (m_pField){
-		m_pField->mRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+		m_pField->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	}
 		m_players.mRender(shaderHash["texture"].get());
 	if (m_pBattleEnemyManager){
