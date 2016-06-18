@@ -11,7 +11,7 @@ class FieldEnemy
 public:
 
 	struct Property{
-		std::shared_ptr<aetherClass::FbxModel> _penemy;			//Enemy本体
+		std::shared_ptr<aetherClass::FbxModel> _pEnemy;			//Enemy本体
 		std::shared_ptr<aetherClass::ModelBase> _pCollider;	//コライダー
 		bool _talkflag;
 		int _enemyAreaNo;		//エリアナンバー

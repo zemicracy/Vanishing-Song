@@ -99,30 +99,40 @@ bool SceneTitle::Initialize(){
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
 	
-	m_pushState = false;
-	m_alphaState = false;
-	m_nowSelectMode = NULL;
-	m_nowCursor = NULL;
-	
+	m_pStage = std::make_shared<FbxModel>();
+	m_pStage->LoadFBX("Model\\Field\\Stage.fbx", eAxisSystem::eAxisOpenGL);
+	m_pStage->SetTextureDirectoryName("Model\\Field\\tex");
+	m_pStage->SetCamera(&m_view);
+	m_pStage->property._transform._scale._x = -1;
+
 	m_pSkybox = std::make_unique<Skybox>();
 	m_pSkybox->Initialize();
 	m_pSkybox->SetCamera(&m_view);
 	m_pSkybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
-	m_pSound = std::make_shared<GameSound>();
-	m_pSound->Load("Sound\\Result\\title.wav");
-	m_pSound->SetValume(-3000);
+	m_bgm.Load("Sound\\Result\\title.wav");
+	m_bgm.SetValume(-3000);
 
+	m_returnSE.Load("Sound\\Title\\decision.wav");
+	m_returnSE.SetValume(-3000);
+
+	m_selectSE.Load("Sound\\Title\\decision.wav");
+	m_selectSE.SetValume(-3000);
+
+	m_view.property._rotation._x = 10;
+	m_view.property._translation = Vector3(70, 60, -900);
+	m_pushState = false;
+	m_alphaState = false;
+	m_nowSelectMode = NULL;
+	m_nowCursor = NULL;
 	_heapmin();
 	return true;
 }
 
 void SceneTitle::Finalize(){
 	_heapmin();
-	if (m_pSound){
-		m_pSound.reset();
-		m_pSound = nullptr;
-	}
+	m_bgm.Stop();
+	m_returnSE.Stop();
 
 	if (m_pLogo){
 		m_pLogo->Finalize();
@@ -157,6 +167,12 @@ void SceneTitle::Finalize(){
 		m_pPushTexture = nullptr;
 	}
 
+	if (m_pStage){
+		m_pStage->Finalize();
+		m_pStage.reset();
+		m_pStage = nullptr;
+	}
+
 	if (m_pSkybox){
 		m_pSkybox->Finalize();
 		m_pSkybox.reset();
@@ -177,10 +193,10 @@ void SceneTitle::Finalize(){
 
 //
 bool SceneTitle::Updater(){
-	m_pSound->PlayToLoop();
-
-	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
-	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
+	m_bgm.PlayToLoop();
+	m_view.Controller();
+	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
+	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	std::pair<bool, bool> UpOrDown;
 	UpOrDown.first = GameController::GetKey().KeyDownTrigger(VK_UP) || GameController::GetJoypad().ButtonPress(eJoyButton::eUp);
 	UpOrDown.second = GameController::GetKey().KeyDownTrigger(VK_DOWN) || GameController::GetJoypad().ButtonPress(eJoyButton::eDown);
@@ -205,7 +221,7 @@ void SceneTitle::Render(){
 	m_view.Render();
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pSkybox->Render(shaderHash["texture"].get());
-	
+	m_pStage->Render(shaderHash["texture"].get());
 	return;
 }
 
@@ -239,18 +255,23 @@ bool SceneTitle::TransitionOut(){
 
 void SceneTitle::mChangeSelect(const bool isUp, const bool isDown){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
-	if (isUp){
+	if (isUp){ 
+		m_selectSE.Stop();
+		m_selectSE.PlayToOneTime();
 		m_nowCursor -= 1;
 	}
 	else if (isDown){
+		m_selectSE.Stop();
+		m_selectSE.PlayToOneTime();
 		m_nowCursor += 1;
 	}
 
-	if (m_nowCursor > m_cursorArray.size() - 1){
+	const int max = m_cursorArray.size() - 1;
+	if (m_nowCursor > max){
 		m_nowCursor = 0;
 	}
 	else if (m_nowCursor < 0){
-		m_nowCursor = m_cursorArray.size() - 1;
+		m_nowCursor = 2;
 	}
 
 	m_pCursor->property._transform._translation._y = m_cursorArray[m_nowCursor]._cursorY;
@@ -263,6 +284,7 @@ void SceneTitle::mCursorState(const bool isStart){
 	if (m_pushState != kPleaseClick)return;
 
 	if (isStart){
+		m_returnSE.PlayToOneTime();
 		m_pMenu->SetTexture(m_pMenuTexture.get());
 		m_pushState = kMenuSelect;
 		m_pMenu->property._color._alpha = 1;
@@ -293,9 +315,11 @@ bool SceneTitle::mMenuSelectState(const bool isReturn, const  std::pair<bool, bo
 	mChangeSelect(UpOrDown.first, UpOrDown.second);
 
 	if (isReturn){
+	
 		SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 		// Exit以外が来たらシーンの遷移を開始
 		if (nextState._nextSceneName != kExit){
+			m_returnSE.PlayToOneTime();
 			// シーンの遷移
 			ChangeScene(nextState._nextSceneName, LoadState::eUse);
 		}

@@ -147,9 +147,6 @@ void FieldArea::mRender(ShaderBase* texture, ShaderBase*shader){
 	for (auto& itr : m_wall){
 		itr->Render(shader);
 	}
-	for (auto& itr : m_pObject){
-		itr->Render(shader);
-	}
 }
 
 void FieldArea::mUpdate(float){
