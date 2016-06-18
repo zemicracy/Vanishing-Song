@@ -181,7 +181,7 @@ void SceneTutorial::mLoadTextData(){
 //‚±‚±‚Åˆê’U~‚ß‚½‚è‚·‚é
 bool SceneTutorial::mTutorialUpdater(){
 	bool result = true;
-	m_view.Controller();
+
 	//à–¾’†‚¶‚á‚È‚¯‚ê‚Î~‚ß‚È‚¢
 	if (!m_isTutorialPlay){
 		return result;

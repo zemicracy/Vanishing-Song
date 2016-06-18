@@ -201,7 +201,6 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 }
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
-	m_view->Controller();
 	//ƒ¿‚¯‚·—p
 	for (auto itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){

@@ -55,6 +55,7 @@ private:
 	void mTutorial();
 	void mRun();
 	bool mMessageUpdate();
+	void mInitializeBGM();
 private:
 	aetherClass::DirectXEntity m_directX;	
 	eState m_gameState;

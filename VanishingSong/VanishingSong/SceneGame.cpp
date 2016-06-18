@@ -63,17 +63,6 @@ bool SceneGame::Initialize(){
 
 	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy, view);
 
-
-	{
-		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
-			m_pBGMArray.push_back(std::make_shared<GameSound>());
-			m_pBGMArray.back()->Load(itr.second.c_str());
-			m_pBGMArray.back()->SetValume(-3000);
-		}
-		for (auto &itr : m_pBGMArray){
-			itr->PlayToLoop();
-		}
-	}
 	
 	const bool isTutorial = (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial)
 		|| (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd);
@@ -89,6 +78,8 @@ bool SceneGame::Initialize(){
 		m_gameState = eState::eRun;
 	}
 
+	mInitializeBGM();
+
 	m_isTransitionEnd = false;
 	m_isFade = false;
 	m_isFade2 = false;
@@ -98,6 +89,18 @@ bool SceneGame::Initialize(){
 	_heapmin();
 	return true;
 }
+
+void SceneGame::mInitializeBGM(){
+		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
+			m_pBGMArray.push_back(std::make_shared<GameSound>());
+			m_pBGMArray.back()->Load(itr.second.c_str());
+			m_pBGMArray.back()->SetValume(-3000);
+		}
+		for (auto &itr : m_pBGMArray){
+			itr->PlayToLoop();
+		}
+}
+
 
 // ‰ð•úˆ—
 // ‘S‚Ä‚Ì‰ð•ú
@@ -194,6 +197,9 @@ void SceneGame::mTutorial(){
 		}
 		else if (m_pTutorialEnemy->mGetSelectType() == TutorialEnemy::eSelect::eNo){
 			if (m_pTutorialEnemy->mGetMessageEnd()){
+
+				ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
+				mInitializeBGM();
 				GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
 				m_isFade = true;
 				m_pTutorialEnemy->mIsEnd(true);

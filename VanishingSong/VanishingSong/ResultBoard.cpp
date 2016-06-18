@@ -124,6 +124,7 @@ void ResultBoard::mInitialize(){
 	reader.UnLoad();
 	m_isEnd = false;
 	m_state = eNone;
+	m_isNoteGet = false;
 }
 
 void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state,UINT stageID){
@@ -155,6 +156,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
 	if (rate >= S_Border&& state == GameManager::eBattleState::eWin){
 		m_TextureList["rank"] = gLoadTexture(path + "S.png");
+		m_isNoteGet = true;
 	}
 	else{
 		if (rate >= A_Border && state == GameManager::eBattleState::eWin){
@@ -197,6 +199,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		}
 		m_TextureList["note"]->Load("Texture\\OrderList\\note_a.png");
 		m_pGeneral["noteImage"]->SetTexture(m_TextureList["note"].get());
+		m_isNoteGet = true;
 	}
 	else if (stageID == 1){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
@@ -287,9 +290,7 @@ void ResultBoard::mUpdate(float timeScale){
 			m_timer = 0;
 			m_state++;
 
-			m_pSoundDevice = std::make_shared<GameSound>();
-			m_pSoundDevice->Load("Sound\\Result\\gauge.wav");
-			m_pSoundDevice->SetValume(-2000);
+			mReloadSound("Sound\\Result\\gauge.wav", -2000);
 		}
 		else{
 			m_timer += GameClock::GetDeltaTime() * timeScale;
@@ -305,8 +306,7 @@ void ResultBoard::mUpdate(float timeScale){
 				m_state++;
 				m_pGauge->mSetRate(m_MaxRate);
 
-				m_pSoundDevice->Stop();
-				m_pSoundDevice.reset();
+				mReloadSound("Sound\\Result\\noteGet.wav", -2000);
 			}
 			else{
 				m_timer += 0.01 * timeScale;
@@ -331,21 +331,31 @@ void ResultBoard::mUpdate(float timeScale){
 	break;
 	case ResultBoard::eNote:
 	{
-		m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin; //(m_noteScaleOrigin * 15);
-		m_pGeneral["noteImage"]->property._color._alpha = 1;
-		if (m_timer < 0){
-			m_pGeneral["noteImage"]->property._transform._scale = m_noteScaleOrigin;
-			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (m_noteScaleOrigin / 2);
-			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
-			m_state++;
-			m_timer = 0;
+		if (m_isNoteGet){
+			m_pSoundDevice->PlayToOneTime();
+			m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin; //(m_noteScaleOrigin * 15);
+			m_pGeneral["noteImage"]->property._color._alpha = 1;
+			if (m_timer < 0){
+				m_pGeneral["noteImage"]->property._transform._scale = m_noteScaleOrigin;
+				m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (m_noteScaleOrigin / 2);
+				m_pGeneral["noteImage"]->property._transform._translation._z = 0;
+				m_state++;
+				m_timer = 0;
+			}
+			else{
+				auto size = (m_pGeneral["noteImage"]->property._transform._scale);
+				m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (size / 2);
+				m_pGeneral["noteImage"]->property._transform._translation._z = 0;
+				m_timer -= 10 * m_acceleration * timeScale;
+				m_acceleration += 0.2;
+			}
 		}
 		else{
-			auto size = (m_pGeneral["noteImage"]->property._transform._scale);
-			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (size / 2);
-			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
-			m_timer -= 10 * m_acceleration * timeScale;
-			m_acceleration += 0.2;
+			if (m_pGeneral["noteImage"]->property._color._alpha > 1){
+				m_pGeneral["noteImage"]->property._color._alpha = 1;
+				m_state++;
+			}else
+				m_pGeneral["noteImage"]->property._color._alpha += 0.05 * timeScale;
 		}
 	}
 	break;
@@ -399,5 +409,16 @@ void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBa
 			m_pNumSprite->Render(shader);
 		}
 	}
+
+}
+
+void ResultBoard::mReloadSound(std::string file,int volume){
+	if (m_pSoundDevice){
+		m_pSoundDevice->Stop();
+		m_pSoundDevice.reset();
+	}
+	m_pSoundDevice = std::make_shared<GameSound>();
+	m_pSoundDevice->Load(file.c_str());
+	m_pSoundDevice->SetValume(volume);
 
 }

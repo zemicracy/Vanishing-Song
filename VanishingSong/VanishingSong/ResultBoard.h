@@ -40,6 +40,7 @@ public:
 	bool mIsEnd();
 private:
 	void mFinalize();
+	void mReloadSound(std::string,int);
 
 	std::unordered_map < std::string, std::shared_ptr<aetherClass::SpriteBase>>m_pGeneral;
 	std::shared_ptr<ClearGauge>m_pGauge;
@@ -59,6 +60,7 @@ private:
 	ResultData m_resultData;
 	bool m_isSetup;
 	bool m_isEnd;
+	bool m_isNoteGet;
 	float m_timer;
 	float m_MaxRate;
 	int m_state;
