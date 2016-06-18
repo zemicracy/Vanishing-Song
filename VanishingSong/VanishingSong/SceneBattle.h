@@ -11,7 +11,6 @@
 #include"Skybox.h"
 
 #include "GameManager.h"
-#include"OrderList.h"
 #include"ActionBoard.h"
 #include"BattleField.h"
 #include "BattlePlayerManager.h"
@@ -20,7 +19,7 @@
 #include"GaugeManager.h"
 #include"ResultBoard.h"
 #include"AttackParticle.h"
-
+#include"OptionNotifier.h"
 
 class SceneBattle :
 	public aetherClass::GameScene
@@ -77,6 +76,7 @@ private:
 	std::unique_ptr<BattleMessage>m_pMessage;
 	std::unique_ptr<GaugeManager>m_pGauge;
 	std::unique_ptr<ResultBoard>m_pResult;
+	std::unique_ptr<OptionNotifier>m_pNotifier;
 
 	aetherClass::ViewCamera m_view;
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;

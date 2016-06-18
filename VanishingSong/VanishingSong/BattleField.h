@@ -10,7 +10,7 @@ class BattleField
 {
 public:
 
-	void mInitialize(aetherClass::ViewCamera* view,RhythmManager*,bool bossStage);
+	void mInitialize(aetherClass::ViewCamera* view,RhythmManager*,bool bossStage,int maxWave);
 	void mUpdate(std::shared_ptr<ActionCommand>command);
 	void mRhythmicMotion();
 
@@ -19,13 +19,16 @@ public:
 	aetherClass::Vector3 mGetPlayerLane(eMusical type);
 	aetherClass::ViewCamera* mGetCamera();
 
+	void mDeleteWaveNote();
+
 	BattleField();
 	~BattleField();
 private:
 	void mFinalize();
 private:
 	bool m_isBossStage;
-	
+	int m_MaxWave;
+
 	float m_commandScale;
 	aetherClass::Vector3 m_tankScaleOrigin;
 
@@ -42,5 +45,6 @@ private:
 	std::shared_ptr<aetherClass::FbxModel>m_pTank;
 	RhythmManager *m_rhythm;
 
+	std::vector<std::shared_ptr<aetherClass::FbxModel>>m_pTankNote;
 };
 

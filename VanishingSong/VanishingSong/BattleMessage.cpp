@@ -52,7 +52,7 @@ void BattleMessage::mWaveMessageOpen(UINT index){
 }
 
 void BattleMessage::mSetActive(bool flg){
-	if (m_active){
+	if (flg){
 		m_pSprite->property._color._alpha = 1;
 	}
 	m_active = flg;

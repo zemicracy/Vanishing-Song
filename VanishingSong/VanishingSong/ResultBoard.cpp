@@ -151,13 +151,12 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_pGeneral["battleResult"]->SetTexture(m_TextureList["issue"].get());
 
 	std::string path = "Texture\\Result\\rank\\";
+	
+	m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
 	if (rate >= S_Border&& state == GameManager::eBattleState::eWin){
 		m_TextureList["rank"] = gLoadTexture(path + "S.png");
-		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note_a.png");
 	}
 	else{
-		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
-
 		if (rate >= A_Border && state == GameManager::eBattleState::eWin){
 			m_TextureList["rank"] = gLoadTexture(path + "A.png");
 		}
@@ -203,6 +202,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 
+		m_pGeneral["noteImage"]->property._color = Color(0, 0, 1, 1);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field2_1.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eSecoundStage);
@@ -210,7 +210,8 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	else if (stageID == 2){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
-		
+
+		m_pGeneral["noteImage"]->property._color = Color(0, 1, 0, 1);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eGreen) = "Sound\\BGM\\field2.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eThirdStage);
@@ -219,6 +220,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 		
+		m_pGeneral["noteImage"]->property._color = Color(1, 0, 0, 1);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eRed) = "Sound\\BGM\\field3.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eForthStage);
@@ -229,6 +231,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		}
 		if (integer < noteBorder)return;
 		
+		m_pGeneral["noteImage"]->property._color = Color(1, 1, 0, 1);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
 	}
@@ -239,6 +242,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 			cnt++;
 		}		//ボスは音符全部で
 		if (cnt >= 4){
+			m_TextureList["note"]->Load("Texture\\OrderList\\note_a.png");
 			itr.clear();
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eAdlib) = "Sound\\BGM\\field5.wav";
 		}

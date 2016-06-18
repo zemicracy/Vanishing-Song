@@ -79,10 +79,11 @@ std::shared_ptr<Texture> gLoadTexture(std::string key, std::string path){
 }
 
 //‰Šú‰»
-void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,ActionBoard* board,BattleField* field,RhythmManager*rhythm){
+void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleState& state,ActionBoard* board,BattleField* field,RhythmManager*rhythm,int stageID){
 	WorldReader reader;
 	std::string dir = "Texture\\OrderList\\";
 
+	m_stageId = stageID;
 	m_faze = &state;
 	m_mode = mode;
 	m_ActionBoard = board;
@@ -163,9 +164,22 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 			m_VolumeOrigin = itr->_transform._translation + itr->_transform._scale / 2;
 			m_VolumeOrigin._z = 0;
 
-
-
-			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note_a.png");
+			m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note.png");
+			if (stageID == 1){
+				m_pVolumeImage->property._color = Color(0, 0, 1, 1);
+			}
+			else if (stageID == 2){
+				m_pVolumeImage->property._color = Color(0, 1, 0, 1);
+			}
+			else if (stageID == 3){
+				m_pVolumeImage->property._color = Color(1, 0, 0, 1);
+			}
+			else if (stageID == 4){
+				m_pVolumeImage->property._color = Color(1, 1, 0, 1);
+			}
+			else{
+				m_pTextureList[itr->_name] = gLoadTexture(itr->_name, dir + "note_a.png");
+			}
 			m_pVolumeImage->SetTexture(m_pTextureList[itr->_name].get());
 		}
 	}
@@ -372,18 +386,18 @@ void OrderList::mPerformUpdate(){
 
 		command = m_EnemyOrderList[m_processId];
 
-		if (command->mGetType() == eMusical::eAdlib){
-			command = m_ActionBoard->mGetCommand(eMusical::eBlue);
-			mPlayEffect("Great");
-		}
 		if (m_kGreat*reducation >= exFrame || exFrame >= 1 - m_kGreat*reducation){
+			if (command->mGetType() == eMusical::eAdlib){
+				mPlayEffect("Great");
+				command = m_ActionBoard->mGetCommand(eMusical::eBlue);
+			}else if (command->mGetType() != eMusical::eNull){
+				mPlayEffect("Good");
+			}
+
 			m_playedAction = command;
 			m_isKeyDown = true;
 			m_isPlaySound = true;
 			m_PlayerOrderList.push_back(command);
-			if (command->mGetType() != eMusical::eNull){
-				mPlayEffect("Good");
-			}
 		}
 	}
 	else if (onCommand){

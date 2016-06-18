@@ -4,7 +4,6 @@
 #include "BattleBoss.h"
 #include"BattleField.h"
 #include"Const.h"
-#include"OrderList.h"
 #include <GameController.h>
 #include <ShaderBase.h>
 #include "CharaStatus.h"

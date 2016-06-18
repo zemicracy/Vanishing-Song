@@ -36,13 +36,12 @@ bool SceneTutorial::Initialize(){
 
 
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view, m_rhythm.get(),false);
+	m_pField->mInitialize(&m_view, m_rhythm.get(),false,m_MaxWave);
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
 	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
 
 	//ウェーブ系
-	m_MaxWave = m_pBattleEnemyManager->mGetWaveAllCount();
 	m_waveID = 1;
 	m_pBattleEnemyManager->ResetEnemyList(m_waveID - 1, &m_view);
 
@@ -160,6 +159,7 @@ void SceneTutorial::mLoadTextData(){
 
 	Cipher cip(file);
 
+	m_MaxWave = std::atoi(&cip.mGetSpriteArray("[WaveAll]").front().front());
 	m_stageID = std::atoi(&cip.mGetSpriteArray("[Stage]").front().front());
 	int type = std::atoi(&cip.mGetSpriteArray("[Beat]").front().front());
 	m_beatMode = GameManager::eGameMode::eQuarter;
@@ -490,7 +490,7 @@ void SceneTutorial::mOnListen(){
 				m_enemyVector.push_back(m_pActionBoard->mGetCommand(itr));
 			}
 			m_pOrderList->mAddEnemyOrder(m_enemyVector);
-			m_pOrderList->mSetOption(eAppendOption::eNone);
+			m_pOrderList->mSetOption(OrderList::eAppendOption::eNone);
 		}
 		m_pOrderList->mPlay();
 		m_initUpdateProcess = true;
@@ -588,6 +588,7 @@ void SceneTutorial::mCheckBattle(){
 		if (m_waveID < m_MaxWave){
 			m_waveID++;
 
+			m_pField->mDeleteWaveNote();
 			m_pBattleEnemyManager->misDie();
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eNewWave;

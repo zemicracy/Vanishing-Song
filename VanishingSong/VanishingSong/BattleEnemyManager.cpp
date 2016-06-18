@@ -2,6 +2,8 @@
 #include <random>
 #include "Cipher.h"
 #include"ResourceManager.h"
+#include"OrderList.h"
+
 using namespace aetherClass;
 int cnt = 0;
 
@@ -169,7 +171,7 @@ int BattleEnemyManager::mGetAppendOption(){
 		if (m_waveID == 1){
 			if (m_optionCount >= 2){
 				m_optionCount = 0;
-				return eAppendOption::eBlack;
+				return OrderList::eAppendOption::eBlack;
 			}
 			else{
 				m_optionCount++;
@@ -180,24 +182,24 @@ int BattleEnemyManager::mGetAppendOption(){
 		if (m_waveID == 1){
 			if (m_optionCount >= 1){
 				m_optionCount = 0;
-				return eAppendOption::eBlack;
+				return OrderList::eAppendOption::eBlack;
 			}
 			else{
 				m_optionCount++;
 			}	
 		}
 		else if (m_waveID == 2){
-			return eAppendOption::eBlack;
+			return OrderList::eAppendOption::eBlack;
 		}
 	}
 	else if (m_stageID == 3){
 		if (m_waveID == 1){
-			return eAppendOption::eReverce;
+			return OrderList::eAppendOption::eReverce;
 		}
 		else if (m_waveID == 2){
 			if (m_optionCount >= 2){
 				m_optionCount = 0;
-				return eAppendOption::eReverce;
+				return OrderList::eAppendOption::eReverce;
 			}
 			else{
 				m_optionCount++;
@@ -211,13 +213,13 @@ int BattleEnemyManager::mGetAppendOption(){
 			int rand = rand100(rnd);
 			if (m_waveID == 1){
 				if (rand > 50){
-					return eAppendOption::eBlack;
+					return OrderList::eAppendOption::eBlack;
 				}
 			}
 		else if (m_waveID == 2){
-			int returnOption = eAppendOption::eReverce;
+			int returnOption = OrderList::eAppendOption::eReverce;
 			if (rand > 70){
-				returnOption |= eAppendOption::eBlack;
+				returnOption |= OrderList::eAppendOption::eBlack;
 			}
 			return returnOption;
 		}
@@ -231,7 +233,7 @@ int BattleEnemyManager::mGetAppendOption(){
 		if (m_waveID == 1){
 			if (m_optionCount >= 1){
 				m_optionCount = 0;
-				return eAppendOption::eBlack;
+				return OrderList::eAppendOption::eBlack;
 			}
 			else{
 				m_optionCount++;
@@ -239,26 +241,26 @@ int BattleEnemyManager::mGetAppendOption(){
 		}
 		if (m_waveID == 2){
 			if (0.25 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
-				int returnOption = eAppendOption::eBlack;
+				int returnOption = OrderList::eAppendOption::eBlack;
 				if (rand > 50){
-					returnOption |= eAppendOption::eReverce;
+					returnOption |= OrderList::eAppendOption::eReverce;
 				}
 				return returnOption;
 			}
 			else if (0.50 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
-				return eAppendOption::eBlack;
+				return OrderList::eAppendOption::eBlack;
 			}
 			else {
 				if (rand > 70){
-					return eAppendOption::eBlack;
+					return OrderList::eAppendOption::eBlack;
 				}
 				else if (rand > 40){
-					return eAppendOption::eReverce;
+					return OrderList::eAppendOption::eReverce;
 				}
 			}
 		}
 	}
-	return eAppendOption::eNone;
+	return OrderList::eAppendOption::eNone;
 }
 
 

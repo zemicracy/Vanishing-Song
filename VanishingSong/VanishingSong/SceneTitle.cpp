@@ -211,8 +211,8 @@ void SceneTitle::Render(){
 
 void SceneTitle::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
-	m_pLogo->Render(shaderHash["texture"].get());
-	m_pMenu->Render(shaderHash["texture"].get());
+	m_pLogo->Render(shaderHash["transparent"].get());
+	m_pMenu->Render(shaderHash["transparent"].get());
 
 	if (m_pushState == kMenuSelect){
 		m_pCursor->Render(shaderHash["color"].get());
