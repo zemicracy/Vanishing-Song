@@ -478,6 +478,7 @@ void SceneBattle::mCheckBattle(){
 		else{
 			m_pBattleEnemyManager->misDie();
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
+			m_pField->mDeleteWaveNote();
 
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;

@@ -202,7 +202,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 
-		m_pGeneral["noteImage"]->property._color = Color(0, 0, 1, 1);
+		m_pGeneral["noteImage"]->property._color = Color(0, 0, 1, 0);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field2_1.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eSecoundStage);
@@ -211,7 +211,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 
-		m_pGeneral["noteImage"]->property._color = Color(0, 1, 0, 1);
+		m_pGeneral["noteImage"]->property._color = Color(0, 1, 0, 0);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eGreen) = "Sound\\BGM\\field2.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eThirdStage);
@@ -220,7 +220,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 		
-		m_pGeneral["noteImage"]->property._color = Color(1, 0, 0, 1);
+		m_pGeneral["noteImage"]->property._color = Color(1, 0, 0, 0);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eRed) = "Sound\\BGM\\field3.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eForthStage);
@@ -231,7 +231,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		}
 		if (integer < noteBorder)return;
 		
-		m_pGeneral["noteImage"]->property._color = Color(1, 1, 0, 1);
+		m_pGeneral["noteImage"]->property._color = Color(1, 1, 0, 0);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
 	}

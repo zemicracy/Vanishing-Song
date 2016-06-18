@@ -401,6 +401,7 @@ void SceneCregit::mCheckBattle(){
 
 	if (m_waveID < m_MaxWave){
 		m_waveID++;
+		m_pField->mDeleteWaveNote();
 		m_pBattleEnemyManager->misDie();
 		m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 
@@ -410,6 +411,7 @@ void SceneCregit::mCheckBattle(){
 	}
 	else{
 		m_pBattleEnemyManager->misDie();
+		m_pField->mDeleteWaveNote();
 		m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 
 		m_battleState = GameManager::eBattleState::eWin;

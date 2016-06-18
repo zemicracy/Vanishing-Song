@@ -50,7 +50,7 @@ bool SceneTutorial::Initialize(){
 
 	//hp
 	m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_waveID - 1);
-	m_enemyHp->_maxHp  = m_enemyHp->_hp = 8;
+	m_enemyHp->_maxHp  = m_enemyHp->_hp = 6;
 	m_pGauge->mSetHpAll(&m_charaHp, m_enemyHp);
 
 
@@ -595,6 +595,9 @@ void SceneTutorial::mCheckBattle(){
 			m_processState = eGameState::ePreCountIn;
 		}
 		else{
+			m_pField->mDeleteWaveNote();
+			m_pBattleEnemyManager->misDie();
+			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;
 		}
