@@ -79,7 +79,7 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 		}
 		return;
 	}
-
+	m_model->KeyframeUpdate("wait", true);
 	if (selectButton){
 		m_isYes = !m_isYes;
 	}
@@ -137,7 +137,7 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 //
 void TutorialEnemy::mRender(ShaderBase* tex){
 	if (m_isEnd)return;
-	m_model->Render(tex);
+	m_model->KeyframeAnimationRender(tex);
 }
 
 void TutorialEnemy::mUIRender(ShaderBase* shader, ShaderBase* color){
