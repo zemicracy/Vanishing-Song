@@ -82,8 +82,8 @@ bool SceneTutorial::Initialize(){
 	m_particleDesc._texturePath = "Texture\\OrderList\\note_a.png";
 	m_particleDesc._rangeMin = Vector3(0, 0, 0);
 	m_particleDesc._rangeMax = Vector3(20, 0, 20);
-	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
-	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
+	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eAdlib);
+	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eAdlib);
 	m_particleDesc._endPoint._y += 100;
 
 
