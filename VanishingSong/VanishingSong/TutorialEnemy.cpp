@@ -70,7 +70,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_buttonSE.second.Load("Sound\\Field\\select.wav");
 	m_buttonSE.first.SetValume(-3000);
 	m_buttonSE.second.SetValume(-3000);
-
+	
 	if (m_isEnd){
 		Finalize();
 	}

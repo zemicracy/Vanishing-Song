@@ -9,6 +9,8 @@ public:
 	void mSave();
 	void mLoad();
 
+public:
+	static const std::string mFilePath;
 private:
 	GameManager::eFieldState mLoadFieldState(const int);
 	int mSaveFieldState(GameManager::eFieldState)const;
@@ -19,6 +21,6 @@ private:
 	char mGetTypeToChar(eMusical);
 	eMusical mGetCharToType( char);
 
-	const std::string mFilePath;
+	
 };
 

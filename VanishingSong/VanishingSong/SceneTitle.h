@@ -79,6 +79,8 @@ private:
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
 
+	std::shared_ptr<aetherClass::FbxModel> m_bluePlayer;
+
 	aetherClass::GameSound m_bgm;
 	aetherClass::GameSound m_returnSE;
 	aetherClass::GameSound m_selectSE;
@@ -89,6 +91,7 @@ private:
 	int m_nowSelectMode;
 	bool m_alphaState;
 	int m_nowCursor;
+	bool m_isVisibleSaveData;
 
 	aetherClass::ViewCamera m_view;
 };
