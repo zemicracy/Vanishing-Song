@@ -66,6 +66,11 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_texture[eState::eNext] = std::make_shared<Texture>();
 	m_texture[eState::eNext]->Load("Texture\\Message\\nextButton.png");
 
+	m_buttonSE.first.Load("Sound\\Field\\message.wav");
+	m_buttonSE.second.Load("Sound\\Field\\select.wav");
+	m_buttonSE.first.SetValume(-3000);
+	m_buttonSE.second.SetValume(-3000);
+
 	if (m_isEnd){
 		Finalize();
 	}
@@ -84,10 +89,15 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 	m_model->KeyframeUpdate("wait", true);
 	m_model->property._transform = m_initTrans;
 	if (selectButton){
+		m_buttonSE.second.Stop();
+		m_buttonSE.second.PlayToOneTime();
+
 		m_isYes = !m_isYes;
 	}
 	m_pCursor->property._transform._translation._x = m_cursorPosition[m_isYes];
 	if (pushButton){
+		m_buttonSE.first.Stop();
+		m_buttonSE.first.PlayToOneTime();
 
 		switch (m_state)
 		{

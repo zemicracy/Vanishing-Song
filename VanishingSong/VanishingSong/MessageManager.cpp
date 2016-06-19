@@ -26,6 +26,11 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 	m_buttonTexture[eState::eEnd].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eSelect].Load("Texture\\Message\\yesno.png");
 
+	m_buttonSE.first.Load("Sound\\Field\\message.wav");
+	m_buttonSE.second.Load("Sound\\Field\\select.wav");
+	m_buttonSE.first.SetValume(-3000);
+	m_buttonSE.second.SetValume(-3000);
+
 	m_messageFlame = std::make_shared<Rectangle3D>();
 	m_messageFlame->Initialize();
 	m_messageFlame->SetCamera(camera);
@@ -90,7 +95,8 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	}
 
 	if (isPressButton){
-		
+		m_buttonSE.first.Stop();
+		m_buttonSE.first.PlayToOneTime();
 		// ÉVÅ[ÉìÇÃëJà⁄ÅH
 		if (m_state == eState::eSelect && m_selectType == eSelectType::eYes){
 			m_isChangeScene = true;
@@ -193,6 +199,8 @@ bool MessageManager::mIsView(){
 void MessageManager::mCursorUpdate(const bool flg){
 	if (m_state != eState::eSelect)return;
 	if (flg){
+		m_buttonSE.second.Stop();
+		m_buttonSE.second.PlayToOneTime();
 		m_select = !m_select;
 	}
 

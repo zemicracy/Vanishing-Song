@@ -5,6 +5,7 @@
 #include "CharaEntity.h"
 #include <array>
 #include "MessageWindow.h"
+#include "GameSound.h"
 class Cage
 {
 public:
@@ -43,6 +44,7 @@ private:
 	bool m_isMessage;
 	float m_changeCommentCount;
 	bool m_changeComment;
+	aetherClass::GameSound m_buttonSE;
 
 };
 
