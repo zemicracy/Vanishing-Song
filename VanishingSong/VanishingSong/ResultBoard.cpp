@@ -292,7 +292,7 @@ void ResultBoard::mUpdate(float timeScale){
 			m_timer = 0;
 			m_state++;
 
-//			mReloadSound("Sound\\Result\\gauge.wav", -2000);
+			mReloadSound("Sound\\Result\\gauge.wav", -2000);
 		}
 		else{
 			m_timer += GameClock::GetDeltaTime() * timeScale;
@@ -308,7 +308,7 @@ void ResultBoard::mUpdate(float timeScale){
 				m_state++;
 				m_pGauge->mSetRate(m_MaxRate);
 
-				mReloadSound("Sound\\Result\\rank.wav", -3000);
+				//mReloadSound("Sound\\Result\\rank.wav", -3000);
 			}
 			else{
 				m_timer += 0.01 * timeScale;
