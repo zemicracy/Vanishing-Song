@@ -29,6 +29,8 @@ void ResultBoard::mFinalize(){
 	for (auto& itr : m_TextureList){
 		itr.second.reset();
 	}
+
+	m_pSoundDevice.reset();
 	m_numberList.clear();
 	m_TextureList.clear();
 }

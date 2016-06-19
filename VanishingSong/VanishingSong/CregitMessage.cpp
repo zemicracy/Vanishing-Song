@@ -26,6 +26,10 @@ void CregitMessage::mInitialize(){
 	m_pSprite->property._transform._scale = Vector3(1280, 720, 0);
 
 	std::string folder = "Texture\\Cregit\\";
+	m_textureList.insert(std::make_pair("1", gCreateTexture(folder + "cregit1.png")));
+	m_textureList.insert(std::make_pair("2", gCreateTexture(folder + "cregit2.png")));
+	m_textureList.insert(std::make_pair("3", gCreateTexture(folder + "cregit3.png")));
+	m_textureList.insert(std::make_pair("4", gCreateTexture(folder + "cregit4.png")));
 	m_textureList.insert(std::make_pair("End", gCreateTexture(folder + "end.png")));
 
 
@@ -33,7 +37,7 @@ void CregitMessage::mInitialize(){
 	m_waveMessage.push_back(gCreateTexture(folder+"programmer.png"));
 	m_waveMessage.push_back(gCreateTexture(folder + "designer.png"));
 	m_waveMessage.push_back(gCreateTexture(folder + "soundcreater.png"));
-	m_waveMessage.push_back(gCreateTexture(folder + "specialthunks.png"));
+	m_waveMessage.push_back(gCreateTexture(folder + "specialthanks.png"));
 
 }
 void CregitMessage::mChangeTexture(std::string path){

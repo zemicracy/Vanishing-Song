@@ -349,6 +349,8 @@ void SceneCregit::mOnListen(){
 		m_initUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
 		m_battleState = GameManager::eBattleState::ePerform;
+		m_pCregitMessage->mChangeTexture(std::to_string(m_waveID));
+		m_pCregitMessage->mSetActive(true);
 	}
 
 	return;
@@ -389,6 +391,7 @@ void SceneCregit::mOnBattle(){
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
 		m_battleState = GameManager::eBattleState::eCheck;
+
 	}
 	return;
 }
@@ -408,6 +411,7 @@ void SceneCregit::mCheckBattle(){
 		m_pField->mDeleteWaveNote();
 		m_battleState = GameManager::eBattleState::eNewWave;
 		m_processState = eGameState::ePreCountIn;
+		m_pCregitMessage->mSetActive(false);
 	}
 	else{
 		m_pBattleEnemyManager->misDie();
@@ -460,7 +464,6 @@ void SceneCregit::mCountIn(){
 			m_inCount = 0;
 			m_processState = eGameState::eUpdate;
 			m_pMessage->mSetActive(false);
-			m_pCregitMessage->mSetActive(false);
 			m_preInitProcess = false;
 
 			return;
