@@ -6,6 +6,7 @@ using namespace aetherFunction;
 using namespace aetherClass;
 namespace{
 	const int kWallCount = 2;
+	const int kBossNumber = 4;
 	const float kRange = 40.f;
 }
 CollideManager::CollideManager(std::shared_ptr<FieldPlayer> player, std::shared_ptr<FieldArea> field, std::shared_ptr<FieldEnemyManager> enemy, std::shared_ptr<CageManager> cage)
@@ -30,7 +31,7 @@ CollideManager::~CollideManager()
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	const int playerNumber = mCheckPlayerFieldArea();
-	
+	Debug::mPrint(std::to_string(playerNumber));
 	mCheckHitObject(playerNumber);
 	mCheckHitEnemy(playerNumber);
 	mCheckHitCage(playerNumber);
@@ -39,6 +40,14 @@ void CollideManager::mUpdate(){
 
 // 障害物と当たったら止まる処理
 void CollideManager::mCheckHitObject(const int number){
+
+	for (auto& objects : m_filed->mGetObjectList()){
+		if (ColliderBoxSphere(*m_player->mGetSphereColldier(), *objects)){
+			m_player->mOnHitObject(objects.get());
+			break;
+		}
+	}
+	
 
 	// プレイヤーと壁
 	if (number > 3)return;
@@ -53,6 +62,9 @@ void CollideManager::mCheckHitObject(const int number){
 }
 
 void CollideManager::mCheckHitEnemy(const int number){
+
+	if (!m_enemy->mGetBossFlg() && number == kBossNumber)return;
+
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
 	if ((x*x) + (z*z) > kRange*kRange){
@@ -87,7 +99,7 @@ void CollideManager::mCheckHitCage(const int number){
 	}
 }
 
-std::pair<int,bool> CollideManager::GetMassageInfo(){
+std::pair<int, bool>& CollideManager::GetMassageInfo(){
 
 	return m_messageInfo;
 }

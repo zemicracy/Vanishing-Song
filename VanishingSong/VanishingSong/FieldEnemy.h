@@ -11,7 +11,7 @@ class FieldEnemy
 public:
 
 	struct Property{
-		std::shared_ptr<aetherClass::FbxModel> _penemy;			//Enemy本体
+		std::shared_ptr<aetherClass::FbxModel> _pEnemy;			//Enemy本体
 		std::shared_ptr<aetherClass::ModelBase> _pCollider;	//コライダー
 		bool _talkflag;
 		int _enemyAreaNo;		//エリアナンバー
@@ -24,6 +24,8 @@ public:
 	void mUpdate();
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mFinalize();	//開放処理
+	void mResetTransform();
+	void mSetTransform(aetherClass::Transform);
 	Property &mGetProperty();
 	void mFaceToPlayer(aetherClass::Vector3);
 	void mRegisterMessage(std::string);
@@ -39,6 +41,7 @@ private:
 	CharaEntity m_charaEntity;
 	Property m_property;
 	std::vector<std::string> m_messagePath;
+	aetherClass::Transform m_initTransform;
 	std::string m_cannotMessagePath;
 	std::string m_dataPath;
 };

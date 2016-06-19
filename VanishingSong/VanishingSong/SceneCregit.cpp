@@ -42,7 +42,7 @@ bool SceneCregit::Initialize(){
 	m_pActionBoard->mInitialize(true);
 
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view, m_rhythm.get());
+	m_pField->mInitialize(&m_view, m_rhythm.get(),false,m_MaxWave);
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
 	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
@@ -71,7 +71,7 @@ bool SceneCregit::Initialize(){
 	m_preInitProcess = false;
 	m_prevWholeBeatNo = 0;
 
-	m_bgmVolume = 30;
+	m_bgmVolume = 60;
 	m_inCount = 0;
 	m_endTime = 0;
 
@@ -83,8 +83,8 @@ bool SceneCregit::Initialize(){
 	m_particleDesc._texturePath = "Texture\\OrderList\\note_a.png";
 	m_particleDesc._rangeMin = Vector3(0, 0, 0);
 	m_particleDesc._rangeMax = Vector3(20, 0, 20);
-	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
-	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
+	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eAdlib);
+	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eAdlib);
 	m_particleDesc._endPoint._y += 100;
 
 	//ÅŒã‚És‚¤
@@ -141,6 +141,7 @@ void SceneCregit::mLoadTextData(){
 	GameManager::mGetInstance().mBattleDataFile(file);
 	Cipher cip(file);
 
+	m_MaxWave = std::atoi(&cip.mGetSpriteArray("[WaveAll]").front().front());
 	m_stageID = std::atoi(&cip.mGetSpriteArray("[Stage]").front().front());
 	int type = std::atoi(&cip.mGetSpriteArray("[Beat]").front().front());
 	if (type == 4){
@@ -187,7 +188,7 @@ bool SceneCregit::Updater(){
 	if (m_isEndTransition){
 		m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
-			if (m_bgmVolume > 8){
+			if (m_bgmVolume > 30){
 				m_sound->SetValume(-m_bgmVolume * 100);
 				m_bgmVolume--;
 			}
@@ -216,7 +217,7 @@ bool SceneCregit::Updater(){
 				m_enemyVector.push_back(m_pActionBoard->mGetCommand(itr));
 			}
 			m_pOrderList->mAddEnemyOrder(m_enemyVector);
-			m_pOrderList->mSetOption(eAppendOption::eNone);
+			m_pOrderList->mSetOption(OrderList::eAppendOption::eNone);
 		}
 		m_processState = eGameState::eCountIn;
 		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime() + 0.1f);
@@ -348,6 +349,8 @@ void SceneCregit::mOnListen(){
 		m_initUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
 		m_battleState = GameManager::eBattleState::ePerform;
+		m_pCregitMessage->mChangeTexture(std::to_string(m_waveID));
+		m_pCregitMessage->mSetActive(true);
 	}
 
 	return;
@@ -388,6 +391,7 @@ void SceneCregit::mOnBattle(){
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
 		m_battleState = GameManager::eBattleState::eCheck;
+
 	}
 	return;
 }
@@ -400,14 +404,18 @@ void SceneCregit::mCheckBattle(){
 
 	if (m_waveID < m_MaxWave){
 		m_waveID++;
+		m_pField->mDeleteWaveNote();
 		m_pBattleEnemyManager->misDie();
 		m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 
+		m_pField->mDeleteWaveNote();
 		m_battleState = GameManager::eBattleState::eNewWave;
 		m_processState = eGameState::ePreCountIn;
+		m_pCregitMessage->mSetActive(false);
 	}
 	else{
 		m_pBattleEnemyManager->misDie();
+		m_pField->mDeleteWaveNote();
 		m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 
 		m_battleState = GameManager::eBattleState::eWin;
@@ -456,7 +464,6 @@ void SceneCregit::mCountIn(){
 			m_inCount = 0;
 			m_processState = eGameState::eUpdate;
 			m_pMessage->mSetActive(false);
-			m_pCregitMessage->mSetActive(false);
 			m_preInitProcess = false;
 
 			return;

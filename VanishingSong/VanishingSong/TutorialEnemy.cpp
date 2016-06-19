@@ -1,5 +1,6 @@
 #include "TutorialEnemy.h"
 #include "Debug.h"
+#include <WorldReader.h>
 using namespace aetherClass;
 TutorialEnemy::TutorialEnemy()
 {
@@ -13,9 +14,20 @@ TutorialEnemy::~TutorialEnemy(){
 }
 
 //
-void TutorialEnemy::mInitalize(const bool flg){
+void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_isEnd = !flg;
-
+	m_model = model;
+	WorldReader reader;
+	reader.Load("data\\Field\\player_init.aether");
+	for (auto& index : reader.GetInputWorldInfo()._object){
+		if (index->_name == "tutorial_enemy"){
+			m_model->property._transform._translation = Vector3(index->_transform._translation._x, 0, index->_transform._translation._z);
+			m_model->property._transform._rotation = index->_transform._rotation;
+			m_model->property._transform._scale._x = -1;
+			m_initTrans = m_model->property._transform;
+		}
+	}
+	reader.UnLoad();
 	m_messageWindow.mInitialize();
 	
 	int count = NULL;
@@ -69,7 +81,8 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 		}
 		return;
 	}
-
+	m_model->KeyframeUpdate("wait", true);
+	m_model->property._transform = m_initTrans;
 	if (selectButton){
 		m_isYes = !m_isYes;
 	}
@@ -125,8 +138,9 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 }
 
 //
-void TutorialEnemy::mRender(ShaderBase*){
+void TutorialEnemy::mRender(ShaderBase* tex){
 	if (m_isEnd)return;
+	m_model->KeyframeAnimationRender(tex);
 }
 
 void TutorialEnemy::mUIRender(ShaderBase* shader, ShaderBase* color){
@@ -161,6 +175,9 @@ TutorialEnemy::eSelect TutorialEnemy::mGetSelectType(){
 }
 
 void TutorialEnemy::Finalize(){
+	if (m_model){
+		m_model.reset();
+	}
 	if (m_pCursor){
 		m_pCursor->Finalize();
 		m_pCursor.reset();

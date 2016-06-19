@@ -24,12 +24,22 @@ void FieldArea::mFinalize(){
 		m_skybox = nullptr;
 	}
 
+	if (m_pNote){
+		m_pNote->Finalize();
+		m_pNote.reset();
+		m_pNote = nullptr;
+	}
+
 	if (m_pGround){
 		m_pGround->Finalize();
 		m_pGround.reset();
 		m_pGround = nullptr;
 	}
 
+	for (auto& itr : m_pObject){
+		itr->Finalize();
+		itr.reset();
+	}
 	for (auto& itr : m_wall){
 		itr->Finalize();
 		itr.reset();
@@ -55,8 +65,13 @@ void gInitalizer(std::shared_ptr<ModelBase> &command, Transform transform, Color
 	command->property._color = color;
 }
 
-
-void FieldArea::mInitialize(){
+void gSphereInitializer(std::shared_ptr<Sphere> &command, Transform transform, Color color){
+	command = std::make_shared<Sphere>(10,10);
+	command->Initialize();
+	command->property._transform = transform;
+	command->property._color = color;
+}
+void FieldArea::mInitialize(std::string texdirectory){
 	WorldReader reader;
 	reader.Load("data\\Field\\stage.aether");
 
@@ -64,12 +79,11 @@ void FieldArea::mInitialize(){
 		if (itr->_name == "stage"){
 			m_pGround = std::make_shared<FbxModel>();
 			m_pGround->LoadFBX("Model\\Field\\Stage.fbx", eAxisSystem::eAxisOpenGL);
-			m_pGround->SetTextureDirectoryName("Model\\Field\\tex");
-			m_pGround->property._transform = itr->_transform;
+			m_pGround->SetTextureDirectoryName(texdirectory);
+			m_pGround->property._transform._translation = itr->_transform._translation;
 			m_pGround->property._transform._scale._x = -1;
-			m_pGround->property._transform._rotation._x = 180;
-
 		}
+
 		if (itr->_name == "wall1"){
 			gInitalizer<Cube>(m_wall[0], itr->_transform, itr->_color);
 		}
@@ -99,7 +113,16 @@ void FieldArea::mInitialize(){
 			gInitalizer<Cube>(m_partitionCube[4], itr->_transform, itr->_color);
 		}
 	}
+	
 	reader.UnLoad();
+
+	mInitializeObject();
+
+	m_pNote = std::make_shared<FbxModel>();
+	m_pNote->LoadFBX("Model\\Object\\Note\\note1.fbx", eAxisSystem::eAxisOpenGL);
+	m_pNote->SetTextureDirectoryName("Model\\Object\\Note\\tex");
+	m_pNote->property._transform._translation._y = 230;
+	m_pNote->property._transform._scale = 25;
 
 	m_skybox = std::make_shared<Skybox>();
 	m_skybox->Initialize();
@@ -124,29 +147,51 @@ void FieldArea::mInitialize(){
 void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
 	m_pGround->SetCamera(camera);
 	m_skybox->SetCamera(camera);
-	for (auto itr : m_wall){
+	for (auto& itr : m_wall){
 		itr->SetCamera(camera);
 	}
+
+	for (auto& itr : m_pObject){
+		itr->SetCamera(camera);
+	}
+
+	m_pNote->SetCamera(camera);
 }
 
 
-void FieldArea::mRender(aetherClass::ShaderBase* texture, aetherClass::ShaderBase*shader){
+void FieldArea::mRender(ShaderBase* texture, ShaderBase*shader){
 	m_pGround->Render(texture);
 	m_skybox->Render(texture);
-	for (auto itr : m_wall){
-		itr->Render(shader);
-	}
+	m_pNote->Render(texture);
 }
 
-void FieldArea::mUpdate(float){
-		
+void FieldArea::mUpdate(float time){
+	m_pNote->property._transform._rotation._y -= time * 1;
 }
 
-std::shared_ptr<aetherClass::ModelBase> FieldArea::mGetPartitionCube(const int number){
+std::shared_ptr<aetherClass::ModelBase>& FieldArea::mGetPartitionCube(const int number){
 	return m_partitionCube[number];
 }
 
 
 std::array<std::shared_ptr<aetherClass::ModelBase>, 2>& FieldArea::mGetPartitionWall(const int number){
 	return m_partitionWall[number];
+}
+
+std::array<std::shared_ptr<Sphere>, 4>& FieldArea::mGetObjectList(){
+	return m_pObject;
+}
+
+void FieldArea::mInitializeObject(){
+
+	Transform trans;
+	trans._scale = 105;
+	gSphereInitializer(m_pObject[0], trans, Color(1, 0, 0, 0.3));
+	trans._translation = Vector3(300, 0, 400);
+	trans._scale = Vector3(65, 50, 65);
+	gSphereInitializer(m_pObject[1], trans, Color(1, 0, 0, 0.3));
+	trans._translation = Vector3(-200, 0, 500);
+	gSphereInitializer(m_pObject[2], trans, Color(1, 0, 0, 0.3));
+	trans._translation = Vector3(-200, 0, -285);
+	gSphereInitializer(m_pObject[3], trans, Color(1, 0, 0, 0.3));
 }

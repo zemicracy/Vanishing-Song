@@ -36,22 +36,21 @@ bool SceneTutorial::Initialize(){
 
 
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view, m_rhythm.get());
+	m_pField->mInitialize(&m_view, m_rhythm.get(),false,m_MaxWave);
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
 	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
 
 	//ウェーブ系
-	m_MaxWave = m_pBattleEnemyManager->mGetWaveAllCount();
 	m_waveID = 1;
 	m_pBattleEnemyManager->ResetEnemyList(m_waveID - 1, &m_view);
 
 	m_pGauge = std::make_unique<GaugeManager>();
-	m_pGauge->mInitialize();
+	m_pGauge->mInitialize(m_rhythm.get());
 
 	//hp
 	m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_waveID - 1);
-	m_enemyHp->_maxHp  = m_enemyHp->_hp = 8;
+	m_enemyHp->_maxHp  = m_enemyHp->_hp = 6;
 	m_pGauge->mSetHpAll(&m_charaHp, m_enemyHp);
 
 
@@ -83,12 +82,12 @@ bool SceneTutorial::Initialize(){
 	m_particleDesc._texturePath = "Texture\\OrderList\\note_a.png";
 	m_particleDesc._rangeMin = Vector3(0, 0, 0);
 	m_particleDesc._rangeMax = Vector3(20, 0, 20);
-	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
-	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
+	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eAdlib);
+	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eAdlib);
 	m_particleDesc._endPoint._y += 100;
 
 
-	m_bgmVolume = 30;
+	m_bgmVolume = 60;
 	m_inCount = 0;
 
 	m_tutorialState = eTutorialState::eInit;
@@ -160,6 +159,7 @@ void SceneTutorial::mLoadTextData(){
 
 	Cipher cip(file);
 
+	m_MaxWave = std::atoi(&cip.mGetSpriteArray("[WaveAll]").front().front());
 	m_stageID = std::atoi(&cip.mGetSpriteArray("[Stage]").front().front());
 	int type = std::atoi(&cip.mGetSpriteArray("[Beat]").front().front());
 	m_beatMode = GameManager::eGameMode::eQuarter;
@@ -276,7 +276,7 @@ bool SceneTutorial::Updater(){
 	if (m_isEndTransition && m_sound){
 		m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
-			if (m_bgmVolume > 8){
+			if (m_bgmVolume > 30){
 				m_sound->SetValume(-m_bgmVolume * 100);
 				m_bgmVolume--;
 			}
@@ -292,6 +292,10 @@ bool SceneTutorial::Updater(){
 	if (m_rhythm){
 		m_rhythm->mAcquire();
 	}
+	if (m_pGauge){
+		m_pGauge->mUpdate(1);
+	}
+
 	bool result = false;
 
 	result = mTutorialUpdater();
@@ -362,9 +366,6 @@ bool SceneTutorial::Updater(){
 
 	mRhythmicMotion();
 
-	if (m_pGauge){
-		m_pGauge->mUpdate(1);
-	}
 	if (m_pOrderList){
 		m_pOrderList->mUpdate();
 	}
@@ -440,10 +441,6 @@ void SceneTutorial::mOnResult(){
 		m_sound->Load("Sound\\Result\\result.wav");
 		m_rhythm->mInitializeRhythm(m_sound, 110);
 
-		m_isTutorialPlay = true;
-		m_tutorialState = eTutorialState::eFin;
-		m_pTutorial->mShowBackCover(true);
-
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();
 
@@ -452,11 +449,19 @@ void SceneTutorial::mOnResult(){
 
 		m_pOrderList.reset();
 		m_resultUpdateTime = 1.0f;
-		m_bgmVolume = 30;
+		m_bgmVolume = 60;
+
 	}
 
 	m_pResult->mUpdate(m_resultUpdateTime);
 	if (m_pResult->mIsEnd()){
+		if (m_tutorialState != eTutorialState::eFin){
+			m_isTutorialPlay = true;
+			m_tutorialState = eTutorialState::eFin;
+			m_pTutorial->mShowBackCover(true);
+			return;
+		}
+
 		const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 		if (isPress){
 			ChangeScene(SceneGame::Name, LoadState::eUse);
@@ -488,7 +493,7 @@ void SceneTutorial::mOnListen(){
 				m_enemyVector.push_back(m_pActionBoard->mGetCommand(itr));
 			}
 			m_pOrderList->mAddEnemyOrder(m_enemyVector);
-			m_pOrderList->mSetOption(eAppendOption::eNone);
+			m_pOrderList->mSetOption(OrderList::eAppendOption::eNone);
 		}
 		m_pOrderList->mPlay();
 		m_initUpdateProcess = true;
@@ -586,12 +591,16 @@ void SceneTutorial::mCheckBattle(){
 		if (m_waveID < m_MaxWave){
 			m_waveID++;
 
+			m_pField->mDeleteWaveNote();
 			m_pBattleEnemyManager->misDie();
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eNewWave;
 			m_processState = eGameState::ePreCountIn;
 		}
 		else{
+			m_pField->mDeleteWaveNote();
+			m_pBattleEnemyManager->misDie();
+			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;
 		}

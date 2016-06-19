@@ -6,6 +6,7 @@
 #include "WorldReader.h"
 #include "Singleton.h"
 #include "ResourceManager.h"
+#include"GameManager.h"
 
 using namespace aetherClass;
 FieldEnemyManager::FieldEnemyManager()
@@ -21,7 +22,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	
 	EnemySize = 1;
 
-	m_bossFlag = false;
+	m_bossFlag = GameManager::mGetInstance().mBossState() != GameManager::eBossState::eUnVisible ? true : false;
 
 	WorldReader reader;
 	reader.Load("data\\Field\\stage.aether");
@@ -37,7 +38,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 			m_pEnemySpawner[2] = index->_transform._translation;
 		}
 		if (index->_name == "area4"){
-			m_pEnemySpawner[3] = index->_transform._translation;
+			m_pEnemySpawner[3] = index->_transform._translation+Vector3(100,0,50);
 		}
 		if (index->_name == "area5"){
 			m_pEnemySpawner[4] = index->_transform._translation;
@@ -55,7 +56,9 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 180;
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 180;
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
+		
 
 	}
 
@@ -67,7 +70,10 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 180;
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 180;
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
+		
+
 	}
 
 	//Enemy(仮)
@@ -78,7 +84,9 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 0;
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 0;
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
+		
 	}
 
 	//Enemy(仮)
@@ -89,18 +97,21 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
-		m_pEnemy.back()->mGetProperty()._penemy->property._transform._rotation._y = 0;
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 0;
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
+
 	}
 
 	//Enemy(仮)
 	for (int i = 0; i < EnemySize; i++){
-		m_bossFlag = true;
 		m_pEnemy.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemy.back()->mInitialize(eMusical::eAdlib, camera, "data\\Battle\\Stage5");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemy.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemy.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
+
 	}
 
 
@@ -134,11 +145,19 @@ bool FieldEnemyManager::mGetIsJudge(){
 
 //更新処理
 void FieldEnemyManager::mUpdater(){
-
-	for (auto itr : m_pEnemy){
-	itr->mUpdate();
+	mSetPosion();
+	for (int i = 0; i < 4; i++){
+		m_pEnemy[i]->mUpdate();
 	}
 
+	if (m_bossFlag){
+		m_pEnemy[4]->mUpdate();
+	}
+
+}
+
+bool FieldEnemyManager::mGetBossFlg(){
+	return m_bossFlag;
 }
 
 
@@ -161,13 +180,23 @@ void FieldEnemyManager::mSetPosion(){
 
 	//敵の出現位置
 	for (int i = 0; i <m_pEnemy.size(); i++){
-		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation = m_pEnemySpawner[i];
-		m_pEnemy[i]->mGetProperty()._penemy->property._transform._translation._y = 20;
+		m_pEnemy[i]->mGetProperty()._pEnemy->property._transform._translation = m_pEnemySpawner[i];
+	
 		m_pEnemy[i]->mGetProperty()._enemyAreaNo = i;
+		m_pEnemy[i]->mSetTransform(m_pEnemy[i]->mGetProperty()._pEnemy->property._transform);
 		m_enemyArray[i]=m_pEnemy[i];
+
 	}
 }
 
-std::shared_ptr<FieldEnemy> FieldEnemyManager::mEnemyGet(int enemy){
+//
+std::shared_ptr<FieldEnemy>& FieldEnemyManager::mEnemyGet(int enemy){
 	return  m_enemyArray[enemy];
+}
+
+//
+void FieldEnemyManager::mResetEnemysTransform(){
+	for (auto &itr : m_pEnemy){
+		itr->mResetTransform();
+	}
 }

@@ -11,6 +11,7 @@
 #include "ResourceManager.h"
 #include "SceneGame.h"
 #include"SceneCregit.h"
+#include "PlayDataManager.h"
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
@@ -54,7 +55,7 @@ bool SceneTitle::Initialize(){
 	
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
-	m_pLogoTexture->Load("Texture\\Title\\TitleImage.png");
+	m_pLogoTexture->Load("Texture\\Title\\Logo.png");
 
 	m_pMenuTexture = std::make_shared<Texture>();
 	m_pMenuTexture->Load("Texture\\Title\\Select.png");
@@ -66,10 +67,10 @@ bool SceneTitle::Initialize(){
 	m_pLogo = std::make_unique<Rectangle2D>();
 	m_pLogo->Initialize();
 	m_pLogo->SetTexture(m_pLogoTexture.get());
-	m_pLogo->property._transform._scale = Vector3(600, 300, 0);
+	m_pLogo->property._transform._scale = Vector3(600, 500, 0);
 
 	const float logoX = (kWindowWidth / 2) - (m_pLogo->property._transform._scale._x / 2);
-	const float logoY = (kWindowHeight / 2) - (m_pLogo->property._transform._scale._y);
+	const float logoY = (kWindowHeight / 2) - (m_pLogo->property._transform._scale._y) + 100;
 	m_pLogo->property._transform._translation = Vector3(logoX, logoY, 0);
 	m_pLogo->property._color = Color(0, 0, 0, 1);
 
@@ -98,22 +99,40 @@ bool SceneTitle::Initialize(){
 		m_cursorArray[i]._cursorY = cursorPosition + (i * (35 + cursorSize));
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
-	
-	m_pushState = false;
-	m_alphaState = false;
-	m_nowSelectMode = NULL;
-	m_nowCursor = NULL;
-	
+
+	m_field.mInitialize("Model\\Field\\title_tex");
+	m_field.mSetCamera(&m_view);
+
+
 	m_pSkybox = std::make_unique<Skybox>();
 	m_pSkybox->Initialize();
 	m_pSkybox->SetCamera(&m_view);
 	m_pSkybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
+
+	m_bgm.Load("Sound\\Result\\title.wav");
+	m_bgm.SetValume(-3000);
+
+	m_returnSE.Load("Sound\\Title\\decision.wav");
+	m_returnSE.SetValume(-3000);
+
+	m_selectSE.Load("Sound\\Title\\select.wav");
+	m_selectSE.SetValume(-3000);
+
+	m_view.property._rotation._x = 10;
+	m_view.property._translation = Vector3(70, 60, -900);
+	m_pushState = false;
+	m_alphaState = false;
+	m_nowSelectMode = NULL;
+	m_nowCursor = NULL;
+
 	_heapmin();
 	return true;
 }
 
 void SceneTitle::Finalize(){
 	_heapmin();
+	m_bgm.Stop();
+	m_returnSE.Stop();
 
 	if (m_pLogo){
 		m_pLogo->Finalize();
@@ -168,9 +187,10 @@ void SceneTitle::Finalize(){
 
 //
 bool SceneTitle::Updater(){
-
-	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
-	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
+	m_bgm.PlayToLoop();
+	m_field.mUpdate(1.0);
+	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
+	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	std::pair<bool, bool> UpOrDown;
 	UpOrDown.first = GameController::GetKey().KeyDownTrigger(VK_UP) || GameController::GetJoypad().ButtonPress(eJoyButton::eUp);
 	UpOrDown.second = GameController::GetKey().KeyDownTrigger(VK_DOWN) || GameController::GetJoypad().ButtonPress(eJoyButton::eDown);
@@ -195,7 +215,7 @@ void SceneTitle::Render(){
 	m_view.Render();
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pSkybox->Render(shaderHash["texture"].get());
-	
+	m_field.mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	return;
 }
 
@@ -229,18 +249,23 @@ bool SceneTitle::TransitionOut(){
 
 void SceneTitle::mChangeSelect(const bool isUp, const bool isDown){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
-	if (isUp){
+	if (isUp){ 
+		m_selectSE.Stop();
+		m_selectSE.PlayToOneTime();
 		m_nowCursor -= 1;
 	}
 	else if (isDown){
+		m_selectSE.Stop();
+		m_selectSE.PlayToOneTime();
 		m_nowCursor += 1;
 	}
 
-	if (m_nowCursor > m_cursorArray.size() - 1){
+	const int max = m_cursorArray.size() - 1;
+	if (m_nowCursor > max){
 		m_nowCursor = 0;
 	}
 	else if (m_nowCursor < 0){
-		m_nowCursor = m_cursorArray.size() - 1;
+		m_nowCursor = 2;
 	}
 
 	m_pCursor->property._transform._translation._y = m_cursorArray[m_nowCursor]._cursorY;
@@ -253,6 +278,8 @@ void SceneTitle::mCursorState(const bool isStart){
 	if (m_pushState != kPleaseClick)return;
 
 	if (isStart){
+		m_returnSE.Stop();
+		m_returnSE.PlayToOneTime();
 		m_pMenu->SetTexture(m_pMenuTexture.get());
 		m_pushState = kMenuSelect;
 		m_pMenu->property._color._alpha = 1;
@@ -283,9 +310,12 @@ bool SceneTitle::mMenuSelectState(const bool isReturn, const  std::pair<bool, bo
 	mChangeSelect(UpOrDown.first, UpOrDown.second);
 
 	if (isReturn){
+	
 		SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 		// Exit以外が来たらシーンの遷移を開始
 		if (nextState._nextSceneName != kExit){
+			m_returnSE.Stop();
+			m_returnSE.PlayToOneTime();
 			// シーンの遷移
 			ChangeScene(nextState._nextSceneName, LoadState::eUse);
 		}

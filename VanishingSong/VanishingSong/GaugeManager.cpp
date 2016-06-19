@@ -21,7 +21,7 @@ void GaugeManager::mFinalize(){
 }
 
 
-bool GaugeManager::mInitialize(){
+bool GaugeManager::mInitialize(RhythmManager *rhythm){
 	WorldReader reader;
 	reader.Load("data\\gaugePosition.aether");
 
@@ -32,6 +32,7 @@ bool GaugeManager::mInitialize(){
 			pp._transform = itr->_transform;
 			pp._color = Color(0,1,0,1);
 
+			m_playerHpGauge->mSetRhythmManager(rhythm);
 			m_playerHpGauge->mSetProperty(pp);
 			m_playerHpGauge->mInitialize();
 
@@ -42,6 +43,7 @@ bool GaugeManager::mInitialize(){
 			pp._transform = itr->_transform;
 			pp._color = Color(1,0.5,0,1);
 
+			m_enemyHpGauge->mSetRhythmManager(rhythm);
 			m_enemyHpGauge->mSetProperty(pp);
 			m_enemyHpGauge->mInitialize();
 		}

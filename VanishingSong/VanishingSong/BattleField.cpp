@@ -6,6 +6,7 @@
 #include<Singleton.h>
 #include"ResourceManager.h"
 #include"GameController.h"
+#include <random>
 
 BattleField::BattleField()
 {
@@ -32,6 +33,12 @@ void BattleField::mFinalize(){
 		itr.reset();
 	}
 
+	for (auto& itr : m_pTankNote){
+		itr->Finalize();
+		itr.reset();
+	}
+	m_pTankNote.clear();
+
 	m_EnemyLane.clear();
 	m_PlayerLane.clear();
 	for (auto& itr : m_pTextureList){
@@ -54,14 +61,15 @@ std::shared_ptr<aetherClass::Texture> gCreateTexture(std::string path){
 	return tex;
 }
 
-void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhythm){
+void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhythm,bool boss,int maxWave){
 	using namespace aetherClass;
 
 	WorldReader reader;
 	reader.Load("data\\BattleStage.aether");
 
+	m_MaxWave = maxWave;
 	m_rhythm = rhythm;
-
+	m_isBossStage = boss;
 	camera->property._translation = reader.GetInputWorldInfo()._camera._position;
 	camera->property._rotation = reader.GetInputWorldInfo()._camera._rotation;
 	m_view = camera;
@@ -73,11 +81,12 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
-			m_pPlane->LoadFBX("Model\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
-			m_pPlane->SetCamera(m_view);
-			m_pPlane->property._transform = itr->_transform;
-			m_pPlane->property._transform._scale._z = 2;
-			//m_pPlane->SetTexture()
+			m_pPlane->LoadFBX("Model\\Battle\\stage\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pPlane->SetTextureDirectoryName("Model\\Battle\\stage");
+			m_pPlane->SetCamera(camera);
+			m_pPlane->property._transform._scale._x = -1;
+			m_pPlane->property._transform._rotation._x = 180;
+			m_pPlane->property._transform._rotation._y = 90;
 		}
 		else if (itr->_name == "PlayerHP"){
 			m_tankScaleOrigin = 1.8;
@@ -89,6 +98,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 			m_pTank->SetCamera(m_view);
 			m_pTank->property._transform = itr->_transform;
 			m_pTank->property._transform._rotation._y = -90;
+			m_pTank->property._transform._scale = 1;
 			m_EnemyLane[eMusical::eAdlib] = itr->_transform._translation;
 		}
 		else if (itr->_name == "lane_blue"){
@@ -157,6 +167,25 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	m_pTextureList.insert(std::make_pair("skybox", ResourceManager::mGetInstance().GetTexture("skybox")));
 	m_pSkyBox->SetTexture(m_pTextureList["skybox"].get());
 
+	for (int i = 0; i < m_MaxWave; ++i){
+		m_pTankNote.push_back(std::make_shared<FbxModel>());
+		if (i % 2 == 0){
+			m_pTankNote.back()->LoadFBX("Model\\note\\note.fbx", eAxisSystem::eAxisOpenGL);
+		}
+		else{
+			m_pTankNote.back()->LoadFBX("Model\\note\\note2.fbx", eAxisSystem::eAxisOpenGL);
+		}
+		m_pTankNote.back()->SetTextureDirectoryName("Model\\note\\tex");
+		m_pTankNote.back()->property._transform._translation = m_pTank->property._transform._translation;
+		std::random_device rnd;
+		std::mt19937 mt(rnd());
+		std::uniform_int_distribution<> x(0, 10);
+		std::uniform_int_distribution<> y(0, 15);
+		m_pTankNote.back()->property._transform._translation += Vector3(x(rnd)/2, y(rnd)/2, 0);
+		m_pTankNote.back()->SetCamera(m_view);
+	}
+
+
 	for (auto itr : m_pLane){
 		itr.second->SetCamera(m_view);
 	}
@@ -171,10 +200,11 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 	//ƒ¿‚¯‚·—p
-	for (auto itr : m_pLane){
+	for (auto& itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){
 			itr.second->property._color._alpha -= 0.1;
 		}
+		itr.second->property._transform._translation._y = 3;
 	}
 	//‘Î‰ž‚µ‚½ƒŒ[ƒ“‚ð@ƒ¿‚P
 	if (m_pLane.find(command->mGetType()) == m_pLane.end())return;
@@ -183,12 +213,17 @@ void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 
 void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug){
 	m_pSkyBox->Render(texture);
-	m_pPlane->Render(debug);
+	m_pPlane->Render(texture);
 
 	for (auto itr : m_pLane){
 		itr.second->Render(debug);
 	}
-	m_pTank->Render(texture);
+	if (!m_isBossStage){
+		for (auto itr : m_pTankNote){
+			itr->Render(texture);
+		}
+		m_pTank->Render(texture);
+	}
 	for (int i = m_pCommand.size()-1; i >= 0; --i){
 		m_pCommand.at(i)->Render(texture);
 	}
@@ -222,4 +257,10 @@ void BattleField::mRhythmicMotion(){
 	}
 
 
+}
+void BattleField::mDeleteWaveNote(){
+	if (m_pTankNote.empty())return;
+
+	m_pTankNote.begin()->get()->Finalize();
+	m_pTankNote.erase(m_pTankNote.begin());
 }

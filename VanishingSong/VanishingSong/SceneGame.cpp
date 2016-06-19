@@ -10,6 +10,7 @@
 #include "SceneTutorial.h"
 #include "ResourceManager.h"
 #include "Debug.h"
+#include "PlayDataManager.h"
 using namespace aetherClass;
 
 const std::string SceneGame::Name = "Game";
@@ -49,7 +50,7 @@ bool SceneGame::Initialize(){
 
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
-	m_pFieldArea->mInitialize();
+	m_pFieldArea->mInitialize("Model\\Field\\title_tex");
 	m_pFieldArea->mSetCamera(view);
 
 
@@ -63,44 +64,55 @@ bool SceneGame::Initialize(){
 
 	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy, view);
 
-
-	{
-		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
-			m_pBGMArray.push_back(std::make_shared<GameSound>());
-			m_pBGMArray.back()->Load(itr.second.c_str());
-			m_pBGMArray.back()->SetValume(0);
-		}
-		for (auto &itr : m_pBGMArray){
-			itr->PlayToLoop();
-		}
-	}
 	
 	const bool isTutorial = (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial)
 		|| (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd);
-
 	m_pTutorialEnemy = std::make_shared<TutorialEnemy>();
-	m_pTutorialEnemy->mInitalize(isTutorial);
-
+	m_pTutorialEnemy->mInitalize(isTutorial, ResourceManager::mGetInstance().mGetEnemyHash(eMusical::eBlue));
 	if (isTutorial){
 		m_gameState = eState::eTutorial;
 	}
 	else{
 		// ゲームの状態を登録
 		m_gameState = eState::eRun;
+		m_pFieldEnemy->mResetEnemysTransform();
+		if (GameManager::mGetInstance().mPrevEnemy().second._rotation._y != 0){
+			const int number = GameManager::mGetInstance().mPrevEnemy().first;
+			Transform trans = GameManager::mGetInstance().mPrevEnemy().second;
+			m_pFieldEnemy->mEnemyGet(number)->mGetProperty()._pEnemy->property._transform._rotation = trans._rotation;
+		}
 	}
 
+	mInitializeBGM();
+
 	m_isTransitionEnd = false;
+	m_isFade = false;
+	m_isFade2 = false;
 	// とりあえず一回呼んでおく
-	mRun();
 	mTutorial();
+	mRun();
+	
 	_heapmin();
 	return true;
 }
+
+void SceneGame::mInitializeBGM(){
+		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
+			m_pBGMArray.push_back(std::make_shared<GameSound>());
+			m_pBGMArray.back()->Load(itr.second.c_str());
+			m_pBGMArray.back()->SetValume(-3000);
+		}
+		for (auto &itr : m_pBGMArray){
+			itr->PlayToLoop();
+		}
+}
+
 
 // 解放処理
 // 全ての解放
 void SceneGame::Finalize(){
 	_heapmin();
+
 	if (m_pCageManager){
 		m_pCageManager.reset();
 		m_pCageManager = nullptr;
@@ -149,13 +161,32 @@ bool SceneGame::Updater(){
 
 	mTutorial();
 	mRun();
-	
 	return true;
 }
 
 // チュートリアル用
 void SceneGame::mTutorial(){
 	if (m_gameState != eState::eTutorial)return;
+
+	if (m_isFade){
+		if (!GameManager::mGetInstance().mfadeManager().In(1)){
+			return;
+		}
+		m_isFade = false;
+		m_isFade2 = true;
+		m_pFieldEnemy->mResetEnemysTransform();
+		return;
+	}
+
+	if (m_isFade2){
+		if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+			return;
+		}
+		m_gameState = eState::eRun;
+		m_isFade2 = false;
+		return;
+	}
+
 	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	bool select = GameController::GetKey().KeyDownTrigger(VK_LEFT) || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft)||
 		GameController::GetKey().KeyDownTrigger(VK_RIGHT) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
@@ -173,19 +204,22 @@ void SceneGame::mTutorial(){
 		}
 		else if (m_pTutorialEnemy->mGetSelectType() == TutorialEnemy::eSelect::eNo){
 			if (m_pTutorialEnemy->mGetMessageEnd()){
+
+				ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
+				mInitializeBGM();
 				GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
-				m_gameState = eState::eRun;
+				m_isFade = true;
 				m_pTutorialEnemy->mIsEnd(true);
 			}
 		}
 
 		m_pTutorialEnemy->mUpdate(false, select, button);
 	}
-	else{
+	else if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd){
 		// チュートリアル終了後
 		if (m_pTutorialEnemy->mGetMessageEnd()){
 			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
-			m_gameState = eState::eRun;
+			m_isFade = true;
 			m_pTutorialEnemy->mIsEnd(true);
 			return;
 		}
@@ -196,9 +230,11 @@ void SceneGame::mTutorial(){
 //
 void SceneGame::mRun(){
 	if (m_gameState != eState::eRun)return;
+	
 	//// タイトルに戻る
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
 		m_gameState = eState::eExit;
+
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return;
 	}
@@ -214,7 +250,7 @@ void SceneGame::mRun(){
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return;
 	}
-
+	
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
 	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();
@@ -225,7 +261,9 @@ void SceneGame::mRun(){
 //
 void SceneGame::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
-	m_pTutorialEnemy->mRender(shaderHash["texture"].get());
+	if (m_pTutorialEnemy){
+		m_pTutorialEnemy->mRender(shaderHash["texture"].get());
+	}
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
@@ -249,7 +287,6 @@ void SceneGame::UIRender(){
 //
 bool SceneGame::TransitionIn(){
 	if (!GameManager::mGetInstance().mfadeManager().In(1)){
-		std::cout << "%d,%d", m_isTransitionEnd, m_isTransitionEnd;
 		return kTransitionning;
 	}
 	return kTransitionEnd;
@@ -281,7 +318,7 @@ bool SceneGame::mMessageUpdate(){
 	if (m_pMessageManager->mGetIsChangeScene()){
 		GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
 		GameManager::mGetInstance().mBattleDataFile(m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetBattleDataPath());
-
+		GameManager::mGetInstance().mPrevEnemy(collideInfo.first, m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetProperty()._pEnemy->property._transform);
 		return true;
 	}
 

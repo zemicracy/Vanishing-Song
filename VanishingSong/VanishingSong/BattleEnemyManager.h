@@ -4,7 +4,6 @@
 #include "BattleBoss.h"
 #include"BattleField.h"
 #include"Const.h"
-#include"OrderList.h"
 #include <GameController.h>
 #include <ShaderBase.h>
 #include "CharaStatus.h"
@@ -56,6 +55,7 @@ private:
 	eEnemyType mGetEnemyType(const char);
 	eMusical mGetEnemyAttack(const char);
 	
+	GameManager::eFieldState m_fieldState;
 
 
 private:
@@ -79,6 +79,7 @@ private:
 	int m_waveAllCount;
 	int m_attackAllCount;
 	int m_stageID;
+	int m_optionCount;
 	
 
 };

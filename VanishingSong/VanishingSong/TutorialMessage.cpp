@@ -38,42 +38,46 @@ bool TutorialMessage::mInitialize(){
 			break;
 		}
 	}
+	m_pTexture = nullptr;
 
 	std::string path = "Texture\\Message\\";
-	m_pTextTextureList["Init1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["Init2"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["Init3"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstDemoListen1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstDemoListen2"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstDemoPerform1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstDemoPerform2"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstDemoBattle1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstDemoBattle2"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstDemoBattle3"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstPlay1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["FirstPlay2"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["AdlibDemoListen1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["AdlibDemoPerform1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["AdlibDemoPerform2"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["AdlibDemoBattle1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["AdlibDemoBattle2"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["AdlibPlay1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["AdlibPlay2"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["PlayerOnly1"] = gCreateTexture(path + "tmplate.png");
-	m_pTextTextureList["Fin1"] = gCreateTexture(path + "tmplate.png");
+	m_pTextTextureList["Init1"] = path + "tmplate.png";
+	m_pTextTextureList["Init2"] = path + "tmplate.png";
+	m_pTextTextureList["Init3"] = path + "tmplate.png";
+	m_pTextTextureList["FirstDemoListen1"] = path + "tmplate.png";
+	m_pTextTextureList["FirstDemoListen2"] = path + "tmplate.png";
+	m_pTextTextureList["FirstDemoPerform1"] = path + "tmplate.png";
+	m_pTextTextureList["FirstDemoPerform2"] = path + "tmplate.png";
+	m_pTextTextureList["FirstDemoBattle1"] = path + "tmplate.png";
+	m_pTextTextureList["FirstDemoBattle2"] = path + "tmplate.png";
+	m_pTextTextureList["FirstDemoBattle3"] = path + "tmplate.png";
+	m_pTextTextureList["FirstPlay1"] = path + "tmplate.png";
+	m_pTextTextureList["FirstPlay2"] = path + "tmplate.png";
+	m_pTextTextureList["AdlibDemoListen1"] = path + "tmplate.png";
+	m_pTextTextureList["AdlibDemoPerform1"] = path + "tmplate.png";
+	m_pTextTextureList["AdlibDemoPerform2"] = path + "tmplate.png";
+	m_pTextTextureList["AdlibDemoBattle1"] = path + "tmplate.png";
+	m_pTextTextureList["AdlibDemoBattle2"] = path + "tmplate.png";
+	m_pTextTextureList["AdlibPlay1"] = path + "tmplate.png";
+	m_pTextTextureList["AdlibPlay2"] = path + "tmplate.png";
+	m_pTextTextureList["PlayerOnly1"] = path + "tmplate.png";
+	m_pTextTextureList["Fin1"] = path + "tmplate.png";
 
+	m_pTexture = gCreateTexture(m_pTextTextureList["Init1"]);
+	m_message->mSetText(m_pTexture.get());
 
-	m_message->mSetText(m_pTextTextureList["Init1"].get());
+	m_pButtonTex = gCreateTexture("Texture\\Message\\nextButton.png");
+	m_message->mSetButton(m_pButtonTex.get());
 
 	return true;
 }
 
 void TutorialMessage::mFinalize(){
-	for (auto &itr : m_pTextTextureList){
-		itr.second.reset();
-	}
 	m_pTextTextureList.clear();
 	m_message.reset();
+	m_pTexture.reset();
+	m_pButtonTex.reset();
+
 }
 
 void TutorialMessage::mShowBackCover(const bool flg){
@@ -90,7 +94,7 @@ void TutorialMessage::mRender(aetherClass::ShaderBase* shader, aetherClass::Shad
 	}
 }
 void TutorialMessage::mUpdate(){
-	m_message->mUpdate(false);
+	m_message->mUpdate(true);
 }
 
 void TutorialMessage::mSetVisible(const bool flg){
@@ -99,6 +103,7 @@ void TutorialMessage::mSetVisible(const bool flg){
 
 bool TutorialMessage::mChangeText(std::string str){
 	if (m_pTextTextureList.find(str) == m_pTextTextureList.end())return false;
-	m_message->mSetText(m_pTextTextureList.at(str).get());
+	m_pTexture = gCreateTexture(m_pTextTextureList.at(str));
+	m_message->mSetText(m_pTexture.get());
 	return true;
 }

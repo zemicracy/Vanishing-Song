@@ -4,8 +4,8 @@
 0,10,-500,0,0,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall2,null_path
 500,10,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall3,null_path
 -500,10,0,0,90,0,500,10,1,0,Rectangle3D,1,0,0,0.5,0,wall4,null_path
--470,15,120,0,90,0,5,5,5,0,Cube,1,1,0,1,0,player_init,null_path
--430,15.007,120,0,-90,0,5,5,5,0,Cube,1,1,0,1,0,tutorial_enemy,null_path
+470,15,120,0,-90,0,5,5,5,0,Cube,1,1,0,1,0,player_init,null_path
+430,15.007,120,0,90,0,5,5,5,0,Cube,1,1,0,1,0,tutorial_enemy,null_path
 [Material]
 [Texture]
 none

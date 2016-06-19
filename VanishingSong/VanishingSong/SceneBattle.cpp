@@ -35,19 +35,22 @@ bool SceneBattle::Initialize(){
 	m_pActionBoard = std::make_shared<ActionBoard>();
 	m_pActionBoard->mInitialize();
 
+	bool bossStage = m_stageID == 5 ? true : false;
 	m_pField = std::make_unique<BattleField>();
-	m_pField->mInitialize(&m_view,m_rhythm.get());
+	m_pField->mInitialize(&m_view,m_rhythm.get(),bossStage,m_MaxWave);
 
 	m_pBattleEnemyManager = std::make_shared<BattleEnemyManager>();
 	m_pBattleEnemyManager->mInitialize(&m_view, m_pField.get());
 
+	m_pNotifier = std::make_unique<OptionNotifier>();
+	m_pNotifier->mInitialize(&m_view, m_pField->mGetEnemyLane(eMusical::eBlue));
+
 	//ウェーブ系
-	m_MaxWave = m_pBattleEnemyManager->mGetWaveAllCount();
 	m_waveID = 1;
 	m_pBattleEnemyManager->ResetEnemyList(m_waveID-1, &m_view);
 
 	m_pGauge = std::make_unique<GaugeManager>();
-	m_pGauge->mInitialize();
+	m_pGauge->mInitialize(m_rhythm.get());
 
 	//hp
 	m_enemyHp = &m_pBattleEnemyManager->mGetCharaStatus(m_waveID - 1);
@@ -55,7 +58,7 @@ bool SceneBattle::Initialize(){
 
 
 	m_pOrderList = std::make_unique<OrderList>();
-	m_pOrderList->mInitialize(m_beatMode,m_battleState,m_pActionBoard.get(),m_pField.get(),m_rhythm.get());
+	m_pOrderList->mInitialize(m_beatMode,m_battleState,m_pActionBoard.get(),m_pField.get(),m_rhythm.get(),m_stageID);
 
 	// プレイヤーの初期化
 	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
@@ -73,7 +76,7 @@ bool SceneBattle::Initialize(){
 	m_isEndTransition = false;
 	m_prevWholeBeatNo = 0;
 
-	m_bgmVolume = 30;
+	m_bgmVolume = 60;
 	m_inCount = 0;
 
 
@@ -82,8 +85,8 @@ bool SceneBattle::Initialize(){
 	m_particleDesc._texturePath = "Texture\\OrderList\\note_a.png";
 	m_particleDesc._rangeMin = Vector3(0, 0, 0);
 	m_particleDesc._rangeMax = Vector3(20, 0, 20);
-	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
-	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eBlue);
+	m_particleDesc._startPoint = m_pField->mGetEnemyLane(eMusical::eAdlib);
+	m_particleDesc._endPoint = m_pField->mGetEnemyLane(eMusical::eAdlib);
 	m_particleDesc._endPoint._y += 100;
 
 	m_players.mUpdate(0, eMusical::eNull);
@@ -134,6 +137,14 @@ void SceneBattle::Finalize(){
 		m_pBattleEnemyManager.reset();
 		m_pBattleEnemyManager = nullptr;
 	}
+	if (m_particle){
+		m_particle.reset();
+		m_particle = nullptr;
+	}
+	if (m_pNotifier){
+		m_pNotifier.reset();
+		m_pNotifier = nullptr;
+	}
 
 	_heapmin();
 	return;
@@ -143,6 +154,7 @@ void SceneBattle::mLoadTextData(){
 	Cipher cip(file);
 	
 	m_stageID = std::atoi(&cip.mGetSpriteArray("[Stage]").front().front());
+	m_MaxWave = std::atoi(&cip.mGetSpriteArray("[WaveAll]").front().front());
 	int type = std::atoi(&cip.mGetSpriteArray("[Beat]").front().front());
 	if (type == 4){
 		m_beatMode = GameManager::eGameMode::eQuarter;
@@ -174,7 +186,7 @@ bool SceneBattle::Updater(){
 	if (m_isEndTransition && m_sound){
 			m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
-			if (m_bgmVolume > 8){
+			if (m_bgmVolume > 30){
 				m_sound->SetValume(-m_bgmVolume * 100);
 				m_bgmVolume--;
 			}
@@ -185,6 +197,7 @@ bool SceneBattle::Updater(){
 			m_enemyHp->_hp -= 1;
 		}
 	}
+	
 	if (m_particle){
 		m_particle->mUpdate(0.8);
 	}
@@ -206,7 +219,16 @@ bool SceneBattle::Updater(){
 				m_enemyVector.push_back(m_pActionBoard->mGetCommand(itr));
 			}
 			m_pOrderList->mAddEnemyOrder(m_enemyVector);
-			m_pOrderList->mSetOption(m_pBattleEnemyManager->mGetAppendOption());
+			int option = m_pBattleEnemyManager->mGetAppendOption();
+			m_pOrderList->mSetOption(option);
+			if (option & 1){
+				m_pNotifier->mChangeTexture(OrderList::eAppendOption::eBlack);
+				m_pNotifier->mSetActive(true);
+			}
+			else if (option & 2){
+				m_pNotifier->mChangeTexture(OrderList::eAppendOption::eReverce);
+				m_pNotifier->mSetActive(true);
+			}
 		}
 		m_processState = eGameState::eCountIn;
 		m_prevWholeBeatNo = (int)(m_rhythm->mWholeBeatTime()+0.1f);
@@ -222,6 +244,7 @@ bool SceneBattle::Updater(){
 		mCountIn();
 	}
 	else if (m_processState == eGameState::eUpdate){
+		m_pNotifier->mSetActive(false);
 		//分岐
 		switch (m_battleState)
 		{
@@ -284,6 +307,7 @@ void SceneBattle::Render(){
 	if (m_particle){
 		m_particle->mRender(shaderHash["texture"].get());
 	}
+	m_pNotifier->mRender(shaderHash["transparent"].get());
 
 	return;
 }
@@ -347,7 +371,7 @@ void SceneBattle::mOnResult(){
 		m_resultUpdateTime = 1.0f;
 
 
-		m_bgmVolume = 30;
+		m_bgmVolume = 60;
 	}
 
 	m_pResult->mUpdate(m_resultUpdateTime);
@@ -447,12 +471,14 @@ void SceneBattle::mCheckBattle(){
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc,&m_view);
 
 
+			m_pField->mDeleteWaveNote();
 			m_battleState = GameManager::eBattleState::eNewWave;
 			m_processState = eGameState::ePreCountIn;
 		}
 		else{
 			m_pBattleEnemyManager->misDie();
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
+			m_pField->mDeleteWaveNote();
 
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;

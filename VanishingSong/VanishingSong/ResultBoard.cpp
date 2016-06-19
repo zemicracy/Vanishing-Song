@@ -29,6 +29,8 @@ void ResultBoard::mFinalize(){
 	for (auto& itr : m_TextureList){
 		itr.second.reset();
 	}
+
+	m_pSoundDevice.reset();
 	m_numberList.clear();
 	m_TextureList.clear();
 }
@@ -94,7 +96,7 @@ void ResultBoard::mInitialize(){
 	m_TextureList["miss"] = gLoadTexture(path + "Miss.png");
 	m_pGeneral["missText"]->SetTexture(m_TextureList["miss"].get());
 
-	m_TextureList["correct"] = gLoadTexture(path + "correct_rate.png");
+	m_TextureList["correct"] = gLoadTexture(path + "clear_rate.png");
 	m_pGeneral["correctRateText"]->SetTexture(m_TextureList["correct"].get());
 
 	m_TextureList["blank"] = gLoadTexture(path + "blank.png");
@@ -124,6 +126,7 @@ void ResultBoard::mInitialize(){
 	reader.UnLoad();
 	m_isEnd = false;
 	m_state = eNone;
+	m_isNoteGet = false;
 }
 
 void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState state,UINT stageID){
@@ -151,13 +154,13 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	m_pGeneral["battleResult"]->SetTexture(m_TextureList["issue"].get());
 
 	std::string path = "Texture\\Result\\rank\\";
+	
+	m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
 	if (rate >= S_Border&& state == GameManager::eBattleState::eWin){
 		m_TextureList["rank"] = gLoadTexture(path + "S.png");
-		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note_a.png");
+		m_isNoteGet = true;
 	}
 	else{
-		m_TextureList["note"] = gLoadTexture("Texture\\OrderList\\note.png");
-
 		if (rate >= A_Border && state == GameManager::eBattleState::eWin){
 			m_TextureList["rank"] = gLoadTexture(path + "A.png");
 		}
@@ -192,18 +195,19 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	auto& itr = ResourceManager::mGetInstance().mGetBGMPath();
 	//ステージ曲追加分
 	if (stageID == 0){
-		if (itr.find(eMusical::eBlue) != itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
+		if (itr.find(eMusical::eBlue) == itr.end() && itr.find(eMusical::eAdlib) == itr.end()){
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
 			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorialEnd);
 		}
 		m_TextureList["note"]->Load("Texture\\OrderList\\note_a.png");
 		m_pGeneral["noteImage"]->SetTexture(m_TextureList["note"].get());
-
+		m_isNoteGet = true;
 	}
 	else if (stageID == 1){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 
+		m_pGeneral["noteImage"]->property._color = Color(0, 0, 1, 0);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field2_1.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eSecoundStage);
@@ -211,7 +215,8 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 	else if (stageID == 2){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
-		
+
+		m_pGeneral["noteImage"]->property._color = Color(0, 1, 0, 0);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eGreen) = "Sound\\BGM\\field2.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eThirdStage);
@@ -220,18 +225,20 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 		
+		m_pGeneral["noteImage"]->property._color = Color(1, 0, 0, 0);
 		if (itr.find(eMusical::eAdlib) == itr.end())
 		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eRed) = "Sound\\BGM\\field3.wav";
 		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eForthStage);
 	}
 	else if (stageID == 4){
-		if (integer < noteBorder)return;
-		
-		if (itr.find(eMusical::eAdlib) == itr.end())
-		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
 		if (GameManager::mGetInstance().mBossState() != GameManager::eBossState::eWin){
 			GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
 		}
+		if (integer < noteBorder)return;
+		
+		m_pGeneral["noteImage"]->property._color = Color(1, 1, 0, 0);
+		if (itr.find(eMusical::eAdlib) == itr.end())
+		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
 	}
 	else if(stageID == 5){
 		if (integer < noteBorder)return;
@@ -240,6 +247,7 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 			cnt++;
 		}		//ボスは音符全部で
 		if (cnt >= 4){
+			m_TextureList["note"]->Load("Texture\\OrderList\\note_a.png");
 			itr.clear();
 			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eAdlib) = "Sound\\BGM\\field5.wav";
 		}
@@ -283,6 +291,8 @@ void ResultBoard::mUpdate(float timeScale){
 			m_pGeneral["missText"]->property._color._alpha = 1;
 			m_timer = 0;
 			m_state++;
+
+			mReloadSound("Sound\\Result\\gauge.wav", -2000);
 		}
 		else{
 			m_timer += GameClock::GetDeltaTime() * timeScale;
@@ -291,11 +301,14 @@ void ResultBoard::mUpdate(float timeScale){
 	break;
 	case ResultBoard::eClearGauge:
 	{
+		m_pSoundDevice->PlayToLoop();
 			m_pGeneral["correctRateText"]->property._color._alpha = 1;
 			if (m_MaxRate <= m_timer){
 				m_timer = 0;
 				m_state++;
 				m_pGauge->mSetRate(m_MaxRate);
+
+				mReloadSound("Sound\\Result\\noteGet.wav", -2000);
 			}
 			else{
 				m_timer += 0.01 * timeScale;
@@ -320,21 +333,31 @@ void ResultBoard::mUpdate(float timeScale){
 	break;
 	case ResultBoard::eNote:
 	{
-		m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin; //(m_noteScaleOrigin * 15);
-		m_pGeneral["noteImage"]->property._color._alpha = 1;
-		if (m_timer < 0){
-			m_pGeneral["noteImage"]->property._transform._scale = m_noteScaleOrigin;
-			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (m_noteScaleOrigin / 2);
-			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
-			m_state++;
-			m_timer = 0;
+		if (m_isNoteGet){
+			m_pSoundDevice->PlayToOneTime();
+			m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin; //(m_noteScaleOrigin * 15);
+			m_pGeneral["noteImage"]->property._color._alpha = 1;
+			if (m_timer < 0){
+				m_pGeneral["noteImage"]->property._transform._scale = m_noteScaleOrigin;
+				m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (m_noteScaleOrigin / 2);
+				m_pGeneral["noteImage"]->property._transform._translation._z = 0;
+				m_state++;
+				m_timer = 0;
+			}
+			else{
+				auto size = (m_pGeneral["noteImage"]->property._transform._scale);
+				m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (size / 2);
+				m_pGeneral["noteImage"]->property._transform._translation._z = 0;
+				m_timer -= 10 * m_acceleration * timeScale;
+				m_acceleration += 0.2;
+			}
 		}
 		else{
-			auto size = (m_pGeneral["noteImage"]->property._transform._scale);
-			m_pGeneral["noteImage"]->property._transform._translation = m_noteTransOrigin - (size / 2);
-			m_pGeneral["noteImage"]->property._transform._translation._z = 0;
-			m_timer -= 10 * m_acceleration * timeScale;
-			m_acceleration += 0.2;
+			if (m_pGeneral["noteImage"]->property._color._alpha > 1){
+				m_pGeneral["noteImage"]->property._color._alpha = 1;
+				m_state++;
+			}else
+				m_pGeneral["noteImage"]->property._color._alpha += 0.05 * timeScale;
 		}
 	}
 	break;
@@ -345,7 +368,7 @@ void ResultBoard::mUpdate(float timeScale){
 			m_timer = 0;
 			m_isEnd = true;
 		}else
-			m_timer += GameClock::GetDeltaTime() * timeScale;
+			m_timer += GameClock::GetDeltaTime();
 
 	}
 		break;
@@ -388,5 +411,16 @@ void ResultBoard::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBa
 			m_pNumSprite->Render(shader);
 		}
 	}
+
+}
+
+void ResultBoard::mReloadSound(std::string file,int volume){
+	if (m_pSoundDevice){
+		m_pSoundDevice->Stop();
+		m_pSoundDevice.reset();
+	}
+	m_pSoundDevice = std::make_shared<GameSound>();
+	m_pSoundDevice->Load(file.c_str());
+	m_pSoundDevice->SetValume(volume);
 
 }

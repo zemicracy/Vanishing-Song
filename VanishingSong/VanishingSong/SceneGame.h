@@ -55,6 +55,7 @@ private:
 	void mTutorial();
 	void mRun();
 	bool mMessageUpdate();
+	void mInitializeBGM();
 private:
 	aetherClass::DirectXEntity m_directX;	
 	eState m_gameState;
@@ -69,5 +70,7 @@ private:
 	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
 	bool m_isTransitionEnd;
 	aetherClass::DirectXEntity m_directEntity;
+	bool m_isFade;
+	bool m_isFade2;
 };
 

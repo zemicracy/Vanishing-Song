@@ -10,6 +10,8 @@
 #include <SpriteBase.h>
 #include <Skybox.h>
 #include "GameManager.h"
+#include"GameSound.h"
+#include "FieldArea.h"
 class SceneTitle :
 	public aetherClass::GameScene
 {
@@ -75,8 +77,13 @@ private:
 	std::shared_ptr<aetherClass::Texture> m_pLogoTexture;
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
+
+	aetherClass::GameSound m_bgm;
+	aetherClass::GameSound m_returnSE;
+	aetherClass::GameSound m_selectSE;
 	std::array<ModeSelect, 3> m_cursorArray;
 	std::unique_ptr<aetherClass::Skybox> m_pSkybox;
+	FieldArea m_field;
 	bool m_pushState;
 	int m_nowSelectMode;
 	bool m_alphaState;

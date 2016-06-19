@@ -19,8 +19,9 @@ public:
 	void mFinalize();
 	void mSetPosion();
 	bool mGetIsJudge();
-	std::shared_ptr<FieldEnemy> mEnemyGet(int);
-
+	std::shared_ptr<FieldEnemy>& mEnemyGet(int);
+	bool mGetBossFlg();
+	void mResetEnemysTransform();
 private:
 
 	std::vector<std::shared_ptr<FieldEnemy>> m_pEnemy;

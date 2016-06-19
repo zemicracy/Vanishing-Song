@@ -24,10 +24,10 @@ bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string data
 	return true;
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
-	m_property._penemy = ResourceManager::mGetInstance().mGetEnemyHash(type);
-	m_property._penemy->property._transform._scale._x = -1;
+	m_property._pEnemy = ResourceManager::mGetInstance().mGetEnemyHash(type);
+	m_property._pEnemy->property._transform._scale._x = -1;
 
-	m_property._penemy->SetCamera(camera);
+	m_property._pEnemy->SetCamera(camera);
 	return true;
 }
 
@@ -37,7 +37,7 @@ bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera
 void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 	m_property._pCollider = std::make_shared<Cube>();
 	m_property._pCollider->Initialize();
-	m_property._pCollider->property._transform._translation = m_property._penemy->property._transform._translation;
+	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation;
 	m_property._pCollider->property._transform._scale = Vector3(10, 10, 10);
 	m_property._pCollider->property._color = Color(1, 1, 1, 0.5);
 	m_property._pCollider->SetCamera(camera);
@@ -46,12 +46,13 @@ void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 
 //XVˆ—
 void FieldEnemy::mUpdate(){
-	m_property._pCollider->property._transform._translation = m_property._penemy->property._transform._translation;
+	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation;
+	m_property._pEnemy->KeyframeUpdate("wait", true);
 }
 
 void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	
-	m_property._penemy->Render(model_shader);
+	m_property._pEnemy->KeyframeAnimationRender(model_shader);
 }
 
 
@@ -60,7 +61,7 @@ FieldEnemy::Property& FieldEnemy::mGetProperty(){
 }
 
 void FieldEnemy::mFaceToPlayer(aetherClass::Vector3 position){
-	m_charaEntity.mFaceToObject(m_property._penemy, position);
+	m_charaEntity.mFaceToObject(m_property._pEnemy, position);
 }
 void FieldEnemy::mFinalize(){
 
@@ -70,8 +71,8 @@ void FieldEnemy::mFinalize(){
 		m_property._pCollider = nullptr;
 	}
 
-	if (m_property._penemy){
-		m_property._penemy.reset();
+	if (m_property._pEnemy){
+		m_property._pEnemy.reset();
 	}
 	
 }
@@ -100,4 +101,12 @@ void FieldEnemy::mRegisterCannnotMessage(std::string path){
 
 std::string FieldEnemy::mGetCannotMessga(){
 	return m_cannotMessagePath;
+}
+
+void FieldEnemy::mResetTransform(){
+	m_property._pEnemy->property._transform = m_initTransform;
+}
+
+void FieldEnemy::mSetTransform(aetherClass::Transform tras){
+	m_initTransform = tras;
 }
