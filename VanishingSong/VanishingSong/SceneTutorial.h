@@ -82,6 +82,7 @@ private:
 	std::unique_ptr<GaugeManager>m_pGauge;
 	std::unique_ptr<ResultBoard>m_pResult;
 	std::unique_ptr<TutorialMessage>m_pTutorial;
+	std::shared_ptr<aetherClass::GameSound>m_pSoundDevice;
 
 	aetherClass::ViewCamera m_view;
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;

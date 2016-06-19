@@ -38,6 +38,9 @@ bool TutorialMessage::mInitialize(){
 			break;
 		}
 	}
+
+	
+
 	m_pTexture = nullptr;
 
 	std::string path = "Texture\\Message\\";
@@ -77,7 +80,6 @@ void TutorialMessage::mFinalize(){
 	m_message.reset();
 	m_pTexture.reset();
 	m_pButtonTex.reset();
-
 }
 
 void TutorialMessage::mShowBackCover(const bool flg){
@@ -94,7 +96,7 @@ void TutorialMessage::mRender(aetherClass::ShaderBase* shader, aetherClass::Shad
 	}
 }
 void TutorialMessage::mUpdate(){
-	m_message->mUpdate(true);
+	m_message->mUpdate(false);
 }
 
 void TutorialMessage::mSetVisible(const bool flg){
