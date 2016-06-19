@@ -441,10 +441,6 @@ void SceneTutorial::mOnResult(){
 		m_sound->Load("Sound\\Result\\result.wav");
 		m_rhythm->mInitializeRhythm(m_sound, 110);
 
-		m_isTutorialPlay = true;
-		m_tutorialState = eTutorialState::eFin;
-		m_pTutorial->mShowBackCover(true);
-
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();
 
@@ -459,6 +455,13 @@ void SceneTutorial::mOnResult(){
 
 	m_pResult->mUpdate(m_resultUpdateTime);
 	if (m_pResult->mIsEnd()){
+		if (m_tutorialState != eTutorialState::eFin){
+			m_isTutorialPlay = true;
+			m_tutorialState = eTutorialState::eFin;
+			m_pTutorial->mShowBackCover(true);
+			return;
+		}
+
 		const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 		if (isPress){
 			ChangeScene(SceneGame::Name, LoadState::eUse);
