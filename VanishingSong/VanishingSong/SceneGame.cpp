@@ -85,6 +85,7 @@ bool SceneGame::Initialize(){
 
 	mInitializeBGM();
 
+
 	m_isTransitionEnd = false;
 	m_isFade = false;
 	m_isFade2 = false;
@@ -112,6 +113,7 @@ void SceneGame::mInitializeBGM(){
 // ‘S‚Ä‚Ì‰ð•ú
 void SceneGame::Finalize(){
 	_heapmin();
+
 
 	if (m_pCageManager){
 		m_pCageManager.reset();

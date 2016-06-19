@@ -72,5 +72,6 @@ private:
 	aetherClass::DirectXEntity m_directEntity;
 	bool m_isFade;
 	bool m_isFade2;
+
 };
 
