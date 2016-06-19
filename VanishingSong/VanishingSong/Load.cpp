@@ -43,7 +43,7 @@ void Load::Initialize(){
 	m_model->property._transform._scale._x = -1;
 	m_model->property._transform._rotation._y = 180;
 	m_model->property._transform._translation._y = -40;
-
+	m_model->property._transform._translation._x = 35;
 	m_view.property._translation._z = -100;
 }
 

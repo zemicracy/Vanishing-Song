@@ -12,6 +12,8 @@
 #include "SceneGame.h"
 #include"SceneCregit.h"
 #include "PlayDataManager.h"
+#include <Shlwapi.h>
+#pragma comment (lib,"ShlwApi.lib")
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
@@ -19,7 +21,7 @@ namespace{
 	const bool kMenuSelect = true;
 	const std::string kExit = "Exit";
 	const bool kShutdown = false;
-	const int kSkipNumber = 3;
+	const int kLoadNumber = 1;
 	const float kUIDepth = 0.9;
 }
 const std::string SceneTitle::Name = "Title";
@@ -59,7 +61,21 @@ bool SceneTitle::Initialize(){
 	m_pLogoTexture->Load("Texture\\Title\\Logo.png");
 
 	m_pMenuTexture = std::make_shared<Texture>();
-	m_pMenuTexture->Load("Texture\\Title\\Select.png");
+	std::wstring filePath;
+	for (auto& index : PlayDataManager::mFilePath){
+		filePath.push_back(index);
+	}
+	// ファイルがあるかの確認
+	if (PathFileExists(filePath.c_str())){
+		m_isVisibleSaveData = true;
+		m_pMenuTexture->Load("Texture\\Title\\AllSelect.png");
+	}
+	else{
+		m_isVisibleSaveData = false;
+		m_pMenuTexture->Load("Texture\\Title\\NoLoadSelect.png");
+	}
+
+	
 
 	m_pPushTexture = std::make_shared<Texture>();
 	m_pPushTexture->Load("Texture\\Title\\PushStart.png");
@@ -104,6 +120,13 @@ bool SceneTitle::Initialize(){
 	m_field.mInitialize("Model\\Field\\title_tex");
 	m_field.mSetCamera(&m_view);
 
+	m_view.property._rotation._x = 5;
+	m_view.property._translation = Vector3(70, 60, -900);
+
+	m_bluePlayer = ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue);
+	m_bluePlayer->property._transform._translation = Vector3(100, 0, -500);
+	m_bluePlayer->property._transform._rotation._y = 180;
+	m_bluePlayer->SetCamera(&m_view);
 
 	m_pSkybox = std::make_unique<Skybox>();
 	m_pSkybox->Initialize();
@@ -118,13 +141,13 @@ bool SceneTitle::Initialize(){
 
 	m_selectSE.Load("Sound\\Title\\select.wav");
 	m_selectSE.SetValume(-3000);
-	m_view.property._rotation._x = 10;
-	m_view.property._translation = Vector3(70, 60, -900);
+
+	
+	
 	m_pushState = false;
 	m_alphaState = false;
 	m_nowSelectMode = NULL;
 	m_nowCursor = NULL;
-
 	_heapmin();
 	return true;
 }
@@ -189,6 +212,7 @@ void SceneTitle::Finalize(){
 bool SceneTitle::Updater(){
 	m_bgm.PlayToLoop();
 	m_field.mUpdate(1.0);
+	m_bluePlayer->KeyframeUpdate(m_bluePlayer->GetKeyframeNameList(0), true);
 	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	std::pair<bool, bool> UpOrDown;
@@ -216,6 +240,7 @@ void SceneTitle::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pSkybox->Render(shaderHash["texture"].get());
 	m_field.mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_bluePlayer->KeyframeAnimationRender(shaderHash["texture"].get());
 	return;
 }
 
@@ -249,23 +274,29 @@ bool SceneTitle::TransitionOut(){
 
 void SceneTitle::mChangeSelect(const bool isUp, const bool isDown){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
+	int sum = NULL;
 	if (isUp){ 
 		m_selectSE.Stop();
 		m_selectSE.PlayToOneTime();
-		m_nowCursor -= 1;
+		sum = -1;
+		m_nowCursor += sum;
 	}
 	else if (isDown){
 		m_selectSE.Stop();
 		m_selectSE.PlayToOneTime();
-		m_nowCursor += 1;
+		sum = 1;
+		m_nowCursor += sum;
 	}
 
 	const int max = m_cursorArray.size() - 1;
+	if (m_nowCursor == kLoadNumber&& !m_isVisibleSaveData){
+		m_nowCursor += sum;
+	}
 	if (m_nowCursor > max){
 		m_nowCursor = 0;
 	}
 	else if (m_nowCursor < 0){
-		m_nowCursor = 2;
+		m_nowCursor = max;
 	}
 
 	m_pCursor->property._transform._translation._y = m_cursorArray[m_nowCursor]._cursorY;
