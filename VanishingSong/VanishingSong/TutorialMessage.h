@@ -22,6 +22,7 @@ private:
 
 	std::unordered_map<std::string, std::string>m_pTextTextureList;
 	std::shared_ptr<aetherClass::Texture>m_pTexture;
+	std::shared_ptr<aetherClass::Texture>m_pButtonTex;
 	std::shared_ptr<MessageWindow>m_message;
 	std::shared_ptr<aetherClass::Rectangle2D>m_windowBackCover;
 	bool m_isVisible;

@@ -66,6 +66,9 @@ bool TutorialMessage::mInitialize(){
 	m_pTexture = gCreateTexture(m_pTextTextureList["Init1"]);
 	m_message->mSetText(m_pTexture.get());
 
+	m_pButtonTex = gCreateTexture("Texture\\Message\\nextButton.png");
+	m_message->mSetButton(m_pButtonTex.get());
+
 	return true;
 }
 
@@ -73,6 +76,8 @@ void TutorialMessage::mFinalize(){
 	m_pTextTextureList.clear();
 	m_message.reset();
 	m_pTexture.reset();
+	m_pButtonTex.reset();
+
 }
 
 void TutorialMessage::mShowBackCover(const bool flg){
@@ -89,7 +94,7 @@ void TutorialMessage::mRender(aetherClass::ShaderBase* shader, aetherClass::Shad
 	}
 }
 void TutorialMessage::mUpdate(){
-	m_message->mUpdate(false);
+	m_message->mUpdate(true);
 }
 
 void TutorialMessage::mSetVisible(const bool flg){
