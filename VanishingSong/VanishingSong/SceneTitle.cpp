@@ -20,6 +20,7 @@ namespace{
 	const std::string kExit = "Exit";
 	const bool kShutdown = false;
 	const int kSkipNumber = 3;
+	const float kUIDepth = 0.9;
 }
 const std::string SceneTitle::Name = "Title";
 SceneTitle::SceneTitle() :
@@ -71,7 +72,7 @@ bool SceneTitle::Initialize(){
 
 	const float logoX = (kWindowWidth / 2) - (m_pLogo->property._transform._scale._x / 2);
 	const float logoY = (kWindowHeight / 2) - (m_pLogo->property._transform._scale._y) + 100;
-	m_pLogo->property._transform._translation = Vector3(logoX, logoY, 0);
+	m_pLogo->property._transform._translation = Vector3(logoX, logoY, kUIDepth);
 	m_pLogo->property._color = Color(0, 0, 0, 1);
 
 	// メニューの初期化
@@ -82,21 +83,21 @@ bool SceneTitle::Initialize(){
 
 	const float menuX = (kWindowWidth / 2) - (m_pMenu->property._transform._scale._x / 2);
 	const float menuY = (kWindowHeight / 2) +(kWindowHeight/20);
-	m_pMenu->property._transform._translation = Vector3(menuX, menuY, 0);
+	m_pMenu->property._transform._translation = Vector3(menuX, menuY, kUIDepth);
 	m_pMenu->property._color = Color(0, 0, 0, 1);
 
 	// カーソルの初期化
 	m_pCursor = std::make_unique<Rectangle2D>();
 	m_pCursor->Initialize();
-	m_pCursor->property._color = Color(1, 1, 1, 0.3);
+	m_pCursor->property._color = Color(1, 1, 1, 0.5);
 	m_pCursor->property._transform._scale = Vector3(400, 50, 0);
-	m_pCursor->property._transform._translation = m_pMenu->property._transform._translation + Vector3(0,35,0);
+	m_pCursor->property._transform._translation = m_pMenu->property._transform._translation + Vector3(0, 35, 0);
 
 	const float cursorPosition = m_pCursor->property._transform._translation._y;
 	const float cursorSize = m_pCursor->property._transform._scale._y;
 
 	for (int i = 0; i < m_cursorArray.size(); ++i){
-		m_cursorArray[i]._cursorY = cursorPosition + (i * (35 + cursorSize));
+		m_cursorArray[i]._cursorY = cursorPosition + (i * (22 + cursorSize));
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
 
@@ -117,7 +118,6 @@ bool SceneTitle::Initialize(){
 
 	m_selectSE.Load("Sound\\Title\\select.wav");
 	m_selectSE.SetValume(-3000);
-
 	m_view.property._rotation._x = 10;
 	m_view.property._translation = Vector3(70, 60, -900);
 	m_pushState = false;
@@ -332,6 +332,9 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	SceneInfo info;
 	switch (index){
 	case eNextMode::eStart:
+		info._nextSceneName = SceneGame::Name;
+		break;
+	case eNextMode::eLoad:
 		info._nextSceneName = SceneGame::Name;
 		break;
 	case eNextMode::eCredit:

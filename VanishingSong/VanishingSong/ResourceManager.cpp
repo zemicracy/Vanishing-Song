@@ -309,7 +309,7 @@ std::string& ResourceManager::mSetBGMPath(eMusical type){
 }
 
 void ResourceManager::mInitializeLaod(){
-	for (int i = 0; i < 3; ++i){
+	for (int i = 0; i < 6; ++i){
 		RegisterTexture("NowLoading" + std::to_string(i + 1), "Texture\\Load\\NowLoading\\" + std::to_string(i + 1) + ".png");
 	}
 }

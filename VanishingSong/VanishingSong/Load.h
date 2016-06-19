@@ -3,6 +3,7 @@
 #include <LoadScreen.h>
 #include <memory>
 #include <SpriteBase.h>
+#include <FbxModel.h>
 class Load :
 	public aetherClass::LoadScreen
 {
@@ -20,8 +21,10 @@ private:
 	void mResetProperty();
 private:
 	std::unique_ptr<aetherClass::SpriteBase> m_pLoadBar;
+	std::shared_ptr<aetherClass::FbxModel> m_model;
 	float m_changeBarTime;
 	int m_barCount;
+	aetherClass::ViewCamera m_view;
 };
 
 #endif
