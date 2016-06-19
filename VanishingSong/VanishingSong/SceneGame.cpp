@@ -241,6 +241,11 @@ void SceneGame::mRun(){
 		return;
 	}
 
+	if (GameController::GetJoypad().ButtonPress(eJoyButton::eBack)){
+		PlayDataManager save;
+		save.mSave();
+	}
+
 	m_pCollideManager->mUpdate();
 
 	// メッセージの更新処理
