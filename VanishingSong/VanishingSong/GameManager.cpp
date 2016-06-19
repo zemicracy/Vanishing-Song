@@ -110,3 +110,12 @@ int  GameManager::mGetCanStage()const{
 FadeManager& GameManager::mfadeManager(){
 	return m_fadeManager;
 }
+
+std::pair<int, Transform>&  GameManager::mPrevEnemy(){
+	return m_prevEnemy;
+}
+void GameManager::mPrevEnemy(const int number, Transform tras){
+	m_prevEnemy.first = number;
+	m_prevEnemy.second = tras;
+
+}

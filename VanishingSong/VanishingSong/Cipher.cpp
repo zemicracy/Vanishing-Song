@@ -20,6 +20,7 @@ Cipher::Cipher(std::string path)
 
 Cipher::~Cipher()
 {
+	mUnLoad();
 }
 
 void Cipher::mLoadFile(std::string path){
@@ -37,7 +38,7 @@ void Cipher::mLoadFile(std::string path){
 		
 		
 		std::string decode = mDecode(readLine, KeyCount);
-		if (decode.front() == '['&&decode.back() == ']'){
+		if (decode.size()>0&&(decode.front() == '['&&decode.back() == ']')){
 			//Å@É^ÉOÇÃê›íË
 			tag = decode;
 			m_elemetHash[tag].clear();
@@ -137,4 +138,66 @@ void Cipher::mConsoleFind(){
 		}
 	}
 	return;
+}
+
+void Cipher::mLock(std::string filePath){
+
+
+	std::ifstream reader;
+	reader.open(filePath, std::ios::in);
+
+	reader.unsetf(std::ios::skipws);
+
+	std::vector<std::string> input;
+
+	int KeyCounter = 0;
+	while (!reader.eof())
+	{
+		std::string line;
+		std::getline(reader, line);
+
+		std::string data;
+
+		input.push_back(line);
+	}
+	reader.close();
+
+	std::ofstream wrriter;
+	std::vector<std::string> pathSplite;
+	std::stringstream ss(filePath);
+	std::string buffer;
+	while (std::getline(ss, buffer, '.')) {
+		pathSplite.push_back(buffer);
+	}
+
+	wrriter.open(filePath);
+	std::string aether = pathSplite.back();
+	int i = 0;
+	KeyCounter = 0;
+	for (auto index : input){
+		for (auto moji : index){
+			char ango = moji ^ mKey[KeyCounter];
+			wrriter << ango;
+			if (aether != "aether"){
+				KeyCounter += 1;
+				if (KeyCounter > mKeySize){
+					KeyCounter = 0;
+				}
+			}
+			else{
+				KeyCounter = 0;
+			}
+		}
+
+		i += 1;
+		if (i > input.size() - 1){
+			break;
+		}
+
+		wrriter << "\n";
+
+	}
+
+
+	wrriter.close();
 }

@@ -23,6 +23,8 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 		if (index->_name == "tutorial_enemy"){
 			m_model->property._transform._translation = Vector3(index->_transform._translation._x, 0, index->_transform._translation._z);
 			m_model->property._transform._rotation = index->_transform._rotation;
+			m_model->property._transform._scale._x = -1;
+			m_initTrans = m_model->property._transform;
 		}
 	}
 	reader.UnLoad();
@@ -80,6 +82,7 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 		return;
 	}
 	m_model->KeyframeUpdate("wait", true);
+	m_model->property._transform = m_initTrans;
 	if (selectButton){
 		m_isYes = !m_isYes;
 	}
