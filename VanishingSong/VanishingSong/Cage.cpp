@@ -55,12 +55,17 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_messagePath.fill("null");
 	m_buttonSE.Load("Sound\\Field\\message.wav");
 	m_buttonSE.SetValume(-3000);
+
+	m_buttonTexture.Load("Texture\\Message\\nextButton.png");
+
+	m_messageWindow.mSetButton(&m_buttonTexture);
 	return;
 }
 
 //
 void Cage::mUpdate(const float timeScale, Vector3 position, const bool button){
 	m_charaEntity.mFaceToObject(m_model, position);
+	m_messageWindow.mUpdate(false);
 	if (m_isComment){
 		m_changeCommentCount += GameClock::GetDeltaTime();
 

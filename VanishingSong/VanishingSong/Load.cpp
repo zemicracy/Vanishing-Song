@@ -8,7 +8,7 @@
 #include <GameController.h>
 using namespace aetherClass;
 namespace{
-	const float kChangeBarTime = 1.f;
+	const float kChangeBarTime = 0.3f;
 }
 Load::Load()
 {
@@ -95,7 +95,7 @@ bool Load::WaitRun(){
 void Load::mChangeBar(float& time){
 	if (time > kChangeBarTime){
 		m_barCount += 1;
-		if (m_barCount >= 3){
+		if (m_barCount >= 6){
 			m_barCount = NULL;
 		}
 		auto loadBarTexture = ResourceManager::mGetInstance().GetTexture("NowLoading" + std::to_string(m_barCount+1)).get();

@@ -38,7 +38,8 @@ private:
 	aetherClass::Vector3 m_initialPosition;
 	CharaEntity m_charaEntity;
 	std::shared_ptr < aetherClass::Cube> m_pCollider;
-	std::array<std::string,2> m_messagePath;
+	std::array<std::string, 2> m_messagePath; 
+	aetherClass::Texture m_buttonTexture;
 	bool m_isTought;
 	bool m_isComment;
 	bool m_isMessage;
