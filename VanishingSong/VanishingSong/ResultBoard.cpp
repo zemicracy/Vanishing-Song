@@ -96,7 +96,7 @@ void ResultBoard::mInitialize(){
 	m_TextureList["miss"] = gLoadTexture(path + "Miss.png");
 	m_pGeneral["missText"]->SetTexture(m_TextureList["miss"].get());
 
-	m_TextureList["correct"] = gLoadTexture(path + "correct_rate.png");
+	m_TextureList["correct"] = gLoadTexture(path + "clear_rate.png");
 	m_pGeneral["correctRateText"]->SetTexture(m_TextureList["correct"].get());
 
 	m_TextureList["blank"] = gLoadTexture(path + "blank.png");
