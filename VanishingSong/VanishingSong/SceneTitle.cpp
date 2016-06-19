@@ -75,8 +75,6 @@ bool SceneTitle::Initialize(){
 		m_pMenuTexture->Load("Texture\\Title\\NoLoadSelect.png");
 	}
 
-	
-
 	m_pPushTexture = std::make_shared<Texture>();
 	m_pPushTexture->Load("Texture\\Title\\PushStart.png");
 	
@@ -361,11 +359,13 @@ bool SceneTitle::mMenuSelectState(const bool isReturn, const  std::pair<bool, bo
 
 SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	SceneInfo info;
+	PlayDataManager load;
 	switch (index){
 	case eNextMode::eStart:
 		info._nextSceneName = SceneGame::Name;
 		break;
 	case eNextMode::eLoad:
+		load.mLoad();
 		info._nextSceneName = SceneGame::Name;
 		break;
 	case eNextMode::eCredit:
