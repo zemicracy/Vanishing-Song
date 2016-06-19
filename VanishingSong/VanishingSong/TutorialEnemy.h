@@ -48,5 +48,6 @@ private:
 	std::shared_ptr<aetherClass::Rectangle2D> m_pCursor;
 	std::unordered_map<bool, float> m_cursorPosition;
 	std::unordered_map<eState, std::shared_ptr<aetherClass::Texture>> m_texture;
+	aetherClass::Transform m_initTrans;
 };
 

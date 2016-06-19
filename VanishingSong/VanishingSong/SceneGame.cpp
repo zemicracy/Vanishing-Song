@@ -10,6 +10,7 @@
 #include "SceneTutorial.h"
 #include "ResourceManager.h"
 #include "Debug.h"
+#include "PlayDataManager.h"
 using namespace aetherClass;
 
 const std::string SceneGame::Name = "Game";
@@ -66,16 +67,20 @@ bool SceneGame::Initialize(){
 	
 	const bool isTutorial = (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial)
 		|| (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd);
-
 	m_pTutorialEnemy = std::make_shared<TutorialEnemy>();
-	m_pTutorialEnemy->mInitalize(isTutorial,ResourceManager::mGetInstance().mGetEnemyHash(eMusical::eBlue));
-
+	m_pTutorialEnemy->mInitalize(isTutorial, ResourceManager::mGetInstance().mGetEnemyHash(eMusical::eBlue));
 	if (isTutorial){
 		m_gameState = eState::eTutorial;
 	}
 	else{
 		// ƒQ[ƒ€‚Ìó‘Ô‚ð“o˜^
 		m_gameState = eState::eRun;
+		m_pFieldEnemy->mResetEnemysTransform();
+		if (GameManager::mGetInstance().mPrevEnemy().second._rotation._y != 0){
+			const int number = GameManager::mGetInstance().mPrevEnemy().first;
+			Transform trans = GameManager::mGetInstance().mPrevEnemy().second;
+			m_pFieldEnemy->mEnemyGet(number)->mGetProperty()._pEnemy->property._transform._rotation = trans._rotation;
+		}
 	}
 
 	mInitializeBGM();
@@ -84,8 +89,9 @@ bool SceneGame::Initialize(){
 	m_isFade = false;
 	m_isFade2 = false;
 	// ‚Æ‚è‚ ‚¦‚¸ˆê‰ñŒÄ‚ñ‚Å‚¨‚­
-	mRun();
 	mTutorial();
+	mRun();
+	
 	_heapmin();
 	return true;
 }
@@ -106,6 +112,7 @@ void SceneGame::mInitializeBGM(){
 // ‘S‚Ä‚Ì‰ð•ú
 void SceneGame::Finalize(){
 	_heapmin();
+
 	if (m_pCageManager){
 		m_pCageManager.reset();
 		m_pCageManager = nullptr;
@@ -227,6 +234,7 @@ void SceneGame::mRun(){
 	//// ƒ^ƒCƒgƒ‹‚É–ß‚é
 	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
 		m_gameState = eState::eExit;
+
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return;
 	}
@@ -242,7 +250,7 @@ void SceneGame::mRun(){
 		ChangeScene(SceneBattle::Name, LoadState::eUse);
 		return;
 	}
-
+	
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
 	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();
@@ -253,7 +261,9 @@ void SceneGame::mRun(){
 //
 void SceneGame::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
-	m_pTutorialEnemy->mRender(shaderHash["texture"].get());
+	if (m_pTutorialEnemy){
+		m_pTutorialEnemy->mRender(shaderHash["texture"].get());
+	}
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
@@ -308,7 +318,7 @@ bool SceneGame::mMessageUpdate(){
 	if (m_pMessageManager->mGetIsChangeScene()){
 		GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
 		GameManager::mGetInstance().mBattleDataFile(m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetBattleDataPath());
-
+		GameManager::mGetInstance().mPrevEnemy(collideInfo.first, m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetProperty()._pEnemy->property._transform);
 		return true;
 	}
 

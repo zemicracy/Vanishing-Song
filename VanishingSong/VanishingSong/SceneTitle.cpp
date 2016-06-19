@@ -11,6 +11,7 @@
 #include "ResourceManager.h"
 #include "SceneGame.h"
 #include"SceneCregit.h"
+#include "PlayDataManager.h"
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
@@ -114,7 +115,7 @@ bool SceneTitle::Initialize(){
 	m_returnSE.Load("Sound\\Title\\decision.wav");
 	m_returnSE.SetValume(-3000);
 
-	m_selectSE.Load("Sound\\Title\\decision.wav");
+	m_selectSE.Load("Sound\\Title\\select.wav");
 	m_selectSE.SetValume(-3000);
 
 	m_view.property._rotation._x = 10;
@@ -123,6 +124,7 @@ bool SceneTitle::Initialize(){
 	m_alphaState = false;
 	m_nowSelectMode = NULL;
 	m_nowCursor = NULL;
+
 	_heapmin();
 	return true;
 }
@@ -276,6 +278,7 @@ void SceneTitle::mCursorState(const bool isStart){
 	if (m_pushState != kPleaseClick)return;
 
 	if (isStart){
+		m_returnSE.Stop();
 		m_returnSE.PlayToOneTime();
 		m_pMenu->SetTexture(m_pMenuTexture.get());
 		m_pushState = kMenuSelect;
@@ -311,6 +314,7 @@ bool SceneTitle::mMenuSelectState(const bool isReturn, const  std::pair<bool, bo
 		SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 		// Exit以外が来たらシーンの遷移を開始
 		if (nextState._nextSceneName != kExit){
+			m_returnSE.Stop();
 			m_returnSE.PlayToOneTime();
 			// シーンの遷移
 			ChangeScene(nextState._nextSceneName, LoadState::eUse);
