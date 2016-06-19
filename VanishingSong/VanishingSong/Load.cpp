@@ -35,6 +35,16 @@ void Load::Initialize(){
 			m_pLoadBar->property._transform = index->_transform;
 		}
 	}
+
+	m_model = std::make_shared<FbxModel>();
+	m_model->LoadFBX("Model\\Load\\model.fbx", eAxisSystem::eAxisOpenGL);
+	m_model->SetTextureDirectoryName("Model\\Load\\tex");
+	m_model->SetCamera(&m_view);
+	m_model->property._transform._scale._x = -1;
+	m_model->property._transform._rotation._y = 180;
+	m_model->property._transform._translation._y = -40;
+
+	m_view.property._translation._z = -100;
 }
 
 
@@ -51,11 +61,14 @@ void Load::Finalize(){
 	ƒ[ƒh’†‚Ìˆ—
 */
 void Load::Run(){
+	auto shader = ResourceManager::mGetInstance().mGetShaderHash();
+	m_view.Render();
+	m_model->KeyframeUpdate(m_model->GetKeyframeNameList(0),true);
+	m_model->KeyframeAnimationRender(shader["texture"].get());
+
 	mChangeBar(m_changeBarTime);
 	DirectXEntity entity;
 	entity.GetDirect3DManager()->Change2DMode();
-	auto shader = ResourceManager::mGetInstance().mGetShaderHash();
-
 	m_pLoadBar->Render(shader["texture"].get());
 	entity.GetDirect3DManager()->Change3DMode();
 	
