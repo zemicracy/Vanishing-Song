@@ -765,18 +765,13 @@ void OrderList::mRhythmicMotion(){
 	static int maxFrame;
 	static int power = 0;
 
-	if (m_rhythm->mIsWholeBeat()){
+	if (m_rhythm->mIsQuarterBeat()){
 		framecnt = 0;
 		maxFrame = 2;
-		power = 4;
-	}
-	else if (m_rhythm->mIsQuarterBeat()){
-		framecnt = 0;
-		maxFrame = 1;
 		power = 2;
 	}
 	if (framecnt < maxFrame){
-		GameController::GetJoypad().SetVibration(std::make_pair(60000 * power, 60000 * power));
+		GameController::GetJoypad().SetVibration(std::make_pair(20000 * power, 65535 * power));
 	}
 	else{
 		GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
