@@ -91,7 +91,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 4 : 8;
 
-	reader.Load("data/orderList.aether");
+	reader.Load("data\\Battle\\orderList.aether",true);
 
 	
 	m_pSpriteList.resize(8);
