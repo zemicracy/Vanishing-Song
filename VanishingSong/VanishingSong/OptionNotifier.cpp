@@ -17,7 +17,7 @@ void OptionNotifier::mInitialize(aetherClass::ViewCamera* camera, aetherClass::V
 	m_pRect->Initialize();
 
 	m_pRect->property._transform._translation = pos;
-	m_pRect->property._transform._translation._y += 30;
+	m_pRect->property._transform._translation._y += 50;
 
 	m_pRect->property._transform._rotation = camera->property._rotation;
 	m_pRect->property._transform._scale = Vector3(4, 3, 1);
