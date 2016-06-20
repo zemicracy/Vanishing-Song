@@ -29,7 +29,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//SpawnêŠ
 	for (auto index : reader.GetInputWorldInfo()._object){
 		if (index->_name == "area1"){
-			m_pEnemySpawner[0] = index->_transform._translation;
+			m_pEnemySpawner[0] = index->_transform._translation + Vector3(0, 0, -150);
 		}
 		if (index->_name == "area2"){
 			m_pEnemySpawner[1] = index->_transform._translation;
@@ -41,7 +41,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 			m_pEnemySpawner[3] = index->_transform._translation+Vector3(100,0,50);
 		}
 		if (index->_name == "area5"){
-			m_pEnemySpawner[4] = index->_transform._translation;
+			m_pEnemySpawner[4] = index->_transform._translation + Vector3(0, 0, 100);
 		}
 	}
 	reader.UnLoad();

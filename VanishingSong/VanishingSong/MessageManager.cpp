@@ -7,7 +7,7 @@ namespace{
 	const int kFirst = 0;
 	const int kCounterNull = 0;
 	const float kMessageFlameTime = 1.0f;
-	const Vector3 kMessageFlameOffset = Vector3(0,40,0);
+	const Vector3 kMessageFlameOffset = Vector3(0,50,0);
 }
 MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherClass::ViewCamera* camera)
 {
