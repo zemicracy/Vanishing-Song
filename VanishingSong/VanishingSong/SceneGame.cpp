@@ -50,7 +50,7 @@ bool SceneGame::Initialize(){
 
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
-	m_pFieldArea->mInitialize("Model\\Field\\title_tex");
+	m_pFieldArea->mInitialize("Model\\Field\\game_tex");
 	m_pFieldArea->mSetCamera(view);
 
 
@@ -85,6 +85,7 @@ bool SceneGame::Initialize(){
 
 	mInitializeBGM();
 
+
 	m_isTransitionEnd = false;
 	m_isFade = false;
 	m_isFade2 = false;
@@ -112,6 +113,7 @@ void SceneGame::mInitializeBGM(){
 // ‘S‚Ä‚Ì‰ð•ú
 void SceneGame::Finalize(){
 	_heapmin();
+
 
 	if (m_pCageManager){
 		m_pCageManager.reset();
@@ -237,6 +239,11 @@ void SceneGame::mRun(){
 
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return;
+	}
+
+	if (GameController::GetJoypad().ButtonPress(eJoyButton::eBack)){
+		PlayDataManager save;
+		save.mSave();
 	}
 
 	m_pCollideManager->mUpdate();

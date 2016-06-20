@@ -19,6 +19,7 @@ class SceneTitle :
 	enum eNextMode{
 		eNull = 0,
 		eStart,
+		eLoad,
 		eCredit,
 		eExit
 	};
@@ -78,16 +79,19 @@ private:
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
 
+	std::shared_ptr<aetherClass::FbxModel> m_bluePlayer;
+
 	aetherClass::GameSound m_bgm;
 	aetherClass::GameSound m_returnSE;
 	aetherClass::GameSound m_selectSE;
-	std::array<ModeSelect, 3> m_cursorArray;
+	std::array<ModeSelect, 4> m_cursorArray;
 	std::unique_ptr<aetherClass::Skybox> m_pSkybox;
 	FieldArea m_field;
 	bool m_pushState;
 	int m_nowSelectMode;
 	bool m_alphaState;
 	int m_nowCursor;
+	bool m_isVisibleSaveData;
 
 	aetherClass::ViewCamera m_view;
 };

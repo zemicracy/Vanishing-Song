@@ -102,7 +102,7 @@ void ResultBoard::mInitialize(){
 	m_TextureList["blank"] = gLoadTexture(path + "blank.png");
 	m_pGeneral["backboard"]->SetTexture(m_TextureList["blank"].get());
 
-	m_TextureList["return"] = gLoadTexture("Texture\\ActionCommand\\Red.png");
+	m_TextureList["return"] = gLoadTexture("Texture\\Result\\Red.png");
 	m_pGeneral["return"]->SetTexture(m_TextureList["return"].get());
 
 
@@ -301,14 +301,14 @@ void ResultBoard::mUpdate(float timeScale){
 	break;
 	case ResultBoard::eClearGauge:
 	{
-		m_pSoundDevice->PlayToLoop();
+	//	m_pSoundDevice->PlayToLoop();
 			m_pGeneral["correctRateText"]->property._color._alpha = 1;
 			if (m_MaxRate <= m_timer){
 				m_timer = 0;
 				m_state++;
 				m_pGauge->mSetRate(m_MaxRate);
 
-				mReloadSound("Sound\\Result\\noteGet.wav", -2000);
+				//mReloadSound("Sound\\Result\\rank.wav", -3000);
 			}
 			else{
 				m_timer += 0.01 * timeScale;
@@ -318,13 +318,15 @@ void ResultBoard::mUpdate(float timeScale){
 	break;
 	case ResultBoard::eRank:
 	{
+		m_pSoundDevice->PlayToOneTime();
 		m_pGeneral["rankText"]->property._color._alpha = 1;
 		m_pGeneral["rankFrame"]->property._color._alpha = 1;
 		m_pGeneral["rankImage"]->property._color._alpha = 1;
-		if (m_timer > 1){
+		if (m_timer >= 1){
 			m_timer = 1000;
 			m_acceleration = 1.0;
 			m_state++;
+			mReloadSound("Sound\\Result\\noteGet.wav", -2000);
 		}
 		else{
 			m_timer += GameClock::GetDeltaTime() * timeScale;

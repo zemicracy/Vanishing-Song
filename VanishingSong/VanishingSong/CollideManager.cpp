@@ -63,7 +63,6 @@ void CollideManager::mCheckHitObject(const int number){
 
 void CollideManager::mCheckHitEnemy(const int number){
 
-	if (!m_enemy->mGetBossFlg() && number == kBossNumber)return;
 
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
@@ -77,6 +76,22 @@ void CollideManager::mCheckHitEnemy(const int number){
 	if (m_messageInfo.second)return;
 	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
 		m_player->mOnHitWall(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
+	}
+
+	if (!m_enemy->mGetBossFlg()&&number != 0)return;
+
+	if ((x*x) + (z*z) > kRange*kRange){
+		m_messageInfo.first = kBossNumber;
+		m_messageInfo.second = true;
+	}
+	else{
+		m_messageInfo.second = false;
+	}
+
+	if (m_messageInfo.second)return;
+
+	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(kBossNumber)->mGetProperty()._pCollider.get())){
+		m_player->mOnHitWall(m_enemy->mEnemyGet(kBossNumber)->mGetProperty()._pCollider.get());
 	}
 	
 }

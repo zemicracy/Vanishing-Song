@@ -106,6 +106,10 @@ bool SceneTutorial::Initialize(){
 			m_enemyVector.push_back(m_pActionBoard->mGetCommand(askey[i]));
 	}
 
+	m_pSoundDevice = std::make_shared<GameSound>();
+	m_pSoundDevice->Load("Sound\\Field\\message.wav");
+	m_pSoundDevice->SetValume(-2000);
+
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume * 100);
 	_heapmin();
@@ -151,6 +155,7 @@ void SceneTutorial::Finalize(){
 	for (int i = 0; i < 20; ++i){
 		_heapmin();
 	}
+	m_pSoundDevice.reset();
 	return;
 }
 void SceneTutorial::mLoadTextData(){
@@ -181,6 +186,7 @@ void SceneTutorial::mLoadTextData(){
 //‚±‚±‚Åˆê’UŽ~‚ß‚½‚è‚·‚é
 bool SceneTutorial::mTutorialUpdater(){
 	bool result = true;
+	m_pTutorial->mUpdate();
 
 	//à–¾’†‚¶‚á‚È‚¯‚ê‚ÎŽ~‚ß‚È‚¢
 	if (!m_isTutorialPlay){
@@ -189,6 +195,7 @@ bool SceneTutorial::mTutorialUpdater(){
 
 	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 	if (isPress){
+		m_pSoundDevice->PlayToOneTime();
 		m_textReadCnt++;
 	}
 

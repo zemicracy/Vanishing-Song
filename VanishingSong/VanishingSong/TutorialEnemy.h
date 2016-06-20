@@ -4,6 +4,7 @@
 #include "MessageWindow.h"
 #include <FbxModel.h>
 #include <array>
+#include <GameSound.h>
 class TutorialEnemy
 {
 	enum class eState{
@@ -49,5 +50,7 @@ private:
 	std::unordered_map<bool, float> m_cursorPosition;
 	std::unordered_map<eState, std::shared_ptr<aetherClass::Texture>> m_texture;
 	aetherClass::Transform m_initTrans;
+
+	std::pair<aetherClass::GameSound, aetherClass::GameSound> m_buttonSE;
 };
 

@@ -78,11 +78,11 @@ bool ResourceManager::InitializeBGM(){
 	アクションコマンドに対応する音の初期化
 */
 bool ResourceManager::InitializeActionSound(){
-	RegisterActionSound(eMusical::eBlue, "Sound/blue.wav");
-	RegisterActionSound(eMusical::eGreen, "Sound/green.wav");
-	RegisterActionSound(eMusical::eRed, "Sound/red.wav");
-	RegisterActionSound(eMusical::eYellow, "Sound/yellow.wav");
-	RegisterActionSound(eMusical::eMiss, "Sound/miss.wav");
+	RegisterActionSound(eMusical::eBlue, "Sound\\Command\\blue.wav");
+	RegisterActionSound(eMusical::eGreen, "Sound\\Command\\green.wav");
+	RegisterActionSound(eMusical::eRed, "Sound\\Command\\red.wav");
+	RegisterActionSound(eMusical::eYellow, "Sound\\Command\\yellow.wav");
+	RegisterActionSound(eMusical::eMiss, "Sound\\Command\\miss.wav");
 
 	return true;
 }
@@ -309,7 +309,7 @@ std::string& ResourceManager::mSetBGMPath(eMusical type){
 }
 
 void ResourceManager::mInitializeLaod(){
-	for (int i = 0; i < 3; ++i){
+	for (int i = 0; i < 6; ++i){
 		RegisterTexture("NowLoading" + std::to_string(i + 1), "Texture\\Load\\NowLoading\\" + std::to_string(i + 1) + ".png");
 	}
 }

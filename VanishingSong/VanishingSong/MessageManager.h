@@ -3,6 +3,7 @@
 #include "MessageWindow.h"
 #include "FieldEnemyManager.h"
 #include "Rectangle3D.h"
+#include "GameSound.h"
 class MessageManager
 {
 	enum class eState{
@@ -41,7 +42,7 @@ private:
 	eState m_state;
 	std::unordered_map<eSelectType, float> m_cursorPosition;
 	eSelectType m_selectType;
-
+	std::pair<aetherClass::GameSound, aetherClass::GameSound> m_buttonSE;
 	std::shared_ptr<aetherClass::Rectangle3D>m_messageFlame;
 	bool m_select;
 	bool m_isChangeScene;

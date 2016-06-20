@@ -2,8 +2,8 @@
 #include "ResourceManager.h"
 #include <fstream>
 #include "Cipher.h"
-PlayDataManager::PlayDataManager():
-mFilePath("data\\PlayData\\save_data.txt")
+const std::string PlayDataManager::mFilePath = "data\\PlayData\\save_data";
+PlayDataManager::PlayDataManager()
 {
 }
 
