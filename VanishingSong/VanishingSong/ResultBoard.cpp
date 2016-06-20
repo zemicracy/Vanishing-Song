@@ -301,7 +301,7 @@ void ResultBoard::mUpdate(float timeScale){
 	break;
 	case ResultBoard::eClearGauge:
 	{
-	//	m_pSoundDevice->PlayToLoop();
+	m_pSoundDevice->PlayToLoop();
 			m_pGeneral["correctRateText"]->property._color._alpha = 1;
 			if (m_MaxRate <= m_timer){
 				m_timer = 0;
@@ -318,7 +318,7 @@ void ResultBoard::mUpdate(float timeScale){
 	break;
 	case ResultBoard::eRank:
 	{
-		m_pSoundDevice->PlayToOneTime();
+	//	m_pSoundDevice->PlayToOneTime();
 		m_pGeneral["rankText"]->property._color._alpha = 1;
 		m_pGeneral["rankFrame"]->property._color._alpha = 1;
 		m_pGeneral["rankImage"]->property._color._alpha = 1;
@@ -337,7 +337,7 @@ void ResultBoard::mUpdate(float timeScale){
 	{
 		if (m_isNoteGet){
 			m_pSoundDevice->PlayToOneTime();
-			m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin; //(m_noteScaleOrigin * 15);
+			m_pGeneral["noteImage"]->property._transform._scale = m_timer + m_noteScaleOrigin;
 			m_pGeneral["noteImage"]->property._color._alpha = 1;
 			if (m_timer < 0){
 				m_pGeneral["noteImage"]->property._transform._scale = m_noteScaleOrigin;
