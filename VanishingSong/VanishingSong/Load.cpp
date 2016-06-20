@@ -40,10 +40,10 @@ void Load::Initialize(){
 	m_model->LoadFBX("Model\\Load\\model.fbx", eAxisSystem::eAxisOpenGL);
 	m_model->SetTextureDirectoryName("Model\\Load\\tex");
 	m_model->SetCamera(&m_view);
-	m_model->property._transform._scale._x = -1;
+	m_model->property._transform._scale= Vector3(-0.5, 0.5, 0.5);
 	m_model->property._transform._rotation._y = 180;
 	m_model->property._transform._translation._y = -40;
-	m_model->property._transform._translation._x = 35;
+	m_model->property._transform._translation._x = 40;
 	m_view.property._translation._z = -100;
 }
 
