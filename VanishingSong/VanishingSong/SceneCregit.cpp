@@ -185,6 +185,12 @@ void SceneCregit::mLoadTextData(){
 
 
 bool SceneCregit::Updater(){
+	{
+		bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eStart) | GameController::GetKey().KeyDownTrigger(VK_ESCAPE);
+		if (isPress){
+			ChangeScene(SceneTitle::Name, LoadState::eUse);
+		}
+	}
 	if (m_isEndTransition){
 		m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
