@@ -67,7 +67,7 @@ void gSphereInitializer(std::shared_ptr<Sphere> &command, Transform transform, C
 }
 void FieldArea::mInitialize(std::string texdirectory){
 	WorldReader reader;
-	reader.Load("data\\Field\\stage.aether");
+	reader.Load("data\\Field\\stage",true);
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
