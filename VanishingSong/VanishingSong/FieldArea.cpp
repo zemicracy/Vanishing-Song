@@ -48,12 +48,6 @@ void FieldArea::mFinalize(){
 		itr->Finalize();
 		itr.reset();
 	}
-	for (auto& itr : m_partitionWall){
-		for (auto& itr2 : itr){
-			itr2->Finalize();
-			itr2.reset();
-		}
-	}
 
 }
 
@@ -128,20 +122,6 @@ void FieldArea::mInitialize(std::string texdirectory){
 	m_skybox->Initialize();
 	m_skybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
-	// 先にコライダーの検出をする
-	int nextNumber = NULL;
-	for (int i = 0; i < 4; ++i){
-		for (auto& wall : m_partitionWall[i]){
-			for (int j = nextNumber; j < 4; ++j){
-				if (CollideBoxOBB(*m_wall[j], *m_partitionCube[i])){
-					wall = m_wall[j];
-					nextNumber = j + 1;
-					break;
-				}
-			}
-		}
-		nextNumber = NULL;
-	}
 }
 
 void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
@@ -174,8 +154,8 @@ std::shared_ptr<aetherClass::ModelBase>& FieldArea::mGetPartitionCube(const int 
 }
 
 
-std::array<std::shared_ptr<aetherClass::ModelBase>, 2>& FieldArea::mGetPartitionWall(const int number){
-	return m_partitionWall[number];
+std::array<std::shared_ptr<aetherClass::ModelBase>, 4>& FieldArea::mGetWallList(){
+	return m_wall;
 }
 
 std::array<std::shared_ptr<Sphere>, 4>& FieldArea::mGetObjectList(){
