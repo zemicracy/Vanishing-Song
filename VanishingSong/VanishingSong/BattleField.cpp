@@ -81,7 +81,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
-			m_pPlane->LoadFBX("Model\\Battle\\stage\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pPlane->LoadFBX("Model\\Battle\\stage\\Battle_Stage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
 			m_pPlane->SetTextureDirectoryName("Model\\Battle\\stage");
 			m_pPlane->SetCamera(camera);
 			m_pPlane->property._transform._scale._x = -1;

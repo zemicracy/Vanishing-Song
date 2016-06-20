@@ -78,6 +78,8 @@ public:
 
 	FadeManager& mfadeManager();
 
+	void mRestStart();
+
 private:
 	GameManager();
 	~GameManager();

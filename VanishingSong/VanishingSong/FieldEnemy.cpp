@@ -20,7 +20,6 @@ bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string data
 	m_dataPath = dataPath;
 	mInitializeEnemy(type, camera);
 	mInitializeEnemyColider(camera);
-	
 	return true;
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
