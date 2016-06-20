@@ -34,7 +34,7 @@ bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	
 
 	WorldReader read;
-	read.Load("data\\Field\\field_camera.aether");
+	read.Load("data\\Field\\field_camera",true);
 	mInitialPlayerView(read.GetInputWorldInfo()._camera, m_model->property._transform._rotation);
 	read.UnLoad();
 	m_cameraRotation = trans._rotation;
