@@ -120,7 +120,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 				m_transform._translation = m_prevPosition - hitPos;
 			}
 		}
-		else{
+		else if (m_isHitWall){
 			if (m_hitWall&&CollideBoxOBB(*m_pBodyCollider, *m_hitWall)){
 				m_transform._translation = m_prevPosition;
 			}
@@ -227,7 +227,7 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 	
 	collider->Initialize();
 	collider->property._transform._translation = original + offset;
-	collider->property._transform._scale = Vector3(5,10,10);
+	collider->property._transform._scale = Vector3(2,10,10);
 	collider->property._color = Color(1, 0, 0, 0.5);
 	collider->SetCamera(&m_playerView);
 	return;

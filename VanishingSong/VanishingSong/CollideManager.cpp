@@ -50,7 +50,7 @@ void CollideManager::mCheckHitObject(const int number){
 	}
 
 	// ƒvƒŒƒCƒ„[‚Æ•Ç
-	for (auto wall : m_filed->mGetWallList()){
+	for (auto& wall : m_filed->mGetWallList()){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
 			m_player->mOnHitWall(wall.get());
 			break;
