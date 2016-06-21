@@ -24,7 +24,7 @@ bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string data
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
 	m_property._pEnemy = ResourceManager::mGetInstance().mGetEnemyHash(type);
-	m_property._pEnemy->property._transform._scale._x = -1;
+	m_property._pEnemy->property._transform._scale = Vector3(-1,1,1);
 
 	m_property._pEnemy->SetCamera(camera);
 	return true;
@@ -52,6 +52,7 @@ void FieldEnemy::mUpdate(){
 void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	
 	m_property._pEnemy->KeyframeAnimationRender(model_shader);
+	m_property._pCollider->Render(colider_shader);
 }
 
 
