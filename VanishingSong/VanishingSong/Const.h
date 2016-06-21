@@ -9,7 +9,7 @@
 */
 namespace{
 	// ウィンドウ関連
-	const std::wstring kWindowName = L"Game";
+	const std::wstring kWindowName = L"Vanishing Song";
 	const float kWindowWidth = 1280.0f;
 	const float kWindowHeight = 720.0f;
 
