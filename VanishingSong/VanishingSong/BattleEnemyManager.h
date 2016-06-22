@@ -13,7 +13,7 @@ namespace{
 }
 class BattleEnemyManager
 {
-	
+
 public:
 	BattleEnemyManager();
 	~BattleEnemyManager();
@@ -46,6 +46,7 @@ public:
 	int mGetWaveAllCount();
 	CharaStatus& mGetCharaStatus(int);
 	int mGetAppendOption();
+	void mChangeAnimation(eBattleActionType,eMusical);
 
 private:
 	void mFinalize();
@@ -66,12 +67,15 @@ private:
 	bool flag;
 
 	std::shared_ptr<BattleBoss> m_pBattle;
-	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
+	std::unordered_map<eMusical,std::shared_ptr<BattleEnemy>>m_pEnemy;
 	
 	std::vector<eMusical> m_enemyList;
 	std::vector<std::vector<std::shared_ptr<BattleEnemy>>> m_waveEnemyList;
 	std::vector<std::vector<eMusical>> m_enemyAttackList;
 	std::vector<CharaStatus> m_hp;
+
+	std::unordered_map<eBattleActionType, std::string>m_animationName;
+	eBattleActionType m_attackState;
 
 	bool m_bossFlag;
 	int m_waveID;

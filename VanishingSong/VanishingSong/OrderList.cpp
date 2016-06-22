@@ -526,7 +526,7 @@ void OrderList::mBattleUpdate(){
 }
 
 void OrderList::mUpdate(){
-
+	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 	mLineUpdate();
 	m_pEffect->mUpdate(1);
 

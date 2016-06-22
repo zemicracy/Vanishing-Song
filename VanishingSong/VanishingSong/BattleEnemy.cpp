@@ -3,6 +3,11 @@
 #include "ResourceManager.h"
 
 using namespace aetherClass;
+
+namespace {
+	const std::string kDefaultAnimationName = "wait";
+	const int kMaxAttackFrame = 30;
+}
 BattleEnemy::BattleEnemy()
 {
 }
@@ -30,6 +35,8 @@ void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* ca
 	}
 
 	m_enemy._model->SetModelColor(Color(0, 0, 0, 1));
+	m_animationName = kDefaultAnimationName;
+	m_type = type;
 }
 
 BattleEnemy::Enemy& BattleEnemy::mGetEnemy(){
@@ -37,6 +44,20 @@ BattleEnemy::Enemy& BattleEnemy::mGetEnemy(){
 }
 
 void BattleEnemy::mUpdate(const float timescale){
+	//アニメーション false は 1Shot
+	if (m_animationName != kDefaultAnimationName){
+		m_enemy._model->KeyframeUpdate(m_animationName, m_animationFrame);
+	}
+	else{
+		m_enemy._model->KeyframeUpdate(kDefaultAnimationName, true);
+	}
+
+	if (m_animationFrame >= kMaxAttackFrame - 1){
+		m_animationName = kDefaultAnimationName;
+	}
+
+	++m_animationFrame;
+
 	if (m_isDie){
 		m_alpha -= 0.05;
 		m_enemy._model->SetModelColor(Color(0, 0, 0, m_alpha));
@@ -57,8 +78,8 @@ void BattleEnemy::mOnDamage(){
 }
 
 void BattleEnemy::mRender(std::shared_ptr<ShaderBase> tex){
-
-	m_enemy._model->Render(tex.get());
+	m_enemy._model->KeyframeAnimationRender(tex.get());
+//	m_enemy._model->Render(tex.get());
 }
 
 void BattleEnemy::misDie(){
@@ -71,4 +92,13 @@ void BattleEnemy::Finalize(){
 	if (m_enemy._model){
 		m_enemy._model.reset();
 	}
+}
+
+void BattleEnemy::mChangeAnimation(std::string name){
+	m_animationFrame = 0;
+	m_animationName = name;
+}
+
+eMusical BattleEnemy::mGetType(){
+	return m_type;
 }

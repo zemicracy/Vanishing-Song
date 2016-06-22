@@ -64,6 +64,7 @@ bool SceneCregit::Initialize(){
 		m_players.mSetPlayer(key[i], m_pField->mGetPlayerLane(key[i]), gearframe);
 	}
 
+	m_pField->mSetStageID(m_stageID);
 
 	m_battleState = GameManager::eBattleState::eNewWave;
 	m_processState = eGameState::ePreCountIn;
@@ -163,7 +164,7 @@ void SceneCregit::mLoadTextData(){
 	m_pBackCover = std::make_shared<Rectangle2D>();
 	m_pBackCover->Initialize();
 	WorldReader reader;
-	reader.Load("data\\Result.aether");
+	reader.Load("data\\Battle\\Result",true);
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "backboard"){
@@ -351,6 +352,7 @@ void SceneCregit::mOnListen(){
 
 	m_pCregitMessage->mUpdate(0.5f);
 
+	m_pBattleEnemyManager->mChangeAnimation(eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
@@ -393,6 +395,15 @@ void SceneCregit::mOnBattle(){
 	}
 
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+	auto i = m_pOrderList->mGetDamage();
+	if (i > 0){
+		m_pBattleEnemyManager->mChangeAnimation(eBattleActionType::eDamage, eMusical::eMiss);
+	}
+	else if (i < 0){
+		m_pBattleEnemyManager->mChangeAnimation(eBattleActionType::eDamage, eMusical::eMiss);
+		//m_charaHp._hp += i;
+	}
+
 
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;

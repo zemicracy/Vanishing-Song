@@ -6,6 +6,9 @@
 #include "CharaEntity.h"
 #include <memory>
 #include<FbxModel.h>
+	enum class eBattleActionType{
+		eWait, eAttack, eDamage
+	};
 class BattleEnemy
 {
 
@@ -47,6 +50,7 @@ public:
 	void misDie();
 
 	
+	void mChangeAnimation(std::string);
 	/*
 		•`‰æˆ—
 	*/
@@ -58,6 +62,8 @@ private:
 
 
 private:
+	std::string m_animationName;
+	int m_animationFrame;
 	eMusical m_type;
 	Enemy m_enemy;
 	bool m_isDie;

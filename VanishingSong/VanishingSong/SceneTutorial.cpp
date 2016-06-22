@@ -76,6 +76,8 @@ bool SceneTutorial::Initialize(){
 	m_prevWholeBeatNo = 0;
 	m_textReadCnt = 1;
 	
+	m_pField->mSetStageID(m_stageID);
+
 
 	m_particleDesc._spawnRate = 10;
 	m_particleDesc._scale = 5;
