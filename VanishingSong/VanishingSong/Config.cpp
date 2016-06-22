@@ -31,7 +31,7 @@ void Config::mIntialize(std::string name){
 
 	m_cursor->property._transform._scale = Vector3(kBaseSize, kBaseSize/kMenuNum, 0);
 	m_cursor->property._transform._translation = m_base->property._transform._translation;
-	m_cursor->property._color = Color(1, 1, 1, 1);
+	m_cursor->property._color = Color(1, 1, 1, 0.5);
 	m_cursorScale.first = m_cursor->property._transform._scale;
 	m_cursorScale.second = Vector3(kBaseSize / kVolumeNum, kBaseSize / kMenuNum, 0);
 	int count = NULL;
@@ -54,13 +54,13 @@ void Config::mIntialize(std::string name){
 	m_selectSE.Load("Sound\\Title\\select.wav");
 
 	if (name == SceneGame::Name){
-
+		m_texture.Load("Texture\\Config\\config.png");
 	}
 	else if (name == SceneTitle::Name){
-
+		m_texture.Load("Texture\\Config\\config.png");
 	}
 	m_sceneName = name;
-
+	m_base->SetTexture(&m_texture);
 	
 	m_isView = false;
 	m_isSelectVolume = false;
@@ -103,7 +103,7 @@ bool Config::mUpdate(const bool isView, const bool isButton,const std::pair<bool
 //
 void Config::mUIRender(aetherClass::ShaderBase* tex, aetherClass::ShaderBase* color){
 	if (!m_isView) return;
-	m_base->Render(color);
+	m_base->Render(tex);
 	m_cursor->Render(color);
 }
 

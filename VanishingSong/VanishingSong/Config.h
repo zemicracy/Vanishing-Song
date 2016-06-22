@@ -51,7 +51,7 @@ private:
 	std::shared_ptr<aetherClass::Rectangle2D> m_cursor;
 	std::array<float, 5> m_cursorYArray;
 	std::array<float, 3> m_cursorXArray;
-	aetherClass::Texture* m_texture;
+	aetherClass::Texture m_texture;
 	std::string m_sceneName;
 	aetherClass::GameSound m_selectSE;
 	aetherClass::GameSound m_returnSE;
