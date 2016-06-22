@@ -20,8 +20,16 @@ void BattleEnemy::mInitialize(eMusical type,eEnemyType enemytype, ViewCamera* ca
 
 	m_enemy._model = ResourceManager::mGetInstance().mGetEnemyHash(type);
 	m_enemy._model->SetCamera(camera);
+<<<<<<< HEAD
 	m_enemy._model->property._transform._translation = Vector3(pos._x,0,pos._z);
+=======
+	m_enemy._model->property._transform._translation = Vector3(pos._x, 0, pos._z);
+>>>>>>> f93c58632eb8bb3d0b1d8030cf7f58058431bc4d
 	m_enemy._model->property._transform._rotation._y = -90;
+
+	if (type == eMusical::eAdlib){
+		m_enemy._model->property._transform._scale -= 0.1;
+	}
 
 	m_enemy._model->SetModelColor(Color(0, 0, 0, 1));
 }

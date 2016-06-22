@@ -46,7 +46,9 @@
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="MessageWindow.cpp" />
     <ClCompile Include="Opening.cpp" />
+    <ClCompile Include="OptionNotifier.cpp" />
     <ClCompile Include="OrderList.cpp" />
+    <ClCompile Include="PlayDataManager.cpp" />
     <ClCompile Include="PlayerHPGauge.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ResultBoard.cpp" />
@@ -106,7 +108,9 @@
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="MessageWindow.h" />
     <ClInclude Include="Opening.h" />
+    <ClInclude Include="OptionNotifier.h" />
     <ClInclude Include="OrderList.h" />
+    <ClInclude Include="PlayDataManager.h" />
     <ClInclude Include="PlayerHPGauge.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ResultBoard.h" />
