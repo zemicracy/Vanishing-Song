@@ -65,7 +65,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	using namespace aetherClass;
 
 	WorldReader reader;
-	reader.Load("data\\Battle\\BattleStage.aether",true);
+	reader.Load("data\\Battle\\BattleStage",true);
 
 	m_MaxWave = maxWave;
 	m_rhythm = rhythm;
@@ -81,7 +81,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
-			m_pPlane->LoadFBX("Model\\Battle\\stage\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pPlane->LoadFBX("Model\\Battle\\stage\\Battle_Stage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
 			m_pPlane->SetTextureDirectoryName("Model\\Battle\\stage");
 			m_pPlane->SetCamera(camera);
 			m_pPlane->property._transform._scale._x = -1;
@@ -93,7 +93,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 		}
 		else if (itr->_name == "EnemyHP"){
 			m_pTank	= std::make_shared<FbxModel>();
-			m_pTank->LoadFBX("Model\\Battle\\capsule.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pTank->LoadFBX("Model\\Battle\\kapuseru.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
 			m_pTank->SetTextureDirectoryName("Model\\Battle");
 			m_pTank->SetCamera(m_view);
 			m_pTank->property._transform = itr->_transform;

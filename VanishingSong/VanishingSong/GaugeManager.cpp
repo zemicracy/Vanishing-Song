@@ -23,7 +23,7 @@ void GaugeManager::mFinalize(){
 
 bool GaugeManager::mInitialize(RhythmManager *rhythm){
 	WorldReader reader;
-	reader.Load("data\\Battle\\gaugePosition.aether",true);
+	reader.Load("data\\Battle\\gaugePosition",true);
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "playerHP"){

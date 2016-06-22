@@ -362,7 +362,7 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	PlayDataManager load;
 	switch (index){
 	case eNextMode::eStart:
-		GameManager::mGetInstance().mRestStart();
+		//GameManager::mGetInstance().mRestStart();
 		info._nextSceneName = SceneGame::Name;
 		break;
 	case eNextMode::eLoad:

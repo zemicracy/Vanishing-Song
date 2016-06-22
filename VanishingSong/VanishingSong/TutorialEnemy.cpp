@@ -18,7 +18,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_isEnd = !flg;
 	m_model = model;
 	WorldReader reader;
-	reader.Load("data\\Field\\player_init.aether");
+	reader.Load("data\\Field\\player_init",true);
 	for (auto& index : reader.GetInputWorldInfo()._object){
 		if (index->_name == "tutorial_enemy"){
 			m_model->property._transform._translation = Vector3(index->_transform._translation._x, 0, index->_transform._translation._z);

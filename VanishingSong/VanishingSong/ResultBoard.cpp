@@ -53,7 +53,7 @@ std::shared_ptr<aetherClass::Texture> gLoadTexture(std::string path){
 
 void ResultBoard::mInitialize(){
 	WorldReader reader;
-	reader.Load("data\\Battle\\Result.aether",true);
+	reader.Load("data\\Battle\\Result",true);
 
 
 	Color BLACK(0, 0, 0, 0);
