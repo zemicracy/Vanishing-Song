@@ -46,5 +46,7 @@ private:
 	RhythmManager *m_rhythm;
 
 	std::vector<std::shared_ptr<aetherClass::FbxModel>>m_pTankNote;
+	std::shared_ptr<aetherClass::FbxModel>m_pObject;
+
 };
 

@@ -34,7 +34,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	int count = NULL;
 	for (auto& message : m_tutorialMessage){
 		
-		message = "Texture\\Message\\tmplate.png";
+		message = "Texture\\Message\\Tutorial\\"+ std::to_string(count)+".png";
 		count += 1;
 	}
 
@@ -62,6 +62,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_select = eSelect::eNull;
 	m_state = eState::eNext;
 	m_isYes = true;
+	m_hogeFuga = false;
 	m_texture[eState::eSelect] = std::make_shared<Texture>();
 	m_texture[eState::eSelect]->Load("Texture\\Message\\yesno.png");
 	m_texture[eState::eNext] = std::make_shared<Texture>();
@@ -115,12 +116,15 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 			else{
 				m_select = eSelect::eNo;
 				m_messageCount += 1;
+				m_hogeFuga = true;
 			}
 			m_state = eState::eNext;
 			break;
 
 		case eState::eNext:
 			m_messageCount += 1;
+
+			
 			break;
 		default:
 			break;
@@ -130,7 +134,7 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 
 	if (isTutorialEnd){
 		if (m_tutorialClearMessage.size() <= m_messageCount){
-			m_messageCount = m_tutorialClearMessage.size() - 1;
+			m_messageCount = m_tutorialClearMessage.size();
 			m_messageEnd = true;
 		}
 		m_message = std::make_shared<Texture>();
@@ -139,11 +143,12 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 	}
 	else{
 		if (m_tutorialMessage.size() <= m_messageCount){
-			m_messageCount = m_tutorialClearMessage.size() - 1;
+			m_messageCount = m_tutorialClearMessage.size();
 			m_messageEnd = true;
 		}
 
-		if (m_messageCount == m_tutorialMessage.size() - 2){
+		const int end = m_tutorialMessage.size() - 2;
+		if (m_messageCount == end){
 			m_state = eState::eSelect;
 		}
 

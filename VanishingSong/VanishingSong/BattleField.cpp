@@ -45,6 +45,8 @@ void BattleField::mFinalize(){
 		itr.second.reset();
 	}
 	m_pTextureList.clear();
+
+	m_pObject->Finalize();
 }
 template<class T>
 std::shared_ptr<T> gInitializer(aetherClass::Transform transform, aetherClass::Color color){
@@ -88,12 +90,22 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 			m_pPlane->property._transform._rotation._x = 180;
 			m_pPlane->property._transform._rotation._y = 90;
 		}
+		else if (itr->_name == "objectPos"){
+
+			m_pObject= std::make_shared<FbxModel>();
+			m_pObject->LoadFBX("Model\\Object\\Symbol\\object.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pObject->SetTextureDirectoryName("Model\\Object\\Symbol\\title_tex");
+			m_pObject->SetCamera(m_view);
+			m_pObject->property._transform._translation = Vector3(0,2.3f,48.2f);
+			m_pObject->property._transform._rotation = Vector3(16.0f, 0, 0);
+
+		}
 		else if (itr->_name == "PlayerHP"){
 			m_tankScaleOrigin = 1.8;
 		}
 		else if (itr->_name == "EnemyHP"){
 			m_pTank	= std::make_shared<FbxModel>();
-			m_pTank->LoadFBX("Model\\Battle\\kapuseru.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pTank->LoadFBX("Model\\Battle\\capsule.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
 			m_pTank->SetTextureDirectoryName("Model\\Battle");
 			m_pTank->SetCamera(m_view);
 			m_pTank->property._transform = itr->_transform;
@@ -200,6 +212,34 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 	//ƒ¿‚¯‚·—p
+	using namespace aetherClass;
+	if (GameController::GetKey().IsKeyDown('Q')){
+		m_pObject->property._transform._rotation._x -= 0.1;
+	}
+	else if (GameController::GetKey().IsKeyDown('E')){
+		m_pObject->property._transform._rotation._x += 0.1;
+	}
+	if (GameController::GetKey().IsKeyDown('W')){
+		m_pObject->property._transform._translation._z -= 0.1;
+	}
+	else if (GameController::GetKey().IsKeyDown('S')){
+		m_pObject->property._transform._translation._z += 0.1;
+	}
+
+	if (GameController::GetKey().IsKeyDown('X')){
+		m_pObject->property._transform._translation._y -= 0.1;
+	}
+	else if (GameController::GetKey().IsKeyDown('C')){
+		m_pObject->property._transform._translation._y += 0.1;
+	}
+
+	if (GameController::GetKey().IsKeyDown(VK_SPACE)){
+		Debug::mPrint(std::to_string(m_pObject->property._transform._rotation._x));
+		Debug::mPrint(std::to_string(m_pObject->property._transform._translation._y));
+		Debug::mPrint(std::to_string(m_pObject->property._transform._translation._z));
+	}
+
+
 	for (auto& itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){
 			itr.second->property._color._alpha -= 0.1;
@@ -215,6 +255,7 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 	m_pSkyBox->Render(texture);
 	m_pPlane->Render(texture);
 
+	m_pObject->Render(texture);
 	for (auto itr : m_pLane){
 		itr.second->Render(debug);
 	}
@@ -250,9 +291,10 @@ void BattleField::mRhythmicMotion(){
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
 	m_pTank->property._transform._scale = m_tankScaleOrigin + (scale / 10);
+	m_pObject->property._transform._scale = 0.1 + (scale / 50);
 
-	for (auto itr : m_pCommand)
-	{
+
+	for (auto itr : m_pCommand){
 		itr->property._transform._scale = m_commandScale + (2 * scale);
 	}
 

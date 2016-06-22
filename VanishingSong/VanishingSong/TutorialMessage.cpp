@@ -43,26 +43,23 @@ bool TutorialMessage::mInitialize(){
 
 	m_pTexture = nullptr;
 
-	std::string path = "Texture\\Message\\";
-	m_pTextTextureList["Init1"] = path + "tmplate.png";
-	m_pTextTextureList["Init2"] = path + "tmplate.png";
-	m_pTextTextureList["Init3"] = path + "tmplate.png";
-	m_pTextTextureList["FirstDemoListen1"] = path + "tmplate.png";
-	m_pTextTextureList["FirstDemoListen2"] = path + "tmplate.png";
-	m_pTextTextureList["FirstDemoPerform1"] = path + "tmplate.png";
-	m_pTextTextureList["FirstDemoPerform2"] = path + "tmplate.png";
-	m_pTextTextureList["FirstDemoBattle1"] = path + "tmplate.png";
-	m_pTextTextureList["FirstDemoBattle2"] = path + "tmplate.png";
-	m_pTextTextureList["FirstDemoBattle3"] = path + "tmplate.png";
-	m_pTextTextureList["FirstPlay1"] = path + "tmplate.png";
-	m_pTextTextureList["FirstPlay2"] = path + "tmplate.png";
-	m_pTextTextureList["AdlibDemoListen1"] = path + "tmplate.png";
-	m_pTextTextureList["AdlibDemoPerform1"] = path + "tmplate.png";
-	m_pTextTextureList["AdlibDemoPerform2"] = path + "tmplate.png";
-	m_pTextTextureList["AdlibDemoBattle1"] = path + "tmplate.png";
-	m_pTextTextureList["AdlibDemoBattle2"] = path + "tmplate.png";
-	m_pTextTextureList["AdlibPlay1"] = path + "tmplate.png";
-	m_pTextTextureList["AdlibPlay2"] = path + "tmplate.png";
+	std::string path = "Texture\\Message\\TutorialBattle\\";
+
+	m_pTextTextureList["Init1"] = path + "0.png";
+	m_pTextTextureList["Init2"] = path + "1.png";
+
+	m_pTextTextureList["FirstPerform1"] = path + "2.png";
+	m_pTextTextureList["FirstBattle1"] = path + "3.png";
+	m_pTextTextureList["FirstBattle2"] = path + "4.png";
+	m_pTextTextureList["FirstBattle3"] = path + "5.png";
+	
+	m_pTextTextureList["AdlibListen1"] = path + "6.png";
+	m_pTextTextureList["AdlibListen2"] = path + "7.png";
+	/*m_pTextTextureList["AdlibPerform1"] = path + "5.png";
+	m_pTextTextureList["AdlibPerform2"] = path + "6.png";*/
+	m_pTextTextureList["AdlibBattle1"] = path + "8.png";
+	m_pTextTextureList["AdlibBattle2"] = path + "9.png";
+	
 	m_pTextTextureList["PlayerOnly1"] = path + "tmplate.png";
 	m_pTextTextureList["Fin1"] = path + "tmplate.png";
 
