@@ -206,36 +206,27 @@ bool SceneTutorial::mTutorialUpdater(){
 	case eTutorialState::eInit:
 			result = m_pTutorial->mChangeText("Init" + std::to_string(m_textReadCnt));
 			if (!result){
-				m_tutorialState = eTutorialState::eFirstDemo;
+				m_tutorialState = eTutorialState::eFirst;
 			}
 		break;
-	case eTutorialState::eFirstDemo:
-		if (m_battleState == GameManager::eBattleState::eListen){
-			result = m_pTutorial->mChangeText("FirstDemoListen" + std::to_string(m_textReadCnt));
-		}
-		else if (m_battleState == GameManager::eBattleState::ePerform){
-			result = m_pTutorial->mChangeText("FirstDemoPerform" + std::to_string(m_textReadCnt));
+	case eTutorialState::eFirst:
+		if (m_battleState == GameManager::eBattleState::ePerform){
+			result = m_pTutorial->mChangeText("FirstPerform" + std::to_string(m_textReadCnt));
 		}
 		else if (m_battleState == GameManager::eBattleState::eBattle){
-			result = m_pTutorial->mChangeText("FirstDemoBattle" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText("FirstBattle" + std::to_string(m_textReadCnt));
 		}
 		break;
-	case eTutorialState::eFirstPlay:
-		result = m_pTutorial->mChangeText("FirstPlay" + std::to_string(m_textReadCnt));
-		break;
-	case eTutorialState::eAdlibDemo:
+	case eTutorialState::eAdlib:
 		if (m_battleState == GameManager::eBattleState::eListen){
-			result = m_pTutorial->mChangeText("AdlibDemoListen" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText("AdlibListen" + std::to_string(m_textReadCnt));
 		}
 		else if (m_battleState == GameManager::eBattleState::ePerform){
-			result = m_pTutorial->mChangeText("AdlibDemoPerform" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText("AdlibPerform" + std::to_string(m_textReadCnt));
 		}
 		else if (m_battleState == GameManager::eBattleState::eBattle){
-			result = m_pTutorial->mChangeText("AdlibDemoBattle" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText("AdlibBattle" + std::to_string(m_textReadCnt));
 		}
-		break;
-	case eTutorialState::eAdlibPlay:
-		result = m_pTutorial->mChangeText("AdlibPlay" + std::to_string(m_textReadCnt));
 		break;
 	case eTutorialState::ePlayerOnly:
 		result = m_pTutorial->mChangeText("PlayerOnly" + std::to_string(m_textReadCnt));
@@ -489,7 +480,7 @@ void SceneTutorial::mOnListen(){
 	
 	if (!m_initUpdateProcess){
 		if (m_tutorialState != eTutorialState::ePlayerOnly){
-			if (m_tutorialState == eTutorialState::eAdlibDemo || m_tutorialState == eTutorialState::eAdlibPlay){
+			if (m_tutorialState == eTutorialState::eAdlib){
 				m_enemyVector.back() = m_pActionBoard->mGetCommand(eMusical::eAdlib);
 			}
 			m_pOrderList->mAddEnemyOrder(m_enemyVector);
@@ -513,8 +504,7 @@ void SceneTutorial::mOnListen(){
 		m_initUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
 		m_battleState = GameManager::eBattleState::ePerform;
-		if (m_tutorialState == eTutorialState::eFirstDemo || m_tutorialState == eTutorialState::eAdlibDemo){
-			m_pOrderList->mSetTutorial(true);
+		if (m_tutorialState == eTutorialState::eFirst || m_tutorialState == eTutorialState::eAdlib){
 			m_isTutorialPlay = true;
 		}
 	}
@@ -539,8 +529,7 @@ void SceneTutorial::mOnPerform(){
 		m_processState = eGameState::ePreCountIn;
 		m_battleState = GameManager::eBattleState::eBattle;
 
-		m_pOrderList->mSetTutorial(false);
-		if (m_tutorialState == eTutorialState::eFirstDemo || m_tutorialState == eTutorialState::eAdlibDemo){
+		if (m_tutorialState == eTutorialState::eFirst || m_tutorialState == eTutorialState::eAdlib){
 			m_isTutorialPlay = true;
 		}
 	}
@@ -560,10 +549,7 @@ void SceneTutorial::mOnBattle(){
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
 	auto i = m_pOrderList->mGetDamage();
 	if (i > 0){
-		if (m_tutorialState == eTutorialState::eAdlibDemo || m_tutorialState == eTutorialState::eFirstDemo){	//Demo‚Ìê‡‚ÍHP‚ðí‚ç‚È‚¢
-		}else{
 			m_enemyHp->_hp -= i;
-		}
 	}
 	else if (i < 0){
 		if (m_charaHp._hp > 1){
@@ -575,7 +561,7 @@ void SceneTutorial::mOnBattle(){
 		m_initUpdateProcess = false;
 		m_battleState = GameManager::eBattleState::eCheck;
 		
-		if (m_tutorialState == eTutorialState::eAdlibPlay){
+		if (m_tutorialState == eTutorialState::eAdlib){
 			m_tutorialState = eTutorialState::ePlayerOnly;
 			m_enemyHp->_hp = 0;
 			m_charaHp._hp = m_charaHp._maxHp;
@@ -619,16 +605,12 @@ void SceneTutorial::mCheckBattle(){
 	else{
 		switch (m_tutorialState)
 		{
-		case eTutorialState::eFirstDemo:
-			m_tutorialState = eTutorialState::eFirstPlay;
+		case eTutorialState::eFirst:
+			m_tutorialState = eTutorialState::eAdlib;
 			m_isTutorialPlay = true;
 			break;
-		case eTutorialState::eFirstPlay:
-			m_tutorialState = eTutorialState::eAdlibDemo;
-			m_isTutorialPlay = true;
-			break;
-		case eTutorialState::eAdlibDemo:
-			m_tutorialState = eTutorialState::eAdlibPlay;
+		case eTutorialState::eAdlib:
+			m_tutorialState = eTutorialState::ePlayerOnly;
 			m_isTutorialPlay = true;
 			break;
 		case eTutorialState::eFin:

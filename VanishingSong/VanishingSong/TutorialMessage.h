@@ -1,7 +1,7 @@
 #pragma once
 #include"MessageWindow.h"
 enum class eTutorialState{
-	eInit, eFirstDemo, eFirstPlay, eAdlibDemo, eAdlibPlay, ePlayerOnly, eFin
+	eInit, eFirst, eAdlib, ePlayerOnly, eFin
 };
 
 class TutorialMessage

@@ -37,10 +37,11 @@ private:
 	MessageWindow m_messageWindow;
 	std::shared_ptr<aetherClass::FbxModel> m_model;
 	std::shared_ptr<aetherClass::Texture> m_message;
-	std::array<std::string, 4> m_tutorialMessage;
+	std::array<std::string, 5> m_tutorialMessage;
 	std::array<std::string, 4> m_tutorialClearMessage;
 
 	bool m_isEnd;
+	bool m_hogeFuga;
 	int m_messageCount;
 	bool m_messageEnd;
 	eState m_state;
