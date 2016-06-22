@@ -36,8 +36,8 @@ SceneGame::~SceneGame()
 bool SceneGame::Initialize(){
 	_heapmin();
 	Finalize();
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\Yellow.fbx", "Model\\Player\\yellow");
 
 	// シーンの登録
 	RegisterScene(new SceneTitle());
@@ -61,10 +61,10 @@ bool SceneGame::Initialize(){
 	m_pCageManager->mInitialize(m_pFieldEnemy.get(), view);
 
 	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea, m_pFieldEnemy,m_pCageManager);
-
 	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy, view);
 
-	
+	m_config.mIntialize(SceneGame::Name);
+
 	const bool isTutorial = (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial)
 		|| (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd);
 	m_pTutorialEnemy = std::make_shared<TutorialEnemy>();
@@ -90,7 +90,7 @@ bool SceneGame::Initialize(){
 	m_isFade = false;
 	m_isFade2 = false;
 	// とりあえず一回呼んでおく
-	mTutorial();
+	mTutorial(false,false);
 	mRun();
 	
 	_heapmin();
@@ -98,10 +98,12 @@ bool SceneGame::Initialize(){
 }
 
 void SceneGame::mInitializeBGM(){
+	const float volume = GameManager::mGetInstance().mGetVolume();
 		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
 			m_pBGMArray.push_back(std::make_shared<GameSound>());
 			m_pBGMArray.back()->Load(itr.second.c_str());
-			m_pBGMArray.back()->SetValume(-3000);
+			m_pBGMArray.back()->SetValume(volume);
+			m_prevVolume = volume;
 		}
 		for (auto &itr : m_pBGMArray){
 			itr->PlayToLoop();
@@ -113,7 +115,6 @@ void SceneGame::mInitializeBGM(){
 // 全ての解放
 void SceneGame::Finalize(){
 	_heapmin();
-
 
 	if (m_pCageManager){
 		m_pCageManager.reset();
@@ -161,13 +162,36 @@ void SceneGame::Finalize(){
 
 bool SceneGame::Updater(){
 
-	mTutorial();
+	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
+	const bool isConfigButton = GameController::GetKey().KeyDownTrigger(VK_ESCAPE) || GameController::GetJoypad().ButtonPress(eJoyButton::eBack);
+	std::pair<bool, bool> UpOrDown;
+	UpOrDown.first = GameController::GetKey().KeyDownTrigger('W') || GameController::GetJoypad().ButtonPress(eJoyButton::eUp);
+	UpOrDown.second = GameController::GetKey().KeyDownTrigger('S') || GameController::GetJoypad().ButtonPress(eJoyButton::eDown);
+
+	std::pair<bool, bool> RightOrLeft;
+	RightOrLeft.first = GameController::GetKey().KeyDownTrigger('D') || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
+	RightOrLeft.second = GameController::GetKey().KeyDownTrigger('A') || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft);
+
+	if (m_config.mUpdate(isConfigButton, isReturn, UpOrDown, RightOrLeft)){
+		const float volume = GameManager::mGetInstance().mGetVolume();
+		if (m_prevVolume != volume){
+			for (auto& index : m_pBGMArray){
+				index->SetValume(volume);
+			}
+			m_prevVolume = volume;
+		}
+		return true;
+	}
+
+	
+
+	mTutorial(isReturn, (RightOrLeft.first || RightOrLeft.second));
 	mRun();
 	return true;
 }
 
 // チュートリアル用
-void SceneGame::mTutorial(){
+void SceneGame::mTutorial(bool isReturn, bool isSelect){
 	if (m_gameState != eState::eTutorial)return;
 
 	if (m_isFade){
@@ -188,10 +212,6 @@ void SceneGame::mTutorial(){
 		m_isFade2 = false;
 		return;
 	}
-
-	bool button = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
-	bool select = GameController::GetKey().KeyDownTrigger(VK_LEFT) || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft)||
-		GameController::GetKey().KeyDownTrigger(VK_RIGHT) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
 
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation,false);
@@ -215,7 +235,7 @@ void SceneGame::mTutorial(){
 			}
 		}
 
-		m_pTutorialEnemy->mUpdate(false, select, button);
+		m_pTutorialEnemy->mUpdate(false, isSelect, isReturn);
 	}
 	else if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd){
 		// チュートリアル終了後
@@ -225,7 +245,7 @@ void SceneGame::mTutorial(){
 			m_pTutorialEnemy->mIsEnd(true);
 			return;
 		}
-		m_pTutorialEnemy->mUpdate(true, false, button);
+		m_pTutorialEnemy->mUpdate(true, false, isReturn);
 	}
 }
 
@@ -287,6 +307,7 @@ void SceneGame::UIRender(){
 	if (m_isTransitionEnd){
 		m_pTutorialEnemy->mUIRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	}
+	m_config.mUIRender(shaderHash["transparent"].get(), shaderHash["color"].get());
 	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }

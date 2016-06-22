@@ -1,7 +1,7 @@
 #include "MessageManager.h"
 #include "ResourceManager.h"
 #include "GameController.h"
-
+#include "GameManager.h"
 using namespace aetherClass;
 namespace{
 	const int kFirst = 0;
@@ -68,6 +68,10 @@ MessageManager::~MessageManager()
 //
 void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPressButton, const bool isCursor, Vector3 position, Vector3 enemyPosition,const int nowStage){
 	bool isEnd = false;
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.first.SetValume(volume);
+	m_buttonSE.second.SetValume(volume);
+
 	if (pair.second)return;
 	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum()-1;
 	m_viewMessageFlame = true;

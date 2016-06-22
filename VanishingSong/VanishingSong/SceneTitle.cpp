@@ -13,6 +13,7 @@
 #include"SceneCregit.h"
 #include "PlayDataManager.h"
 #include <Shlwapi.h>
+
 #pragma comment (lib,"ShlwApi.lib")
 using namespace aetherClass;
 using namespace aetherFunction;
@@ -22,7 +23,7 @@ namespace{
 	const std::string kExit = "Exit";
 	const bool kShutdown = false;
 	const int kLoadNumber = 1;
-	const float kUIDepth = 0.9;
+	const float kUIDepth = 0.9f;
 }
 const std::string SceneTitle::Name = "Title";
 SceneTitle::SceneTitle() :
@@ -53,7 +54,7 @@ bool SceneTitle::Initialize(){
 	//次のシーン
 	RegisterScene(new SceneGame());
 	RegisterScene(new SceneCregit());
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "Model\\Player\\red");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\red");
 
 	
 	// テクスチャの初期化
@@ -62,7 +63,7 @@ bool SceneTitle::Initialize(){
 
 	m_pMenuTexture = std::make_shared<Texture>();
 	std::wstring filePath;
-	for (auto& index : PlayDataManager::mFilePath){
+	for (auto& index : PlayDataManager::mSaveFile){
 		filePath.push_back(index);
 	}
 	// ファイルがあるかの確認
@@ -110,7 +111,7 @@ bool SceneTitle::Initialize(){
 	const float cursorPosition = m_pCursor->property._transform._translation._y;
 	const float cursorSize = m_pCursor->property._transform._scale._y;
 
-	for (int i = 0; i < m_cursorArray.size(); ++i){
+	for (int i = 0; i < (int)m_cursorArray.size(); ++i){
 		m_cursorArray[i]._cursorY = cursorPosition + (i * (22 + cursorSize));
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
@@ -131,15 +132,18 @@ bool SceneTitle::Initialize(){
 	m_pSkybox->SetCamera(&m_view);
 	m_pSkybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
+
+	const float volume = GameManager::mGetInstance().mGetVolume();
 	m_bgm.Load("Sound\\Result\\title.wav");
-	m_bgm.SetValume(-3000);
+	m_bgm.SetValume(volume);
 
 	m_returnSE.Load("Sound\\Title\\decision.wav");
-	m_returnSE.SetValume(-3000);
+	m_returnSE.SetValume(volume);
 
 	m_selectSE.Load("Sound\\Title\\select.wav");
-	m_selectSE.SetValume(-3000);
-
+	m_selectSE.SetValume(volume);
+	
+	m_config.mIntialize(SceneTitle::Name);
 	
 	
 	m_pushState = false;
@@ -150,6 +154,7 @@ bool SceneTitle::Initialize(){
 	return true;
 }
 
+//
 void SceneTitle::Finalize(){
 	_heapmin();
 	m_bgm.Stop();
@@ -208,14 +213,34 @@ void SceneTitle::Finalize(){
 
 //
 bool SceneTitle::Updater(){
+	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
+	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
+	const bool isConfigButton = GameController::GetKey().KeyDownTrigger(VK_ESCAPE) || GameController::GetJoypad().ButtonPress(eJoyButton::eBack);
+	std::pair<bool, bool> UpOrDown;
+	UpOrDown.first = GameController::GetKey().KeyDownTrigger('W') || GameController::GetJoypad().ButtonPress(eJoyButton::eUp);
+	UpOrDown.second = GameController::GetKey().KeyDownTrigger('S') || GameController::GetJoypad().ButtonPress(eJoyButton::eDown);
+
+	std::pair<bool, bool> RightOrLeft;
+	RightOrLeft.first = GameController::GetKey().KeyDownTrigger('D') || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
+	RightOrLeft.second = GameController::GetKey().KeyDownTrigger('A') || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft);
+
+	if (m_config.mUpdate(isConfigButton, isReturn, UpOrDown, RightOrLeft)){
+
+		const float volume = GameManager::mGetInstance().mGetVolume();
+		m_bgm.SetValume(volume);
+
+		m_returnSE.SetValume(volume);
+
+		m_selectSE.SetValume(volume);
+
+		return true;
+	}
+
 	m_bgm.PlayToLoop();
 	m_field.mUpdate(1.0);
 	m_bluePlayer->KeyframeUpdate(m_bluePlayer->GetKeyframeNameList(0), true);
-	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
-	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
-	std::pair<bool, bool> UpOrDown;
-	UpOrDown.first = GameController::GetKey().KeyDownTrigger(VK_UP) || GameController::GetJoypad().ButtonPress(eJoyButton::eUp);
-	UpOrDown.second = GameController::GetKey().KeyDownTrigger(VK_DOWN) || GameController::GetJoypad().ButtonPress(eJoyButton::eDown);
+
+
 	
 	mCursorState(isStart);
 	bool isUpdate = mMenuSelectState(isReturn,UpOrDown);
@@ -250,6 +275,9 @@ void SceneTitle::UIRender(){
 	if (m_pushState == kMenuSelect){
 		m_pCursor->Render(shaderHash["color"].get());
 	}
+
+	m_config.mUIRender(shaderHash["transparent"].get(), shaderHash["color"].get());
+
 	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
@@ -324,10 +352,10 @@ void SceneTitle::mCursorState(const bool isStart){
 
 	// 増減の実行
 	if (m_alphaState){
-		m_pMenu->property._color._alpha += 0.01;
+		m_pMenu->property._color._alpha += 0.01f;
 	}
 	else{
-		m_pMenu->property._color._alpha -= 0.01;
+		m_pMenu->property._color._alpha -= 0.01f;
 	}
 
 }

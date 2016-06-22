@@ -121,4 +121,17 @@ void GameManager::mRestStart(){
 	m_bossState = eBossState::eUnVisible;
 	m_fieldState = eFieldState::eTutorial;
 	m_canStageNumber = NULL;
+
+	m_players.clear();
+	m_players.insert(std::make_pair(eMusical::eBlue, eMusical::eBlue));
+}
+
+//
+float GameManager::mGetVolume()const{
+	return m_volume;
+}
+
+//
+void GameManager::mSetVolume(const float volume){
+	m_volume = volume;
 }

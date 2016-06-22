@@ -2,7 +2,8 @@
 #include "ResourceManager.h"
 #include <fstream>
 #include "Cipher.h"
-const std::string PlayDataManager::mFilePath = "data\\PlayData\\save_data";
+const std::string PlayDataManager::mSaveFile = "data\\PlayData\\save_data";
+const std::string PlayDataManager::mConfigFile = "data\\PlayData\\config";
 PlayDataManager::PlayDataManager()
 {
 }
@@ -15,7 +16,7 @@ PlayDataManager::~PlayDataManager()
 void PlayDataManager::mSave(){
 	auto fieldState = GameManager::mGetInstance().mFieldState();
 	std::ofstream saveObject;
-	saveObject.open(mFilePath, std::ios::out);
+	saveObject.open(mSaveFile, std::ios::out);
 	saveObject << "[Field]" << std::endl;
 	saveObject << mSaveFieldState(fieldState) << std::endl;
 
@@ -42,13 +43,13 @@ void PlayDataManager::mSave(){
 
 	// ˆÃ†‰»
 	Cipher lock;
-	lock.mLock(mFilePath);
+	lock.mLock(mSaveFile);
 	return;
 }
 
 void PlayDataManager::mLoad(){
 	Cipher load;
-	load.mLoadFile(mFilePath);
+	load.mLoadFile(mSaveFile);
 	auto fieldState = mLoadFieldState(std::atoi(load.mGetData("[Field]", 0).c_str()));
 	GameManager::mGetInstance().mFieldState(fieldState);
 
@@ -190,4 +191,27 @@ eMusical PlayDataManager::mGetCharToType(const char type){
 	}
 
 	return eMusical::eNull;
+}
+
+//
+void PlayDataManager::mConfigSave(){
+	auto fieldState = GameManager::mGetInstance().mFieldState();
+	std::ofstream saveObject;
+	saveObject.open(mConfigFile, std::ios::out);
+	saveObject << "[Volume]" << std::endl;
+	saveObject << GameManager::mGetInstance().mGetVolume() << std::endl;
+
+	// ˆÃ†‰»
+	Cipher lock;
+	lock.mLock(mConfigFile);
+}
+
+//
+void PlayDataManager::mConfigLoad(){
+	Cipher load;
+	load.mLoadFile(mConfigFile);
+	auto volume = std::atoi(load.mGetData("[Volume]", 0).c_str());
+	GameManager::mGetInstance().mSetVolume(volume);
+
+	return;
 }

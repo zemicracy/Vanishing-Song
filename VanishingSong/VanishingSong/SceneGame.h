@@ -11,6 +11,7 @@
 #include "CageManager.h"
 #include<GameSound.h>
 #include "TutorialEnemy.h"
+#include "Config.h"
 class SceneGame :
 	public aetherClass::GameScene
 {
@@ -52,7 +53,7 @@ public:
 
 private:
 
-	void mTutorial();
+	void mTutorial(bool ,bool);
 	void mRun();
 	bool mMessageUpdate();
 	void mInitializeBGM();
@@ -68,10 +69,12 @@ private:
 	std::shared_ptr<CageManager> m_pCageManager;
 	std::shared_ptr<TutorialEnemy> m_pTutorialEnemy;
 	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
+	Config m_config;
 	bool m_isTransitionEnd;
 	aetherClass::DirectXEntity m_directEntity;
 	bool m_isFade;
 	bool m_isFade2;
+	float m_prevVolume;
 
 };
 

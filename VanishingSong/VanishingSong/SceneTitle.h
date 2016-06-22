@@ -12,6 +12,7 @@
 #include "GameManager.h"
 #include"GameSound.h"
 #include "FieldArea.h"
+#include "Config.h"
 class SceneTitle :
 	public aetherClass::GameScene
 {
@@ -94,6 +95,8 @@ private:
 	bool m_isVisibleSaveData;
 
 	aetherClass::ViewCamera m_view;
+
+	Config m_config;
 };
 
 #endif

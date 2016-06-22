@@ -1,5 +1,6 @@
 #include "TutorialEnemy.h"
 #include "Debug.h"
+#include "GameManager.h"
 #include <WorldReader.h>
 using namespace aetherClass;
 TutorialEnemy::TutorialEnemy()
@@ -68,8 +69,10 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 
 	m_buttonSE.first.Load("Sound\\Field\\message.wav");
 	m_buttonSE.second.Load("Sound\\Field\\select.wav");
-	m_buttonSE.first.SetValume(-3000);
-	m_buttonSE.second.SetValume(-3000);
+
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.first.SetValume(volume);
+	m_buttonSE.second.SetValume(volume);
 	
 	if (m_isEnd){
 		Finalize();
@@ -79,6 +82,9 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 
 //
 void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, const bool pushButton){
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.first.SetValume(volume);
+	m_buttonSE.second.SetValume(volume);
 	if (m_isEnd){
 		if (m_pCursor){
 			m_pCursor->Finalize();
@@ -88,7 +94,7 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 	}
 	m_model->KeyframeUpdate("wait", true);
 	m_model->property._transform = m_initTrans;
-	if (selectButton){
+	if (selectButton&&m_state == eState::eSelect){
 		m_buttonSE.second.Stop();
 		m_buttonSE.second.PlayToOneTime();
 
