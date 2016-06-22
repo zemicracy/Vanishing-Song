@@ -116,11 +116,17 @@ bool SceneTitle::Initialize(){
 		m_cursorArray[i]._modeNumber = eNextMode::eNull + (i + 1);
 	}
 
-	m_field.mInitialize("Model\\Field\\title_tex");
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_bgm = std::make_shared<GameSound>();
+	m_bgm->Load("Sound\\Result\\title.wav");
+	m_bgm->SetValume(volume);
+
+	m_field.mInitialize(m_bgm,122,"Model\\Field\\title_tex");
 	m_field.mSetCamera(&m_view);
 
-	m_view.property._rotation._x = 5;
-	m_view.property._translation = Vector3(70, 60, -900);
+	m_view.property._rotation = Vector3(-5,20,0);
+
+	m_view.property._translation = Vector3(60, 50, -800);
 
 	m_bluePlayer = ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue);
 	m_bluePlayer->property._transform._translation = Vector3(100, 0, -500);
@@ -131,11 +137,6 @@ bool SceneTitle::Initialize(){
 	m_pSkybox->Initialize();
 	m_pSkybox->SetCamera(&m_view);
 	m_pSkybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
-
-
-	const float volume = GameManager::mGetInstance().mGetVolume();
-	m_bgm.Load("Sound\\Result\\title.wav");
-	m_bgm.SetValume(volume);
 
 	m_returnSE.Load("Sound\\Title\\decision.wav");
 	m_returnSE.SetValume(volume);
@@ -157,7 +158,11 @@ bool SceneTitle::Initialize(){
 //
 void SceneTitle::Finalize(){
 	_heapmin();
-	m_bgm.Stop();
+	m_bgm->Stop();
+	if (m_bgm){
+		m_bgm.reset();
+		m_bgm = nullptr;
+	}
 	m_returnSE.Stop();
 
 	if (m_pLogo){
@@ -227,7 +232,7 @@ bool SceneTitle::Updater(){
 	if (m_config.mUpdate(isConfigButton, isReturn, UpOrDown, RightOrLeft)){
 
 		const float volume = GameManager::mGetInstance().mGetVolume();
-		m_bgm.SetValume(volume);
+		m_bgm->SetValume(volume);
 
 		m_returnSE.SetValume(volume);
 
@@ -236,7 +241,7 @@ bool SceneTitle::Updater(){
 		return true;
 	}
 
-	m_bgm.PlayToLoop();
+	m_bgm->PlayToLoop();
 	m_field.mUpdate(1.0);
 	m_bluePlayer->KeyframeUpdate(m_bluePlayer->GetKeyframeNameList(0), true);
 

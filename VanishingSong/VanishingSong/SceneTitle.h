@@ -82,7 +82,7 @@ private:
 
 	std::shared_ptr<aetherClass::FbxModel> m_bluePlayer;
 
-	aetherClass::GameSound m_bgm;
+	std::shared_ptr<aetherClass::GameSound> m_bgm;
 	aetherClass::GameSound m_returnSE;
 	aetherClass::GameSound m_selectSE;
 	std::array<ModeSelect, 4> m_cursorArray;

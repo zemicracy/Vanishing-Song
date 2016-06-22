@@ -4,6 +4,7 @@
 #include<WorldReader.h>
 #include <Physics.h>
 #include "ResourceManager.h"
+#include "GameManager.h"
 #include <Singleton.h>
 using namespace aetherFunction;
 using namespace aetherClass;
@@ -48,7 +49,7 @@ void FieldArea::mFinalize(){
 		itr->Finalize();
 		itr.reset();
 	}
-
+	m_rhythmManager.mFinalize();
 }
 
 template<typename T>
@@ -65,7 +66,8 @@ void gSphereInitializer(std::shared_ptr<Sphere> &command, Transform transform, C
 	command->property._transform = transform;
 	command->property._color = color;
 }
-void FieldArea::mInitialize(std::string texdirectory){
+
+void FieldArea::mInitialize(std::shared_ptr<aetherClass::GameSound>& sound, const int bpm, std::string texdirectory){
 	WorldReader reader;
 	reader.Load("data\\Field\\stage",true);
 
@@ -122,6 +124,7 @@ void FieldArea::mInitialize(std::string texdirectory){
 	m_skybox->Initialize();
 	m_skybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
+	m_rhythmManager.mInitializeRhythm(sound, bpm);
 }
 
 void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
@@ -146,7 +149,26 @@ void FieldArea::mRender(ShaderBase* texture, ShaderBase*shader){
 }
 
 void FieldArea::mUpdate(float time){
-	m_pNote->property._transform._rotation._y -= time * 1;
+	m_rhythmManager.mAcquire();
+
+	if (GameManager::mGetInstance().mBossState() == GameManager::eBossState::eWin){
+
+		float note = 360 * m_rhythmManager.mQuarterBeatTime();
+		float nowFrameWave = cos(note * kAetherRadian);
+		float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
+
+		float rote = 90 * m_rhythmManager.mQuarterBeatTime();
+
+		m_pNote->property._transform._scale = 25 + (scale*5);
+		m_pNote->property._transform._rotation._y = rote;
+	}
+	else{
+		if(m_pNote->property._transform._rotation._y > 360){
+			m_pNote->property._transform._rotation._y -= 360;
+		}
+		m_pNote->property._transform._rotation._y += time * 1;
+	}
+	
 }
 
 std::shared_ptr<aetherClass::ModelBase>& FieldArea::mGetPartitionCube(const int number){

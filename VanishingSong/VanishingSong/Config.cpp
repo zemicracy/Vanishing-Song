@@ -54,13 +54,15 @@ void Config::mIntialize(std::string name){
 	m_selectSE.Load("Sound\\Title\\select.wav");
 
 	if (name == SceneGame::Name){
-		m_texture.Load("Texture\\Config\\config.png");
+		m_menuTexture.Load("Texture\\Config\\config.png");
+		m_volumeTexture.Load("Texture\\Config\\config_v.png");
 	}
 	else if (name == SceneTitle::Name){
-		m_texture.Load("Texture\\Config\\config.png");
+		m_menuTexture.Load("Texture\\Config\\config_no.png");
+		m_volumeTexture.Load("Texture\\Config\\config_no_v.png");
 	}
 	m_sceneName = name;
-	m_base->SetTexture(&m_texture);
+	m_base->SetTexture(&m_menuTexture);
 	
 	m_isView = false;
 	m_isSelectVolume = false;
@@ -73,6 +75,12 @@ void Config::mIntialize(std::string name){
 bool Config::mUpdate(const bool isView, const bool isButton,const std::pair<bool, bool> UpOrDown, const std::pair<bool, bool> RightOrLeft){
 	if (isView){
 		m_isView = !m_isView;
+		if (m_isView){
+			m_isSelectVolume = false;
+			m_isBackToTitle = false;
+			m_cursorYCount = NULL;
+			m_cursorXCount = NULL;
+		}
 	}
 
 	if (!m_isView) return false;
@@ -82,6 +90,11 @@ bool Config::mUpdate(const bool isView, const bool isButton,const std::pair<bool
 	m_selectSE.SetValume(volume);
 
 	if (m_isSelectVolume){
+		if (GameController::GetJoypad().ButtonPress(eJoyButton::eA)){
+			m_isSelectVolume = false;
+			return true;
+		}
+		m_base->SetTexture(&m_volumeTexture);
 		m_cursor->property._transform._scale = m_cursorScale.second;
 		m_cursor->property._transform._translation._y = m_cursorYArray.at(kSkipNumber);
 		mCountCursorX(m_cursorXCount, RightOrLeft);
@@ -89,6 +102,7 @@ bool Config::mUpdate(const bool isView, const bool isButton,const std::pair<bool
 		mVolumeDecision(isButton, m_cursorXCount);
 	}
 	else{
+		m_base->SetTexture(&m_menuTexture);
 		m_cursor->property._transform._scale = m_cursorScale.first;
 		m_cursor->property._transform._translation._x = m_cursorXArray.at(0);
 		mCountCursorY(m_cursorYCount, UpOrDown);

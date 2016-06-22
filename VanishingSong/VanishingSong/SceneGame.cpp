@@ -50,7 +50,7 @@ bool SceneGame::Initialize(){
 
 	auto view = m_pFieldPlayer->mGetView();
 	m_pFieldArea = std::make_shared<FieldArea>();
-	m_pFieldArea->mInitialize("Model\\Field\\game_tex");
+	m_pFieldArea->mInitialize(m_pBGMArray.at(0),128,"Model\\Field\\game_tex");
 	m_pFieldArea->mSetCamera(view);
 
 
@@ -174,6 +174,14 @@ bool SceneGame::Updater(){
 
 	if (m_config.mUpdate(isConfigButton, isReturn, UpOrDown, RightOrLeft)){
 		const float volume = GameManager::mGetInstance().mGetVolume();
+
+		if (m_config.mGetIsBackToTitle()){
+			m_gameState = eState::eExit;
+			ChangeScene(SceneTitle::Name, LoadState::eUse);
+
+			return true;
+		}
+
 		if (m_prevVolume != volume){
 			for (auto& index : m_pBGMArray){
 				index->SetValume(volume);
@@ -252,14 +260,6 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 //
 void SceneGame::mRun(){
 	if (m_gameState != eState::eRun)return;
-	
-	//// ƒ^ƒCƒgƒ‹‚É–ß‚é
-	if (GameController::GetKey().KeyDownTrigger(VK_ESCAPE)){
-		m_gameState = eState::eExit;
-
-		ChangeScene(SceneTitle::Name, LoadState::eUse);
-		return;
-	}
 
 	if (GameController::GetJoypad().ButtonPress(eJoyButton::eBack)){
 		PlayDataManager save;

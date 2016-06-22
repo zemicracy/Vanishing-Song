@@ -5,10 +5,11 @@
 #include<memory>
 #include<unordered_map>
 #include <Sphere.h>
+#include "RhythmManager.h"
 class FieldArea
 {
 public:
-	void mInitialize(std::string texdirectory);
+	void mInitialize(std::shared_ptr<aetherClass::GameSound>&,const int bpm,std::string texdirectory);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUpdate(float);
 	std::shared_ptr<aetherClass::ModelBase>& mGetPartitionCube(const int number);
@@ -26,5 +27,6 @@ private:
 	std::shared_ptr<aetherClass::FbxModel> m_pGround;
 	std::array<std::shared_ptr<aetherClass::Sphere>, 4> m_pObject;
 	std::shared_ptr<aetherClass::FbxModel> m_pNote;
+	RhythmManager m_rhythmManager;
 };
 
