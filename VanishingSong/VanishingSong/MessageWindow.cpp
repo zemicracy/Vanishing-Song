@@ -30,6 +30,14 @@ void MessageWindow::mFinalize(){
 		m_window->Finalize();
 		m_window.reset();
 	}
+	if (m_icon){
+		m_icon->Finalize();
+		m_icon.reset();
+	}
+	if (m_iconFlame){
+		m_iconFlame->Finalize();
+		m_iconFlame.reset();
+	}
 }
 
 bool MessageWindow::mInitialize(){
@@ -58,6 +66,16 @@ bool MessageWindow::mInitialize(){
 		return false;
 	}
 
+	m_iconFlame = std::make_shared<Rectangle2D>();
+	result = m_iconFlame->Initialize();
+	if (!result){
+		return false;
+	}
+
+	m_iconFlameTexture = std::make_shared<Texture>();
+	m_iconFlameTexture->Load("Texture\\Message\\icon_flame.png");
+	m_iconFlame->SetTexture(m_iconFlameTexture.get());
+
 	WorldReader reader;
 	reader.Load("data\\MessageWindow.aether");
 
@@ -78,6 +96,10 @@ bool MessageWindow::mInitialize(){
 
 		if (itr->_name == "icon"){
 			m_icon->property._transform = itr->_transform;
+		}
+
+		if (itr->_name == "icon_flame"){
+			m_iconFlame->property._transform = itr->_transform;
 		}
 
 	}
@@ -125,6 +147,7 @@ void MessageWindow::mRender(ShaderBase *shader){
 	m_window->Render(shader);
 	m_text->Render(shader);
 	m_button->Render(shader);
+	m_iconFlame->Render(shader);
 	m_icon->Render(shader);
 	
 }
