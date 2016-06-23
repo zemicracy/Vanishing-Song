@@ -18,7 +18,7 @@ RhythmManager::~RhythmManager()
 }
 
 void RhythmManager::mFinalize(){
-	m_sound.reset();
+	
 	m_playTime = 0;
 	m_prevEighterBeat = 0;
 	m_prevQuarterBeat = 0;
@@ -65,7 +65,7 @@ float RhythmManager::mGetPlayTime(){
 }
 
 
-void RhythmManager::mInitializeRhythm(std::shared_ptr<aetherClass::GameSound> index, int bpm){
+void RhythmManager::mInitializeRhythm(aetherClass::GameSound* index, int bpm){
 	m_sound = index;
 	m_bpm = bpm;
 	m_playTime = 0;

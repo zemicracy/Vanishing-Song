@@ -26,14 +26,14 @@ void BattlePlayer::mInitialize(eMusical type, aetherClass::Vector3 position, std
 
 //
 void BattlePlayer::mRender(aetherClass::ShaderBase* shader){
-	m_model->Render(shader);
+	m_model->KeyframeAnimationRender(shader);
 }
 
 //
 void BattlePlayer::mUpdate(const float scale){
 	// アニメーション系かな？
 	m_model->property._transform = m_transform;
-	
+	m_model->KeyframeUpdate(m_model->GetKeyframeNameList(0),true);
 }
 
 // 自分のタイプを取得

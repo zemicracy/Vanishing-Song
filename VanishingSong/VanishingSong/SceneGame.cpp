@@ -35,7 +35,7 @@ SceneGame::~SceneGame()
 
 bool SceneGame::Initialize(){
 	_heapmin();
-	Finalize();
+	//Finalize();
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\green");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\Yellow.fbx", "Model\\Player\\yellow");
 
@@ -49,19 +49,14 @@ bool SceneGame::Initialize(){
 	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue), GameManager::mGetInstance().mGetPlayerTransform());
 
 	auto view = m_pFieldPlayer->mGetView();
-	m_pFieldArea = std::make_shared<FieldArea>();
-	m_pFieldArea->mInitialize(m_pBGMArray.at(0),128,"Model\\Field\\game_tex");
-	m_pFieldArea->mSetCamera(view);
-
 
 	m_pFieldEnemy = std::make_shared<FieldEnemyManager>();
-	m_pFieldEnemy->mInitilize(view);
+	m_pFieldEnemy->mInitilize(view.get());
 
 	m_pCageManager = std::make_shared<CageManager>();
-	m_pCageManager->mInitialize(m_pFieldEnemy.get(), view);
+	m_pCageManager->mInitialize(m_pFieldEnemy.get(), view.get());
 
-	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea, m_pFieldEnemy,m_pCageManager);
-	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy, view);
+	m_pMessageManager = std::make_shared<MessageManager>(m_pFieldEnemy, view.get());
 
 	m_config.mIntialize(SceneGame::Name);
 
@@ -85,6 +80,28 @@ bool SceneGame::Initialize(){
 
 	mInitializeBGM();
 
+	m_pFieldArea = std::make_shared<FieldArea>();
+	m_pFieldArea->mInitialize("Model\\Field\\game_tex");
+
+	m_pRhythm = std::make_shared<RhythmManager>();
+	if (!m_pBGMArray.empty()){
+		if (m_pBGMArray.at(0)){
+			m_pRhythm->mInitializeRhythm(m_pBGMArray.at(0).get(), 128);
+			m_pFieldArea->mSetRhythm(m_pRhythm.get());
+		}
+		else{
+			m_pFieldArea->mInitialize("Model\\Field\\game_tex");
+			m_pFieldArea->mSetRhythm(nullptr);
+		}
+	}
+	else{
+		m_pFieldArea->mInitialize("Model\\Field\\game_tex");
+		m_pFieldArea->mSetRhythm(nullptr);
+	}
+	m_pFieldArea->mSetCamera(view.get());
+
+
+	m_pCollideManager = std::make_unique<CollideManager>(m_pFieldPlayer, m_pFieldArea, m_pFieldEnemy, m_pCageManager);
 
 	m_isTransitionEnd = false;
 	m_isFade = false;
@@ -122,6 +139,7 @@ void SceneGame::Finalize(){
 	}
 
 	for (auto &itr : m_pBGMArray){
+		if (!itr)continue;
 		itr->Stop();
 		itr.reset();
 	}
@@ -152,6 +170,12 @@ void SceneGame::Finalize(){
 	if (m_pTutorialEnemy){
 		m_pTutorialEnemy.reset();
 		m_pTutorialEnemy = nullptr;
+	}
+
+	if (m_pRhythm){
+		m_pRhythm->mFinalize();
+		m_pRhythm.reset();
+		m_pRhythm = nullptr;
 	}
 	m_gameState = eState::eNull;
 	_heapmin();
@@ -220,7 +244,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		m_isFade2 = false;
 		return;
 	}
-
+	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation,false);
 	if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorial){
@@ -234,9 +258,10 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		}
 		else if (m_pTutorialEnemy->mGetSelectType() == TutorialEnemy::eSelect::eNo){
 			if (m_pTutorialEnemy->mGetMessageEnd()){
-
 				ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
 				mInitializeBGM();
+				m_pRhythm->mInitializeRhythm(m_pBGMArray.at(0).get(), 128);
+				m_pFieldArea->mSetRhythm(m_pRhythm.get());
 				GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
 				m_isFade = true;
 				m_pTutorialEnemy->mIsEnd(true);
@@ -292,7 +317,7 @@ void SceneGame::Render(){
 		m_pTutorialEnemy->mRender(shaderHash["texture"].get());
 	}
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
-	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["transparent"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());

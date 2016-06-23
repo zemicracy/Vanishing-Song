@@ -20,6 +20,7 @@ void BattlePlayerManager::mSetPlayer(eMusical type, Vector3 position, std::share
 void BattlePlayerManager::mRender(aetherClass::ShaderBase* shader){
 	for (auto& player : m_pBattlePlayers){
 		player.second.mRender(shader);
+
 	}
 }
 

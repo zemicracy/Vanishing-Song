@@ -49,7 +49,10 @@ void FieldArea::mFinalize(){
 		itr->Finalize();
 		itr.reset();
 	}
-	m_rhythmManager.mFinalize();
+	if (m_rhythmManager){
+		m_rhythmManager->mFinalize();
+	
+	}
 }
 
 template<typename T>
@@ -67,9 +70,9 @@ void gSphereInitializer(std::shared_ptr<Sphere> &command, Transform transform, C
 	command->property._color = color;
 }
 
-void FieldArea::mInitialize(std::shared_ptr<aetherClass::GameSound>& sound, const int bpm, std::string texdirectory){
+void FieldArea::mInitialize(std::string texdirectory){
 	WorldReader reader;
-	reader.Load("data\\Field\\stage",true);
+	reader.Load("data\\Field\\stage", true);
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
@@ -109,7 +112,7 @@ void FieldArea::mInitialize(std::shared_ptr<aetherClass::GameSound>& sound, cons
 			gInitalizer<Cube>(m_partitionCube[4], itr->_transform, itr->_color);
 		}
 	}
-	
+
 	reader.UnLoad();
 
 	mInitializeObject();
@@ -124,7 +127,14 @@ void FieldArea::mInitialize(std::shared_ptr<aetherClass::GameSound>& sound, cons
 	m_skybox->Initialize();
 	m_skybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
-	m_rhythmManager.mInitializeRhythm(sound, bpm);
+	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
+		m_usePlayer.push_back(index.first);
+	}
+	m_isChangeInit = false;
+	m_isBlack = false;
+	m_changeColorCount;
+
+	m_originColor = Color(0, 0, 0, 1);
 }
 
 void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
@@ -145,29 +155,33 @@ void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
 void FieldArea::mRender(ShaderBase* texture, ShaderBase*shader){
 	m_pGround->Render(texture);
 	m_skybox->Render(texture);
-	m_pNote->Render(texture);
+	m_pNote->Render(shader);
 }
 
 void FieldArea::mUpdate(float time){
-	m_rhythmManager.mAcquire();
 
-	if (GameManager::mGetInstance().mBossState() == GameManager::eBossState::eWin){
+	if (m_rhythmManager){
+		m_rhythmManager->mAcquire();
+		if (GameManager::mGetInstance().mBossState() == GameManager::eBossState::eWin){
+			
+			float note = 360 * m_rhythmManager->mQuarterBeatTime();
+			float nowFrameWave = cos(note * kAetherRadian);
+			float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
-		float note = 360 * m_rhythmManager.mQuarterBeatTime();
-		float nowFrameWave = cos(note * kAetherRadian);
-		float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
+			float rote = 90 * m_rhythmManager->mQuarterBeatTime();
 
-		float rote = 90 * m_rhythmManager.mQuarterBeatTime();
-
-		m_pNote->property._transform._scale = 25 + (scale*5);
-		m_pNote->property._transform._rotation._y = rote;
-	}
-	else{
-		if(m_pNote->property._transform._rotation._y > 360){
-			m_pNote->property._transform._rotation._y -= 360;
+			m_pNote->property._transform._scale = 25 + (scale * 5);
+			m_pNote->property._transform._rotation._y = rote;
 		}
-		m_pNote->property._transform._rotation._y += time * 1;
+		else{
+			if (m_pNote->property._transform._rotation._y > 360){
+				m_pNote->property._transform._rotation._y -= 360;
+			}
+			m_pNote->property._transform._rotation._y += time * 1;
+		}
 	}
+	
+	mChangeColor();
 	
 }
 
@@ -196,4 +210,63 @@ void FieldArea::mInitializeObject(){
 	gSphereInitializer(m_pObject[2], trans, Color(1, 0, 0, 0.3));
 	trans._translation = Vector3(-200, 0, -285);
 	gSphereInitializer(m_pObject[3], trans, Color(1, 0, 0, 0.3));
+}
+
+//
+void FieldArea::mChangeColor(){
+	if (!m_isChangeInit){
+		m_changeColor += 1;
+		if (m_changeColorCount > m_usePlayer.size()-1){
+			m_changeColorCount = 0;
+		}
+		m_changeColor = mMusicalToColor(m_usePlayer.at(m_changeColorCount));
+		m_isChangeInit = true;
+	}
+	const float time = GameClock::GetDeltaTime();
+
+	if (m_isBlack){
+		m_originColor._red -= time*m_changeColor._red;
+		m_originColor._green -= time*m_changeColor._green;
+		m_originColor._blue -= time*m_changeColor._blue;
+		if (m_originColor._red <= 0.0f&&m_originColor._blue <= 0.0f
+			&&m_originColor._green <= 0.0f){
+			m_isChangeInit = false;
+			m_isBlack = false;
+		}
+	}
+	else{
+		m_originColor._red += time*m_changeColor._red;
+		m_originColor._green += time*m_changeColor._green;
+		m_originColor._blue += time*m_changeColor._blue;
+		if (m_originColor._red >= m_changeColor._red&&m_originColor._blue >= m_changeColor._blue
+			&&m_originColor._green >= m_changeColor._green){
+			m_isBlack = true;
+		}
+	}
+	m_pNote->SetModelColor(m_originColor);
+	return;
+}
+
+Color FieldArea::mMusicalToColor(eMusical type){
+	switch (type)
+	{
+	case eMusical::eBlue:
+		return Color(0, 0, 1, 1);
+		break;
+	case eMusical::eGreen:
+		return Color(0, 1, 0, 1);
+	case eMusical::eRed:
+		return Color(1, 0, 0, 1);
+		
+	case eMusical::eYellow:
+		return Color(1, 1, 0, 1);
+	default:
+		break;
+	}
+
+	return Color(0, 0, 0, 1);
+}
+
+void FieldArea::mSetRhythm(RhythmManager* rhythm){
+	m_rhythmManager = rhythm;
 }

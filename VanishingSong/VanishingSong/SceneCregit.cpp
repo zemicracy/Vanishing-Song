@@ -157,7 +157,7 @@ void SceneCregit::mLoadTextData(){
 	m_sound->Load("Sound\\BGM\\field1.wav");
 
 	m_rhythm = std::make_shared<RhythmManager>();
-	m_rhythm->mInitializeRhythm(m_sound, 128);
+	m_rhythm->mInitializeRhythm(m_sound.get(), 128);
 	m_rhythm->mAcquire();
 
 

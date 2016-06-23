@@ -121,7 +121,17 @@ bool SceneTitle::Initialize(){
 	m_bgm->Load("Sound\\Result\\title.wav");
 	m_bgm->SetValume(volume);
 
-	m_field.mInitialize(m_bgm,122,"Model\\Field\\title_tex");
+
+	if (m_bgm){
+		m_pRhythmManager = std::make_shared<RhythmManager>();
+		m_pRhythmManager->mInitializeRhythm(m_bgm.get(), 122);
+		m_field.mInitialize("Model\\Field\\title_tex");
+		m_field.mSetRhythm(m_pRhythmManager.get());
+	}
+	else{
+		m_field.mInitialize("Model\\Field\\title_tex");
+		m_field.mSetRhythm(nullptr);
+	}
 	m_field.mSetCamera(&m_view);
 
 	m_view.property._rotation = Vector3(-5,20,0);
@@ -158,13 +168,10 @@ bool SceneTitle::Initialize(){
 //
 void SceneTitle::Finalize(){
 	_heapmin();
-	m_bgm->Stop();
-	if (m_bgm){
-		m_bgm.reset();
-		m_bgm = nullptr;
-	}
-	m_returnSE.Stop();
 
+	m_bgm->Stop();
+	m_returnSE.Stop();
+	
 	if (m_pLogo){
 		m_pLogo->Finalize();
 		m_pLogo.reset();
@@ -204,6 +211,17 @@ void SceneTitle::Finalize(){
 		m_pSkybox = nullptr;
 	}
 
+	
+	if (m_pRhythmManager){
+		m_pRhythmManager->mFinalize();
+		m_pRhythmManager.reset();
+		m_pRhythmManager = nullptr;
+	}
+
+	if (m_bgm){
+		m_bgm.reset();
+		m_bgm  = nullptr;
+	}
 	m_pushState = false;
 
 	m_alphaState = false;
@@ -267,7 +285,7 @@ void SceneTitle::Render(){
 	m_view.Render();
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pSkybox->Render(shaderHash["texture"].get());
-	m_field.mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_field.mRender(shaderHash["texture"].get(), shaderHash["transparent"].get());
 	m_bluePlayer->KeyframeAnimationRender(shaderHash["texture"].get());
 	return;
 }

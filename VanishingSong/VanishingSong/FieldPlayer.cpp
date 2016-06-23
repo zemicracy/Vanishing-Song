@@ -26,10 +26,10 @@ FieldPlayer::~FieldPlayer()
 //
 bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	mFinalize();
-
+	m_playerView = std::make_shared<aetherClass::ViewCamera>();
 	// 初期位置の設定
 	m_model = model;
-	m_model->SetCamera(&m_playerView);
+	m_model->SetCamera(m_playerView.get());
 	m_transform = trans;
 	
 
@@ -47,7 +47,7 @@ bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	m_pSphereCollider->property._transform._translation = m_model->property._transform._translation + kColliderOffset;
 	m_pSphereCollider->property._transform._scale = Vector3(10, 10, 10);
 	m_pSphereCollider->property._color = Color(1, 0, 0, 0.5);
-	m_pSphereCollider->SetCamera(&m_playerView);
+	m_pSphereCollider->SetCamera(m_playerView.get());
 
 	m_animationName.insert(std::make_pair(eState::eMove, "move"));
 	m_animationName.insert(std::make_pair(eState::eWait, "wait"));
@@ -88,7 +88,7 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 
 	// カメラの処理
 	m_cameraRotation += getKeyValues.second;
-	mUpdateView(m_playerView, m_cameraRotation, m_model->property._transform._translation);
+	mUpdateView(m_playerView.get(), m_cameraRotation, m_model->property._transform._translation);
 
 	// 移動があれば
 	FieldPlayer::eState state;
@@ -196,7 +196,7 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 //
 void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 
-	m_playerView.Render();
+	m_playerView->Render();
 	if (!m_model)return;
 
 	m_model->KeyframeAnimationRender(modelShader);
@@ -207,12 +207,12 @@ void FieldPlayer::mRender(ShaderBase* modelShader,ShaderBase* colliderShader){
 */
 void FieldPlayer::mInitialPlayerView(CameraValue input, Vector3 rotation){
 	// カメラの初期化
-	m_playerView.property._translation = input._position;
-	m_playerView.property._rotation = input._rotation;
+	m_playerView->property._translation = input._position;
+	m_playerView->property._rotation = input._rotation;
 	
 	// カメラのオフセットの設定
-	m_cameraOffset._translation = m_playerView.property._translation;
-	m_cameraOffset._rotation = m_playerView.property._rotation;
+	m_cameraOffset._translation = m_playerView->property._translation;
+	m_cameraOffset._rotation = m_playerView->property._rotation;
 
 	m_cameraRotation = rotation;
 	return;
@@ -229,7 +229,7 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 	collider->property._transform._translation = original + offset;
 	collider->property._transform._scale = Vector3(2,10,10);
 	collider->property._color = Color(1, 0, 0, 0.5);
-	collider->SetCamera(&m_playerView);
+	collider->SetCamera(m_playerView.get());
 	return;
 }
 
@@ -248,7 +248,7 @@ void FieldPlayer::mUpdateBodyCollider(Transform& transform){
 }
 
 //
-void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookAtPosition){
+void FieldPlayer::mUpdateView(ViewCamera* view, Vector3& rotation, Vector3 lookAtPosition){
 
 	// カメラのリセット一応階といた
 	mCheckCameraRotation(rotation);
@@ -258,8 +258,8 @@ void FieldPlayer::mUpdateView(ViewCamera& view, Vector3& rotation, Vector3 lookA
 	Vector3 position = m_cameraOffset._translation;
 	position = position.TransformCoordNormal(rotationMatrix);
 
-	view.property._translation = Vector3(lookAtPosition._x,NULL,lookAtPosition._z) + position;
-	view.property._rotation = rotation + m_cameraOffset._rotation;
+	view->property._translation = Vector3(lookAtPosition._x,NULL,lookAtPosition._z) + position;
+	view->property._rotation = rotation + m_cameraOffset._rotation;
 
 	return;
 }
@@ -309,8 +309,8 @@ Transform FieldPlayer::mGetTransform(){
 }
 
 //
-ViewCamera* FieldPlayer::mGetView(){
-	return &m_playerView;
+std::shared_ptr<ViewCamera>& FieldPlayer::mGetView(){
+	return m_playerView;
 }
 
 std::shared_ptr<Cube>& FieldPlayer::mGetBodyColldier(){

@@ -170,11 +170,11 @@ void SceneBattle::mLoadTextData(){
 	m_rhythm = std::make_shared<RhythmManager>();
 	if (m_stageID != 5){
 		m_sound->Load("Sound\\Battle\\normal.wav");
-		m_rhythm->mInitializeRhythm(m_sound, 120);
+		m_rhythm->mInitializeRhythm(m_sound.get(), 120);
 	}
 	else{
 		m_sound->Load("Sound\\Battle\\boss.wav");
-		m_rhythm->mInitializeRhythm(m_sound, 117);
+		m_rhythm->mInitializeRhythm(m_sound.get(), 117);
 	}
 
 	m_rhythm->mAcquire();
@@ -361,7 +361,7 @@ void SceneBattle::mOnResult(){
 		
 		m_sound = std::make_shared<GameSound>();
 		m_sound->Load("Sound\\Result\\result.wav");
-		m_rhythm->mInitializeRhythm(m_sound, 110);
+		m_rhythm->mInitializeRhythm(m_sound.get(), 110);
 
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();

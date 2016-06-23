@@ -178,7 +178,7 @@ void SceneTutorial::mLoadTextData(){
 	m_sound->Load("Sound\\Battle\\tutorial100.wav");
 
 	m_rhythm = std::make_shared<RhythmManager>();
-	m_rhythm->mInitializeRhythm(m_sound, 100);
+	m_rhythm->mInitializeRhythm(m_sound.get(), 100);
 	m_rhythm->mAcquire();
 
 	cip.mUnLoad();
@@ -439,7 +439,7 @@ void SceneTutorial::mOnResult(){
 
 		m_sound = std::make_shared<GameSound>();
 		m_sound->Load("Sound\\Result\\result.wav");
-		m_rhythm->mInitializeRhythm(m_sound, 110);
+		m_rhythm->mInitializeRhythm(m_sound.get(), 110);
 
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();

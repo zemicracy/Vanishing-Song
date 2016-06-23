@@ -81,7 +81,7 @@ private:
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
 
 	std::shared_ptr<aetherClass::FbxModel> m_bluePlayer;
-
+	std::shared_ptr<RhythmManager> m_pRhythmManager;
 	std::shared_ptr<aetherClass::GameSound> m_bgm;
 	aetherClass::GameSound m_returnSE;
 	aetherClass::GameSound m_selectSE;

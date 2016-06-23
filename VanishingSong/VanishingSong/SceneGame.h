@@ -69,6 +69,7 @@ private:
 	std::shared_ptr<CageManager> m_pCageManager;
 	std::shared_ptr<TutorialEnemy> m_pTutorialEnemy;
 	std::vector<std::shared_ptr<aetherClass::GameSound>>m_pBGMArray;
+	std::shared_ptr<RhythmManager> m_pRhythm;
 	Config m_config;
 	bool m_isTransitionEnd;
 	aetherClass::DirectXEntity m_directEntity;
