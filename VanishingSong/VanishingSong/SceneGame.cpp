@@ -291,11 +291,6 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLeft){
 	if (m_gameState != eState::eRun)return;
 
-	if (GameController::GetJoypad().ButtonPress(eJoyButton::eBack)){
-		PlayDataManager save;
-		save.mSave();
-	}
-
 	m_pCollideManager->mUpdate();
 
 	// メッセージの更新処理

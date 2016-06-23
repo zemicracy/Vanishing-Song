@@ -55,7 +55,7 @@ bool SceneTitle::Initialize(){
 	RegisterScene(new SceneGame());
 	RegisterScene(new SceneCregit());
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\red");
-
+	
 	
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
@@ -171,7 +171,6 @@ void SceneTitle::Finalize(){
 
 	m_bgm->Stop();
 	m_returnSE.Stop();
-	
 	if (m_pLogo){
 		m_pLogo->Finalize();
 		m_pLogo.reset();
