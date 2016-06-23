@@ -56,7 +56,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 180;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
-		
+		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\template.png");
 
 	}
 
@@ -70,8 +70,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 180;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
-		
-
+		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\template.png");
 	}
 
 	//Enemy(‰¼)
@@ -84,7 +83,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 0;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
-		
+		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\template.png");
+
 	}
 
 	//Enemy(‰¼)
@@ -97,6 +97,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 0;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
+		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\template.png");
 
 	}
 
@@ -109,6 +110,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale = Vector3( -1.5,1.5,1.5);
+		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\template.png");
+
 	}
 
 	//“G‚Ì‰ŠúˆÊ’u

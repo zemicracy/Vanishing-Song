@@ -110,3 +110,19 @@ void FieldEnemy::mResetTransform(){
 void FieldEnemy::mSetTransform(aetherClass::Transform tras){
 	m_initTransform = tras;
 }
+
+
+std::shared_ptr<aetherClass::Texture>& FieldEnemy::mGetIcon(){
+	return m_pIcon;
+}
+
+
+void FieldEnemy::mRegisterIcon(std::string path){
+	if (m_pIcon){
+		return;
+	}
+
+	m_pIcon = std::make_shared<Texture>();
+	m_pIcon->Load(path);
+	return;
+}
