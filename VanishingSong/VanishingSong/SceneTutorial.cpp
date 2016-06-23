@@ -218,7 +218,7 @@ bool SceneTutorial::mTutorialUpdater(){
 	switch (m_tutorialState)
 	{		//ŽŸ‚Ì‰æ‘œ‚ª–³‚¢‚ÆFalse‚ð•Ô‚µ‚Ä‚­‚é
 	case eTutorialState::eInit:
-			result = m_pTutorial->mChangeText("Init" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText(k_TutorialKey[0] + std::to_string(m_textReadCnt));
 			if (!result){
 				m_tutorialState = eTutorialState::eFirst;
 			}
@@ -226,46 +226,43 @@ bool SceneTutorial::mTutorialUpdater(){
 	case eTutorialState::eFirst:
 		if (m_processState == eGameState::eCountIn){
 			if (m_battleState == GameManager::eBattleState::eListen){
-				result = m_pTutorial->mChangeText("FirstPreListen" + std::to_string(m_textReadCnt));
+				result = m_pTutorial->mChangeText(k_TutorialKey[1] + std::to_string(m_textReadCnt));
 			}
 			else if (m_battleState == GameManager::eBattleState::ePerform){
-				result = m_pTutorial->mChangeText("FirstPrePerform" + std::to_string(m_textReadCnt));
+				result = m_pTutorial->mChangeText(k_TutorialKey[3] + std::to_string(m_textReadCnt));
 			}
 			else if (m_battleState == GameManager::eBattleState::eBattle){
-				result = m_pTutorial->mChangeText("FirstPreBattle" + std::to_string(m_textReadCnt));
+				result = m_pTutorial->mChangeText(k_TutorialKey[5] + std::to_string(m_textReadCnt));
 			}
 		}
 		else{
-			if (m_battleState == GameManager::eBattleState::eListen){
-				result = m_pTutorial->mChangeText("FirstListen" + std::to_string(m_textReadCnt));
-			}
-			else if (m_battleState == GameManager::eBattleState::ePerform){
-				result = m_pTutorial->mChangeText("FirstPerform" + std::to_string(m_textReadCnt));
+			if (m_battleState == GameManager::eBattleState::ePerform){
+				result = m_pTutorial->mChangeText(k_TutorialKey[2] + std::to_string(m_textReadCnt));
 			}
 			else if (m_battleState == GameManager::eBattleState::eBattle){
-				result = m_pTutorial->mChangeText("FirstBattle" + std::to_string(m_textReadCnt));
+				result = m_pTutorial->mChangeText(k_TutorialKey[4] + std::to_string(m_textReadCnt));
 			}
 		}
 		break;
 	case eTutorialState::eAdlib:
 		if (m_battleState == GameManager::eBattleState::eListen && m_processState == eGameState::eUpdate){
-			result = m_pTutorial->mChangeText("AdlibStop" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText(k_TutorialKey[7] + std::to_string(m_textReadCnt));
 		}
 		else if (m_battleState == GameManager::eBattleState::eListen){
-			result = m_pTutorial->mChangeText("AdlibListen" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText(k_TutorialKey[6] + std::to_string(m_textReadCnt));
 		}
 		else if (m_battleState == GameManager::eBattleState::ePerform){
-			result = m_pTutorial->mChangeText("AdlibPerform" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText(k_TutorialKey[8] + std::to_string(m_textReadCnt));
 		}
 		else if (m_battleState == GameManager::eBattleState::eBattle){
-			result = m_pTutorial->mChangeText("AdlibBattle" + std::to_string(m_textReadCnt));
+			result = m_pTutorial->mChangeText(k_TutorialKey[9] + std::to_string(m_textReadCnt));
 		}
 		break;
 	case eTutorialState::ePlayerOnly:
-		result = m_pTutorial->mChangeText("PlayerOnly" + std::to_string(m_textReadCnt));
+		result = m_pTutorial->mChangeText(k_TutorialKey[10] + std::to_string(m_textReadCnt));
 		break;
 	case eTutorialState::eFin:
-		result = m_pTutorial->mChangeText("Fin" + std::to_string(m_textReadCnt));
+		result = m_pTutorial->mChangeText(k_TutorialKey[11] + std::to_string(m_textReadCnt));
 		break;
 	}
 
