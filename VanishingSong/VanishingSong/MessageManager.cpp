@@ -71,11 +71,13 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	const float volume = GameManager::mGetInstance().mGetVolume();
 	m_buttonSE.first.SetValume(volume);
 	m_buttonSE.second.SetValume(volume);
-
 	if (pair.second)return;
 	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum()-1;
 	m_viewMessageFlame = true;
 	m_messageFlame->property._transform._translation = enemyPosition + kMessageFlameOffset;
+
+	// アイコンの設置
+	m_message.mSetIcon(m_enemy->mEnemyGet(pair.first)->mGetIcon().get());
 
 	// 話してるときは何もしない
 	if (m_isView){
@@ -220,4 +222,8 @@ void MessageManager::mCursorUpdate(const bool flg){
 
 bool MessageManager::mGetIsChangeScene()const{
 	return m_isChangeScene;
+}
+
+void MessageManager::mSetIcon(Texture* tex){
+	m_message.mSetIcon(tex);
 }

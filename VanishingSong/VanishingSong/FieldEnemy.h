@@ -34,6 +34,10 @@ public:
 	std::string mGetMessage(const int id);
 	std::string mGetCannotMessga();
 	std::string mGetBattleDataPath();
+
+	std::shared_ptr<aetherClass::Texture>& mGetIcon();
+	void mRegisterIcon(std::string);
+
 private:
 	bool mInitializeEnemy(eMusical,aetherClass::ViewCamera*);	//敵の初期化
 	void mInitializeEnemyColider(aetherClass::ViewCamera*);	//コライダーの初期化
@@ -44,5 +48,7 @@ private:
 	aetherClass::Transform m_initTransform;
 	std::string m_cannotMessagePath;
 	std::string m_dataPath;
+
+	std::shared_ptr<aetherClass::Texture> m_pIcon;
 };
 #endif

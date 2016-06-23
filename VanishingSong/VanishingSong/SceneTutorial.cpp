@@ -111,7 +111,7 @@ bool SceneTutorial::Initialize(){
 	m_pSoundDevice = std::make_shared<GameSound>();
 	m_pSoundDevice->Load("Sound\\Field\\message.wav");
 	const float volume = GameManager::mGetInstance().mGetVolume();
-	m_pSoundDevice->SetValume(volume-1000);
+	m_pSoundDevice->SetValume(volume+ (-1000));
 
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume * 100);

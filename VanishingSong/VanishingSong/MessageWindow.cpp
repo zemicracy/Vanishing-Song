@@ -52,6 +52,12 @@ bool MessageWindow::mInitialize(){
 		return false;
 	}
 
+	m_icon = std::make_shared<Rectangle2D>();
+	result = m_icon->Initialize();
+	if (!result){
+		return false;
+	}
+
 	WorldReader reader;
 	reader.Load("data\\MessageWindow.aether");
 
@@ -69,6 +75,11 @@ bool MessageWindow::mInitialize(){
 		if (itr->_name == "YesOrNo"){
 			m_button->property._transform = itr->_transform;
 		}
+
+		if (itr->_name == "icon"){
+			m_icon->property._transform = itr->_transform;
+		}
+
 	}
 	reader.UnLoad();
 
@@ -83,6 +94,10 @@ void MessageWindow::mSetText(aetherClass::Texture *tex){
 
 void MessageWindow::mSetButton(Texture* tex){
 	m_button->SetTexture(tex);
+}
+
+void MessageWindow::mSetIcon(Texture* tex){
+	m_icon->SetTexture(tex);
 }
 
 void MessageWindow::mUpdate(const bool flg){
@@ -110,5 +125,6 @@ void MessageWindow::mRender(ShaderBase *shader){
 	m_window->Render(shader);
 	m_text->Render(shader);
 	m_button->Render(shader);
+	m_icon->Render(shader);
 	
 }
