@@ -23,10 +23,8 @@ private:
 		
 	};
 public:
-	Config() = default;
-	~Config(){
-		mFinalize();
-	}
+	Config();
+	~Config();
 	void mIntialize(std::string);
 	bool mUpdate(const bool isView, const bool isButton,const std::pair<bool, bool> UpOrDown, const std::pair<bool, bool> RightOrLeft);
 

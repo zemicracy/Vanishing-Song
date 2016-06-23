@@ -29,14 +29,11 @@ bool VanishingSongFrame::InitializeBuffer(){
 	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\blue");
-
+	
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air\\air.fbx", "Model\\Enemy\\Air\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Annon\\annon.fbx", "Model\\Enemy\\annon\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Ground\\gro.fbx", "Model\\Enemy\\Ground\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Danbal\\danbal.fbx", "Model\\Enemy\\Danbal\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\boss.fbx", "Model\\Enemy\\Boss\\tex");
-
-	GameManager::mGetInstance().mGetCanStage(5);
+	
+	// 初めに設定ファイルだけはロードしておく
 	PlayDataManager playData;
 	playData.mConfigLoad();
 	return true;

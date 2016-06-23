@@ -56,6 +56,10 @@ bool SceneTitle::Initialize(){
 	RegisterScene(new SceneCregit());
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\red");
 	
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Ground\\gro.fbx", "Model\\Enemy\\Ground\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Danbal\\danbal.fbx", "Model\\Enemy\\Danbal\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\boss.fbx", "Model\\Enemy\\Boss\\tex");
+
 	
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();

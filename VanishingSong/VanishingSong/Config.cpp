@@ -17,6 +17,14 @@ namespace{
 
 }
 
+Config::Config(){
+}
+
+//
+Config::~Config(){
+	mFinalize();
+}
+
 void Config::mIntialize(std::string name){
 	m_base = std::make_unique<Rectangle2D>();
 	m_base->Initialize();
@@ -154,6 +162,7 @@ void Config::mFinalize(){
 	if (m_cursor){
 		m_cursor->Finalize();
 		m_cursor.reset();
+
 	}
 
 }

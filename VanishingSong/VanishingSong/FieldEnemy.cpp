@@ -46,7 +46,7 @@ void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 //XVˆ—
 void FieldEnemy::mUpdate(){
 	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation;
-	m_property._pEnemy->KeyframeUpdate("wait", true);
+	m_property._pEnemy->KeyframeUpdate("attack", true);
 }
 
 void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
