@@ -40,6 +40,7 @@ private:
 	std::array<std::string, 5> m_tutorialMessage;
 	std::array<std::string, 4> m_tutorialClearMessage;
 
+	aetherClass::Texture m_icon;
 	bool m_isEnd;
 	bool m_hogeFuga;
 	int m_messageCount;

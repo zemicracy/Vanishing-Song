@@ -22,6 +22,7 @@ public:
 	void mSetMessagePath(int,std::string);
 	aetherClass::Vector3 mGetPosition();
 	bool mGetMessageRun();
+	void mRegisterIcon(std::string);
 private:
 
 	void mInitialize(std::shared_ptr<aetherClass::FbxModel>, aetherClass::Vector3 position, aetherClass::ViewCamera*,bool);
@@ -46,6 +47,7 @@ private:
 	float m_changeCommentCount;
 	bool m_changeComment;
 	aetherClass::GameSound m_buttonSE;
+	aetherClass::Texture m_icon;
 
 };
 

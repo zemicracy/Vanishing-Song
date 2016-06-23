@@ -66,6 +66,7 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 void Cage::mUpdate(const float timeScale, Vector3 position, const bool button){
 	m_charaEntity.mFaceToObject(m_model, position);
 	m_messageWindow.mUpdate(false);
+	m_messageWindow.mSetIcon(&m_icon);
 	if (m_isComment){
 		m_changeCommentCount += GameClock::GetDeltaTime();
 
@@ -153,4 +154,8 @@ bool Cage::mGetMessageRun(){
 void Cage::mSetMessagePath(int id,std::string path){
 	m_messagePath[id] = path;
 	
+}
+
+void Cage::mRegisterIcon(std::string path){
+	m_icon.Load(path);
 }

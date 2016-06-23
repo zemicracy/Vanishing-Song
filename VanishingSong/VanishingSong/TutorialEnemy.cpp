@@ -74,7 +74,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	const float volume = GameManager::mGetInstance().mGetVolume();
 	m_buttonSE.first.SetValume(volume);
 	m_buttonSE.second.SetValume(volume);
-	
+	m_icon.Load("Texture\\Icon\\Enemy\\template.png");
 	if (m_isEnd){
 		Finalize();
 	}
@@ -93,6 +93,8 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 		}
 		return;
 	}
+
+	m_messageWindow.mSetIcon(&m_icon);
 	m_model->KeyframeUpdate("wait", true);
 	m_model->property._transform = m_initTrans;
 	if (selectButton&&m_state == eState::eSelect){

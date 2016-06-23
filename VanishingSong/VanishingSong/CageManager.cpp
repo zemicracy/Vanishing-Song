@@ -36,7 +36,7 @@ void CageManager::mInitialize(FieldEnemyManager* enemyManager, ViewCamera* camer
 
 		index->mSetMessagePath(0, "Texture\\Message\\tmplate.png");
 		index->mSetMessagePath(1, "Texture\\Message\\tmplate.png");
-
+		index->mRegisterIcon("Texture\\Icon\\Player\\template.png");
 		count += 1;
 	}
 }
@@ -87,3 +87,4 @@ bool CageManager::mGetIsMessageRun(const int number){
 std::shared_ptr<aetherClass::Cube>& CageManager::mGetColldier(const int id){
 	return m_pCage.at(id)->mGetCollider();
 }
+
