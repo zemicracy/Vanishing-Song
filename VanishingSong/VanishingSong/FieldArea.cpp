@@ -132,7 +132,7 @@ void FieldArea::mInitialize(std::string texdirectory){
 	}
 	m_isChangeInit = false;
 	m_isBlack = false;
-	m_changeColorCount;
+	m_changeColorCount = NULL;
 
 	m_originColor = Color(0, 0, 0, 1);
 }
@@ -216,7 +216,6 @@ void FieldArea::mInitializeObject(){
 void FieldArea::mChangeColor(){
 	if (!m_isChangeInit){
 		mResizeUsePlayer();
-		m_changeColor += 1;
 		if (m_changeColorCount > m_usePlayer.size()-1){
 			m_changeColorCount = 0;
 		}
@@ -238,6 +237,8 @@ void FieldArea::mChangeColor(){
 			&&m_originColor._green <= 0.0f){
 			m_isChangeInit = false;
 			m_isBlack = false;
+			m_changeColorCount += 1;
+			m_originColor = Color(0, 0, 0, 1);
 		}
 	}
 	else{
