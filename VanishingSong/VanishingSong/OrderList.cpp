@@ -231,7 +231,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	m_pEffect->mLoadEffect(6, "In", "Effect\\InCommand\\");
 	m_pEffect->mLoadEffect(17, "Miss", "Effect\\Miss\\");
 	m_pEffect->mLoadEffect(17, "Good", "Effect\\Good\\");
-	m_pEffect->mLoadEffect(17, "Great", "Effect\\Great\\");
+	m_pEffect->mLoadEffect(23, "Great", "Effect\\Great\\");
 
 
 	m_effectTrans = Transform(Vector3(), Vector3(), Vector3( 16*10, 9*10,0));
