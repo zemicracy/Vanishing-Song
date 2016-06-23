@@ -32,7 +32,7 @@ void CageManager::mInitialize(FieldEnemyManager* enemyManager, ViewCamera* camer
 			}
 		}
 		const auto position = enemyManager->mEnemyGet(count)->mGetProperty()._pEnemy->property._transform._translation;
-		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(position._x + 30, 0.0f, position._z), camera, isThought);
+		index = std::make_shared<Cage>(ResourceManager::mGetInstance().mGetPlayerHash(musical[count]), Vector3(position._x + 50, 0.0f, position._z), camera, isThought);
 
 		index->mSetMessagePath(0, "Texture\\Message\\tmplate.png");
 		index->mSetMessagePath(1, "Texture\\Message\\tmplate.png");

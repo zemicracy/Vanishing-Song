@@ -73,21 +73,20 @@ private:
 	void mCursorState(const bool isStart);
 	bool mMenuSelectState(const bool isReturn, const  std::pair<bool, bool>);
 private:
-	std::unique_ptr<aetherClass::SpriteBase> m_pLogo;
-	std::unique_ptr<aetherClass::SpriteBase> m_pMenu;
-	std::unique_ptr<aetherClass::SpriteBase> m_pCursor;
+	std::shared_ptr<aetherClass::SpriteBase> m_pLogo;
+	std::shared_ptr<aetherClass::SpriteBase> m_pMenu;
+	std::shared_ptr<aetherClass::SpriteBase> m_pCursor;
 	std::shared_ptr<aetherClass::Texture> m_pLogoTexture;
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
 
 	std::shared_ptr<aetherClass::FbxModel> m_bluePlayer;
 	std::shared_ptr<RhythmManager> m_pRhythmManager;
-	std::shared_ptr<aetherClass::GameSound> m_bgm;
-	aetherClass::GameSound m_returnSE;
-	aetherClass::GameSound m_selectSE;
+	std::shared_ptr<aetherClass::GameSound> m_pBGM;
+	std::shared_ptr<aetherClass::GameSound> m_returnSE;
+	std::shared_ptr<aetherClass::GameSound> m_selectSE;
 	std::array<ModeSelect, 4> m_cursorArray;
-	std::unique_ptr<aetherClass::Skybox> m_pSkybox;
-	FieldArea m_field;
+	std::shared_ptr<FieldArea>  m_pField;
 	bool m_pushState;
 	int m_nowSelectMode;
 	bool m_alphaState;

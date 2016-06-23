@@ -81,6 +81,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 
 	// ˜b‚µ‚Ä‚é‚Æ‚«‚Í‰½‚à‚µ‚È‚¢
 	if (m_isView){
+		m_enemy->mEnemyGet(pair.first)->mIsTalking(true);
 		m_viewMessageFlame = false;
 		m_message.mUpdate((m_state == eState::eSelect));
 	}
@@ -170,6 +171,8 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		m_isChangeScene = false;
 		m_state = eState::eNext;
 		m_selectType = eSelectType::eNull;
+		m_enemy->mEnemyGet(pair.first)->mIsTalking(false);
+		m_enemy->mEnemyGet(pair.first)->mResetTransform();
 	}
 }
 

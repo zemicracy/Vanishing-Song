@@ -3,6 +3,7 @@
 #include <Rectangle3D.h>
 #include <GameClock.h>
 #include "ResourceManager.h"
+#include "GameManager.h"
 using namespace aetherClass;
 namespace{
 	const Vector3 kCollideOffset = Vector3(0, 5, 0);
@@ -54,7 +55,8 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_changeCommentCount = NULL;
 	m_messagePath.fill("null");
 	m_buttonSE.Load("Sound\\Field\\message.wav");
-	m_buttonSE.SetValume(-3000);
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.SetValume(volume);
 
 	m_buttonTexture.Load("Texture\\Message\\nextButton.png");
 
@@ -67,6 +69,8 @@ void Cage::mUpdate(const float timeScale, Vector3 position, const bool button){
 	m_charaEntity.mFaceToObject(m_model, position);
 	m_messageWindow.mUpdate(false);
 	m_messageWindow.mSetIcon(&m_icon);
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.SetValume(volume);
 	if (m_isComment){
 		m_changeCommentCount += GameClock::GetDeltaTime();
 

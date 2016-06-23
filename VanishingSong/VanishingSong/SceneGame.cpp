@@ -34,7 +34,7 @@ SceneGame::~SceneGame()
 
 bool SceneGame::Initialize(){
 	_heapmin();
-	//Finalize();
+	Finalize();
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\green");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\Yellow.fbx", "Model\\Player\\yellow");
 
@@ -244,7 +244,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		m_isFade2 = false;
 		return;
 	}
-	m_pFieldEnemy->mUpdater();
+
 	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation,false);

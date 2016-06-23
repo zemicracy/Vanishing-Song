@@ -20,6 +20,8 @@ bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string data
 	m_dataPath = dataPath;
 	mInitializeEnemy(type, camera);
 	mInitializeEnemyColider(camera);
+	m_type = type;
+	m_isTalking = false;
 	return true;
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
@@ -44,15 +46,22 @@ void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 }
 
 //XVˆ—
-void FieldEnemy::mUpdate(){
+void FieldEnemy::mUpdate(std::string name){
 	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation;
-	m_property._pEnemy->KeyframeUpdate("attack", true);
+
+	if (m_isTalking){
+		m_property._pEnemy->KeyframeUpdate("wait",0);
+		m_property._pEnemy->KeyframeUpdate("wait", true);
+	}
+	else{
+		m_property._pEnemy->KeyframeUpdate(name, 0);
+		m_property._pEnemy->KeyframeUpdate(name, true);
+	}
 }
 
 void FieldEnemy::mRender(aetherClass::ShaderBase* model_shader, aetherClass::ShaderBase* colider_shader){
 	
 	m_property._pEnemy->KeyframeAnimationRender(model_shader);
-	//m_property._pCollider->Render(colider_shader);
 }
 
 
@@ -125,4 +134,12 @@ void FieldEnemy::mRegisterIcon(std::string path){
 	m_pIcon = std::make_shared<Texture>();
 	m_pIcon->Load(path);
 	return;
+}
+
+eMusical FieldEnemy::mGetType(){
+	return m_type;
+}
+
+void FieldEnemy::mIsTalking(const bool talk){
+	m_isTalking = talk;
 }

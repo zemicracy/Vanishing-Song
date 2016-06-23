@@ -21,7 +21,7 @@ public:
 	~FieldEnemy();
 
 	bool mInitialize(eMusical,aetherClass::ViewCamera*,std::string dataPath);
-	void mUpdate();
+	void mUpdate(std::string name);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mFinalize();	//開放処理
 	void mResetTransform();
@@ -37,7 +37,9 @@ public:
 
 	std::shared_ptr<aetherClass::Texture>& mGetIcon();
 	void mRegisterIcon(std::string);
+	eMusical mGetType();
 
+	void mIsTalking(const bool);
 private:
 	bool mInitializeEnemy(eMusical,aetherClass::ViewCamera*);	//敵の初期化
 	void mInitializeEnemyColider(aetherClass::ViewCamera*);	//コライダーの初期化
@@ -48,7 +50,8 @@ private:
 	aetherClass::Transform m_initTransform;
 	std::string m_cannotMessagePath;
 	std::string m_dataPath;
-
+	eMusical m_type;
 	std::shared_ptr<aetherClass::Texture> m_pIcon;
+	bool m_isTalking;
 };
 #endif

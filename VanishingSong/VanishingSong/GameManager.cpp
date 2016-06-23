@@ -2,6 +2,7 @@
 #include "Const.h"
 #include <GameController.h>
 #include <WorldReader.h>
+#include "ResourceManager.h"
 using namespace aetherClass;
 GameManager::GameManager()
 {
@@ -121,7 +122,7 @@ void GameManager::mRestStart(){
 	m_bossState = eBossState::eUnVisible;
 	m_fieldState = eFieldState::eTutorial;
 	m_canStageNumber = NULL;
-
+	ResourceManager::mGetInstance().mGetBGMPath().clear();
 	m_players.clear();
 }
 

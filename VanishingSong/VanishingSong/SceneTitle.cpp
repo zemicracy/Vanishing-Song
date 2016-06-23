@@ -12,9 +12,14 @@
 #include "SceneGame.h"
 #include"SceneCregit.h"
 #include "PlayDataManager.h"
+
+#ifndef _SHLWAPI_
+#define _SHLWAPI_
+#pragma comment (lib,"ShlwApi.lib")
+#endif
+
 #include <Shlwapi.h>
 
-#pragma comment (lib,"ShlwApi.lib")
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
@@ -51,6 +56,7 @@ SceneTitle::~SceneTitle()
 
 bool SceneTitle::Initialize(){
 	_heapmin();
+	Finalize();
 	//次のシーン
 	RegisterScene(new SceneGame());
 	RegisterScene(new SceneCregit());
@@ -65,18 +71,20 @@ bool SceneTitle::Initialize(){
 	m_pLogoTexture = std::make_shared<Texture>();
 	m_pLogoTexture->Load("Texture\\Title\\Logo.png");
 
-	m_pMenuTexture = std::make_shared<Texture>();
 	std::wstring filePath;
 	for (auto& index : PlayDataManager::mSaveFile){
 		filePath.push_back(index);
 	}
+
 	// ファイルがあるかの確認
 	if (PathFileExists(filePath.c_str())){
 		m_isVisibleSaveData = true;
+		m_pMenuTexture = std::make_shared<Texture>();
 		m_pMenuTexture->Load("Texture\\Title\\AllSelect.png");
 	}
 	else{
 		m_isVisibleSaveData = false;
+		m_pMenuTexture = std::make_shared<Texture>();
 		m_pMenuTexture->Load("Texture\\Title\\NoLoadSelect.png");
 	}
 
@@ -84,7 +92,7 @@ bool SceneTitle::Initialize(){
 	m_pPushTexture->Load("Texture\\Title\\PushStart.png");
 	
 	// ロゴの初期化
-	m_pLogo = std::make_unique<Rectangle2D>();
+	m_pLogo = std::make_shared<Rectangle2D>();
 	m_pLogo->Initialize();
 	m_pLogo->SetTexture(m_pLogoTexture.get());
 	m_pLogo->property._transform._scale = Vector3(600, 500, 0);
@@ -95,7 +103,7 @@ bool SceneTitle::Initialize(){
 	m_pLogo->property._color = Color(0, 0, 0, 1);
 
 	// メニューの初期化
-	m_pMenu = std::make_unique<Rectangle2D>();
+	m_pMenu = std::make_shared<Rectangle2D>();
 	m_pMenu->Initialize();
 	m_pMenu->SetTexture(m_pPushTexture.get());
 	m_pMenu->property._transform._scale = Vector3(400, 300, 0);
@@ -106,7 +114,7 @@ bool SceneTitle::Initialize(){
 	m_pMenu->property._color = Color(0, 0, 0, 1);
 
 	// カーソルの初期化
-	m_pCursor = std::make_unique<Rectangle2D>();
+	m_pCursor = std::make_shared<Rectangle2D>();
 	m_pCursor->Initialize();
 	m_pCursor->property._color = Color(1, 1, 1, 0.5);
 	m_pCursor->property._transform._scale = Vector3(400, 50, 0);
@@ -121,22 +129,22 @@ bool SceneTitle::Initialize(){
 	}
 
 	const float volume = GameManager::mGetInstance().mGetVolume();
-	m_bgm = std::make_shared<GameSound>();
-	m_bgm->Load("Sound\\Result\\title.wav");
-	m_bgm->SetValume(volume);
+	m_pBGM = std::make_shared<GameSound>();
+	m_pBGM->Load("Sound\\Result\\title.wav");
+	m_pBGM->SetValume(volume);
 
-
-	if (m_bgm){
+	m_pField = std::make_shared<FieldArea>();
+	if (m_pBGM){
 		m_pRhythmManager = std::make_shared<RhythmManager>();
-		m_pRhythmManager->mInitializeRhythm(m_bgm.get(), 122);
-		m_field.mInitialize("Model\\Field\\title_tex");
-		m_field.mSetRhythm(m_pRhythmManager.get());
+		m_pRhythmManager->mInitializeRhythm(m_pBGM.get(), 122);
+		m_pField->mInitialize("Model\\Field\\title_tex");
+		m_pField->mSetRhythm(m_pRhythmManager.get());
 	}
 	else{
-		m_field.mInitialize("Model\\Field\\title_tex");
-		m_field.mSetRhythm(nullptr);
+		m_pField->mInitialize("Model\\Field\\title_tex");
+		m_pField->mSetRhythm(nullptr);
 	}
-	m_field.mSetCamera(&m_view);
+	m_pField->mSetCamera(&m_view);
 
 	m_view.property._rotation = Vector3(-5,20,0);
 
@@ -147,16 +155,13 @@ bool SceneTitle::Initialize(){
 	m_bluePlayer->property._transform._rotation._y = 180;
 	m_bluePlayer->SetCamera(&m_view);
 
-	m_pSkybox = std::make_unique<Skybox>();
-	m_pSkybox->Initialize();
-	m_pSkybox->SetCamera(&m_view);
-	m_pSkybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
+	m_returnSE = std::make_shared<GameSound>();
+	m_returnSE->Load("Sound\\Title\\decision.wav");
+	m_returnSE->SetValume(volume);
 
-	m_returnSE.Load("Sound\\Title\\decision.wav");
-	m_returnSE.SetValume(volume);
-
-	m_selectSE.Load("Sound\\Title\\select.wav");
-	m_selectSE.SetValume(volume);
+	m_selectSE = std::make_shared<GameSound>();
+	m_selectSE->Load("Sound\\Title\\select.wav");
+	m_selectSE->SetValume(volume);
 	
 	m_config.mIntialize(SceneTitle::Name);
 	
@@ -172,9 +177,19 @@ bool SceneTitle::Initialize(){
 //
 void SceneTitle::Finalize(){
 	_heapmin();
+	if (m_returnSE){
+		m_returnSE->Stop();
+		m_returnSE.reset();
+		m_returnSE = nullptr;
+	}
 
-	m_bgm->Stop();
-	m_returnSE.Stop();
+	if (m_selectSE){
+		m_selectSE->Stop();
+		m_selectSE.reset();
+		m_selectSE = nullptr;
+	}
+
+
 	if (m_pLogo){
 		m_pLogo->Finalize();
 		m_pLogo.reset();
@@ -207,13 +222,6 @@ void SceneTitle::Finalize(){
 		m_pPushTexture.reset();
 		m_pPushTexture = nullptr;
 	}
-
-	if (m_pSkybox){
-		m_pSkybox->Finalize();
-		m_pSkybox.reset();
-		m_pSkybox = nullptr;
-	}
-
 	
 	if (m_pRhythmManager){
 		m_pRhythmManager->mFinalize();
@@ -221,10 +229,22 @@ void SceneTitle::Finalize(){
 		m_pRhythmManager = nullptr;
 	}
 
-	if (m_bgm){
-		m_bgm.reset();
-		m_bgm  = nullptr;
+	if (m_pBGM){
+		m_pBGM->Stop();
+		m_pBGM.reset();
+		m_pBGM  = nullptr;
 	}
+
+	if (m_bluePlayer){
+		m_bluePlayer.reset();
+		m_bluePlayer = nullptr;
+	}
+
+	if (m_pField){
+		m_pField.reset();
+		m_pField = nullptr;
+	}
+
 	m_pushState = false;
 
 	m_alphaState = false;
@@ -253,21 +273,19 @@ bool SceneTitle::Updater(){
 	if (m_config.mUpdate(isConfigButton, isReturn, UpOrDown, RightOrLeft)){
 
 		const float volume = GameManager::mGetInstance().mGetVolume();
-		m_bgm->SetValume(volume);
+		m_pBGM->SetValume(volume);
 
-		m_returnSE.SetValume(volume);
+		m_returnSE->SetValume(volume);
 
-		m_selectSE.SetValume(volume);
+		m_selectSE->SetValume(volume);
 
 		return true;
 	}
 
-	m_bgm->PlayToLoop();
-	m_field.mUpdate(1.0);
+	m_pBGM->PlayToLoop();
+	m_pField->mUpdate(1.0);
 	m_bluePlayer->KeyframeUpdate(m_bluePlayer->GetKeyframeNameList(0), true);
 
-
-	
 	mCursorState(isStart);
 	bool isUpdate = mMenuSelectState(isReturn,UpOrDown);
 
@@ -287,8 +305,7 @@ bool SceneTitle::Updater(){
 void SceneTitle::Render(){
 	m_view.Render();
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
-	m_pSkybox->Render(shaderHash["texture"].get());
-	m_field.mRender(shaderHash["texture"].get(), shaderHash["transparent"].get());
+	m_pField->mRender(shaderHash["texture"].get(), shaderHash["transparent"].get());
 	m_bluePlayer->KeyframeAnimationRender(shaderHash["texture"].get());
 	return;
 }
@@ -328,14 +345,14 @@ void SceneTitle::mChangeSelect(const bool isUp, const bool isDown){
 	const float cursorSize = m_pCursor->property._transform._scale._y;
 	int sum = NULL;
 	if (isUp){ 
-		m_selectSE.Stop();
-		m_selectSE.PlayToOneTime();
+		m_selectSE->Stop();
+		m_selectSE->PlayToOneTime();
 		sum = -1;
 		m_nowCursor += sum;
 	}
 	else if (isDown){
-		m_selectSE.Stop();
-		m_selectSE.PlayToOneTime();
+		m_selectSE->Stop();
+		m_selectSE->PlayToOneTime();
 		sum = 1;
 		m_nowCursor += sum;
 	}
@@ -361,8 +378,8 @@ void SceneTitle::mCursorState(const bool isStart){
 	if (m_pushState != kPleaseClick)return;
 
 	if (isStart){
-		m_returnSE.Stop();
-		m_returnSE.PlayToOneTime();
+		m_returnSE->Stop();
+		m_returnSE->PlayToOneTime();
 		m_pMenu->SetTexture(m_pMenuTexture.get());
 		m_pushState = kMenuSelect;
 		m_pMenu->property._color._alpha = 1;
@@ -397,8 +414,8 @@ bool SceneTitle::mMenuSelectState(const bool isReturn, const  std::pair<bool, bo
 		SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 		// Exit以外が来たらシーンの遷移を開始
 		if (nextState._nextSceneName != kExit){
-			m_returnSE.Stop();
-			m_returnSE.PlayToOneTime();
+			m_returnSE->Stop();
+			m_returnSE->PlayToOneTime();
 			// シーンの遷移
 			ChangeScene(nextState._nextSceneName, LoadState::eUse);
 		}
@@ -416,7 +433,7 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	PlayDataManager load;
 	switch (index){
 	case eNextMode::eStart:
-		//GameManager::mGetInstance().mRestStart();
+		GameManager::mGetInstance().mRestStart();
 		info._nextSceneName = SceneGame::Name;
 		break;
 	case eNextMode::eLoad:

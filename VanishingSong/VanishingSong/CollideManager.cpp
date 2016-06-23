@@ -96,6 +96,7 @@ void CollideManager::mCheckHitCage(const int number){
 	}
 }
 
+//
 std::pair<int, bool>& CollideManager::GetMassageInfo(){
 	return m_messageInfo;
 }

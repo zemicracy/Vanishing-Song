@@ -1,4 +1,3 @@
-
 #ifndef _SCENECREGIT_H
 #define _SCENECREGIT_H
 #include <GameScene.h>
