@@ -76,7 +76,7 @@ bool SceneBattle::Initialize(){
 	m_isEndTransition = false;
 	m_prevWholeBeatNo = 0;
 
-	m_bgmVolume = 60;
+	m_bgmVolume = -(GameManager::mGetInstance().mGetVolume() / 100 - 30);
 	m_inCount = 0;
 
 	m_pField->mSetStageID(m_stageID);
@@ -188,7 +188,7 @@ bool SceneBattle::Updater(){
 	if (m_isEndTransition && m_sound){
 			m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
-			if (m_bgmVolume > 30){
+			if (m_bgmVolume > -(GameManager::mGetInstance().mGetVolume() / 100)){
 				m_sound->SetValume(-m_bgmVolume * 100);
 				m_bgmVolume--;
 			}
@@ -373,7 +373,7 @@ void SceneBattle::mOnResult(){
 		m_resultUpdateTime = 1.0f;
 
 
-		m_bgmVolume = 60;
+		m_bgmVolume = -(GameManager::mGetInstance().mGetVolume() / 100 - 30);
 	}
 
 	m_pResult->mUpdate(m_resultUpdateTime);

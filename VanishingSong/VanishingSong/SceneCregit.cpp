@@ -72,7 +72,7 @@ bool SceneCregit::Initialize(){
 	m_preInitProcess = false;
 	m_prevWholeBeatNo = 0;
 
-	m_bgmVolume = 60;
+	m_bgmVolume = -(GameManager::mGetInstance().mGetVolume() / 100 - 30);
 	m_inCount = 0;
 	m_endTime = 0;
 
@@ -195,7 +195,7 @@ bool SceneCregit::Updater(){
 	if (m_isEndTransition){
 		m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
-			if (m_bgmVolume > 30){
+			if (m_bgmVolume > -(GameManager::mGetInstance().mGetVolume() / 100)){
 				m_sound->SetValume(-m_bgmVolume * 100);
 				m_bgmVolume--;
 			}

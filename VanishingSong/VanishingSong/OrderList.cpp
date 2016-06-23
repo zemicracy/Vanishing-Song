@@ -92,6 +92,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 4 : 8;
 
 	reader.Load("data\\Battle\\orderList",true);
+
 	
 	m_pSpriteList.resize(8);
 	m_pSpriteOrigin.resize(8);
@@ -699,7 +700,7 @@ void OrderList::mEndReset(){
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
 	sound->mStop();
-	sound->mPlaySoundAction(-3000);
+	sound->mPlaySoundAction(-GameManager::mGetInstance().mGetVolume());
 }
 
 void OrderList::mRhythmicMotion(){
