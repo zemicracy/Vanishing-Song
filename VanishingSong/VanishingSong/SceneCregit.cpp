@@ -29,12 +29,12 @@ bool SceneCregit::Initialize(){
 	_heapmin();
 
 	mLoadTextData();
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\Yellow.fbx", "Model\\Player\\yellow");
 
 
 	RegisterScene(new SceneTitle());
-
+	
 	m_pMessage = std::make_unique<BattleMessage>();
 	m_pCregitMessage = std::make_unique<CregitMessage>();
 
