@@ -32,8 +32,7 @@ public:
 	enum class eGameState{
 		ePreCountIn, eCountIn, eUpdate, eFin
 	};
-
-
+	
 	SceneTutorial();
 	~SceneTutorial();
 
@@ -67,6 +66,7 @@ private:
 	bool mTutorialUpdater();
 	void mTimeEngagerForTuto();
 	void mRhythmicMotion();
+	void mOnDebug();
 private:
 	GameManager::eBattleState m_battleState;
 	GameManager::eBattleState m_winner;
@@ -94,10 +94,12 @@ private:
 	bool m_timeEngage;
 	bool m_isTutorialPlay;
 	bool m_isEndTransition;
+	bool m_isPreMessageOpen;
 
 	float m_bgmVolume;
 	int m_inCount;
 	int m_prevWholeBeatNo;
+	int m_countAdlibTiming;
 	float m_resultUpdateTime;
 
 	int m_textReadCnt;
@@ -114,7 +116,7 @@ private:
 	eGameState m_processState;
 
 	//Tutorial用
-	eTutorialState m_tutorialState;
+	Tutorial::eTutorialState m_tutorialState;
 	std::vector<std::shared_ptr<ActionCommand>>m_enemyVector;
 
 	//パーティクル

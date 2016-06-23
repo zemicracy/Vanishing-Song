@@ -700,7 +700,7 @@ void OrderList::mEndReset(){
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
 	sound->mStop();
-	sound->mPlaySoundAction(-GameManager::mGetInstance().mGetVolume());
+	sound->mPlaySoundAction(GameManager::mGetInstance().mGetVolume());
 }
 
 void OrderList::mRhythmicMotion(){

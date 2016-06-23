@@ -19,6 +19,9 @@ namespace{
 		tex->Load(path);
 		return tex;
 	}
+	std::string gAppend(int key,int index){
+		return Tutorial::k_TutorialKey[key] + std::to_string(index);
+	}
 }
 
 bool TutorialMessage::mInitialize(){
@@ -40,28 +43,28 @@ bool TutorialMessage::mInitialize(){
 	}
 
 	
+	using namespace Tutorial;
 
 	m_pTexture = nullptr;
 
 	std::string path = "Texture\\Message\\TutorialBattle\\";
 
-	m_pTextTextureList["Init1"] = path + "0.png";
-	m_pTextTextureList["Init2"] = path + "1.png";
+	m_pTextTextureList[gAppend(0, 1)] = path + "0.png";
+	m_pTextTextureList[gAppend(0, 2)] = path + "1.png";
 
-	m_pTextTextureList["FirstPerform1"] = path + "2.png";
-	m_pTextTextureList["FirstBattle1"] = path + "3.png";
-	m_pTextTextureList["FirstBattle2"] = path + "4.png";
-	m_pTextTextureList["FirstBattle3"] = path + "5.png";
-	
-	m_pTextTextureList["AdlibListen1"] = path + "6.png";
-	m_pTextTextureList["AdlibListen2"] = path + "7.png";
-	/*m_pTextTextureList["AdlibPerform1"] = path + "5.png";
-	m_pTextTextureList["AdlibPerform2"] = path + "6.png";*/
-	m_pTextTextureList["AdlibBattle1"] = path + "8.png";
-	m_pTextTextureList["AdlibBattle2"] = path + "9.png";
-	
-	m_pTextTextureList["PlayerOnly1"] = path + "tmplate.png";
-	m_pTextTextureList["Fin1"] = path + "tmplate.png";
+	m_pTextTextureList[gAppend(1, 1)] = path + "0.png";
+	m_pTextTextureList[gAppend(2, 1)] = path + "1.png";
+	m_pTextTextureList[gAppend(3, 1)] = path + "0.png";
+	m_pTextTextureList[gAppend(4, 1)] = path + "1.png";
+	m_pTextTextureList[gAppend(5, 1)] = path + "0.png";
+	m_pTextTextureList[gAppend(6, 1)] = path + "1.png";
+	m_pTextTextureList[gAppend(7, 1)] = path + "0.png";
+	m_pTextTextureList[gAppend(8, 1)] = path + "1.png";
+
+	m_pTextTextureList[gAppend(9, 1)] = path + "0.png";
+	m_pTextTextureList[gAppend(10, 1)] = path + "1.png";
+	m_pTextTextureList[gAppend(11, 1)] = path + "0.png";
+	m_pTextTextureList[gAppend(12, 1)] = path + "1.png";
 
 	m_pTexture = gCreateTexture(m_pTextTextureList["Init1"]);
 	m_message->mSetText(m_pTexture.get());
