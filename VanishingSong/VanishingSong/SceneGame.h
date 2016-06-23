@@ -54,8 +54,8 @@ public:
 private:
 
 	void mTutorial(bool ,bool);
-	void mRun();
-	bool mMessageUpdate();
+	void mRun(const bool, const std::pair<bool, bool>);
+	bool mMessageUpdate(const bool,const bool);
 	void mInitializeBGM();
 private:
 	aetherClass::DirectXEntity m_directX;	

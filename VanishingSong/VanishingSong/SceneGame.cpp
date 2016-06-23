@@ -11,10 +11,9 @@
 #include "ResourceManager.h"
 #include "Debug.h"
 #include "PlayDataManager.h"
+
 using namespace aetherClass;
-
 const std::string SceneGame::Name = "Game";
-
 namespace{
 	const float kScaleTime = 1.0f; 
 	const bool kError = false;
@@ -106,9 +105,10 @@ bool SceneGame::Initialize(){
 	m_isTransitionEnd = false;
 	m_isFade = false;
 	m_isFade2 = false;
+
 	// とりあえず一回呼んでおく
 	mTutorial(false,false);
-	mRun();
+	mRun(false,std::make_pair(false,false));
 	
 	_heapmin();
 	return true;
@@ -218,7 +218,7 @@ bool SceneGame::Updater(){
 	
 
 	mTutorial(isReturn, (RightOrLeft.first || RightOrLeft.second));
-	mRun();
+	mRun(isReturn, RightOrLeft);
 	return true;
 }
 
@@ -244,6 +244,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		m_isFade2 = false;
 		return;
 	}
+	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation,false);
@@ -251,6 +252,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		if (m_pTutorialEnemy->mGetSelectType()== TutorialEnemy::eSelect::eYes){
 			m_gameState = eState::eBattle;
 			m_pTutorialEnemy->mIsEnd(true);
+			GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
 			GameManager::mGetInstance().mSetPlayerTransform(m_pFieldPlayer->mGetTransform());
 			GameManager::mGetInstance().mBattleDataFile(m_pTutorialEnemy->mGetDataPath());
 			ChangeScene(SceneTutorial::Name, LoadState::eUse);
@@ -258,6 +260,8 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		}
 		else if (m_pTutorialEnemy->mGetSelectType() == TutorialEnemy::eSelect::eNo){
 			if (m_pTutorialEnemy->mGetMessageEnd()){
+
+				GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
 				ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field1.wav";
 				mInitializeBGM();
 				m_pRhythm->mInitializeRhythm(m_pBGMArray.at(0).get(), 128);
@@ -273,6 +277,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 	else if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd){
 		// チュートリアル終了後
 		if (m_pTutorialEnemy->mGetMessageEnd()){
+			GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
 			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
 			m_isFade = true;
 			m_pTutorialEnemy->mIsEnd(true);
@@ -283,7 +288,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 }
 
 //
-void SceneGame::mRun(){
+void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLeft){
 	if (m_gameState != eState::eRun)return;
 
 	if (GameController::GetJoypad().ButtonPress(eJoyButton::eBack)){
@@ -294,7 +299,7 @@ void SceneGame::mRun(){
 	m_pCollideManager->mUpdate();
 
 	// メッセージの更新処理
-	bool changeBattle = mMessageUpdate();
+	bool changeBattle = mMessageUpdate(isReturn, RightOrLeft.first || RightOrLeft.second);
 	if (changeBattle){
 		// 戦闘に行く処理
 		// 戦闘に行く前に設定する奴もここでする
@@ -355,13 +360,11 @@ bool SceneGame::TransitionOut(){
 }
 
 // メッセージの更新処理
-bool SceneGame::mMessageUpdate(){
+bool SceneGame::mMessageUpdate(const bool isReturn, const bool isSelect){
 
 	auto collideInfo = m_pCollideManager->GetMassageInfo();
-	const bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
-	const bool selectButton = GameController::GetJoypad().ButtonPress(eJoyButton::eLeft) || GameController::GetJoypad().ButtonPress(eJoyButton::eRight) ||
-		GameController::GetKey().KeyDownTrigger('A') || GameController::GetKey().KeyDownTrigger('D');
-
+	const bool isPress = isReturn;
+	const bool selectButton = isSelect;
 	const Vector3 playerPosition = m_pFieldPlayer->mGetBodyColldier()->property._transform._translation;
 	const Vector3 enemyPosition = m_pFieldEnemy->mEnemyGet(collideInfo.first)->mGetProperty()._pCollider->property._transform._translation;
 

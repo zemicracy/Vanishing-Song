@@ -215,11 +215,17 @@ void FieldArea::mInitializeObject(){
 //
 void FieldArea::mChangeColor(){
 	if (!m_isChangeInit){
+		mResizeUsePlayer();
 		m_changeColor += 1;
 		if (m_changeColorCount > m_usePlayer.size()-1){
 			m_changeColorCount = 0;
 		}
-		m_changeColor = mMusicalToColor(m_usePlayer.at(m_changeColorCount));
+		if (!m_usePlayer.empty()){
+			m_changeColor = mMusicalToColor(m_usePlayer.at(m_changeColorCount));
+		}
+		else{
+			m_changeColor = Color(0, 0, 0, 1);
+		}
 		m_isChangeInit = true;
 	}
 	const float time = GameClock::GetDeltaTime();
@@ -267,6 +273,20 @@ Color FieldArea::mMusicalToColor(eMusical type){
 	return Color(0, 0, 0, 1);
 }
 
+//
 void FieldArea::mSetRhythm(RhythmManager* rhythm){
 	m_rhythmManager = rhythm;
+}
+
+void FieldArea::mResizeUsePlayer(){
+	if (m_usePlayer.size() == GameManager::mGetInstance().mGetUsePlayer().size())return;
+	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
+		for (auto& pushIndex : m_usePlayer){
+			if (pushIndex == index.first){
+				continue;
+			}
+		}
+		m_usePlayer.push_back(index.first);
+	}
+
 }

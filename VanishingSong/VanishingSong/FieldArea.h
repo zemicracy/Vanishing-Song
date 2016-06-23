@@ -24,6 +24,7 @@ private:
 	void mInitializeObject();
 	void mFinalize();
 	void mChangeColor();
+	void mResizeUsePlayer();
 	aetherClass::Color mMusicalToColor(eMusical);
 	std::array<std::shared_ptr<aetherClass::ModelBase>, 4>m_wall;
 	std::array<std::shared_ptr<aetherClass::ModelBase>, 5>m_partitionCube;

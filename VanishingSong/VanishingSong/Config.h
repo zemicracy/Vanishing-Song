@@ -3,6 +3,7 @@
 #include <GameSound.h>
 #include <memory>
 #include <array>
+#include "MessageWindow.h"
 class Config
 {
 private:
@@ -49,6 +50,9 @@ private:
 
 	std::shared_ptr<aetherClass::Rectangle2D> m_base;
 	std::shared_ptr<aetherClass::Rectangle2D> m_cursor;
+	aetherClass::Texture m_saveMessage;
+	aetherClass::Texture m_pushButton;
+	MessageWindow m_messageWindow;
 	std::array<float, 5> m_cursorYArray;
 	std::array<float, 3> m_cursorXArray;
 	aetherClass::Texture m_menuTexture;
@@ -56,7 +60,7 @@ private:
 	std::string m_sceneName;
 	aetherClass::GameSound m_selectSE;
 	aetherClass::GameSound m_returnSE;
-
+	bool m_isSaved;
 	std::pair<aetherClass::Vector3, aetherClass::Vector3> m_cursorScale;
 };
 

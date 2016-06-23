@@ -63,10 +63,18 @@ void Config::mIntialize(std::string name){
 	}
 	m_sceneName = name;
 	m_base->SetTexture(&m_menuTexture);
-	
+
+	m_messageWindow.mInitialize();
+	m_saveMessage.Load("Texture\\Message\\tmplate.png");
+	m_pushButton.Load("Texture\\Message\\nextButton.png");
+
+	m_messageWindow.mSetText(&m_saveMessage);
+	m_messageWindow.mSetButton(&m_pushButton);
+
 	m_isView = false;
 	m_isSelectVolume = false;
 	m_isBackToTitle = false;
+	m_isSaved = false;
 	m_cursorYCount = NULL;
 	m_cursorXCount = NULL;
 }
@@ -84,6 +92,15 @@ bool Config::mUpdate(const bool isView, const bool isButton,const std::pair<bool
 	}
 
 	if (!m_isView) return false;
+
+
+	if (m_isSaved&&isButton){
+		m_isSaved = false;
+		return true;
+	}
+
+	m_messageWindow.mUpdate(false);
+	if (m_isSaved)return true;
 
 	const float volume = GameManager::mGetInstance().mGetVolume();
 	m_returnSE.SetValume(volume);
@@ -108,8 +125,8 @@ bool Config::mUpdate(const bool isView, const bool isButton,const std::pair<bool
 		mCountCursorY(m_cursorYCount, UpOrDown);
 		m_cursor->property._transform._translation._y = m_cursorYArray.at(m_cursorYCount);
 		mMenuDecision(isButton, m_cursorYCount);
-		
 	}
+
 	
 	return true;
 }
@@ -119,6 +136,9 @@ void Config::mUIRender(aetherClass::ShaderBase* tex, aetherClass::ShaderBase* co
 	if (!m_isView) return;
 	m_base->Render(tex);
 	m_cursor->Render(color);
+	if (m_isSaved){
+		m_messageWindow.mRender(tex);
+	}
 }
 
 
@@ -135,6 +155,7 @@ void Config::mFinalize(){
 		m_cursor->Finalize();
 		m_cursor.reset();
 	}
+
 }
 
 
@@ -213,6 +234,7 @@ void Config::mMenuDecision(const bool isButton, const int count){
 	case eStae::eSave:
 		playData.mSave();
 		playData.mConfigSave();
+		m_isSaved = true;
 		break;
 
 	case eStae::eBackToTitle:

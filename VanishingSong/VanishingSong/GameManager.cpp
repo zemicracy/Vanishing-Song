@@ -123,7 +123,6 @@ void GameManager::mRestStart(){
 	m_canStageNumber = NULL;
 
 	m_players.clear();
-	m_players.insert(std::make_pair(eMusical::eBlue, eMusical::eBlue));
 }
 
 //

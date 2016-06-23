@@ -25,7 +25,6 @@ bool VanishingSongFrame::InitializeBuffer(){
 	result = ResourceManager::mGetInstance().Initialize();
 	// 操作キャラクターのリソースを初期化
 
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
 	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
 	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
@@ -52,7 +51,8 @@ bool VanishingSongFrame::FrameRunningBuffer(){
 
 // プログラムの終了時に実行される
 void VanishingSongFrame::FinalizeBuffer(){
-
+	PlayDataManager playData;
+	playData.mConfigSave();
 	ResourceManager::mGetInstance().Finalize();
 	return;
 }
