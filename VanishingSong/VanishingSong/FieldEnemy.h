@@ -53,5 +53,7 @@ private:
 	eMusical m_type;
 	std::shared_ptr<aetherClass::Texture> m_pIcon;
 	bool m_isTalking;
+	int m_animationCount;
+	std::string m_prevAnimationName;
 };
 #endif

@@ -114,6 +114,17 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 
 	}
 
+	for (int i = 0; i < 4; i++){
+
+		if (i < mFieldStateToInt(GameManager::mGetInstance().mFieldState())){
+			if (m_pEnemyList[i]->mGetType() != eMusical::eYellow || m_pEnemyList[i]->mGetType() != eMusical::eRed){
+				m_pEnemyList[i]->mGetProperty()._pEnemy->property._transform._rotation._y = 180;
+			}
+			else{
+				m_pEnemyList[i]->mGetProperty()._pEnemy->property._transform._rotation._y = 0;
+			}
+		}
+	}
 	//“G‚Ì‰ŠúˆÊ’u
 	mSetPosion();
 
@@ -145,8 +156,14 @@ bool FieldEnemyManager::mGetIsJudge(){
 //XVˆ—
 void FieldEnemyManager::mUpdater(){
 	for (int i = 0; i < 4; i++){
+		if (m_pEnemyList[i]->mGetType() == eMusical::eGreen)continue;
 		if (m_pEnemyList[i]->mGetType() != eMusical::eYellow){
-			m_pEnemyList[i]->mUpdate("attack");
+			if (i > mFieldStateToInt(GameManager::mGetInstance().mFieldState())){
+				m_pEnemyList[i]->mUpdate("attack");
+			}
+			else{
+				m_pEnemyList[i]->mUpdate("wait");
+			}
 		}
 		else{
 			m_pEnemyList[i]->mUpdate("wait");
@@ -181,7 +198,6 @@ void FieldEnemyManager::mSetPosion(){
 	
 		m_pEnemyList[i]->mGetProperty()._enemyAreaNo = i;
 		m_pEnemyList[i]->mSetTransform(m_pEnemyList[i]->mGetProperty()._pEnemy->property._transform);
-
 	}
 }
 
@@ -195,4 +211,23 @@ void FieldEnemyManager::mResetEnemysTransform(){
 	for (auto &itr : m_pEnemyList){
 		itr->mResetTransform();
 	}
+}
+
+int FieldEnemyManager::mFieldStateToInt(GameManager::eFieldState state){
+	switch (state)
+	{
+	case GameManager::eFieldState::eFirstStage:
+		return -1;
+	case GameManager::eFieldState::eSecoundStage:
+		return 0;
+	case GameManager::eFieldState::eThirdStage:
+		return 1;
+	case GameManager::eFieldState::eForthStage:
+		return 2;
+
+	default:
+		break;
+	}
+
+	return -50;
 }

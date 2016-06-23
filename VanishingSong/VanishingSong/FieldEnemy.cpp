@@ -22,6 +22,8 @@ bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string data
 	mInitializeEnemyColider(camera);
 	m_type = type;
 	m_isTalking = false;
+	m_animationCount = NULL;
+	m_prevAnimationName = "null";
 	return true;
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
@@ -50,12 +52,29 @@ void FieldEnemy::mUpdate(std::string name){
 	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation;
 
 	if (m_isTalking){
-		m_property._pEnemy->KeyframeUpdate("wait",0);
-		m_property._pEnemy->KeyframeUpdate("wait", true);
+		if (m_prevAnimationName != "wait"){
+			m_animationCount = NULL;
+			m_prevAnimationName = "wait";
+		}
+
+		if (m_property._pEnemy->GetKeyframeCount("wait") - 1 < m_animationCount){
+			m_animationCount = NULL;
+		}
+
+		m_property._pEnemy->KeyframeUpdate("wait", m_animationCount);
+		m_animationCount += 1;
 	}
 	else{
-		m_property._pEnemy->KeyframeUpdate(name, 0);
-		m_property._pEnemy->KeyframeUpdate(name, true);
+		if (m_prevAnimationName != name){
+			m_animationCount = NULL;
+			m_prevAnimationName = name;
+		}
+
+		if (m_property._pEnemy->GetKeyframeCount(name)-1 < m_animationCount){
+			m_animationCount = NULL;
+		}
+		m_property._pEnemy->KeyframeUpdate(name, m_animationCount);
+		m_animationCount += 1;
 	}
 }
 
