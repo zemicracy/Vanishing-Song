@@ -8,10 +8,9 @@
 #include <ConsoleWindow.h>
 #include <GameSceneManager.h>
 #include "Const.h"
-#include "SceneGame.h"
-#include "SceneTitle.h"
 #include "VanishingSongFrame.h"
 #include "Load.h"
+#include"SceneLogoView.h"
 using namespace aetherClass;
 
 namespace{
@@ -53,7 +52,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, INT){
 	}
 
 	//一番最初のシーンとロード画面の設定
-	GameSceneManager::SetCurrentScene(new SceneTitle());
+	GameSceneManager::SetCurrentScene(new SceneLogoView());
 	GameSceneManager::SetLoadScreen(new Load());
 	frame->BackgroundColor(Color(0, 0, 0, 0));
 	//メインループの開始
