@@ -242,7 +242,7 @@ void FieldPlayer::mSetUpBodyCollider(std::shared_ptr<Cube>& collider, aetherClas
 	
 	collider->Initialize();
 	collider->property._transform._translation = original + offset;
-	collider->property._transform._scale = Vector3(2,10,10);
+	collider->property._transform._scale = Vector3(5,10,5);
 	collider->property._color = Color(1, 0, 0, 0.5);
 	collider->SetCamera(m_playerView.get());
 	return;

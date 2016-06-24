@@ -43,6 +43,12 @@ class SceneTitle :
 	struct SceneInfo{
 		std::string _nextSceneName;
 	};
+
+	struct  TitlePlayer
+	{
+		std::shared_ptr<aetherClass::FbxModel> _model;
+		std::string _animationName;
+	};
 public:
 	SceneTitle();
 
@@ -72,6 +78,7 @@ private:
 	void mChangeSelect(const bool isUp, const bool isDown);
 	void mCursorState(const bool isStart);
 	bool mMenuSelectState(const bool isReturn, const  std::pair<bool, bool>);
+	void mSetPlayer(eMusical);
 private:
 	std::shared_ptr<aetherClass::SpriteBase> m_pLogo;
 	std::shared_ptr<aetherClass::SpriteBase> m_pMenu;
@@ -80,7 +87,7 @@ private:
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
 	
-	std::shared_ptr<aetherClass::FbxModel> m_bluePlayer;
+	std::unordered_map<eMusical, TitlePlayer> m_players;
 	std::shared_ptr<RhythmManager> m_pRhythmManager;
 	std::shared_ptr<aetherClass::GameSound> m_pBGM;
 	std::shared_ptr<aetherClass::GameSound> m_returnSE;

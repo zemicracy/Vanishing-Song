@@ -19,6 +19,8 @@ Cage::~Cage(){}
 
 //
 void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCamera* camera, bool isTought){
+
+	m_isTought = isTought;
 	m_model = model;
 	m_model->SetCamera(camera);
 	m_initialPosition = position;
@@ -29,14 +31,21 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 
 	m_pCollider->property._transform._translation = m_initialPosition + kCollideOffset;
 	m_pCollider->property._color = Color(1.0, 0, 0, 0.3);
-	m_pCollider->property._transform._scale = 15;
 	m_pCollider->SetCamera(camera);
 
 	m_commentFlame = std::make_shared<Rectangle3D>();
 	m_commentFlame->Initialize();
 	m_commentFlame->SetCamera(camera);
 	m_commentFlame->SetTexture(ResourceManager::mGetInstance().GetTexture("commet").get());
-	m_commentFlame->property._transform._translation = position + Vector3(0, 50, 0);
+
+	if (m_isTought){
+		m_pCollider->property._transform._scale = 15;
+		m_commentFlame->property._transform._translation = position + Vector3(0, 50, 0);
+	}
+	else{
+		m_pCollider->property._transform._scale = Vector3(10,15,15);
+		m_commentFlame->property._transform._translation = position + Vector3(0, 25, 0);
+	}
 	m_commentFlame->property._transform._scale = Vector3(10, 6, 0);
 
 	m_messageWindow.mInitialize();
@@ -49,7 +58,6 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 		m_cage->property._transform._translation = position + Vector3(0,1,0);
 		m_cage->property._transform._scale = 3;
 	}
-	m_isTought = isTought;
 	m_isComment = false;
 	m_changeComment = false;
 	m_changeCommentCount = NULL;
@@ -112,7 +120,6 @@ void Cage::mRender(ShaderBase* tex, ShaderBase* color){
 		m_cage->Render(tex);
 	}
 	m_model->Render(tex);
-
 	if (m_isComment&&!m_isMessage){
 		m_commentFlame->property._transform._rotation = m_camera->property._rotation;
 		m_commentFlame->Render(tex);

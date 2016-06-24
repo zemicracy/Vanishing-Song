@@ -153,11 +153,7 @@ bool SceneTitle::Initialize(){
 
 	m_view.property._translation = Vector3(60, 50, -800);
 
-	m_bluePlayer = ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue);
-	m_bluePlayer->property._transform._translation = Vector3(100, 0, -500);
-	m_bluePlayer->property._transform._rotation._y = 180;
-	m_bluePlayer->SetCamera(&m_view);
-
+	
 	m_returnSE = std::make_shared<GameSound>();
 	m_returnSE->Load("Sound\\Title\\decision.wav");
 	m_returnSE->SetValume(volume);
@@ -170,6 +166,7 @@ bool SceneTitle::Initialize(){
 	
 	for (auto& usePlayer : GameManager::mGetInstance().mGetUsePlayer()){
 		m_fieldNote.mInitialize(usePlayer.second, &m_view, Vector3(-400.0f, 0.f, -400.0f), Vector3(400.0f, 0.0f, 400.0f));
+		mSetPlayer(usePlayer.first);
 	}
 	
 	m_pushState = false;
@@ -241,9 +238,9 @@ void SceneTitle::Finalize(){
 		m_pBGM  = nullptr;
 	}
 
-	if (m_bluePlayer){
-		m_bluePlayer.reset();
-		m_bluePlayer = nullptr;
+	for (auto& player : m_players){
+		player.second._model.reset();
+		player.second._model = nullptr;
 	}
 
 	if (m_pField){
@@ -290,7 +287,11 @@ bool SceneTitle::Updater(){
 
 	m_pBGM->PlayToLoop();
 	m_pField->mUpdate(1.0);
-	m_bluePlayer->KeyframeUpdate(m_bluePlayer->GetKeyframeNameList(0), true);
+
+	for (auto& player : m_players){
+		player.second._model->KeyframeUpdate(player.second._animationName, true);
+	}
+
 	m_fieldNote.mUpdate();
 	mCursorState(isStart);
 	bool isUpdate = mMenuSelectState(isReturn,UpOrDown);
@@ -312,7 +313,9 @@ void SceneTitle::Render(){
 	m_view.Render();
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pField->mRender(shaderHash["texture"].get(), shaderHash["transparent"].get());
-	m_bluePlayer->KeyframeAnimationRender(shaderHash["texture"].get());
+	for (auto& player : m_players){
+		player.second._model->KeyframeAnimationRender(shaderHash["texture"].get());
+	}
 	m_fieldNote.mRender(shaderHash["transparent"].get());
 	return;
 }
@@ -457,4 +460,46 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 		break;
 	}
 	return info;
+}
+
+void SceneTitle::mSetPlayer(eMusical type){
+	switch (type)
+	{
+	case eMusical::eBlue:
+		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
+		m_players[type]._model->property._transform._translation = Vector3(100, 0, -500);
+		m_players[type]._model->property._transform._rotation._y = 180;
+		m_players[type]._model->SetCamera(&m_view);
+		m_players[type]._animationName = "wait";
+		break;
+
+	case eMusical::eGreen:
+		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
+		m_players[type]._model->property._transform._translation = Vector3(150, 0, -500);
+		m_players[type]._model->property._transform._rotation._y = 180;
+		m_players[type]._model->SetCamera(&m_view);
+		m_players[type]._animationName = "wait";
+
+		break;
+
+	case eMusical::eRed:
+		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
+		m_players[type]._model->property._transform._translation = Vector3(200, 0, -500);
+		m_players[type]._model->property._transform._rotation._y = 180;
+		m_players[type]._model->SetCamera(&m_view);
+		m_players[type]._animationName = "wait";
+
+		break;
+
+	case eMusical::eYellow:
+		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
+		m_players[type]._model->property._transform._translation = Vector3(250, 0, -500);
+		m_players[type]._model->property._transform._rotation._y = 180;
+		m_players[type]._model->SetCamera(&m_view);
+		m_players[type]._animationName = "wait";
+
+		break;
+	default:
+		break;
+	}
 }

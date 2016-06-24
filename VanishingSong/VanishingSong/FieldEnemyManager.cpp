@@ -27,7 +27,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	//SpawnêŠ
 	for (auto index : reader.GetInputWorldInfo()._object){
 		if (index->_name == "area1"){
-			m_pEnemySpawner[0] = index->_transform._translation + Vector3(-130, 0, -150);
+			m_pEnemySpawner[0] = index->_transform._translation + Vector3(-120, 0, -150);
 		}
 		if (index->_name == "area2"){
 			m_pEnemySpawner[1] = index->_transform._translation + Vector3(0, 0, -150);
@@ -109,7 +109,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
-		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale = Vector3( -1.5,1.5,1.5);
+		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale = Vector3( -1,1,1);
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\boss.png");
 
 	}
