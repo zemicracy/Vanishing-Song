@@ -42,7 +42,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	//
 	count = 0;
 	for (auto& message : m_tutorialClearMessage){
-		message="Texture\\Message\\tmplate.png";
+		message="Texture\\Message\\TutorialAfter\\"+std::to_string(count)+".png";
 		count += 1;
 	}
 
