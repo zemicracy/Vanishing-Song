@@ -66,7 +66,6 @@ bool SceneTitle::Initialize(){
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Danbal\\danbal.fbx", "Model\\Enemy\\Danbal\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\boss.fbx", "Model\\Enemy\\Boss\\tex");
 
-	
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
 	m_pLogoTexture->Load("Texture\\Title\\Logo.png");
@@ -475,8 +474,8 @@ void SceneTitle::mSetPlayer(eMusical type){
 
 	case eMusical::eGreen:
 		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
-		m_players[type]._model->property._transform._translation = Vector3(150, 0, -500);
-		m_players[type]._model->property._transform._rotation._y = 180;
+		m_players[type]._model->property._transform._translation = Vector3(300, 55, -570);
+		m_players[type]._model->property._transform._rotation._y = 270;
 		m_players[type]._model->SetCamera(&m_view);
 		m_players[type]._animationName = "wait";
 
@@ -484,8 +483,8 @@ void SceneTitle::mSetPlayer(eMusical type){
 
 	case eMusical::eRed:
 		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
-		m_players[type]._model->property._transform._translation = Vector3(200, 0, -500);
-		m_players[type]._model->property._transform._rotation._y = 180;
+		m_players[type]._model->property._transform._translation = Vector3(0, 0, -300);
+		m_players[type]._model->property._transform._rotation._y = 90;
 		m_players[type]._model->SetCamera(&m_view);
 		m_players[type]._animationName = "wait";
 
@@ -493,8 +492,8 @@ void SceneTitle::mSetPlayer(eMusical type){
 
 	case eMusical::eYellow:
 		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
-		m_players[type]._model->property._transform._translation = Vector3(250, 0, -500);
-		m_players[type]._model->property._transform._rotation._y = 180;
+		m_players[type]._model->property._transform._translation = Vector3(50, 0, -300);
+		m_players[type]._model->property._transform._rotation._y = 270;
 		m_players[type]._model->SetCamera(&m_view);
 		m_players[type]._animationName = "wait";
 
