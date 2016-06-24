@@ -6,11 +6,12 @@
 #include "CharaEntity.h"
 #include <memory>
 #include<FbxModel.h>
+class BattleEnemy
+{
+public:
 	enum class eBattleActionType{
 		eWait, eAttack, eDamage
 	};
-class BattleEnemy
-{
 
 public:
 	struct Enemy

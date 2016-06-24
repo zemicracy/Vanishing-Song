@@ -46,7 +46,7 @@ public:
 	int mGetWaveAllCount();
 	CharaStatus& mGetCharaStatus(int);
 	int mGetAppendOption();
-	void mChangeAnimation(eBattleActionType,eMusical);
+	void mChangeAnimation(BattleEnemy::eBattleActionType, eMusical);
 
 private:
 	void mFinalize();
@@ -74,8 +74,7 @@ private:
 	std::vector<std::vector<eMusical>> m_enemyAttackList;
 	std::vector<CharaStatus> m_hp;
 
-	std::unordered_map<eBattleActionType, std::string>m_animationName;
-	eBattleActionType m_attackState;
+	std::unordered_map<BattleEnemy::eBattleActionType, std::string>m_animationName;
 
 	bool m_bossFlag;
 	int m_waveID;

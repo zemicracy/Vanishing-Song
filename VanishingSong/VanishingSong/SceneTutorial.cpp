@@ -541,6 +541,7 @@ void SceneTutorial::mOnListen(){
 
 	//Œõ‚é“z
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+	m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 	if (m_tutorialState == eTutorialState::eAdlib && m_countAdlibTiming <= 4){
 		if (m_rhythm->mIsQuarterBeat()){
 			m_countAdlibTiming++;
@@ -576,6 +577,7 @@ void SceneTutorial::mOnPerform(){
 	}
 
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+	m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
@@ -603,9 +605,11 @@ void SceneTutorial::mOnBattle(){
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
 	auto i = m_pOrderList->mGetDamage();
 	if (i > 0){
-			m_enemyHp->_hp -= i;
+		m_enemyHp->_hp -= i;
+		m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 	}
 	else if (i < 0){
+		m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eDamage, eMusical::eMiss);
 		if (m_charaHp._hp > 1){
 			m_charaHp._hp += i;
 		}
@@ -641,6 +645,8 @@ void SceneTutorial::mCheckBattle(){
 
 			m_pField->mDeleteWaveNote();
 			m_pBattleEnemyManager->misDie();
+			m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
+
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eNewWave;
 			m_processState = eGameState::ePreCountIn;
@@ -648,6 +654,7 @@ void SceneTutorial::mCheckBattle(){
 		else{
 			m_pField->mDeleteWaveNote();
 			m_pBattleEnemyManager->misDie();
+			m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eWin, eMusical::eMiss);
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;

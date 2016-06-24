@@ -27,11 +27,10 @@ void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	m_fieldState = GameManager::mGetInstance().mFieldState();
 	m_optionCount = 0;
 
-	m_animationName.insert(std::make_pair(eBattleActionType::eWait, "wait"));
-	m_animationName.insert(std::make_pair(eBattleActionType::eAttack, "attack"));
-	m_animationName.insert(std::make_pair(eBattleActionType::eDamage, "damage"));
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eWait, "wait"));
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eAttack, "attack"));
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eDamage, "damage"));
 
-	m_attackState = eBattleActionType::eWait;
 }
 
 
@@ -351,7 +350,7 @@ void BattleEnemyManager:: mFinalize(){
 
 }
 
-void BattleEnemyManager::mChangeAnimation(eBattleActionType action, eMusical color){
+void BattleEnemyManager::mChangeAnimation(BattleEnemy::eBattleActionType action, eMusical color){
 	if (m_pEnemy.find(color) == m_pEnemy.end() && color != eMusical::eMiss)return;
 
 	if (color == eMusical::eMiss){
@@ -359,7 +358,7 @@ void BattleEnemyManager::mChangeAnimation(eBattleActionType action, eMusical col
 			itr.second->mChangeAnimation(m_animationName.at(action));
 		}
 	}
-	else if (action == eBattleActionType::eAttack){
+	else if (action == BattleEnemy::eBattleActionType::eAttack){
 		if (m_pEnemy.begin()->second->mGetType() == eMusical::eAdlib){
 			m_pEnemy.at(eMusical::eAdlib)->mChangeAnimation(m_animationName.at(action));
 		}
