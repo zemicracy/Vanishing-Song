@@ -138,6 +138,7 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 		if (m_tutorialClearMessage.size() <= m_messageCount){
 			m_messageCount = m_tutorialClearMessage.size();
 			m_messageEnd = true;
+			return;
 		}
 		m_message = std::make_shared<Texture>();
 		m_message->Load(m_tutorialClearMessage.at(m_messageCount));
@@ -145,8 +146,9 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 	}
 	else{
 		if (m_tutorialMessage.size() <= m_messageCount){
-			m_messageCount = m_tutorialClearMessage.size();
+			m_messageCount = m_tutorialMessage.size();
 			m_messageEnd = true;
+			return;
 		}
 
 		const int end = m_tutorialMessage.size() - 2;

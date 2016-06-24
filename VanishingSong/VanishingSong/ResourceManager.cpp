@@ -96,6 +96,7 @@ bool ResourceManager::InitializeTexture(){
 
 	RegisterTexture("comment", "Texture\\Message\\comment_flame.png");
 	RegisterTexture("comment2", "Texture\\Message\\comment_flame2.png");
+	RegisterTexture("cursor", "Texture\\messageframe.png");
 
 	std::string comPath = "Texture\\ActionCommand\\";
 	RegisterTexture("ActionBlue", comPath + "Blue.png");

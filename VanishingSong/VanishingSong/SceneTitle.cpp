@@ -12,7 +12,7 @@
 #include "SceneGame.h"
 #include"SceneCregit.h"
 #include "PlayDataManager.h"
-
+#include "ResourceManager.h"
 #ifndef _SHLWAPI_
 #define _SHLWAPI_
 #pragma comment (lib,"ShlwApi.lib")
@@ -116,10 +116,13 @@ bool SceneTitle::Initialize(){
 	// ƒJ[ƒ\ƒ‹‚Ì‰Šú‰»
 	m_pCursor = std::make_shared<Rectangle2D>();
 	m_pCursor->Initialize();
-	m_pCursor->property._color = Color(1, 1, 1, 0.5);
-	m_pCursor->property._transform._scale = Vector3(400, 50, 0);
-	m_pCursor->property._transform._translation = m_pMenu->property._transform._translation + Vector3(0, 35, 0);
-
+	m_pCursor->property._color = Color(0.f, 0.f, 0.f, 1.f);
+	m_pCursor->property._transform._scale = Vector3(250, 50, 0);
+	const float x = (kWindowWidth / 2) - (m_pCursor->property._transform._scale._x / 2);
+	m_pCursor->property._transform._translation._y = m_pMenu->property._transform._translation._y +(float)35;
+	m_pCursor->property._transform._translation._x = x;
+	
+	m_pCursor->SetTexture(ResourceManager::mGetInstance().GetTexture("cursor").get());
 	const float cursorPosition = m_pCursor->property._transform._translation._y;
 	const float cursorSize = m_pCursor->property._transform._scale._y;
 
@@ -320,7 +323,7 @@ void SceneTitle::UIRender(){
 	m_pMenu->Render(shaderHash["transparent"].get());
 
 	if (m_pushState == kMenuSelect){
-		m_pCursor->Render(shaderHash["color"].get());
+		m_pCursor->Render(shaderHash["transparent"].get());
 	}
 
 	m_config.mUIRender(shaderHash["transparent"].get(), shaderHash["color"].get());
