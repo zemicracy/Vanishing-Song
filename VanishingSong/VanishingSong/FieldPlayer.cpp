@@ -14,7 +14,7 @@ namespace{
 	const float kCameraRotationMaxX = -5.0f;
 	const float kCameraRotationMinX = -20.0f;
 	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
-	const float kDefaultMove = 100.0f;
+	const float kDefaultMove = 50.0f;
 
 }
 
@@ -49,10 +49,12 @@ bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	m_pSphereCollider->property._color = Color(1, 0, 0, 0.5);
 	m_pSphereCollider->SetCamera(m_playerView.get());
 
-	m_animationName.insert(std::make_pair(eState::eMove, "move"));
+	m_animationName.insert(std::make_pair(eState::eMove, "walk"));
 	m_animationName.insert(std::make_pair(eState::eWait, "wait"));
 	m_isHitWall = false;
 	m_isHitObject = false;
+	m_preveAnimtionName = "null";
+	m_animtationCount = NULL;
 	return true;
 }
 
@@ -143,8 +145,21 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	// コライダーの更新処理
 	mUpdateBodyCollider(m_transform);
 
+
+	std::string animationName;
+	animationName = m_animationName.at(state);
 	// アニメーションの更新
-	m_model->KeyframeUpdate(m_model->GetKeyframeNameList(0), true);
+	if (m_preveAnimtionName != animationName){
+		m_animtationCount = NULL;
+		m_preveAnimtionName = animationName;
+	}
+
+	if (m_animtationCount > m_model->GetKeyframeCount(m_preveAnimtionName) - 1){
+		m_animtationCount = 0;
+	}
+
+	m_model->KeyframeUpdate(m_preveAnimtionName, m_animtationCount);
+	m_animtationCount += 1;
 	return;
 }
 

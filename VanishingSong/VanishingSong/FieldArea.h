@@ -7,6 +7,7 @@
 #include <Sphere.h>
 #include "RhythmManager.h"
 #include "Const.h"
+#include "FieldNote.h"
 class FieldArea
 {
 public:
@@ -39,5 +40,6 @@ private:
 	bool m_isChangeInit;
 	bool m_isBlack;
 	int m_changeColorCount;
+
 };
 

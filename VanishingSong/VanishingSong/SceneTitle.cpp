@@ -165,6 +165,9 @@ bool SceneTitle::Initialize(){
 	
 	m_config.mIntialize(SceneTitle::Name);
 	
+	for (auto& usePlayer : GameManager::mGetInstance().mGetUsePlayer()){
+		m_fieldNote.mInitialize(usePlayer.second, &m_view, Vector3(-400.0f, 0.f, -400.0f), Vector3(400.0f, 0.0f, 400.0f));
+	}
 	
 	m_pushState = false;
 	m_alphaState = false;
@@ -285,7 +288,7 @@ bool SceneTitle::Updater(){
 	m_pBGM->PlayToLoop();
 	m_pField->mUpdate(1.0);
 	m_bluePlayer->KeyframeUpdate(m_bluePlayer->GetKeyframeNameList(0), true);
-
+	m_fieldNote.mUpdate();
 	mCursorState(isStart);
 	bool isUpdate = mMenuSelectState(isReturn,UpOrDown);
 
@@ -307,6 +310,7 @@ void SceneTitle::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pField->mRender(shaderHash["texture"].get(), shaderHash["transparent"].get());
 	m_bluePlayer->KeyframeAnimationRender(shaderHash["texture"].get());
+	m_fieldNote.mRender(shaderHash["transparent"].get());
 	return;
 }
 

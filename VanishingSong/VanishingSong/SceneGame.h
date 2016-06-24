@@ -12,6 +12,7 @@
 #include<GameSound.h>
 #include "TutorialEnemy.h"
 #include "Config.h"
+#include "FieldNote.h"
 class SceneGame :
 	public aetherClass::GameScene
 {
@@ -57,6 +58,7 @@ private:
 	void mRun(const bool, const std::pair<bool, bool>);
 	bool mMessageUpdate(const bool,const bool);
 	void mInitializeBGM();
+	void mInitializeFieldNote();
 private:
 	aetherClass::DirectXEntity m_directX;	
 	eState m_gameState;
@@ -73,6 +75,8 @@ private:
 	Config m_config;
 	bool m_isTransitionEnd;
 	aetherClass::DirectXEntity m_directEntity;
+	FieldNote m_fieldNote;
+
 	bool m_isFade;
 	bool m_isFade2;
 	float m_prevVolume;

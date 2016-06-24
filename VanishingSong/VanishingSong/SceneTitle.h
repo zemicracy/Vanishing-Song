@@ -87,6 +87,8 @@ private:
 	std::shared_ptr<aetherClass::GameSound> m_selectSE;
 	std::array<ModeSelect, 4> m_cursorArray;
 	std::shared_ptr<FieldArea>  m_pField;
+	FieldNote m_fieldNote;
+
 	bool m_pushState;
 	int m_nowSelectMode;
 	bool m_alphaState;

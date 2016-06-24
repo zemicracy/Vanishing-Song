@@ -115,6 +115,8 @@ private:
 	aetherClass::Transform m_transform;
 	float m_prevRotationY;
 	int m_fieldNumber;
+	std::string m_preveAnimtionName;
+	int m_animtationCount;
 };
 
 #endif

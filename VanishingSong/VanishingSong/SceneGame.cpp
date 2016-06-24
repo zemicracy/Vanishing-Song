@@ -42,7 +42,12 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
 	RegisterScene(new SceneTutorial());
-
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
+	
+	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
 	//// フェードイン・アウトを行う
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue), GameManager::mGetInstance().mGetPlayerTransform());
@@ -105,6 +110,8 @@ bool SceneGame::Initialize(){
 	m_isTransitionEnd = false;
 	m_isFade = false;
 	m_isFade2 = false;
+
+	mInitializeFieldNote();
 
 	// とりあえず一回呼んでおく
 	mTutorial(false,false);
@@ -233,6 +240,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		m_isFade = false;
 		m_isFade2 = true;
 		m_pFieldEnemy->mResetEnemysTransform();
+		mInitializeFieldNote();
 		return;
 	}
 
@@ -307,7 +315,7 @@ void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLef
 	m_pFieldArea->mUpdate(kScaleTime);
 	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();
 	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView()||m_pCageManager->mGetIsMessageRun(fieldNumber));
-	
+	m_fieldNote.mUpdate();
 }
 
 //
@@ -319,6 +327,7 @@ void SceneGame::Render(){
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["transparent"].get());
 	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_fieldNote.mRender(shaderHash["transparent"].get());
 	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	return;
@@ -377,3 +386,9 @@ bool SceneGame::mMessageUpdate(const bool isReturn, const bool isSelect){
 	return false;
 }
 
+//
+void SceneGame::mInitializeFieldNote(){
+	for (auto& usePlayer : GameManager::mGetInstance().mGetUsePlayer()){
+		m_fieldNote.mInitialize(usePlayer.second, m_pFieldPlayer->mGetView().get(), Vector3(-400.0f, 0.f, -400.0f), Vector3(400.0f, 0.0f, 400.0f));
+	}
+}
