@@ -31,6 +31,7 @@ CollideManager::~CollideManager()
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	const int playerNumber = mCheckPlayerFieldArea();
+	Debug::mPrint(std::to_string(playerNumber));
 	mCheckHitObject(playerNumber);
 	mCheckHitEnemy(playerNumber);
 	mCheckHitCage(playerNumber);
@@ -62,9 +63,10 @@ void CollideManager::mCheckHitObject(const int number){
 //
 void CollideManager::mCheckHitEnemy(const int number){
 
+
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
-	if ((x*x) + (z*z) > kRange*kRange){
+	if ((x*x) + (z*z) < kRange*kRange){
 		m_messageInfo.first = number;
 		m_messageInfo.second = true;
 	}
@@ -83,7 +85,7 @@ void CollideManager::mCheckHitCage(const int number){
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_cage->mGetPosition(number)._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_cage->mGetPosition(number)._z;
 
-	if ((x*x) + (z*z) < kRange*kRange&&m_messageInfo.second){
+	if ((x*x) + (z*z) < kRange*kRange&&!m_messageInfo.second){
 		m_cage->mSetIsComment(number, true);
 	}
 	else{

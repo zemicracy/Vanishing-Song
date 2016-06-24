@@ -42,12 +42,7 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
 	RegisterScene(new SceneTutorial());
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
 	
-	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
 	//// フェードイン・アウトを行う
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue), GameManager::mGetInstance().mGetPlayerTransform());
