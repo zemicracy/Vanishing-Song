@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 #include "GameController.h"
 #include "GameManager.h"
+#include "ResourceManager.h"
 using namespace aetherClass;
 namespace{
 	const int kFirst = 0;
@@ -9,6 +10,7 @@ namespace{
 	const float kMessageFlameTime = 1.0f;
 	const Vector3 kMessageFlameOffset = Vector3(0,50,0);
 }
+
 MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherClass::ViewCamera* camera)
 {
 	m_message.mInitialize();
@@ -19,8 +21,10 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 	m_pCursor = std::make_shared<Rectangle2D>();
 	m_pCursor->Initialize();
 	m_pCursor->property._transform._translation._y = 630;
-	m_pCursor->property._transform._scale = Vector3(120,50,0);
-	m_pCursor->property._color = Color(1.f, 1.f, 1.f, 0.3f);
+	m_pCursor->property._transform._scale = Vector3(120, 50, 0);
+	m_pCursor->property._color = Color(0.f, 0.f, 0.f, 1.0f);
+	m_pCursor->SetTexture(ResourceManager::mGetInstance().GetTexture("cursor").get());
+
 	m_buttonTexture[eState::eNext].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eCannotSelect].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eEnd].Load("Texture\\Message\\nextButton.png");
@@ -28,8 +32,9 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 
 	m_buttonSE.first.Load("Sound\\Field\\message.wav");
 	m_buttonSE.second.Load("Sound\\Field\\select.wav");
-	m_buttonSE.first.SetValume(-3000);
-	m_buttonSE.second.SetValume(-3000);
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.first.SetValume(volume);
+	m_buttonSE.second.SetValume(volume);
 
 	m_messageFlame = std::make_shared<Rectangle3D>();
 	m_messageFlame->Initialize();
@@ -37,8 +42,8 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 	m_messageFlame->property._transform._scale = Vector3(10, 6, 0);
 
 	// カーソルの位値
-	m_cursorPosition[eSelectType::eYes] = 400.f;
-	m_cursorPosition[eSelectType::eNo] = 730.f;
+	m_cursorPosition[eSelectType::eYes] = 485.f;
+	m_cursorPosition[eSelectType::eNo] = 780.f;
 
 	m_state = eState::eNull;
 	m_select = true;
@@ -186,7 +191,7 @@ void MessageManager::m2DRender(aetherClass::ShaderBase* trans, aetherClass::Shad
 	if (!m_isView)return;
 	m_message.mRender(trans);
 	if (m_state == eState::eSelect){
-		m_pCursor->Render(col);
+		m_pCursor->Render(trans);
 	}
 }
 

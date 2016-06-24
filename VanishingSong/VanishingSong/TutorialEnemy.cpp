@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "GameManager.h"
 #include <WorldReader.h>
+#include "ResourceManager.h"
 using namespace aetherClass;
 TutorialEnemy::TutorialEnemy()
 {
@@ -49,10 +50,10 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_pCursor->Initialize();
 	m_pCursor->property._transform._translation._y = 630;
 	m_pCursor->property._transform._scale = Vector3(120, 50, 0);
-	m_pCursor->property._color = Color(1.f, 1.f, 1.f, 0.3f);
-
-	m_cursorPosition[true] = 400.f;
-	m_cursorPosition[false] = 730.f;
+	m_pCursor->property._color = Color(0.f, 0.f, 0.f, 1.f);
+	m_pCursor->SetTexture(ResourceManager::mGetInstance().GetTexture("cursor").get());
+	m_cursorPosition[true] = 485.f;
+	m_cursorPosition[false] = 780.f;
 
 
 	m_pCursor->property._transform._translation._x = m_cursorPosition[m_isYes];
@@ -175,7 +176,7 @@ void TutorialEnemy::mUIRender(ShaderBase* shader, ShaderBase* color){
 	
 	if (m_state == eState::eSelect){
 		m_messageWindow.mUpdate(true);
-		m_pCursor->Render(color);
+		m_pCursor->Render(shader);
 	}
 	else{
 		m_messageWindow.mUpdate(false);
