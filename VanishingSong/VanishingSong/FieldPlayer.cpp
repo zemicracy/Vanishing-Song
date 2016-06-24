@@ -119,11 +119,12 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 		if (m_isHitObject){
 			Vector3 hitPos;
 			if (m_hitObject&&ColliderBoxSphere(*m_pSphereCollider, *m_hitObject, &hitPos)){
-				m_transform._translation = m_prevPosition - hitPos;
+				m_transform._translation = m_prevPosition - Vector3(hitPos._x,0,hitPos._z);
 			}
 		}
 		else if (m_isHitWall){
 			if (m_hitWall&&CollideBoxOBB(*m_pBodyCollider, *m_hitWall)){
+				Vector3 trans = Vector3(translation._x / translation._x, 0, translation._z / translation._z);
 				m_transform._translation = m_prevPosition;
 			}
 		}

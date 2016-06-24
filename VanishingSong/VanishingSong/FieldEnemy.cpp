@@ -3,7 +3,6 @@
 #include "ResourceManager.h"
 #include <Singleton.h>
 #include "Debug.h"
-#include <Sphere.h>
 #include"GameManager.h"
 using namespace aetherClass;
 
@@ -38,7 +37,7 @@ bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera
 
 //コライダーの初期化
 void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
-	m_property._pCollider = std::make_shared<Cube>();
+	m_property._pCollider = std::make_shared<Sphere>(10,10);
 	m_property._pCollider->Initialize();
 	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation;
 	m_property._pCollider->property._transform._scale = Vector3(10, 10, 10);
@@ -49,7 +48,7 @@ void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 
 //更新処理
 void FieldEnemy::mUpdate(std::string name){
-	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation;
+	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation + Vector3(0,10,0);
 
 	if (m_isTalking){
 		if (m_prevAnimationName != "wait"){

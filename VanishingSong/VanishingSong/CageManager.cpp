@@ -84,7 +84,7 @@ bool CageManager::mGetIsMessageRun(const int number){
 	return m_pCage.at(number)->mGetMessageRun();
 }
 
-std::shared_ptr<aetherClass::Cube>& CageManager::mGetColldier(const int id){
+std::shared_ptr<aetherClass::Sphere>& CageManager::mGetColldier(const int id){
 	return m_pCage.at(id)->mGetCollider();
 }
 

@@ -74,8 +74,8 @@ void CollideManager::mCheckHitEnemy(const int number){
 		m_messageInfo.second = false;
 	}
 
-	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
-		m_player->mOnHitWall(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
+	if (ColliderBoxSphere(*m_player->mGetSphereColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
+		m_player->mOnHitObject(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
 	}
 }
 
@@ -92,8 +92,8 @@ void CollideManager::mCheckHitCage(const int number){
 		m_cage->mSetIsComment(number, false);
 	}
 
-	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_cage->mGetColldier(number).get())){
-		m_player->mOnHitWall(m_cage->mGetColldier(number).get());
+	if (ColliderBoxSphere(*m_player->mGetSphereColldier(), *m_cage->mGetColldier(number).get())){
+		m_player->mOnHitObject(m_cage->mGetColldier(number).get());
 	}
 }
 

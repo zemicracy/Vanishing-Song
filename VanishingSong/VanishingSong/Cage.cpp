@@ -26,7 +26,7 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_initialPosition = position;
 
 	m_model->property._transform._translation = m_initialPosition;
-	m_pCollider = std::make_shared<Cube>();
+	m_pCollider = std::make_shared<Sphere>(10,10);
 	m_pCollider->Initialize();
 
 	m_pCollider->property._transform._translation = m_initialPosition + kCollideOffset;
@@ -139,7 +139,7 @@ void Cage::mFinalize(){
 	m_pCollider->Finalize();
 }
 
-std::shared_ptr<Cube>& Cage::mGetCollider(){
+std::shared_ptr<aetherClass::Sphere>& Cage::mGetCollider(){
 	return m_pCollider;
 }
 

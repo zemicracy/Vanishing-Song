@@ -139,6 +139,7 @@ void FieldEnemyManager::mRender(aetherClass::ShaderBase* model_shader, aetherCla
 	
 		for (int i = 0; i < 4; i++){
 			m_pEnemyList[i]->mRender(model_shader, colider_shader);
+			m_pEnemyList[i]->mGetProperty()._pCollider->Render(colider_shader);
 		}
 
 		if (m_bossFlag){
