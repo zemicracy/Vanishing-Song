@@ -35,8 +35,8 @@ SceneGame::~SceneGame()
 bool SceneGame::Initialize(){
 	_heapmin();
 	Finalize();
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\green");
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\Yellow.fbx", "Model\\Player\\yellow");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\green.fbx", "Model\\Player\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\yellow.fbx", "Model\\Player\\yellow");
 
 	// ÉVÅ[ÉìÇÃìoò^
 	RegisterScene(new SceneTitle());

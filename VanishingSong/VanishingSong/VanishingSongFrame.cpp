@@ -28,7 +28,7 @@ bool VanishingSongFrame::InitializeBuffer(){
 	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
 	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\blue");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player\\blue.fbx", "Model\\Player\\blue");
 	
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air\\air.fbx", "Model\\Enemy\\Air\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Annon\\annon.fbx", "Model\\Enemy\\annon\\tex");

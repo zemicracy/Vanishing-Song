@@ -29,8 +29,8 @@ bool SceneCregit::Initialize(){
 	_heapmin();
 
 	mLoadTextData();
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\keyframeTest.fbx", "Model\\Player\\green");
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\Yellow.fbx", "Model\\Player\\yellow");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\green.fbx", "Model\\Player\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\yellow.fbx", "Model\\Player\\yellow");
 
 
 	RegisterScene(new SceneTitle());
