@@ -3,7 +3,10 @@
 using namespace aetherClass;
 namespace{
 	const int kWaitAnimation = 60;
+	const int kMaxAttackFrame = 30;
 	const int kZero = 0;
+	const std::string kDefaultAnimationName = "wait";
+	const std::string kWinAnimationName = "win";
 }
 BattlePlayer::BattlePlayer()
 {
@@ -32,8 +35,31 @@ void BattlePlayer::mRender(aetherClass::ShaderBase* shader){
 //
 void BattlePlayer::mUpdate(const float scale){
 	// アニメーション系かな？
+	if (m_animationName == kWinAnimationName){
+		if (m_animationFrame >= kMaxAttackFrame-3){
+			m_animationFrame = kMaxAttackFrame - 3;
+		}
+	}
+	
+
+	if (m_animationName == kDefaultAnimationName){
+		if (m_animationFrame >= kWaitAnimation - 1){
+			m_animationName = kDefaultAnimationName;
+			m_animationFrame = -1;
+		}
+	}
+	else{
+		if (m_animationFrame >= kMaxAttackFrame - 1){
+			m_animationName = kDefaultAnimationName;
+			m_animationFrame = -1;
+		}
+	}
+
+	++m_animationFrame;
+
+
+	m_model->KeyframeUpdate(m_animationName, m_animationFrame);
 	m_model->property._transform = m_transform;
-	m_model->KeyframeUpdate(m_model->GetKeyframeNameList(0),true);
 }
 
 // 自分のタイプを取得
@@ -44,4 +70,10 @@ eMusical BattlePlayer::mGetType(){
 //
 void BattlePlayer::mSetPosition(aetherClass::Vector3 position){
 	m_transform._translation = position;
+}
+
+
+void BattlePlayer::mChangeAnimation(std::string name){
+	m_animationFrame = 0;
+	m_animationName = name;
 }

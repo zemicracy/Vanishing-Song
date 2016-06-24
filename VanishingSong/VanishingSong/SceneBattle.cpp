@@ -405,7 +405,7 @@ void SceneBattle::mOnListen(){
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
 
 
-	m_pBattleEnemyManager->mChangeAnimation(eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
+	m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
@@ -426,6 +426,8 @@ void SceneBattle::mOnPerform(){
 	}
 
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+
+	m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
@@ -449,11 +451,11 @@ void SceneBattle::mOnBattle(){
 	auto i = m_pOrderList->mGetDamage();
 	if (i > 0){
 		m_enemyHp->_hp -= i;
-		m_pBattleEnemyManager->mChangeAnimation(eBattleActionType::eDamage, eMusical::eMiss);
+		m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 	}
 	else if (i < 0){
 		m_charaHp._hp += i;
-//		m_pBattleEnemyManager->mChangeAnimation(eBattleActionType::eDamage, eMusical::eMiss);
+		m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eDamage, eMusical::eMiss);
 	}
 
 	if (m_pOrderList->mIsEnd()){
@@ -474,6 +476,7 @@ void SceneBattle::mCheckBattle(){
 			m_waveID++;
 
 			m_pBattleEnemyManager->misDie();
+			m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc,&m_view);
 
 
@@ -486,6 +489,7 @@ void SceneBattle::mCheckBattle(){
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_pField->mDeleteWaveNote();
 
+			m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eWin, eMusical::eMiss);
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;
 		}
