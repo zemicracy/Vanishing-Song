@@ -18,7 +18,8 @@ private:
 
 	/*	FieldPlayer‚Ìó‘Ô		*/
 	enum class eState{
-		eMove,
+		eWalk,
+		eRun,
 		eWait,
 		eNull
 	};
@@ -117,6 +118,7 @@ private:
 	int m_fieldNumber;
 	std::string m_preveAnimtionName;
 	int m_animtationCount;
+	bool m_isRun;
 };
 
 #endif

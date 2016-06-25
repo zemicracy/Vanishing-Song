@@ -14,7 +14,8 @@ namespace{
 	const float kCameraRotationMaxX = -5.0f;
 	const float kCameraRotationMinX = -20.0f;
 	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
-	const float kDefaultMove = 100.0f;
+	const float kWalk = 30.0f;
+	const float kRun = 150.f;
 	const float kCameraRotation = 50.0f;
 }
 
@@ -49,12 +50,14 @@ bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	m_pSphereCollider->property._color = Color(1, 0, 0, 0.5);
 	m_pSphereCollider->SetCamera(m_playerView.get());
 
-	m_animationName.insert(std::make_pair(eState::eMove, "run"));
+	m_animationName.insert(std::make_pair(eState::eRun, "run"));
+	m_animationName.insert(std::make_pair(eState::eWalk, "walk"));
 	m_animationName.insert(std::make_pair(eState::eWait, "wait"));
 	m_isHitWall = false;
 	m_isHitObject = false;
 	m_preveAnimtionName = "null";
 	m_animtationCount = NULL;
+	m_isRun = false;
 	return true;
 }
 
@@ -97,10 +100,14 @@ void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
 	if (getKeyValues.first._translation == kVector3Zero){
 		state = eState::eWait;
 	}
-	else{
+	else if (m_isRun){
 		// 向きだけ変える
 		m_transform._rotation._y = getKeyValues.first._rotation._y + m_cameraRotation._y;
-		state = eState::eMove;
+		state = eState::eRun;
+	}
+	else{
+		m_transform._rotation._y = getKeyValues.first._rotation._y + m_cameraRotation._y;
+		state = eState::eWalk;
 	}
 
 	m_prevState = state;
@@ -172,25 +179,57 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 
 	std::pair<Transform, Vector3> output;
 
-	/* 奥行の移動(Z軸)	*/
-	if (GameController::GetKey().IsKeyDown('W')||GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
-		output.first._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		output.first._rotation._y = 0;
+	if (GameController::GetKey().IsKeyDown(VK_SHIFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eLB1)){
+		/* 奥行の移動(Z軸)	*/
+		if (GameController::GetKey().IsKeyDown('W') || GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
+			output.first._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kRun;
+			output.first._rotation._y = 0;
+			m_isRun = true;
+		}
+		else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
+			output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kRun);
+			output.first._rotation._y = 180;
+			m_isRun = true;
+		}
+		else
+			/* 横の移動(X軸)	*/
+			if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
+				output.first._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kRun;
+				output.first._rotation._y = 90;
+				m_isRun = true;
+			}
+			else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
+				output.first._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kRun);
+				output.first._rotation._y = 270;
+				m_isRun = true;
+			}
 	}
-	else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
-		output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		output.first._rotation._y = 180;
+	else{
+		/* 奥行の移動(Z軸)	*/
+		if (GameController::GetKey().IsKeyDown('W') || GameController::GetJoypad().IsButtonDown(eJoyButton::eUp)){
+			output.first._translation._z = (float)GameClock::GetDeltaTime()*timeScale*kWalk;
+			output.first._rotation._y = 0;
+			m_isRun = false;
+		}
+		else if (GameController::GetKey().IsKeyDown('S') || GameController::GetJoypad().IsButtonDown(eJoyButton::eDown)){
+			output.first._translation._z = (float)-(GameClock::GetDeltaTime()*timeScale*kWalk);
+			output.first._rotation._y = 180;
+			m_isRun = false;
+		}
+		else
+			/* 横の移動(X軸)	*/
+			if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
+				output.first._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kWalk;
+				output.first._rotation._y = 90;
+				m_isRun = false;
+			}
+			else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
+				output.first._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kWalk);
+				output.first._rotation._y = 270;
+				m_isRun = false;
+			}
 	}
-	else
-	/* 横の移動(X軸)	*/
-	if (GameController::GetKey().IsKeyDown('D') || GameController::GetJoypad().IsButtonDown(eJoyButton::eRight)){
-		output.first._translation._x = (float)GameClock::GetDeltaTime()*timeScale*kDefaultMove;
-		output.first._rotation._y = 90;
-	}
-	else if (GameController::GetKey().IsKeyDown('A') || GameController::GetJoypad().IsButtonDown(eJoyButton::eLeft)){
-		output.first._translation._x = (float)-(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
-		output.first._rotation._y = 270;
-	}
+	
 
 	/*	カメラの回転	*/	
 	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRRight)){
