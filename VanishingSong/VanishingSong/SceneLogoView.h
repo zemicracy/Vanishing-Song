@@ -35,17 +35,18 @@ public:
 
 private:
 	bool mChangeTexture(int);
+	void mLoadingTexture(std::string, int);
+
+
 	float m_FrameTime;
 
-
+	int m_MaxImage;
 	int m_State;
 	int m_PrevState;
 	bool m_isEndTransition;
 
 	std::unordered_map<int,std::shared_ptr<aetherClass::Texture>>m_pTextureList;
-	std::shared_ptr<aetherClass::Texture>m_pAetherTexture;
 	std::shared_ptr<aetherClass::SpriteBase>m_pSprite;
 	std::shared_ptr<aetherClass::GameSound>m_pSoundDevice;
-
 };
 

@@ -166,6 +166,8 @@ char PlayDataManager::mGetTypeToChar(eMusical type){
 		return 'y';
 	case eMusical::eGreen:
 		return 'g';
+	case eMusical::eAdlib:
+		return 'a';
 	default:
 		break;
 	}
@@ -188,6 +190,9 @@ eMusical PlayDataManager::mGetCharToType(const char type){
 
 	if (type == 'g'){
 		return eMusical::eGreen;
+	}
+	if (type == 'a'){
+		return eMusical::eAdlib;
 	}
 
 	return eMusical::eNull;
