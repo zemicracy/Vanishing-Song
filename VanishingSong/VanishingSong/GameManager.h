@@ -32,6 +32,7 @@ public:
 		eVisible,
 		eUnVisible,
 		eWin,
+		eEnd,
 		eNull
 	};
 
@@ -45,6 +46,7 @@ public:
 		eForthStage,
 		
 		eBoss,
+		eEnd,
 		eNull
 	};
 public:

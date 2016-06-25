@@ -68,10 +68,6 @@ bool SceneTitle::Initialize(){
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Danbal\\danbal.fbx", "Model\\Enemy\\Danbal\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\boss.fbx", "Model\\Enemy\\Boss\\tex");
 
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
 	m_pLogoTexture->Load("Texture\\Title\\Logo.png");
@@ -267,7 +263,7 @@ void SceneTitle::Finalize(){
 
 //
 bool SceneTitle::Updater(){
-	m_view.Controller();
+
 	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	const bool isConfigButton = GameController::GetKey().KeyDownTrigger(VK_ESCAPE) || GameController::GetJoypad().ButtonPress(eJoyButton::eBack);
@@ -476,7 +472,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model->property._transform._translation = Vector3(100, 0, -500);
 		m_players[type]._model->property._transform._rotation._y = 180;
 		m_players[type]._model->SetCamera(&m_view);
-		m_players[type]._animationName = "attack";
+		m_players[type]._animationName = "attackwait";
 		break;
 
 	case eMusical::eGreen:

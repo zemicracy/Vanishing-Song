@@ -89,13 +89,17 @@ GameManager::eFieldState PlayDataManager::mLoadFieldState(const int id){
 
 	case 2:
 		return GameManager::eFieldState::eSecoundStage;
+
 	case 3:
 		return GameManager::eFieldState::eThirdStage;
+
 	case 4:
 		return GameManager::eFieldState::eForthStage;
 	case 5:
 		return GameManager::eFieldState::eBoss;
 
+	case 6:
+		return GameManager::eFieldState::eEnd;
 	default:
 		return GameManager::eFieldState::eNull;
 	}
@@ -117,6 +121,10 @@ int PlayDataManager::mSaveFieldState(GameManager::eFieldState state)const{
 		return 4;
 	case GameManager::eFieldState::eBoss:
 		return 5;
+
+	case GameManager::eFieldState::eEnd:
+		return 6;
+		
 	case GameManager::eFieldState::eNull:
 	default:
 		return -1;
@@ -133,6 +141,8 @@ GameManager::eBossState PlayDataManager::mLoadBossState(const int id){
 		return GameManager::eBossState::eVisible;
 	case 2:
 		return GameManager::eBossState::eWin;
+	case 3:
+		return GameManager::eBossState::eEnd;
 	default:
 		return GameManager::eBossState::eNull;
 	}
@@ -148,6 +158,8 @@ int PlayDataManager::mSaveBossState(GameManager::eBossState state)const{
 		return 1;
 	case GameManager::eBossState::eWin:
 		return 2;
+	case GameManager::eBossState::eEnd:
+		return 3;
 	case GameManager::eBossState::eNull:
 	default:
 		return -1;

@@ -78,6 +78,9 @@ bool SceneEnd::Initialize(){
 	m_pSkybox->SetCamera(&m_view);
 	m_pSkybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
+	GameManager::mGetInstance().mBossState(GameManager::eBossState::eEnd);
+	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eEnd);
+
 	return true;
 }
 

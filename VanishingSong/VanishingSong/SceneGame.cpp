@@ -145,10 +145,12 @@ void SceneGame::Finalize(){
 		itr->Stop();
 		itr.reset();
 	}
+
 	if (m_pMessageManager){
 		m_pMessageManager.reset();
 		m_pMessageManager = nullptr;
 	}
+
 	if (m_pCollideManager){
 		m_pCollideManager.reset();
 		m_pCollideManager = nullptr;
