@@ -36,6 +36,7 @@ bool VanishingSongFrame::InitializeBuffer(){
 	// 初めに設定ファイルだけはロードしておく
 	PlayDataManager playData;
 	playData.mConfigLoad();
+	playData.mLoad();
 	return true;
 }
 

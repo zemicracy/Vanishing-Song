@@ -177,7 +177,9 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		m_state = eState::eNext;
 		m_selectType = eSelectType::eNull;
 		m_enemy->mEnemyGet(pair.first)->mIsTalking(false);
-		m_enemy->mEnemyGet(pair.first)->mResetTransform();
+		if (GameManager::mGetInstance().mGetCanStage()<pair.first){
+			m_enemy->mEnemyGet(pair.first)->mResetTransform();
+		}
 	}
 }
 

@@ -25,6 +25,10 @@ void BattlePlayer::mInitialize(eMusical type, aetherClass::Vector3 position, std
 	m_transform._rotation._y = 90;
 	m_transform._scale = Vector3(-1, 1, 1);
 	m_animationFrame = NULL;
+	m_winAnimationFrame = NULL;
+	m_isWin = false;
+	m_change = false;
+	m_prevAnimationName = "null";
 	return;
 }
 
@@ -36,11 +40,37 @@ void BattlePlayer::mRender(aetherClass::ShaderBase* shader){
 //
 void BattlePlayer::mUpdate(const float scale){
 	// アニメーション系かな？
-	++m_animationFrame;
+	if (m_prevAnimationName != m_animationName){
+		m_prevAnimationName = m_animationName;
+		m_animationFrame = 0;
+	}
+	//
 	if (m_animationName == kWinAnimationName){
-		if (m_animationFrame >= kMaxAttackFrame-1){
-			m_animationFrame = 0;
+		m_isWin = true;
+	}
+
+	if (m_isWin){
+
+		//
+		if (m_change){
+			m_winAnimationFrame-= 1;
 		}
+		else{
+			m_winAnimationFrame += 1;
+		}
+
+		//
+		if (m_winAnimationFrame >= kMaxAttackFrame - 1){
+			m_winAnimationFrame = kMaxAttackFrame - 1;
+			m_change = true;
+		}
+		else if (m_winAnimationFrame < 0){
+			m_winAnimationFrame = 0;
+			m_change = false;
+		}
+	}
+	else{
+		m_animationFrame += 1;
 	}
 	
 
@@ -57,7 +87,12 @@ void BattlePlayer::mUpdate(const float scale){
 		}
 	}
 
-	m_model->KeyframeUpdate(m_animationName, m_animationFrame);
+	if (m_isWin){
+		m_model->KeyframeUpdate(m_animationName, m_winAnimationFrame);
+	}
+	else{
+		m_model->KeyframeUpdate(m_animationName, m_animationFrame);
+	}
 	m_model->property._transform = m_transform;
 }
 
@@ -73,6 +108,6 @@ void BattlePlayer::mSetPosition(aetherClass::Vector3 position){
 
 
 void BattlePlayer::mChangeAnimation(std::string name){
-	m_animationFrame = 0;
+	
 	m_animationName = name;
 }
