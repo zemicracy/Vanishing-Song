@@ -26,6 +26,8 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_initialPosition = position;
 
 	m_model->property._transform._translation = m_initialPosition;
+	m_model->property._transform._rotation._y =90;
+
 	m_pCollider = std::make_shared<Sphere>(10,10);
 	m_pCollider->Initialize();
 
@@ -61,6 +63,7 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	m_isComment = false;
 	m_changeComment = false;
 	m_changeCommentCount = NULL;
+	m_animationCount = 0;
 	m_messagePath.fill("null");
 	m_buttonSE.Load("Sound\\Field\\message.wav");
 	const float volume = GameManager::mGetInstance().mGetVolume();
@@ -74,14 +77,21 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 
 //
 void Cage::mUpdate(const float timeScale, Vector3 position, const bool button){
-	m_charaEntity.mFaceToObject(m_model, position);
+
 	if (m_isTought){
-		m_model->KeyframeUpdate("caught", true);
+		if (m_animationCount > m_model->GetKeyframeCount("caught") - 1){
+			m_animationCount = NULL;
+		}
+		m_model->KeyframeUpdate("caught", m_animationCount);
 	}
 	else{
-		m_model->KeyframeUpdate("wait", true);
-
+		if (m_animationCount > m_model->GetKeyframeCount("wait") - 1){
+			m_animationCount = NULL;
+		}
+		m_charaEntity.mFaceToObject(m_model, position);
+		m_model->KeyframeUpdate("wait", m_animationCount);
 	}
+	m_animationCount += 1;
 	m_messageWindow.mUpdate(false);
 	m_messageWindow.mSetIcon(&m_icon);
 	const float volume = GameManager::mGetInstance().mGetVolume();

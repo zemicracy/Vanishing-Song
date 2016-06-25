@@ -40,7 +40,7 @@ void FieldEnemy::mInitializeEnemyColider(ViewCamera* camera){
 	m_property._pCollider = std::make_shared<Sphere>(10,10);
 	m_property._pCollider->Initialize();
 	m_property._pCollider->property._transform._translation = m_property._pEnemy->property._transform._translation;
-	m_property._pCollider->property._transform._scale = Vector3(10, 10, 10);
+	m_property._pCollider->property._transform._scale = Vector3(15, 15, 15);
 	m_property._pCollider->property._color = Color(1, 1, 1, 0.5);
 	m_property._pCollider->SetCamera(camera);
 

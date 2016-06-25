@@ -61,11 +61,17 @@ bool SceneTitle::Initialize(){
 	RegisterScene(new SceneGame());
 	RegisterScene(new SceneCregit());
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player\\red.fbx", "Model\\Player\\red");
-	
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\green.fbx", "Model\\Player\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\yellow.fbx", "Model\\Player\\yellow");
+
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Ground\\gro.fbx", "Model\\Enemy\\Ground\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Danbal\\danbal.fbx", "Model\\Enemy\\Danbal\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\boss.fbx", "Model\\Enemy\\Boss\\tex");
 
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eGreen);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
+	GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
 	// テクスチャの初期化
 	m_pLogoTexture = std::make_shared<Texture>();
 	m_pLogoTexture->Load("Texture\\Title\\Logo.png");
@@ -477,7 +483,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model->property._transform._translation = Vector3(300, 55, -570);
 		m_players[type]._model->property._transform._rotation._y = 270;
 		m_players[type]._model->SetCamera(&m_view);
-		m_players[type]._animationName = "wait";
+		m_players[type]._animationName = "sit";
 
 		break;
 

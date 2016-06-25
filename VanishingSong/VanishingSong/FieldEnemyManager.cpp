@@ -51,8 +51,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemyList.back()->mInitialize(eMusical::eBlue,camera,"data\\Battle\\Stage1");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
-		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\tmplate.png");
+
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
@@ -157,7 +156,6 @@ bool FieldEnemyManager::mGetIsJudge(){
 //XVˆ—
 void FieldEnemyManager::mUpdater(){
 	for (int i = 0; i < 4; i++){
-		if (m_pEnemyList[i]->mGetType() == eMusical::eGreen)continue;
 		if (m_pEnemyList[i]->mGetType() != eMusical::eYellow){
 			if (i > mFieldStateToInt(GameManager::mGetInstance().mFieldState())){
 				m_pEnemyList[i]->mUpdate("attack");

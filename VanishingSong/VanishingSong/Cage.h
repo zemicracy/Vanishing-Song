@@ -47,6 +47,7 @@ private:
 	bool m_isMessage;
 	float m_changeCommentCount;
 	bool m_changeComment;
+	int m_animationCount;
 	aetherClass::GameSound m_buttonSE;
 	aetherClass::Texture m_icon;
 

@@ -5,7 +5,7 @@ namespace{
 	const int kWaitAnimation = 60;
 	const int kMaxAttackFrame = 30;
 	const int kZero = 0;
-	const std::string kDefaultAnimationName = "wait";
+	const std::string kDefaultAnimationName = "attackwait";
 	const std::string kWinAnimationName = "win";
 }
 BattlePlayer::BattlePlayer()
