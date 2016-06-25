@@ -6,6 +6,8 @@
 #include <GameController.h>
 #include "ResourceManager.h"
 #include"SceneGame.h"
+#include"SceneEnd.h"
+
 #include"Cipher.h"
 #include"ModelUtility.h"
 //debug
@@ -93,6 +95,10 @@ bool SceneBattle::Initialize(){
 
 	m_players.mUpdate(0, eMusical::eNull);
 	m_pOrderList->mUpdate();
+
+	if (m_stageID == 5){
+		RegisterScene(new SceneEnd());
+	}
 
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume*100);
@@ -380,7 +386,14 @@ void SceneBattle::mOnResult(){
 	if (m_pResult->mIsEnd()){
 		const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 		if (isPress){
+			if (m_stageID == 5 && m_winner == GameManager::eBattleState::eWin){
+				if (GameManager::mGetInstance().mBossState() != GameManager::eBossState::eEnd){
+					ChangeScene(SceneEnd::Name, LoadState::eUse);
+					return;
+				}
+			}
 			ChangeScene(SceneGame::Name, LoadState::eUse);
+			return;
 		}
 	}
 	else{
