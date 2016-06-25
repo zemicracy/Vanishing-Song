@@ -52,7 +52,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mInitialize(eMusical::eBlue,camera,"data\\Battle\\Stage1");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Blue.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Blue1.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\E_Blue1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\air2.png");
@@ -65,7 +65,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mInitialize(eMusical::eGreen, camera, "data\\Battle\\Stage2");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Green.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Green1.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\E_Green1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\gro.png");
@@ -77,7 +77,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mInitialize(eMusical::eRed, camera, "data\\Battle\\Stage3");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Red.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Red1.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\E_Red1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\danbaru.png");
@@ -89,8 +89,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemyList.back()->mInitialize(eMusical::eYellow, camera, "data\\Battle\\Stage4");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Yellow.png");
-		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Yello1.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Yellow1.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\E_Yellow1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 0;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\annon.png");
@@ -103,7 +103,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mInitialize(eMusical::eAdlib, camera, "data\\Battle\\Stage5");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\Boss.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\Boss1.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Boss1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale = Vector3( -1,1,1);
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\boss.png");
 
