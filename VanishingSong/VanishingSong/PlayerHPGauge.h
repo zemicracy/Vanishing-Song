@@ -2,6 +2,7 @@
 
 #include"GaugeBase.h"
 #include"CharaStatus.h"
+#include"RhythmManager.h"
 class PlayerHPGauge : public GaugeBase
 {
 public:
@@ -13,14 +14,19 @@ public:
 	void mUpdate(float)override;
 
 	//AccessorMethods
+	void mSetRhythmManager(RhythmManager* rhythm);
 	void mSetCharaStatus(CharaStatus*);
 	void mSetProperty(aetherClass::SpriteBase::Property);
 
 private:
 	void mFinalize()override;
 	void mException();
+	void mRhythmicMotion();
 
+	RhythmManager *m_rhythm;
 	std::shared_ptr<aetherClass::SpriteBase>m_pDamageSprite;
+	std::shared_ptr<aetherClass::Texture>m_coverTexture;
+	std::shared_ptr<aetherClass::SpriteBase>m_pCoverSprite;
 	HalfFillShader::FillType m_fillType;
 	CharaStatus *m_CharaStatus;
 	aetherClass::SpriteBase::Property m_property;

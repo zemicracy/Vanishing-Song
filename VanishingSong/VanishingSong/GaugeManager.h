@@ -10,7 +10,7 @@ public:
 	GaugeManager();
 	~GaugeManager();
 
-	bool mInitialize();
+	bool mInitialize(RhythmManager *rhythm);
 	void mRender();
 	void mUpdate(float);
 

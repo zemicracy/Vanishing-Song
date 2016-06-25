@@ -4,7 +4,6 @@
 #include "BattleBoss.h"
 #include"BattleField.h"
 #include"Const.h"
-#include"OrderList.h"
 #include <GameController.h>
 #include <ShaderBase.h>
 #include "CharaStatus.h"
@@ -14,7 +13,7 @@ namespace{
 }
 class BattleEnemyManager
 {
-	
+
 public:
 	BattleEnemyManager();
 	~BattleEnemyManager();
@@ -26,7 +25,7 @@ public:
 
 	
 
-	void mUpadate(const float timeScale);
+	void mUpdate(const float timeScale);
 
 	std::vector<eMusical> GetList();
 
@@ -47,6 +46,7 @@ public:
 	int mGetWaveAllCount();
 	CharaStatus& mGetCharaStatus(int);
 	int mGetAppendOption();
+	void mChangeAnimation(BattleEnemy::eBattleActionType, eMusical);
 
 private:
 	void mFinalize();
@@ -56,6 +56,7 @@ private:
 	eEnemyType mGetEnemyType(const char);
 	eMusical mGetEnemyAttack(const char);
 	
+	GameManager::eFieldState m_fieldState;
 
 
 private:
@@ -66,19 +67,22 @@ private:
 	bool flag;
 
 	std::shared_ptr<BattleBoss> m_pBattle;
-	std::vector<std::shared_ptr<BattleEnemy>> m_pEnemy;
+	std::unordered_map<eMusical,std::shared_ptr<BattleEnemy>>m_pEnemy;
 	
 	std::vector<eMusical> m_enemyList;
 	std::vector<std::vector<std::shared_ptr<BattleEnemy>>> m_waveEnemyList;
 	std::vector<std::vector<eMusical>> m_enemyAttackList;
 	std::vector<CharaStatus> m_hp;
 
-	
+	std::unordered_map<BattleEnemy::eBattleActionType, std::string>m_animationName;
+
+	bool m_bossFlag;
 	int m_waveID;
 	bool m_isEnd;
 	int m_waveAllCount;
 	int m_attackAllCount;
 	int m_stageID;
+	int m_optionCount;
 	
 
 };

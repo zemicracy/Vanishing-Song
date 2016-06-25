@@ -4,7 +4,7 @@
 #include "FieldEnemy.h"
 #include "GameClock.h"
 #include "MessageWindow.h"
-
+#include "GameManager.h"
 
 class FieldEnemyManager
 {
@@ -19,14 +19,17 @@ public:
 	void mFinalize();
 	void mSetPosion();
 	bool mGetIsJudge();
-	std::shared_ptr<FieldEnemy> mEnemyGet(int);
-
+	std::shared_ptr<FieldEnemy>& mEnemyGet(int);
+	bool mGetBossFlg();
+	void mResetEnemysTransform();
 private:
 
-	std::vector<std::shared_ptr<FieldEnemy>> m_pEnemy;
-	std::array<std::shared_ptr<FieldEnemy>,5> m_enemyArray;
+	int mFieldStateToInt(GameManager::eFieldState);
+
+	std::vector<std::shared_ptr<FieldEnemy>> m_pEnemyList;
 	std::array<aetherClass::Vector3, 5>	m_pEnemySpawner;	//èoåªèÍèä
 	
+	bool m_bossFlag;
 	int EnemySize;	//Enemyêî
 	int EnemyMaxSize;
 	bool m_isRender;

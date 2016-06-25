@@ -30,7 +30,7 @@ public:
 	}
 
 
-	void mRedner(aetherClass::ShaderBase* shader){
+	void mRender(aetherClass::ShaderBase* shader){
 		m_pFadeObject->Render(shader);
 		return;
 	}

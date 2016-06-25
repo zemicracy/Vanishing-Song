@@ -1,10 +1,11 @@
-#include "VanishingSongFrame.h"
+ï»¿#include "VanishingSongFrame.h"
 #include "Debug.h"
 #include <Singleton.h>
 #include "ResourceManager.h"
 #include "GameManager.h"
 #include "GameController.h"
 #include "Const.h"
+#include "PlayDataManager.h"
 using namespace aetherClass;
 VanishingSongFrame::VanishingSongFrame()
 {
@@ -17,42 +18,38 @@ VanishingSongFrame::~VanishingSongFrame()
 
 
 /*
-	ƒvƒƒOƒ‰ƒ€‚ÌŠJn‚Ì‚İÀs‚³‚ê‚é
+	ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®é–‹å§‹æ™‚ã®ã¿å®Ÿè¡Œã•ã‚Œã‚‹
 */
 bool VanishingSongFrame::InitializeBuffer(){
 	bool result = false;
 	result = ResourceManager::mGetInstance().Initialize();
-	// ‘€ìƒLƒƒƒ‰ƒNƒ^[‚ÌƒŠƒ\[ƒX‚ğ‰Šú‰»
-
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
+	// æ“ä½œã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒªã‚½ãƒ¼ã‚¹ã‚’åˆæœŸåŒ–
 
 	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
-//	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
+	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","Model\\Player\\blue");
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player", "Model\\Player\\red");
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
-
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Ground", "\\blue");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Air", "\\red");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Air", "\\green");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Ground", "\\yellow");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Ground", "\\yellow");
-
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player\\blue.fbx", "Model\\Player\\blue");
+	
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air\\air.fbx", "Model\\Enemy\\Air\\tex");
+	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Annon\\annon.fbx", "Model\\Enemy\\annon\\tex");
+	
+	// åˆã‚ã«è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã ã‘ã¯ãƒ­ãƒ¼ãƒ‰ã—ã¦ãŠã
+	PlayDataManager playData;
+	playData.mConfigLoad();
 	return true;
 }
 
-//@‚PƒtƒŒ[ƒ€‚²‚Æ‚ÉÀs‚³‚ê‚é
+//ã€€ï¼‘ãƒ•ãƒ¬ãƒ¼ãƒ ã”ã¨ã«å®Ÿè¡Œã•ã‚Œã‚‹Â‡		ResourceManager::mGetInstance ãŒè¿”ã•ã‚Œã¾ã—ãŸ	{m_pTextureHash=??? m_pShaderHash=??? m_pActionSoundHash=??? ...}	ResourceManager &
 bool VanishingSongFrame::FrameRunningBuffer(){
 	_heapmin();
 	
 	return true;
 }
 
-// ƒvƒƒOƒ‰ƒ€‚ÌI—¹‚ÉÀs‚³‚ê‚é
+// ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®çµ‚äº†æ™‚ã«å®Ÿè¡Œã•ã‚Œã‚‹
 void VanishingSongFrame::FinalizeBuffer(){
-
+	PlayDataManager playData;
+	playData.mConfigSave();
 	ResourceManager::mGetInstance().Finalize();
 	return;
 }

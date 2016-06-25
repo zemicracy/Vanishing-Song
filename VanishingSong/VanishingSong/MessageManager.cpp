@@ -1,11 +1,16 @@
 #include "MessageManager.h"
+#include "ResourceManager.h"
 #include "GameController.h"
+#include "GameManager.h"
+#include "ResourceManager.h"
+using namespace aetherClass;
 namespace{
 	const int kFirst = 0;
 	const int kCounterNull = 0;
 	const float kMessageFlameTime = 1.0f;
+	const Vector3 kMessageFlameOffset = Vector3(0,40,0);
 }
-using namespace aetherClass;
+
 MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherClass::ViewCamera* camera)
 {
 	m_message.mInitialize();
@@ -16,27 +21,29 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 	m_pCursor = std::make_shared<Rectangle2D>();
 	m_pCursor->Initialize();
 	m_pCursor->property._transform._translation._y = 630;
-	m_pCursor->property._transform._scale = Vector3(120,50,0);
-	m_pCursor->property._color = Color(1.f, 1.f, 1.f, 0.3f);
+	m_pCursor->property._transform._scale = Vector3(120, 50, 0);
+	m_pCursor->property._color = Color(0.f, 0.f, 0.f, 1.0f);
+	m_pCursor->SetTexture(ResourceManager::mGetInstance().GetTexture("cursor").get());
+
 	m_buttonTexture[eState::eNext].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eCannotSelect].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eEnd].Load("Texture\\Message\\nextButton.png");
 	m_buttonTexture[eState::eSelect].Load("Texture\\Message\\yesno.png");
 
-	m_messageFlameTexture = std::make_shared<Texture>();
-	m_messageFlameTexture->Load("Texture\\Message\\message_flame2.png");
-
-	m_messageFlameTexture2 = std::make_shared<Texture>();
-	m_messageFlameTexture2->Load("Texture\\Message\\message_flame.png");
+	m_buttonSE.first.Load("Sound\\Field\\message.wav");
+	m_buttonSE.second.Load("Sound\\Field\\select.wav");
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.first.SetValume(volume);
+	m_buttonSE.second.SetValume(volume);
 
 	m_messageFlame = std::make_shared<Rectangle3D>();
 	m_messageFlame->Initialize();
 	m_messageFlame->SetCamera(camera);
-	m_messageFlame->property._transform._scale = Vector3(16, 12, 0);
+	m_messageFlame->property._transform._scale = Vector3(10, 6, 0);
 
 	// カーソルの位値
-	m_cursorPosition[eSelectType::eYes] = 400.f;
-	m_cursorPosition[eSelectType::eNo] = 730.f;
+	m_cursorPosition[eSelectType::eYes] = 485.f;
+	m_cursorPosition[eSelectType::eNo] = 780.f;
 
 	m_state = eState::eNull;
 	m_select = true;
@@ -49,7 +56,6 @@ MessageManager::MessageManager(std::shared_ptr<FieldEnemyManager> enemy, aetherC
 
 MessageManager::~MessageManager()
 {
-	m_message.mFinalize();
 	if (m_messageFlame){
 		m_messageFlame->Finalize();
 		m_messageFlame.reset();
@@ -61,30 +67,26 @@ MessageManager::~MessageManager()
 		m_pCursor = nullptr;
 	}
 
-	if (m_messageFlameTexture){
-		m_messageFlameTexture.reset();
-		m_messageFlameTexture = nullptr;
-	}
-
-	if (m_messageFlameTexture2){
-		m_messageFlameTexture2.reset();
-		m_messageFlameTexture2 = nullptr;
-	}
-
 	m_buttonTexture.clear();
 }
 
 //
 void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPressButton, const bool isCursor, Vector3 position, Vector3 enemyPosition,const int nowStage){
 	bool isEnd = false;
-	if (pair.second)return;
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.first.SetValume(volume);
+	m_buttonSE.second.SetValume(volume);
+	if (!pair.second)return;
 	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum()-1;
 	m_viewMessageFlame = true;
-	m_messageFlame->property._transform._translation = enemyPosition;
-	m_messageFlame->property._transform._translation._y = enemyPosition._y+35;
+	m_messageFlame->property._transform._translation = enemyPosition + kMessageFlameOffset;
+
+	// アイコンの設置
+	m_message.mSetIcon(m_enemy->mEnemyGet(pair.first)->mGetIcon().get());
 
 	// 話してるときは何もしない
 	if (m_isView){
+		m_enemy->mEnemyGet(pair.first)->mIsTalking(true);
 		m_viewMessageFlame = false;
 		m_message.mUpdate((m_state == eState::eSelect));
 	}
@@ -98,14 +100,15 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	}
 
 	if (m_changeMessageFlame){
-		m_messageFlame->SetTexture(m_messageFlameTexture.get());
+		m_messageFlame->SetTexture(ResourceManager::mGetInstance().GetTexture("comment").get());
 	}
 	else{
-		m_messageFlame->SetTexture(m_messageFlameTexture2.get());
+		m_messageFlame->SetTexture(ResourceManager::mGetInstance().GetTexture("comment2").get());
 	}
 
 	if (isPressButton){
-		
+		m_buttonSE.first.Stop();
+		m_buttonSE.first.PlayToOneTime();
 		// シーンの遷移？
 		if (m_state == eState::eSelect && m_selectType == eSelectType::eYes){
 			m_isChangeScene = true;
@@ -118,10 +121,14 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		else{
 			// メッセージの切り替え
 			if (m_state == eState::eCannotSelect){
-				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());
+				m_messageBuffer = std::make_shared<Texture>();
+				m_messageBuffer->Load(m_enemy->mEnemyGet(pair.first)->mGetCannotMessga());
+				mChangeMessage(m_messageBuffer.get());
 			}
 			else{
-				mChangeMessage(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter).get());
+				m_messageBuffer = std::make_shared<Texture>();
+				m_messageBuffer->Load(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter));
+				mChangeMessage(m_messageBuffer.get());
 			}
 		}
 
@@ -169,6 +176,8 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		m_isChangeScene = false;
 		m_state = eState::eNext;
 		m_selectType = eSelectType::eNull;
+		m_enemy->mEnemyGet(pair.first)->mIsTalking(false);
+		m_enemy->mEnemyGet(pair.first)->mResetTransform();
 	}
 }
 
@@ -182,7 +191,7 @@ void MessageManager::m2DRender(aetherClass::ShaderBase* trans, aetherClass::Shad
 	if (!m_isView)return;
 	m_message.mRender(trans);
 	if (m_state == eState::eSelect){
-		m_pCursor->Render(col);
+		m_pCursor->Render(trans);
 	}
 }
 
@@ -204,6 +213,8 @@ bool MessageManager::mIsView(){
 void MessageManager::mCursorUpdate(const bool flg){
 	if (m_state != eState::eSelect)return;
 	if (flg){
+		m_buttonSE.second.Stop();
+		m_buttonSE.second.PlayToOneTime();
 		m_select = !m_select;
 	}
 
@@ -219,4 +230,8 @@ void MessageManager::mCursorUpdate(const bool flg){
 
 bool MessageManager::mGetIsChangeScene()const{
 	return m_isChangeScene;
+}
+
+void MessageManager::mSetIcon(Texture* tex){
+	m_message.mSetIcon(tex);
 }

@@ -10,7 +10,7 @@ class AttackParticle
 public:
 	struct ParticleDesc{
 		ParticleDesc(){
-			_size = NULL;
+			_spawnRate = NULL;
 			_rangeMax = NULL;
 			_rangeMin = NULL;
 			_startPoint = 0.0f;
@@ -19,16 +19,16 @@ public:
 		}
 
 		~ParticleDesc(){
-			_size = NULL;
+			_spawnRate = NULL;
 			_rangeMax = NULL;
 			_rangeMin = NULL;
 			_startPoint = 0.0f;
 			_endPoint = 0.0f;
 			_texturePath = "NULL";
 		}
-		int _size;
-		aetherClass::Vector3 _rangeMax;
-		aetherClass::Vector3 _rangeMin;
+		int _spawnRate;		//出現量
+		aetherClass::Vector3 _rangeMax;		//出現位置の最大範囲
+		aetherClass::Vector3 _rangeMin;		//出現位置の最小範囲
 		aetherClass::Vector3 _startPoint;
 		aetherClass::Vector3 _endPoint;
 		aetherClass::Vector3 _scale;

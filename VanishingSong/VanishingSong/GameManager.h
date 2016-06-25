@@ -37,7 +37,8 @@ public:
 
 	enum class eFieldState{
 		eTutorial,
-		
+		eTutorialEnd,
+
 		eFirstStage,
 		eSecoundStage,
 		eThirdStage,
@@ -53,8 +54,12 @@ public:
 
 	void mPushUsePlayer(eMusical);
 	std::unordered_map<eMusical, eMusical>& mGetUsePlayer();
+	
 	aetherClass::Transform mGetPlayerTransform();
 	void mSetPlayerTransform(aetherClass::Transform);
+
+	std::pair<int, aetherClass::Transform>& mPrevEnemy();
+	void mPrevEnemy(const int, aetherClass::Transform);
 
 	void mBattleDataFile(std::string);
 	std::string mBattleDataFile();
@@ -73,6 +78,10 @@ public:
 
 	FadeManager& mfadeManager();
 
+	void mRestStart();
+
+	float mGetVolume()const;
+	void mSetVolume(const float);
 private:
 	GameManager();
 	~GameManager();
@@ -86,7 +95,10 @@ private:
 	std::vector<eMusical> m_noteArray;
 	int m_canStageNumber;
 
+	std::pair<int, aetherClass::Transform> m_prevEnemy;
+
 	FadeManager m_fadeManager;
+	int m_volume;
 };
 
 #endif

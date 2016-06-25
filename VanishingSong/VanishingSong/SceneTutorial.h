@@ -1,7 +1,7 @@
 //#pragma once
 
-#ifndef _SCENEBATTLE_H
-#define _SCENEBATTLE_H
+#ifndef _SCENETUTORIAL_H
+#define _SCENETUTORIAL_H
 #include <GameScene.h>
 #include <ModelBase.h>
 #include <ShaderBase.h>
@@ -20,6 +20,7 @@
 #include"GaugeManager.h"
 #include"ResultBoard.h"
 #include"TutorialMessage.h"
+#include"AttackParticle.h"
 
 class SceneTutorial :
 	public aetherClass::GameScene
@@ -31,8 +32,7 @@ public:
 	enum class eGameState{
 		ePreCountIn, eCountIn, eUpdate, eFin
 	};
-
-
+	
 	SceneTutorial();
 	~SceneTutorial();
 
@@ -66,6 +66,7 @@ private:
 	bool mTutorialUpdater();
 	void mTimeEngagerForTuto();
 	void mRhythmicMotion();
+	void mOnDebug();
 private:
 	GameManager::eBattleState m_battleState;
 	GameManager::eBattleState m_winner;
@@ -81,6 +82,7 @@ private:
 	std::unique_ptr<GaugeManager>m_pGauge;
 	std::unique_ptr<ResultBoard>m_pResult;
 	std::unique_ptr<TutorialMessage>m_pTutorial;
+	std::shared_ptr<aetherClass::GameSound>m_pSoundDevice;
 
 	aetherClass::ViewCamera m_view;
 	std::shared_ptr<BattleEnemyManager> m_pBattleEnemyManager;
@@ -91,10 +93,14 @@ private:
 	bool m_preInitProcess;
 	bool m_timeEngage;
 	bool m_isTutorialPlay;
+	bool m_isEndTransition;
+	bool m_isPreMessageOpen;
 
 	float m_bgmVolume;
 	int m_inCount;
 	int m_prevWholeBeatNo;
+	int m_countAdlibTiming;
+	float m_resultUpdateTime;
 
 	int m_textReadCnt;
 	//ウェーブ
@@ -110,8 +116,12 @@ private:
 	eGameState m_processState;
 
 	//Tutorial用
-	eTutorialState m_tutorialState;
+	Tutorial::eTutorialState m_tutorialState;
 	std::vector<std::shared_ptr<ActionCommand>>m_enemyVector;
+
+	//パーティクル
+	std::shared_ptr<AttackParticle>m_particle;
+	AttackParticle::ParticleDesc m_particleDesc;
 
 
 	//ptr

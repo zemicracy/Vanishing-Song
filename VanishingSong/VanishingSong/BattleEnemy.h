@@ -8,6 +8,10 @@
 #include<FbxModel.h>
 class BattleEnemy
 {
+public:
+	enum class eBattleActionType{
+		eWait, eAttack, eDamage
+	};
 
 public:
 	struct Enemy
@@ -47,6 +51,7 @@ public:
 	void misDie();
 
 	
+	void mChangeAnimation(std::string);
 	/*
 		•`‰æˆ—
 	*/
@@ -58,9 +63,12 @@ private:
 
 
 private:
+	std::string m_animationName;
+	int m_animationFrame;
 	eMusical m_type;
 	Enemy m_enemy;
 	bool m_isDie;
+	float m_alpha;
 };
 
 #endif

@@ -11,8 +11,10 @@ private:
 	typedef std::unordered_map<std::string, std::vector<std::string>> CipherType;
 public:
 	Cipher(std::string);
+	Cipher() = default;
 	~Cipher();
 
+	void mLock(std::string);
 	void mLoadFile(std::string);
 	void mUnLoad();
 	void mConsoleFind();

@@ -21,7 +21,7 @@ AttackParticle::~AttackParticle()
 }
 
 void AttackParticle::mInitialize(ParticleDesc desc, ViewCamera* camera){
-	m_particle.resize(desc._size);
+	m_particle.resize(desc._spawnRate);
 	m_texture = std::make_shared<Texture>();
 	m_texture->Load(desc._texturePath);
 	for (auto& index : m_particle){

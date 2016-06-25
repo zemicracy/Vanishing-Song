@@ -2,6 +2,8 @@
 #include <random>
 #include "Cipher.h"
 #include"ResourceManager.h"
+#include"OrderList.h"
+
 using namespace aetherClass;
 int cnt = 0;
 
@@ -22,14 +24,19 @@ void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	mLoadInfo(GameManager::mGetInstance().mBattleDataFile(),lane,camera);
 	
 	flag = true;
+	m_fieldState = GameManager::mGetInstance().mFieldState();
+	m_optionCount = 0;
 
-	
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eWait, "wait"));
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eAttack, "attack"));
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eDamage, "damage"));
+
 }
 
 
 void BattleEnemyManager::mRender(std::shared_ptr<ShaderBase> tex){
-	for (auto itr : m_pEnemy){
-		itr->mRender(tex);
+	for (auto &itr : m_pEnemy){
+		itr.second->mRender(tex);
 	}
 }
 
@@ -39,7 +46,24 @@ std::vector<eMusical>  BattleEnemyManager::GetList(){
 
 	int random = mGetRandom();
 
-	return m_enemyAttackList[random];
+	std::vector<eMusical>vec;
+	vec.reserve(m_enemyAttackList[random].size());
+
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<> rand100(0, m_enemyAttackList[random].size());
+	int adlib = rand100(rnd);
+
+	for (int i = 0; i < m_enemyAttackList[random].size(); ++i){
+		auto itr = m_enemyAttackList[random][i];
+			if (i == adlib){
+				std::uniform_int_distribution<> randDevice(0, 100);
+				int makeAdlib = randDevice(rnd);
+				if (makeAdlib >= 50) itr = eMusical::eAdlib;
+		}
+		vec.push_back(itr);
+	}
+	return vec;
 }
 
 int BattleEnemyManager::mGetRandom(){
@@ -59,8 +83,11 @@ int BattleEnemyManager::mGetRandom(){
 	return r;
 }
 
-void BattleEnemyManager::mUpadate(const float timeScale ){
-
+void BattleEnemyManager::mUpdate(const float timeScale ){
+	for (auto &itr : m_pEnemy){
+		itr.second->mUpdate(1);
+	}
+	
 }
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
@@ -127,41 +154,119 @@ void BattleEnemyManager::ResetEnemyList(int waveCount,ViewCamera* camera){
 
 	if (!m_pEnemy.empty()){
 		for (auto& enemy : m_pEnemy){
-			enemy.reset();
+			enemy.second.reset();
 		}
 		m_pEnemy.clear();
 	}
 
 	for (auto& enemyType : m_waveEnemyList[waveCount]){
-		m_pEnemy.push_back(enemyType);
+		m_pEnemy.insert(std::make_pair(enemyType->mGetType(),enemyType));
 	}
 
 }
 
 void BattleEnemyManager::misDie(){
 	for (auto& enemy : m_pEnemy){
-		enemy->misDie();
+		enemy.second->misDie();
 	}
 }
 
 int BattleEnemyManager::mGetAppendOption(){
 
-	if (m_stageID < 3){
-		return eAppendOption::eNone;
-	}
-	if (m_stageID == 4){
-		if (m_waveID == 2){
-			return eAppendOption::eReverce;
+	if (m_stageID == 1){
+		if (m_waveID == 1){
+			if (m_optionCount >= 2){
+				m_optionCount = 0;
+				return OrderList::eAppendOption::eBlack;
+			}
+			else{
+				m_optionCount++;
+			}
 		}
 	}
+	else if (m_stageID == 2){
+		if (m_waveID == 1){
+			if (m_optionCount >= 1){
+				m_optionCount = 0;
+				return OrderList::eAppendOption::eBlack;
+			}
+			else{
+				m_optionCount++;
+			}	
+		}
+		else if (m_waveID == 2){
+			return OrderList::eAppendOption::eBlack;
+		}
+	}
+	else if (m_stageID == 3){
+		if (m_waveID == 1){
+			return OrderList::eAppendOption::eReverce;
+		}
+		else if (m_waveID == 2){
+			if (m_optionCount >= 2){
+				m_optionCount = 0;
+				return OrderList::eAppendOption::eReverce;
+			}
+			else{
+				m_optionCount++;
+			}
+		}
+	}
+	else if (m_stageID == 4){
+			std::random_device rnd;
+			std::mt19937 mt(rnd());
+			std::uniform_int_distribution<> rand100(0, 100);
+			int rand = rand100(rnd);
+			if (m_waveID == 1){
+				if (rand > 50){
+					return OrderList::eAppendOption::eBlack;
+				}
+			}
+		else if (m_waveID == 2){
+			int returnOption = OrderList::eAppendOption::eReverce;
+			if (rand > 70){
+				returnOption |= OrderList::eAppendOption::eBlack;
+			}
+			return returnOption;
+		}
+	}
+	else if (m_stageID == 5){
+		std::random_device rnd;
+		std::mt19937 mt(rnd());
+		std::uniform_int_distribution<> rand100(0, 100);
+		int rand = rand100(rnd);
 
-	if (m_stageID == 5){
+		if (m_waveID == 1){
+			if (m_optionCount >= 1){
+				m_optionCount = 0;
+				return OrderList::eAppendOption::eBlack;
+			}
+			else{
+				m_optionCount++;
+			}
+		}
 		if (m_waveID == 2){
-			return eAppendOption::eBlack;
+			if (0.25 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
+				int returnOption = OrderList::eAppendOption::eBlack;
+				if (rand > 50){
+					returnOption |= OrderList::eAppendOption::eReverce;
+				}
+				return returnOption;
+			}
+			else if (0.50 > m_hp[m_waveID]._hp / m_hp[m_waveID]._maxHp){
+				return OrderList::eAppendOption::eBlack;
+			}
+			else {
+				if (rand > 70){
+					return OrderList::eAppendOption::eBlack;
+				}
+				else if (rand > 40){
+					return OrderList::eAppendOption::eReverce;
+				}
+			}
 		}
 	}
-	
-	return eAppendOption::eNone;
+	return OrderList::eAppendOption::eNone;
 }
 
 
@@ -235,7 +340,7 @@ eMusical BattleEnemyManager::mGetEnemyAttack(const char attack){
 void BattleEnemyManager:: mFinalize(){
 	
 	for (auto enemy : m_pEnemy){
-		enemy.reset();
+		enemy.second.reset();
 	}
 
 	m_waveEnemyList.clear();
@@ -244,3 +349,22 @@ void BattleEnemyManager:: mFinalize(){
 	m_hp.clear();
 
 }
+
+void BattleEnemyManager::mChangeAnimation(BattleEnemy::eBattleActionType action, eMusical color){
+	if (m_pEnemy.find(color) == m_pEnemy.end() && color != eMusical::eMiss)return;
+
+	if (color == eMusical::eMiss){
+		for (auto &itr : m_pEnemy){
+			itr.second->mChangeAnimation(m_animationName.at(action));
+		}
+	}
+	else if (action == BattleEnemy::eBattleActionType::eAttack){
+		if (m_pEnemy.begin()->second->mGetType() == eMusical::eAdlib){
+			m_pEnemy.at(eMusical::eAdlib)->mChangeAnimation(m_animationName.at(action));
+		}
+		else{
+			m_pEnemy.at(color)->mChangeAnimation(m_animationName.at(action));
+		}
+	}
+}
+

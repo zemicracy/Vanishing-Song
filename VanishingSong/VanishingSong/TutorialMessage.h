@@ -1,11 +1,16 @@
 #pragma once
 #include"MessageWindow.h"
-enum class eTutorialState{
-	eInit, eFirstDemo, eFirstPlay, eAdlibDemo, eAdlibPlay, ePlayerOnly, eFin
-};
-
+namespace Tutorial{
+	static std::string k_TutorialKey[12] = { "Init", "FirstPreListen", "FirstPerform", "FirstPrePerform", "FirstBattle", "FirstPreBattle",
+		"AdlibListen", "AdlibStop", "AdlibPerform", "AdlibBattle", "PlayerOnly", "Fin" };
+	enum class eTutorialState{
+		eInit, eFirst, eAdlib, ePlayerOnly, eFin
+	};
+}
 class TutorialMessage
 {
+public:
+
 public:
 	TutorialMessage();
 	~TutorialMessage();
@@ -20,7 +25,9 @@ public:
 private:
 	void mFinalize();
 
-	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextTextureList;
+	std::unordered_map<std::string, std::string>m_pTextTextureList;
+	std::shared_ptr<aetherClass::Texture>m_pTexture;
+	std::shared_ptr<aetherClass::Texture>m_pButtonTex;
 	std::shared_ptr<MessageWindow>m_message;
 	std::shared_ptr<aetherClass::Rectangle2D>m_windowBackCover;
 	bool m_isVisible;

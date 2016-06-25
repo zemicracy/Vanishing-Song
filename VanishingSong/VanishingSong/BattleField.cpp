@@ -6,6 +6,7 @@
 #include<Singleton.h>
 #include"ResourceManager.h"
 #include"GameController.h"
+#include <random>
 
 BattleField::BattleField()
 {
@@ -25,14 +26,18 @@ void BattleField::mFinalize(){
 
 	m_pSkyBox->Finalize();
 	m_pPlane->Finalize();
-	for (auto& itr : m_pDebug){
-		itr->Finalize();
-		itr.reset();
-	}
+	m_pTank->Finalize();
+
 	for (auto& itr : m_pCommand){
 		itr->Finalize();
 		itr.reset();
 	}
+
+	for (auto& itr : m_pTankNote){
+		itr->Finalize();
+		itr.reset();
+	}
+	m_pTankNote.clear();
 
 	m_EnemyLane.clear();
 	m_PlayerLane.clear();
@@ -40,6 +45,8 @@ void BattleField::mFinalize(){
 		itr.second.reset();
 	}
 	m_pTextureList.clear();
+
+	m_pObject->Finalize();
 }
 template<class T>
 std::shared_ptr<T> gInitializer(aetherClass::Transform transform, aetherClass::Color color){
@@ -56,14 +63,15 @@ std::shared_ptr<aetherClass::Texture> gCreateTexture(std::string path){
 	return tex;
 }
 
-void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhythm){
+void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhythm,bool boss,int maxWave){
 	using namespace aetherClass;
 
 	WorldReader reader;
-	reader.Load("data\\BattleStage.aether");
+	reader.Load("data\\Battle\\BattleStage",true);
 
+	m_MaxWave = maxWave;
 	m_rhythm = rhythm;
-
+	m_isBossStage = boss;
 	camera->property._translation = reader.GetInputWorldInfo()._camera._position;
 	camera->property._rotation = reader.GetInputWorldInfo()._camera._rotation;
 	m_view = camera;
@@ -75,17 +83,24 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
-			m_pPlane->LoadFBX("Model\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisDirectX);
-			m_pPlane->SetCamera(m_view);
-			m_pPlane->property._transform = itr->_transform;
-			//m_pPlane->SetTexture()
+			m_pPlane->LoadFBX("Model\\Battle\\stage\\Battle_Stage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pPlane->SetTextureDirectoryName("Model\\Battle\\stage");
+			m_pPlane->SetCamera(camera);
+			m_pPlane->property._transform._scale._x = -1;
+			m_pPlane->property._transform._rotation._x = 180;
+			m_pPlane->property._transform._rotation._y = 90;
 		}
 		else if (itr->_name == "PlayerHP"){
-			m_pDebug[0] = gInitializer<Cube>(itr->_transform, itr->_color);
-			m_tankScaleOrigin = itr->_transform._scale;
+			m_tankScaleOrigin = 1.8;
 		}
 		else if (itr->_name == "EnemyHP"){
-			m_pDebug[1] = gInitializer<Cube>(itr->_transform, itr->_color);
+			m_pTank	= std::make_shared<FbxModel>();
+			m_pTank->LoadFBX("Model\\Battle\\kapuseru.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pTank->SetTextureDirectoryName("Model\\Battle");
+			m_pTank->SetCamera(m_view);
+			m_pTank->property._transform = itr->_transform;
+			m_pTank->property._transform._rotation._y = -90;
+			m_pTank->property._transform._scale = 1;
 			m_EnemyLane[eMusical::eAdlib] = itr->_transform._translation;
 		}
 		else if (itr->_name == "lane_blue"){
@@ -154,9 +169,40 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	m_pTextureList.insert(std::make_pair("skybox", ResourceManager::mGetInstance().GetTexture("skybox")));
 	m_pSkyBox->SetTexture(m_pTextureList["skybox"].get());
 
-	for (auto itr : m_pDebug){
-		itr->SetCamera(m_view);
+	for (int i = 0; i < m_MaxWave; ++i){
+		m_pTankNote.push_back(std::make_shared<FbxModel>());
+		if (i % 2 == 0){
+			m_pTankNote.back()->LoadFBX("Model\\note\\note.fbx", eAxisSystem::eAxisOpenGL);
+		}
+		else{
+			m_pTankNote.back()->LoadFBX("Model\\note\\note2.fbx", eAxisSystem::eAxisOpenGL);
+		}
+		m_pTankNote.back()->SetTextureDirectoryName("Model\\note\\tex");
+		m_pTankNote.back()->property._transform._translation = m_pTank->property._transform._translation;
+		std::random_device rnd;
+		std::mt19937 mt(rnd());
+		std::uniform_int_distribution<> x(0, 10);
+		std::uniform_int_distribution<> y(0, 15);
+		m_pTankNote.back()->property._transform._translation += Vector3(x(rnd)/2, y(rnd)/2, 0);
+		m_pTankNote.back()->SetCamera(m_view);
 	}
+
+	m_pObject = std::make_shared<FbxModel>();
+	m_pObject->LoadFBX("Model\\Object\\Symbol\\object.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+	m_pObject->SetTextureDirectoryName("Model\\Object\\Symbol\\title_tex");
+	m_pObject->SetCamera(m_view);
+	m_pObject->property._transform._translation = Vector3(-50.0f, 2.3f, 48.2f);
+	m_pObject->property._transform._rotation = Vector3(16.0f, 0, 0);
+
+	m_pNoteObject = std::make_shared<FbxModel>();
+	m_pNoteObject->LoadFBX("Model\\Object\\Note\\note1.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+	m_pNoteObject->SetTextureDirectoryName("Model\\Object\\Note\\tex");
+	m_pNoteObject->SetCamera(m_view);
+	m_pNoteObject->property._transform = m_pObject->property._transform;
+	m_pNoteObject->property._transform._translation._y = 46.1f;
+
+
+
 	for (auto itr : m_pLane){
 		itr.second->SetCamera(m_view);
 	}
@@ -170,23 +216,14 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 }
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
+	//ƒ¿‚¯‚·—p
+	using namespace aetherClass;
 
-	/*if (aetherClass::GameController::GetKey().IsKeyDown('X')){
-		m_pSkyBox->property._transform._rotation._x += 0.1;
-	}
-	else if (aetherClass::GameController::GetKey().IsKeyDown('C')){
-		m_pSkyBox->property._transform._rotation._x -= 0.1;
-	}
-	if (aetherClass::GameController::GetKey().IsKeyDown(VK_SPACE)){
-
-		Debug::mPrint(std::to_string(m_pSkyBox->property._transform._rotation._x));
-	}*/
-
-	//ƒ¿‚¯‚·‚æ
-	for (auto itr : m_pLane){
+	for (auto& itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){
 			itr.second->property._color._alpha -= 0.1;
 		}
+		itr.second->property._transform._translation._y = 3;
 	}
 	//‘Î‰ž‚µ‚½ƒŒ[ƒ“‚ð@ƒ¿‚P
 	if (m_pLane.find(command->mGetType()) == m_pLane.end())return;
@@ -195,13 +232,18 @@ void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 
 void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug){
 	m_pSkyBox->Render(texture);
-	m_pPlane->Render(debug);
+	m_pPlane->Render(texture);
 
+	m_pObject->Render(texture);
+	m_pNoteObject->Render(texture);
 	for (auto itr : m_pLane){
 		itr.second->Render(debug);
 	}
-	for (auto itr : m_pDebug){
-		itr->Render(debug);
+	if (!m_isBossStage){
+		for (auto itr : m_pTankNote){
+			itr->Render(texture);
+		}
+		m_pTank->Render(texture);
 	}
 	for (int i = m_pCommand.size()-1; i >= 0; --i){
 		m_pCommand.at(i)->Render(texture);
@@ -228,13 +270,54 @@ void BattleField::mRhythmicMotion(){
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
+	float rote = 90 * m_rhythm->mQuarterBeatTime();
 
-	for (auto itr : m_pDebug){
-		itr->property._transform._scale = m_tankScaleOrigin + (2 * scale);
-	}
-	for (auto itr : m_pCommand)
+	m_pTank->property._transform._scale = m_tankScaleOrigin + (scale / 10);
+	m_pObject->property._transform._scale = 0.2 + (scale / 50);
+	m_pNoteObject->property._transform._scale = 5 + (scale);
+	m_pNoteObject->property._transform._rotation._y = rote;
 	{
-		itr->property._transform._scale = m_commandScale + (2*scale);
+		float note2 = 360 * m_rhythm->mWholeBeatTime();
+		float nowFrameWave2 = cos(note2 * kAetherRadian);
+		float scale2 = nowFrameWave2 >= 0.5 ? nowFrameWave2 : 0;
+
+		switch (m_stageID)
+		{
+		case 0:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0.5*scale2, 0.5*scale2, 0.5*scale2, 1));
+			break;
+		case 1:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0, 0, 0.5*scale2, 1));
+			break;
+		case 2:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0, 0.5*scale2, 0, 1));
+			break;
+		case 3:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0.5*scale2, 0, 0, 1));
+			break;
+		case 4:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0.5*scale2, 0.5*scale2, 0, 1));
+			break;
+		case 5:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0, 0.5*scale2, 0.5*scale2, 1));
+			break;
+		default:
+			break;
+		}
+	}
+	for (auto itr : m_pCommand){
+		itr->property._transform._scale = m_commandScale + (2 * scale);
 	}
 
+
+}
+void BattleField::mDeleteWaveNote(){
+	if (m_pTankNote.empty())return;
+
+	m_pTankNote.begin()->get()->Finalize();
+	m_pTankNote.erase(m_pTankNote.begin());
+}
+
+void BattleField::mSetStageID(int stage){
+	m_stageID = stage;
 }

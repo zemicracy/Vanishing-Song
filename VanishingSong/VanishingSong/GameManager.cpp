@@ -1,16 +1,13 @@
 #include "GameManager.h"
 #include "Const.h"
 #include <GameController.h>
-
+#include <WorldReader.h>
+#include "ResourceManager.h"
 using namespace aetherClass;
 GameManager::GameManager()
 {
-	m_prevPlayerTransform._translation = kVector3Zero;
-	m_bossState = eBossState::eUnVisible;
-	m_fieldState = eFieldState::eNull;
-	m_canStageNumber = NULL;
+	mRestStart();
 }
-
 
 GameManager::~GameManager()
 {
@@ -98,4 +95,43 @@ int  GameManager::mGetCanStage()const{
 
 FadeManager& GameManager::mfadeManager(){
 	return m_fadeManager;
+}
+
+std::pair<int, Transform>&  GameManager::mPrevEnemy(){
+	return m_prevEnemy;
+}
+void GameManager::mPrevEnemy(const int number, Transform tras){
+	m_prevEnemy.first = number;
+	m_prevEnemy.second = tras;
+
+}
+
+void GameManager::mRestStart(){
+	WorldReader read;
+	read.Load("data\\Field\\player_init",true);
+	for (auto& index : read.GetInputWorldInfo()._object){
+		if (index->_name == "player_init"){
+
+			m_prevPlayerTransform._translation = index->_transform._translation;
+			m_prevPlayerTransform._translation._y = 0;
+			m_prevPlayerTransform._rotation = index->_transform._rotation;
+			m_prevPlayerTransform._scale._x = -1;
+		}
+	}
+	read.UnLoad();
+	m_bossState = eBossState::eUnVisible;
+	m_fieldState = eFieldState::eTutorial;
+	m_canStageNumber = NULL;
+	ResourceManager::mGetInstance().mGetBGMPath().clear();
+	m_players.clear();
+}
+
+//
+float GameManager::mGetVolume()const{
+	return m_volume;
+}
+
+//
+void GameManager::mSetVolume(const float volume){
+	m_volume = volume;
 }

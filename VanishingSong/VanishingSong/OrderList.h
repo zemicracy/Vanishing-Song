@@ -4,20 +4,18 @@
 #include"GameManager.h"
 #include"ActionSound.h"
 #include"RhythmManager.h"
-#include"AttackParticle.h"
 #include"BattleField.h"
 #include"ResultBoard.h"
 #include"EffectGenerator2D.h"
 
 #include<array>
-namespace{
-	enum eAppendOption{
-		eNone = 0, eBlack = 1, eReverce = 2
-	};
-}
 class OrderList
 {
 public:
+	enum eAppendOption{
+		eNone = 0, eBlack = 1, eReverce = 2
+	};
+
 
 	OrderList();
 	~OrderList();
@@ -42,7 +40,7 @@ public:
 	void mEndReset();
 
 	//Indispensable Method
-	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,ActionBoard*,BattleField*,RhythmManager*);
+	void mInitialize(GameManager::eGameMode,GameManager::eBattleState&,ActionBoard*,BattleField*,RhythmManager*,int stageID = 0);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUpdate();
 
@@ -55,14 +53,13 @@ public:
 	void mRhythmicMotion();
 
 
-	//other
-	void mRender3D(aetherClass::ShaderBase*);
 
 private:
 	void mBattleUpdate();
 	void mListenUpdate();
 	void mPerformUpdate();
 	void mLineUpdate();
+	void mPlayEffect(std::string Name);
 
 	void mFinalize();
 	
@@ -78,9 +75,6 @@ private:
 	std::vector<std::shared_ptr<ActionCommand>>m_PlayerOrderList;
 	std::vector<std::shared_ptr<ActionCommand>>m_EnemyOrderList;
 
-	//パーティクル
-	AttackParticle::ParticleDesc m_perticleDesc;
-	std::unique_ptr<AttackParticle>m_pParticle;
 
 	//コマンド描画先
 	std::vector<std::shared_ptr<aetherClass::SpriteBase>>m_pSpriteList;
@@ -135,6 +129,7 @@ private:
 
 	int m_processId;		//処理中のID
 	int m_MaxOrderSize;
+	int m_stageId;			//ステージ番号
 	
 	int m_damagedValue;		//攻撃かダメージか
 	ResultData m_resultData;
