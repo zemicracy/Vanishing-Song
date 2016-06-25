@@ -44,7 +44,7 @@ bool SceneOpening::Initialize(){
 	m_imageCount = 0;
 
 	//テクスチャを読み込み
-	for (int i = 0; i<16; i++){
+	for (int i = 0; i<17; i++){
 		m_pTexture[i] = std::make_unique<Texture>();
 		m_pTexture[i]->Load("Texture/Opening" + std::to_string(i + 1) + ".png");
 	}
@@ -66,7 +66,7 @@ bool SceneOpening::Updater(){
 	m_clockCount = m_clockCount + GameClock::GetDeltaTime();
 
 	//1、2繰り返し表示
-	/*if (m_imageCount < 2){
+	if (m_imageCount < 2){
 		if (m_clockCount > 1){
 			m_clockCount = 0;
 			if (m_array < 2){
@@ -84,23 +84,14 @@ bool SceneOpening::Updater(){
 		m_array = 2;
 	}
 
-	//3～16表示
+	//3～17表示
 	if (m_imageCount > 1){
-		if (m_clockCount > 1){
+		if (m_clockCount > 2){
 			m_clockCount = 0;
-			if (m_array < 16){
+			if (m_array < 17){
 				m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
 				m_array++;
 				m_imageCount++;
-			}
-		}
-	}*/
-
-	if (m_imageCount < 2){
-		if (m_clockCount>1){
-			m_clockCount = 0;
-			if (m_array < 2){
-
 			}
 		}
 	}

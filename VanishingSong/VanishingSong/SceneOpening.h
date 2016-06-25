@@ -17,7 +17,7 @@ private:
 	std::unique_ptr<aetherClass::SpriteBase>m_pSpriteBase;
 
 	//テクスチャ用の配列
-	std::unique_ptr<aetherClass::Texture>m_pTexture[16];
+	std::unique_ptr<aetherClass::Texture>m_pTexture[17];
 
 	double m_clockCount;
 	int m_array;
