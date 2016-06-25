@@ -3,21 +3,23 @@
 #include"GameManager.h"
 #include"ResourceManager.h"
 #include"SceneTitle.h"
+#include"GameController.h"
+#include<iostream>
 using namespace aetherClass;
 const std::string SceneLogoView::Name = "Logo";
 
 namespace{
-	const int KMaxImage = 38;
+	const int KMaxImage = 54;
 }
 SceneLogoView::SceneLogoView() : GameScene(Name,GetManager())
 {
-	mFrameTime = 0;
+	m_FrameTime = 0;
 }
 
 
 SceneLogoView::~SceneLogoView()
 {
-	mFrameTime = 0;
+	m_FrameTime = 0;
 }
 
 bool SceneLogoView::mChangeTexture(int num){
@@ -36,7 +38,10 @@ bool SceneLogoView::Initialize(){
 	m_pSprite->Initialize();
 	m_pSprite->property._transform._scale = Vector3(kWindowWidth, kWindowHeight, 0);
 
-	mFrameTime = 0;
+	m_FrameTime = 0;
+	m_isEndTransition = false;
+	m_State = eState::eAether;
+	m_PrevState = 0;
 
 	std::string path = "Texture\\Logo\\";
 	for (int i = 0; i < KMaxImage; ++i){
@@ -49,11 +54,15 @@ bool SceneLogoView::Initialize(){
 		}
 	}
 
+	m_pAetherTexture = std::make_shared<Texture>();
+	m_pAetherTexture->Load("Texture\\Logo\\Aether.png");
+
 	float vol = GameManager::mGetInstance().mGetVolume();
 	m_pSoundDevice = std::make_shared<GameSound>();
 	m_pSoundDevice->Load("Sound\\Title\\Logo.wav");
 	m_pSoundDevice->SetValume(vol);
-	m_pSoundDevice->PlayToOneTime();
+
+	m_pSprite->SetTexture(m_pAetherTexture.get());
 
 	RegisterScene(new SceneTitle());
 	return true;
@@ -76,14 +85,49 @@ void SceneLogoView::Finalize(){
 //1フレームごとの更新処理
 bool SceneLogoView::Updater(){
 	bool result = true;
+	const bool isPress = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 
+	if (isPress){
+		m_PrevState = m_State;
+		m_State++;
+	}
 	
-		result = mChangeTexture((int)mFrameTime);
-		if (!result){
-			ChangeScene(SceneTitle::Name, LoadState::eUse);
+	if (m_State == eState::eAether){
+		if (m_FrameTime > 2){
+			if (!GameManager::mGetInstance().mfadeManager().In(1)){
+				return true;
+			}
+				m_isEndTransition = false;
+				m_PrevState = m_State;
+				m_State++;
 		}
-		mFrameTime += GameClock::GetDeltaTime() * 20;
+		else{
+			m_FrameTime += (float)GameClock::GetDeltaTime();
+		}
+	}
+	else if (m_State == eState::eZemicracy){
+		if (!m_isEndTransition){
+			result = mChangeTexture(0);
+			if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+				return true;
+			}
+			m_isEndTransition = true;
+		}
+		if (m_PrevState != m_State){
+			m_FrameTime = 0;
+			m_pSoundDevice->PlayToOneTime();
+			m_PrevState = m_State;
+		}
 
+		result = mChangeTexture((int)m_FrameTime);
+		if (!result){
+			m_State++;
+		}
+		m_FrameTime += GameClock::GetDeltaTime() * 18;
+	}
+	else if(m_State == eState::eFin){
+		ChangeScene(SceneTitle::Name, LoadState::eUse);
+	}
 	return true;
 }
 
@@ -107,5 +151,9 @@ bool SceneLogoView::TransitionIn(){
 	return kTransitionEnd;
 }
 bool SceneLogoView::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+		return kTransitionning;
+	}
+	m_isEndTransition = true;
 	return kTransitionEnd;
 }

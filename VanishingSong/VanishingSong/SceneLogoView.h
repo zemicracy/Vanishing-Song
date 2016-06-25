@@ -6,6 +6,9 @@
 
 class SceneLogoView : public aetherClass::GameScene
 {
+	enum eState{
+		eAether, eZemicracy, eFin
+	};
 public:
 	static const std::string Name;
 
@@ -32,9 +35,15 @@ public:
 
 private:
 	bool mChangeTexture(int);
-	float mFrameTime;
+	float m_FrameTime;
+
+
+	int m_State;
+	int m_PrevState;
+	bool m_isEndTransition;
 
 	std::unordered_map<int,std::shared_ptr<aetherClass::Texture>>m_pTextureList;
+	std::shared_ptr<aetherClass::Texture>m_pAetherTexture;
 	std::shared_ptr<aetherClass::SpriteBase>m_pSprite;
 	std::shared_ptr<aetherClass::GameSound>m_pSoundDevice;
 
