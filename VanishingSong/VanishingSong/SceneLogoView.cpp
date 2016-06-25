@@ -91,10 +91,10 @@ bool SceneLogoView::Updater(){
 
 	if (isPress){
 		m_PrevState = m_State;
+		m_State++;
 		if (m_State == eState::eZemicracy){
 			mLoadingTexture("zemi\\", KZemiImage);
 		}
-		m_State++;
 	}
 	
 	if (m_State == eState::eAether){
