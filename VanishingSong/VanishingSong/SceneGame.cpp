@@ -43,8 +43,6 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneTutorial());
 	RegisterScene(new SceneEnd());
 
-
-	
 	//// フェードイン・アウトを行う
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
 	m_pFieldPlayer->mInitialize(ResourceManager::mGetInstance().mGetPlayerHash(eMusical::eBlue), GameManager::mGetInstance().mGetPlayerTransform());

@@ -475,7 +475,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model->property._transform._translation = Vector3(100, 0, -500);
 		m_players[type]._model->property._transform._rotation._y = 180;
 		m_players[type]._model->SetCamera(&m_view);
-		m_players[type]._animationName = "wait";
+		m_players[type]._animationName = "win";
 		break;
 
 	case eMusical::eGreen:
@@ -492,7 +492,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model->property._transform._translation = Vector3(0, 0, -300);
 		m_players[type]._model->property._transform._rotation._y = 90;
 		m_players[type]._model->SetCamera(&m_view);
-		m_players[type]._animationName = "wait";
+		m_players[type]._animationName = "attack";
 
 		break;
 

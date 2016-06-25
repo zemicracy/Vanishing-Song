@@ -23,7 +23,8 @@ void BattlePlayer::mInitialize(eMusical type, aetherClass::Vector3 position, std
 	m_model = model;
 	m_transform._translation = Vector3(position._x, 0.0f, position._z);
 	m_transform._rotation._y = 90;
-	m_transform._scale._x = -1;
+	m_transform._scale = Vector3(-1, 1, 1);
+	m_animationFrame = NULL;
 	return;
 }
 
@@ -35,9 +36,10 @@ void BattlePlayer::mRender(aetherClass::ShaderBase* shader){
 //
 void BattlePlayer::mUpdate(const float scale){
 	// アニメーション系かな？
+	++m_animationFrame;
 	if (m_animationName == kWinAnimationName){
-		if (m_animationFrame >= kMaxAttackFrame-3){
-			m_animationFrame = kMaxAttackFrame - 3;
+		if (m_animationFrame >= kMaxAttackFrame-1){
+			m_animationFrame = 0;
 		}
 	}
 	
@@ -45,18 +47,15 @@ void BattlePlayer::mUpdate(const float scale){
 	if (m_animationName == kDefaultAnimationName){
 		if (m_animationFrame >= kWaitAnimation - 1){
 			m_animationName = kDefaultAnimationName;
-			m_animationFrame = -1;
+			m_animationFrame = 0;
 		}
 	}
 	else{
 		if (m_animationFrame >= kMaxAttackFrame - 1){
 			m_animationName = kDefaultAnimationName;
-			m_animationFrame = -1;
+			m_animationFrame = 0;
 		}
 	}
-
-	++m_animationFrame;
-
 
 	m_model->KeyframeUpdate(m_animationName, m_animationFrame);
 	m_model->property._transform = m_transform;

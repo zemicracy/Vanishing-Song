@@ -77,7 +77,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	m_buttonSE.first.SetValume(volume);
 	m_buttonSE.second.SetValume(volume);
 	if (!pair.second)return;
-	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum()-1;
+	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum();
 	m_viewMessageFlame = true;
 	m_messageFlame->property._transform._translation = enemyPosition + kMessageFlameOffset;
 
@@ -115,7 +115,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 			return;
 		}
 
-		if (m_counter > kEnd){
+		if (m_counter >= kEnd){
 			isEnd = true;
 		}
 		else{
@@ -146,7 +146,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		if (m_counter == kEnd){
 			m_state = eState::eEnd;
 		}
-		else if(m_counter == kEnd-1){
+		else if (m_counter == kEnd - 2){
 			// そのステージを受ける資格があるかの判断
 			if (pair.first <= nowStage){
 				m_state = eState::eSelect;

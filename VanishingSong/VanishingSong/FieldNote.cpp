@@ -21,9 +21,17 @@ void FieldNote::mInitialize(eMusical type, ViewCamera* view, Vector3 min, Vector
 	int count = 0;
 	for (auto& note : m_object[type]){
 		note._object = std::make_shared<FbxModel>();
-		note._object->LoadFBX("Model\\note\\note.fbx", eAxisSystem::eAxisOpenGL);
-		note._object->SetTextureDirectoryName("Model\\note\\tex\\Field");
-		note._isUpOrDwon = (count % 2 == 0);
+		if (count % 2 == 0){
+			note._object->LoadFBX("Model\\note\\note.fbx", eAxisSystem::eAxisOpenGL);
+			note._object->SetTextureDirectoryName("Model\\note\\tex\\Field");
+			note._isUpOrDwon = true;
+		}
+		else{
+			note._object->LoadFBX("Model\\note\\note2.fbx", eAxisSystem::eAxisOpenGL);
+			note._object->SetTextureDirectoryName("Model\\note\\tex\\Field");
+			note._isUpOrDwon = false;
+		}
+		
 		note._object->property._transform._translation = Vector3(-3,3,3);
 		note._object->SetCamera(view);
 		note._object->SetModelColor(mGetColor(type));

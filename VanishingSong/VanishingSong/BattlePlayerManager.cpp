@@ -3,7 +3,7 @@
 using namespace aetherClass;
 BattlePlayerManager::BattlePlayerManager()
 {
-	m_animationName.insert(std::make_pair(BattlePlayer::eBattleActionType::eWait, "wait"));
+	m_animationName.insert(std::make_pair(BattlePlayer::eBattleActionType::eWait, "attackwait"));
 	m_animationName.insert(std::make_pair(BattlePlayer::eBattleActionType::eAttack, "attack"));
 	m_animationName.insert(std::make_pair(BattlePlayer::eBattleActionType::eDamage, "damage"));
 	m_animationName.insert(std::make_pair(BattlePlayer::eBattleActionType::eWin, "win"));
