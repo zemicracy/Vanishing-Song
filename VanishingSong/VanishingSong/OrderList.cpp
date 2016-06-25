@@ -330,7 +330,7 @@ void OrderList::mPerformUpdate(){
 
 	//一番最初だけ判定時間のばす
 	if (m_processId == 0){
-		reducation = 1.7f;
+		reducation = 2.3f;
 	}
 
 	//タイミング判定

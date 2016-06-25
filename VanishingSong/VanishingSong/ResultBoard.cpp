@@ -70,9 +70,6 @@ void ResultBoard::mInitialize(){
 		else if (itr->_name == "missValue"){
 			m_missCountPosision = itr->_transform._translation;
 		}
-		else if (itr->_name == "backboard"){
-			m_pGeneral.insert(std::make_pair(itr->_name, gInitializer<Rectangle2D>(itr->_transform, itr->_color)));
-		}
 		else if (itr->_name != ""){
 			m_pGeneral.insert(std::make_pair(itr->_name, gInitializer<Rectangle2D>(itr->_transform, BLACK)));
 		}
@@ -99,7 +96,7 @@ void ResultBoard::mInitialize(){
 	m_TextureList["correct"] = gLoadTexture(path + "clear_rate.png");
 	m_pGeneral["correctRateText"]->SetTexture(m_TextureList["correct"].get());
 
-	m_TextureList["blank"] = gLoadTexture(path + "blank.png");
+	m_TextureList["blank"] = gLoadTexture(path + "backboard.png");
 	m_pGeneral["backboard"]->SetTexture(m_TextureList["blank"].get());
 
 	m_TextureList["return"] = gLoadTexture("Texture\\Result\\Red.png");
@@ -208,37 +205,42 @@ void ResultBoard::mSetResultData(ResultData result,GameManager::eBattleState sta
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 
 		m_pGeneral["noteImage"]->property._color = Color(0, 0, 1, 0);
-		if (itr.find(eMusical::eAdlib) == itr.end())
-		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field2_1.wav";
-		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eSecoundStage);
+		if (itr.find(eMusical::eAdlib) == itr.end()){
+			Debug::mPrint("NotFind");
+			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eBlue) = "Sound\\BGM\\field2_1.wav";
+			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eSecoundStage);
+		}
 	}
 	else if (stageID == 2){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eRed);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
 
 		m_pGeneral["noteImage"]->property._color = Color(0, 1, 0, 0);
-		if (itr.find(eMusical::eAdlib) == itr.end())
-		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eGreen) = "Sound\\BGM\\field2.wav";
-		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eThirdStage);
+		if (itr.find(eMusical::eAdlib) == itr.end()){
+			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eGreen) = "Sound\\BGM\\field2.wav";
+			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eThirdStage);
+		}
 	}
 	else if (stageID == 3){
 		GameManager::mGetInstance().mPushUsePlayer(eMusical::eYellow);
 		if (integer < noteBorder)return;		//レート0.90以上で音符の取得
-		
+
 		m_pGeneral["noteImage"]->property._color = Color(1, 0, 0, 0);
-		if (itr.find(eMusical::eAdlib) == itr.end())
-		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eRed) = "Sound\\BGM\\field3.wav";
-		GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eForthStage);
+		if (itr.find(eMusical::eAdlib) == itr.end()){
+			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eRed) = "Sound\\BGM\\field3.wav";
+			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eForthStage);
+		}
 	}
 	else if (stageID == 4){
 		if (GameManager::mGetInstance().mBossState() != GameManager::eBossState::eWin){
 			GameManager::mGetInstance().mBossState(GameManager::eBossState::eVisible);
 		}
 		if (integer < noteBorder)return;
-		
+
 		m_pGeneral["noteImage"]->property._color = Color(1, 1, 0, 0);
-		if (itr.find(eMusical::eAdlib) == itr.end())
-		ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
+		if (itr.find(eMusical::eAdlib) == itr.end()){
+			ResourceManager::mGetInstance().mSetBGMPath(eMusical::eYellow) = "Sound\\BGM\\field4.wav";
+		}
 	}
 	else if(stageID == 5){
 		if (integer < noteBorder)return;
