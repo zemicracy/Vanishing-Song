@@ -77,7 +77,7 @@ bool MessageWindow::mInitialize(){
 	m_iconFlame->SetTexture(m_iconFlameTexture.get());
 
 	WorldReader reader;
-	reader.Load("data\\MessageWindow.aether");
+	reader.Load("data\\MessageWindow",true);
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "window"){
