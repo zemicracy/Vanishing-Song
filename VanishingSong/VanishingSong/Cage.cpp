@@ -75,6 +75,13 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 //
 void Cage::mUpdate(const float timeScale, Vector3 position, const bool button){
 	m_charaEntity.mFaceToObject(m_model, position);
+	if (m_isTought){
+		m_model->KeyframeUpdate("caught", true);
+	}
+	else{
+		m_model->KeyframeUpdate("wait", true);
+
+	}
 	m_messageWindow.mUpdate(false);
 	m_messageWindow.mSetIcon(&m_icon);
 	const float volume = GameManager::mGetInstance().mGetVolume();
@@ -119,7 +126,7 @@ void Cage::mRender(ShaderBase* tex, ShaderBase* color){
 	if (m_isTought){
 		m_cage->Render(tex);
 	}
-	m_model->Render(tex);
+	m_model->KeyframeAnimationRender(tex);
 	if (m_isComment&&!m_isMessage){
 		m_commentFlame->property._transform._rotation = m_camera->property._rotation;
 		m_commentFlame->Render(tex);

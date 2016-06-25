@@ -11,7 +11,7 @@
 #include "ResourceManager.h"
 #include "Debug.h"
 #include "PlayDataManager.h"
-
+#include "SceneEnd.h"
 using namespace aetherClass;
 const std::string SceneGame::Name = "Game";
 namespace{
@@ -42,6 +42,9 @@ bool SceneGame::Initialize(){
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
 	RegisterScene(new SceneTutorial());
+	RegisterScene(new SceneEnd());
+
+
 	
 	//// フェードイン・アウトを行う
 	m_pFieldPlayer = std::make_shared<FieldPlayer>();
@@ -306,6 +309,10 @@ void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLef
 		return;
 	}
 	
+	if (GameController::GetKey().KeyDownTrigger('E')){
+		ChangeScene(SceneEnd::Name, LoadState::eUse);
+		return;
+	}
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
 	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();

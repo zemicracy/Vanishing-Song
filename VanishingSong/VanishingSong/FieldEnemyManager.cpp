@@ -83,7 +83,7 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\tmplate.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
-		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\template.png");
+		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\danbaru.png");
 
 	}
 

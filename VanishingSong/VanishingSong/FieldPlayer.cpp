@@ -14,8 +14,8 @@ namespace{
 	const float kCameraRotationMaxX = -5.0f;
 	const float kCameraRotationMinX = -20.0f;
 	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
-	const float kDefaultMove = 50.0f;
-
+	const float kDefaultMove = 100.0f;
+	const float kCameraRotation = 50.0f;
 }
 
 FieldPlayer::~FieldPlayer()
@@ -49,7 +49,7 @@ bool FieldPlayer::mInitialize(std::shared_ptr<FbxModel> model, Transform trans){
 	m_pSphereCollider->property._color = Color(1, 0, 0, 0.5);
 	m_pSphereCollider->SetCamera(m_playerView.get());
 
-	m_animationName.insert(std::make_pair(eState::eMove, "walk"));
+	m_animationName.insert(std::make_pair(eState::eMove, "run"));
 	m_animationName.insert(std::make_pair(eState::eWait, "wait"));
 	m_isHitWall = false;
 	m_isHitObject = false;
@@ -194,16 +194,16 @@ std::pair<Transform, Vector3> FieldPlayer::mReadKey(const float timeScale){
 
 	/*	ÉJÉÅÉâÇÃâÒì]	*/	
 	if (GameController::GetKey().IsKeyDown(VK_RIGHT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRRight)){
-		output.second._y += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output.second._y += (float)(GameClock::GetDeltaTime()*timeScale*kCameraRotation);
 	}
 	else if (GameController::GetKey().IsKeyDown(VK_LEFT) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRLeft)){
-		output.second._y -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output.second._y -= (float)(GameClock::GetDeltaTime()*timeScale*kCameraRotation);
 	}else
 	if (GameController::GetKey().IsKeyDown(VK_UP) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRUp)){
-		output.second._x += (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output.second._x += (float)(GameClock::GetDeltaTime()*timeScale*kCameraRotation);
 	}
 	else if (GameController::GetKey().IsKeyDown(VK_DOWN) || GameController::GetJoypad().IsButtonDown(eJoyButton::eRDown)){
-		output.second._x -= (float)(GameClock::GetDeltaTime()*timeScale*kDefaultMove);
+		output.second._x -= (float)(GameClock::GetDeltaTime()*timeScale*kCameraRotation);
 	}
 
 	return output;
