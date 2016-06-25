@@ -267,6 +267,7 @@ void SceneTitle::Finalize(){
 
 //
 bool SceneTitle::Updater(){
+	m_view.Controller();
 	const bool isStart = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 	const bool isReturn = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 	const bool isConfigButton = GameController::GetKey().KeyDownTrigger(VK_ESCAPE) || GameController::GetJoypad().ButtonPress(eJoyButton::eBack);
@@ -475,7 +476,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model->property._transform._translation = Vector3(100, 0, -500);
 		m_players[type]._model->property._transform._rotation._y = 180;
 		m_players[type]._model->SetCamera(&m_view);
-		m_players[type]._animationName = "win";
+		m_players[type]._animationName = "attack";
 		break;
 
 	case eMusical::eGreen:
@@ -484,7 +485,6 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model->property._transform._rotation._y = 270;
 		m_players[type]._model->SetCamera(&m_view);
 		m_players[type]._animationName = "sit";
-
 		break;
 
 	case eMusical::eRed:
