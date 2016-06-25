@@ -44,6 +44,7 @@ private:
 	int m_State;
 	int m_PrevState;
 	bool m_isEndTransition;
+	bool m_triggerOnFade;
 
 	std::unordered_map<int,std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 	std::shared_ptr<aetherClass::SpriteBase>m_pSprite;

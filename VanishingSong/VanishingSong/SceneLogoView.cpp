@@ -54,12 +54,14 @@ bool SceneLogoView::Initialize(){
 	m_pSprite = std::make_shared<Rectangle2D>();
 	m_pSprite->Initialize();
 	m_pSprite->property._transform._scale = Vector3(kWindowWidth, kWindowHeight, 0);
+	m_pSprite->property._transform._translation = Vector3(0, 0, 0.1);
 
 	m_FrameTime = 0;
 	m_isEndTransition = false;
 	m_State = eState::eAether;
 	m_PrevState = 0;
-	
+	m_triggerOnFade = false;
+
 	mLoadingTexture("aether\\", kAetherImage);
 	float vol = GameManager::mGetInstance().mGetVolume();
 	m_pSoundDevice = std::make_shared<GameSound>();
@@ -89,12 +91,20 @@ bool SceneLogoView::Updater(){
 	bool result = true;
 	const bool isPress = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 
-	if (isPress){
+	if (isPress || m_triggerOnFade){
+		if (m_State != eState::eZemicracy){
+			while (!GameManager::mGetInstance().mfadeManager().In(10)){
+				m_triggerOnFade = true;
+				return true;
+			}
+		}
+		
 		m_PrevState = m_State;
 		m_State++;
 		if (m_State == eState::eZemicracy){
 			mLoadingTexture("zemi\\", KZemiImage);
 		}
+		m_triggerOnFade = false;
 	}
 	
 	if (m_State == eState::eAether){
