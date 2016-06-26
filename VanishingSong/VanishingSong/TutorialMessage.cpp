@@ -32,7 +32,7 @@ bool TutorialMessage::mInitialize(){
 	m_windowBackCover->Initialize();
 
 	WorldReader reader;
-	reader.Load("data\\MessageWindow.aether");
+	reader.Load("data\\MessageWindow",true);
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "window"){
