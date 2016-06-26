@@ -249,7 +249,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		m_isFade2 = false;
 		return;
 	}
-	m_pFieldEnemy->mUpdater();
+	
 	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation,false);
@@ -277,6 +277,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 			}
 		}
 
+		m_pFieldEnemy->mUpdater();
 		m_pTutorialEnemy->mUpdate(false, isSelect, isReturn);
 	}
 	else if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd){
@@ -288,7 +289,9 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 			m_pTutorialEnemy->mIsEnd(true);
 			return;
 		}
+		m_pFieldEnemy->mUpdater();
 		m_pTutorialEnemy->mUpdate(true, false, isReturn);
+		
 	}
 }
 
