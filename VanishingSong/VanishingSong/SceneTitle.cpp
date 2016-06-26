@@ -83,6 +83,8 @@ bool SceneTitle::Initialize(){
 		m_isVisibleSaveData = true;
 		m_pMenuTexture = std::make_shared<Texture>();
 		m_pMenuTexture->Load("Texture\\Title\\AllSelect.png");
+		PlayDataManager playData;
+		playData.mLoad();
 	}
 	else{
 		m_isVisibleSaveData = false;
