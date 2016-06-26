@@ -46,7 +46,7 @@ void Cage::mInitialize(std::shared_ptr<FbxModel> model, Vector3 position, ViewCa
 	}
 	else{
 		m_pCollider->property._transform._scale = Vector3(10,15,15);
-		m_commentFlame->property._transform._translation = position + Vector3(0, 25, 0);
+		m_commentFlame->property._transform._translation = position + Vector3(0, 35, 0);
 	}
 	m_commentFlame->property._transform._scale = Vector3(10, 6, 0);
 

@@ -18,6 +18,8 @@ public:
 	std::shared_ptr<aetherClass::Sphere>& mGetColldier(const int);
 	
 private:
+	std::string mGetIconPath(eMusical);
+private:
 	std::array<std::shared_ptr<Cage>, 3> m_pCage;
 };
 

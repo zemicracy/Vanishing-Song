@@ -36,7 +36,7 @@ void CageManager::mInitialize(FieldEnemyManager* enemyManager, ViewCamera* camer
 
 		index->mSetMessagePath(0, "Texture\\Message\\CagePlayer\\" + std::to_string(count) + ".png");
 		index->mSetMessagePath(1, "Texture\\Message\\FieldPlayer\\" + std::to_string(count) + ".png");
-		index->mRegisterIcon("Texture\\Icon\\Player\\template.png");
+		index->mRegisterIcon(mGetIconPath(musical[count]));
 		count += 1;
 	}
 }
@@ -88,3 +88,16 @@ std::shared_ptr<aetherClass::Sphere>& CageManager::mGetColldier(const int id){
 	return m_pCage.at(id)->mGetCollider();
 }
 
+std::string CageManager::mGetIconPath(eMusical type){
+	switch (type)
+	{
+	case eMusical::eRed:
+		return "Texture\\Icon\\Player\\red.png";
+	case eMusical::eYellow:
+		return "Texture\\Icon\\Player\\yellow.png";
+	case eMusical::eGreen:
+		return "Texture\\Icon\\Player\\green.png";
+	default:
+		break;
+	}
+}
