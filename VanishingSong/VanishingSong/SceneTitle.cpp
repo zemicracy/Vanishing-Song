@@ -177,6 +177,7 @@ bool SceneTitle::Initialize(){
 	m_alphaState = false;
 	m_nowSelectMode = NULL;
 	m_nowCursor = NULL;
+
 	_heapmin();
 	return true;
 }
@@ -294,7 +295,12 @@ bool SceneTitle::Updater(){
 	m_pField->mUpdate(1.0);
 
 	for (auto& player : m_players){
-		player.second._model->KeyframeUpdate(player.second._animationName, true);
+		if (player.second._model->GetKeyframeCount(player.second._animationName) - 1 < player.second._animationCount){
+			player.second._animationCount = NULL;
+		}
+
+		player.second._model->KeyframeUpdate(player.second._animationName, player.second._animationCount);
+		player.second._animationCount += 1;
 	}
 
 	m_fieldNote.mUpdate();

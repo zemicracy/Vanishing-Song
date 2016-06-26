@@ -46,8 +46,12 @@ class SceneTitle :
 
 	struct  TitlePlayer
 	{
+		TitlePlayer(){
+			_animationCount = NULL;
+		}
 		std::shared_ptr<aetherClass::FbxModel> _model;
 		std::string _animationName;
+		int _animationCount;
 	};
 public:
 	SceneTitle();
