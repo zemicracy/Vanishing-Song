@@ -200,7 +200,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	m_flameScaleOrigin *= 1.05;
 	m_pFlame->property._transform._translation = m_flameScaleOrigin / 2 * -1 + m_flameScaleOrigin;
-
+	m_pFlame->property._transform._translation._z = 0.0000001;
 	//ˆÊ’u•â³
 	{
 		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x;
