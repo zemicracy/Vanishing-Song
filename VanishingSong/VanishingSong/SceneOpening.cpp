@@ -22,7 +22,7 @@ bool SceneOpening::Initialize(){
 
 	m_pSpriteBase = std::make_unique<Rectangle2D>();
 	m_pSpriteBase->Initialize();
-	m_pSpriteBase->property._transform._translation = Vector3(0, 0, 0);
+	m_pSpriteBase->property._transform._translation = Vector3(0, 0, 0.001);
 	m_pSpriteBase->property._transform._scale._x = 1280;
 	m_pSpriteBase->property._transform._scale._y = 720;
 	m_pSpriteBase->property._color = Color(0, 0, 0, 1);
@@ -42,6 +42,14 @@ bool SceneOpening::Initialize(){
 		m_pTexture[i]->Load("Texture\\Opening\\Opening" + std::to_string(i + 1) + ".png");
 	}
 
+	m_skipTexture.Load("Texture\\Sk8ip\\skip.png");
+	m_pSkip = std::make_shared<Rectangle2D>();
+	m_pSkip->Initialize();
+	m_pSkip->SetTexture(&m_skipTexture);
+	m_pSkip->property._transform._scale = Vector3(150, 100, 0);
+	const float x = m_pSkip->property._transform._scale._x;
+	const float y = m_pSkip->property._transform._scale._y;
+	m_pSkip->property._transform._translation = Vector3(kWindowWidth - x, kWindowHeight - y, 0);
 	//1枚目はすぐ表示
 	m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
 
@@ -52,12 +60,22 @@ bool SceneOpening::Initialize(){
 }
 
 void SceneOpening::Finalize(){
-	m_pSpriteBase->Finalize();
-
+	if (m_pSpriteBase){
+		m_pSpriteBase->Finalize();
+	}
+	if (m_pSkip){
+		m_pSkip->Finalize();
+		m_pSkip.reset();
+	}
 	return;
 }
 
 bool SceneOpening::Updater(){
+	if (GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart)){
+		ChangeScene(SceneGame::Name, LoadState::eUse);
+		return true;
+	}
+
 	m_bgm.PlayToLoop();
 	//m_clockCountにデルタタイムを足していく
 	m_clockCount = m_clockCount + GameClock::GetDeltaTime();
@@ -102,6 +120,7 @@ bool SceneOpening::Updater(){
 void SceneOpening::Render(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	m_pSpriteBase->Render(shaderHash["texture"].get());
+	m_pSkip->Render(shaderHash["texture"].get());
 	return;
 }
 

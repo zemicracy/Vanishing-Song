@@ -23,6 +23,7 @@ bool FieldEnemy::mInitialize(eMusical type, ViewCamera* camera, std::string data
 	m_isTalking = false;
 	m_animationCount = NULL;
 	m_prevAnimationName = "null";
+	m_isBattled = false;
 	return true;
 }
 bool FieldEnemy::mInitializeEnemy(eMusical type, aetherClass::ViewCamera* camera){
@@ -160,4 +161,23 @@ eMusical FieldEnemy::mGetType(){
 
 void FieldEnemy::mIsTalking(const bool talk){
 	m_isTalking = talk;
+}
+
+//
+void FieldEnemy::mRegisterAfterMessage(std::string path){
+	m_afterMessagePath.push_back(path);
+	m_afterMessagePath.shrink_to_fit();
+}
+
+//
+std::string FieldEnemy::mGetAfterMesage(const int id){
+	return m_afterMessagePath.at(id);
+}
+
+bool FieldEnemy::mBattled(){
+	return m_isBattled;
+}
+
+void FieldEnemy::mBattled(const bool flg){
+	m_isBattled = flg;
 }

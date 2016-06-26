@@ -208,7 +208,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 		auto size = (m_pFlame->property._transform._scale);
 		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
 		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
-		m_pFlame->property._transform._translation._z = 0;
+		m_pFlame->property._transform._translation._z = 0.0001;
 	}
 
 
@@ -746,7 +746,7 @@ void OrderList::mRhythmicMotion(){
 		auto size = (m_pFlame->property._transform._scale);
 		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
 		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
-		m_pFlame->property._transform._translation._z = 0;
+		m_pFlame->property._transform._translation._z = 0.00001;
 	}
 
 	//‚»‚Ì‘¼ƒRƒ}ƒ“ƒh

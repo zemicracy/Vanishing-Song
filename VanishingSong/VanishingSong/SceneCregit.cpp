@@ -90,12 +90,26 @@ bool SceneCregit::Initialize(){
 
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume * 100);
+
+	m_skipTexture.Load("Texture\\Skip\\skip.png");
+	m_pSkip = std::make_shared<Rectangle2D>();
+	m_pSkip->Initialize();
+	m_pSkip->SetTexture(&m_skipTexture);
+	m_pSkip->property._transform._scale = Vector3(150, 100, 0);
+	const float x = m_pSkip->property._transform._scale._x;
+	const float y = m_pSkip->property._transform._scale._y;
+	m_pSkip->property._transform._translation = Vector3(kWindowWidth - x, kWindowHeight - y, 0);
+
 	_heapmin();
 	return true;
 }
 
 void SceneCregit::Finalize(){
 	_heapmin();
+	if (m_pSkip){
+		m_pSkip->Finalize();
+		m_pSkip.reset();
+	}
 
 	if (m_pOrderList){
 		m_pOrderList.reset();
@@ -315,6 +329,8 @@ void SceneCregit::UIRender(){
 	if (m_pCregitMessage){
 		m_pCregitMessage->mRender(shaderHash["transparent"].get());
 	}
+
+	m_pSkip->Render(shaderHash["texture"].get());
 
 	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;

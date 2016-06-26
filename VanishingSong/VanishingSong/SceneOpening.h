@@ -22,6 +22,8 @@ private:
 	int m_array;
 	int m_imageCount;
 	aetherClass::GameSound m_bgm;
+	std::shared_ptr<aetherClass::SpriteBase> m_pSkip;
+	aetherClass::Texture m_skipTexture;
 public:
 	static const std::string Name;
 public:
