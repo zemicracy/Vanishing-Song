@@ -3,6 +3,7 @@
 #include "SceneTitle.h"
 #include "Const.h"
 #include "PlayDataManager.h"
+#include "ResourceManager.h"
 using namespace aetherClass;
 namespace{
 	const float kBaseSize = 500.0f;
@@ -39,7 +40,8 @@ void Config::mIntialize(std::string name){
 
 	m_cursor->property._transform._scale = Vector3(kBaseSize, kBaseSize/kMenuNum, 0);
 	m_cursor->property._transform._translation = m_base->property._transform._translation;
-	m_cursor->property._color = Color(1, 1, 1, 0.5);
+	m_cursor->property._color = Color(0, 0, 0, 1);
+	m_cursor->SetTexture(ResourceManager::mGetInstance().GetTexture("cursor").get());
 	m_cursorScale.first = m_cursor->property._transform._scale;
 	m_cursorScale.second = Vector3(kBaseSize / kVolumeNum, kBaseSize / kMenuNum, 0);
 	int count = NULL;

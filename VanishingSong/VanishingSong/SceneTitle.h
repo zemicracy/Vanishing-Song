@@ -96,7 +96,7 @@ private:
 	std::shared_ptr<FieldArea>  m_pField;
 	FieldNote m_fieldNote;
 
-	bool m_pushState;
+	int m_pushState;
 	int m_nowSelectMode;
 	bool m_alphaState;
 	int m_nowCursor;

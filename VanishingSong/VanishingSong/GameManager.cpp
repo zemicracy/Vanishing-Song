@@ -122,6 +122,7 @@ void GameManager::mRestStart(){
 	m_bossState = eBossState::eUnVisible;
 	m_fieldState = eFieldState::eTutorial;
 	m_canStageNumber = NULL;
+	mGetCanStage(NULL);
 	ResourceManager::mGetInstance().mGetBGMPath().clear();
 	m_players.clear();
 }

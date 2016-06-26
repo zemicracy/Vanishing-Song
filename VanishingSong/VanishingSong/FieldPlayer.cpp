@@ -16,7 +16,7 @@ namespace{
 	const Vector3 kColliderOffset = Vector3(0, 15, 0); 
 	const float kWalk = 30.0f;
 	const float kRun = 150.f;
-	const float kCameraRotation = 50.0f;
+	const float kCameraRotation = 150.0f;
 }
 
 FieldPlayer::~FieldPlayer()

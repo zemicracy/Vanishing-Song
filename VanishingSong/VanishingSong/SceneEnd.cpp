@@ -99,6 +99,10 @@ bool SceneEnd::Initialize(){
 	m_isTransitionEnd = false;
 	mChangeMessage(m_messageWindow,m_message, 0);
 	m_message._count += 1;
+
+	m_returnSE.Load("Sound\\End\\decision.wav");
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_returnSE.SetValume(volume);
 	return true;
 }
 
@@ -117,7 +121,8 @@ bool SceneEnd::Updater(){
 	}
 
 	if (!m_isMessageEnd&&isPushButton){
-	
+		m_returnSE.Stop();
+		m_returnSE.PlayToOneTime();
 		const int messageCount = m_message._count;
 		mChangeMessage(m_messageWindow,m_message, messageCount);
 		m_message._count += 1;

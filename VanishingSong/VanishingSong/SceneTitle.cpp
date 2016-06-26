@@ -23,8 +23,9 @@
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
-	const bool kPleaseClick = false;
-	const bool kMenuSelect = true;
+	const int kPleaseClick = 0;
+	const int kMenuSelect = 1;
+	const int kSelected = 3;
 	const std::string kExit = "Exit";
 	const bool kShutdown = false;
 	const int kLoadNumber = 1;
@@ -422,7 +423,7 @@ bool SceneTitle::mMenuSelectState(const bool isReturn, const  std::pair<bool, bo
 	mChangeSelect(UpOrDown.first, UpOrDown.second);
 
 	if (isReturn){
-	
+		m_pushState = kSelected;
 		SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 		// Exit以外が来たらシーンの遷移を開始
 		if (nextState._nextSceneName != kExit){

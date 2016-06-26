@@ -12,6 +12,7 @@
 #include "FieldArea.h"
 #include <vector>
 #include "MessageWindow.h"
+
 class SceneEnd:
 	public aetherClass::GameScene
 {
@@ -91,6 +92,7 @@ private:
 	Message m_message;
 	bool m_isMessageEnd;
 	bool m_isTransitionEnd;
+	aetherClass::GameSound m_returnSE;
 };
 
 #endif
