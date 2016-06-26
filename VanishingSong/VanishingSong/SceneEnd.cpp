@@ -40,7 +40,7 @@ bool SceneEnd::Initialize(){
 	m_boss._prevAnimationName = "wait";
 
 	WorldReader reader;
-	reader.Load("data\\End\\PlayerEndScene.aether");
+	reader.Load("data\\End\\PlayerEndScene", true);
 
 	for (auto index : reader.GetInputWorldInfo()._object){
 		if (index->_name == "playerBlue"){
