@@ -129,7 +129,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 			}
 			else{
 				m_messageBuffer = std::make_shared<Texture>();
-				if (m_enemy->mEnemyGet(pair.first)->mBattled){
+				if (m_enemy->mEnemyGet(pair.first)->mBattled()){
 					m_messageBuffer->Load(m_enemy->mEnemyGet(pair.first)->mGetAfterMesage(m_counter));
 				}
 				else{
