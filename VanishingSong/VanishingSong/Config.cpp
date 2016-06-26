@@ -145,7 +145,7 @@ bool Config::mUpdate(const bool isView, const bool isButton,const std::pair<bool
 void Config::mUIRender(aetherClass::ShaderBase* tex, aetherClass::ShaderBase* color){
 	if (!m_isView) return;
 	m_base->Render(tex);
-	m_cursor->Render(color);
+	m_cursor->Render(tex);
 	if (m_isSaved){
 		m_messageWindow.mRender(tex);
 	}
