@@ -49,10 +49,7 @@ void FieldArea::mFinalize(){
 		itr->Finalize();
 		itr.reset();
 	}
-	if (m_rhythmManager){
-		m_rhythmManager->mFinalize();
-	
-	}
+
 }
 
 template<typename T>

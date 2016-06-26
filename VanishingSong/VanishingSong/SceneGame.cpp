@@ -311,10 +311,6 @@ void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLef
 		return;
 	}
 	
-	if (GameController::GetKey().KeyDownTrigger('E')){
-		ChangeScene(SceneEnd::Name, LoadState::eUse);
-		return;
-	}
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
 	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();

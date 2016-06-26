@@ -3,11 +3,12 @@
 #include<PixelShader.h>
 #include<Rectangle2D.h>
 #include<GameController.h>
-
+#include "SceneGame.h"
+#include "ResourceManager.h"
 using namespace aetherClass;
-
+const std::string SceneOpening::Name = "Opening";
 SceneOpening::SceneOpening():
-GameScene("SceneOpening",GetManager())
+GameScene(SceneOpening::Name, GetManager())
 {
 }
 
@@ -18,14 +19,6 @@ SceneOpening::~SceneOpening()
 
 bool SceneOpening::Initialize(){
 
-	ShaderDesc desc;
-	desc._vertex._entryName = "vs_main";
-	desc._vertex._srcFile = L"Shader\\VertexShaderBase.hlsl";
-	desc._pixel._entryName = "ps_main";
-	desc._pixel._srcFile = L"Shader\\ColorTexture.hlsl";
-
-	m_pShaderBase = std::make_unique<PixelShader>();
-	m_pShaderBase->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
 
 	m_pSpriteBase = std::make_unique<Rectangle2D>();
 	m_pSpriteBase->Initialize();
@@ -46,12 +39,15 @@ bool SceneOpening::Initialize(){
 	//テクスチャを読み込み
 	for (int i = 0; i<17; i++){
 		m_pTexture[i] = std::make_unique<Texture>();
-		m_pTexture[i]->Load("Texture/Opening" + std::to_string(i + 1) + ".png");
+		m_pTexture[i]->Load("Texture\\Opening\\Opening" + std::to_string(i + 1) + ".png");
 	}
 
 	//1枚目はすぐ表示
 	m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
 
+	m_bgm.Load("Sound\\Opening\\Opening.wav");
+	float volume = GameManager::mGetInstance().mGetVolume();
+	m_bgm.SetValume(volume);
 	return true;
 }
 
@@ -62,6 +58,7 @@ void SceneOpening::Finalize(){
 }
 
 bool SceneOpening::Updater(){
+	m_bgm.PlayToLoop();
 	//m_clockCountにデルタタイムを足していく
 	m_clockCount = m_clockCount + GameClock::GetDeltaTime();
 
@@ -93,6 +90,9 @@ bool SceneOpening::Updater(){
 				m_array++;
 				m_imageCount++;
 			}
+			else{
+				ChangeScene(SceneGame::Name, LoadState::eUse);
+			}
 		}
 	}
 
@@ -100,7 +100,8 @@ bool SceneOpening::Updater(){
 }
 
 void SceneOpening::Render(){
-	m_pSpriteBase->Render(m_pShaderBase.get());
+	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
+	m_pSpriteBase->Render(shaderHash["texture"].get());
 	return;
 }
 

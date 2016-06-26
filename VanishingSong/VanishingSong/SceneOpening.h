@@ -8,12 +8,11 @@
 #include<Texture.h>
 #include<memory>
 #include<GameClock.h>
-
+#include <GameSound.h>
 class SceneOpening :
 	public aetherClass::GameScene
 {
 private:
-	std::unique_ptr<aetherClass::ShaderBase> m_pShaderBase;
 	std::unique_ptr<aetherClass::SpriteBase>m_pSpriteBase;
 
 	//テクスチャ用の配列
@@ -22,6 +21,9 @@ private:
 	double m_clockCount;
 	int m_array;
 	int m_imageCount;
+	aetherClass::GameSound m_bgm;
+public:
+	static const std::string Name;
 public:
 	SceneOpening();
 	~SceneOpening();

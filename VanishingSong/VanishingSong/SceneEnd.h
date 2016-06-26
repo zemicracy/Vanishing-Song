@@ -28,7 +28,6 @@ private:
 
 		~EndActor(){
 			if (_model){
-				_model->Finalize();
 				_model.reset();
 				_model = nullptr;
 			}
@@ -80,6 +79,8 @@ private:
 	void mChangeMessage(MessageWindow&,Message&, const int);
 private:
 	std::shared_ptr<aetherClass::GameSound> m_bgm;
+	std::shared_ptr<aetherClass::SpriteBase> m_pEndBord;
+	aetherClass::Texture m_endBordTexture;
 	std::unordered_map<eMusical, EndActor> m_actors;
 	EndActor m_boss;
 	std::unique_ptr<aetherClass::Skybox> m_pSkybox;
@@ -93,6 +94,10 @@ private:
 	bool m_isMessageEnd;
 	bool m_isTransitionEnd;
 	aetherClass::GameSound m_returnSE;
+	bool m_isFade;
+	bool m_isFade2;
+	bool m_isRender;
+	float m_backToTitleTime;
 };
 
 #endif

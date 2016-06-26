@@ -1,10 +1,13 @@
 #include "SceneEnd.h"
 #include "ResourceManager.h"
 #include "GameController.h"
-
+#include "Const.h"
+#include "SceneTitle.h"
 using namespace aetherClass;
 
-
+namespace{
+	const float kMaxReurnTime = 5;
+}
 const std::string SceneEnd::Name = "End";
 SceneEnd::SceneEnd() :
 GameScene(Name, GetManager())
@@ -18,8 +21,7 @@ SceneEnd::~SceneEnd()
 
 bool SceneEnd::Initialize(){
 
-	Debug::mPrint("yobareta");
-
+	RegisterScene(new SceneTitle());
 	m_field.mInitialize("Model\\Field\\title_tex");
 	m_field.mSetCamera(&m_view);
 
@@ -40,7 +42,7 @@ bool SceneEnd::Initialize(){
 	m_boss._prevAnimationName = "wait";
 
 	WorldReader reader;
-	reader.Load("data\\End\\PlayerEndScene.aether");
+	reader.Load("data\\End\\PlayerEndScene",true);
 
 	for (auto index : reader.GetInputWorldInfo()._object){
 		if (index->_name == "playerBlue"){
@@ -79,6 +81,11 @@ bool SceneEnd::Initialize(){
 	m_pSkybox->Initialize();
 	m_pSkybox->SetCamera(&m_view);
 	m_pSkybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
+	m_endBordTexture.Load("Texture\\End\\ED.png");
+	m_pEndBord = std::make_shared<Rectangle2D>();
+	m_pEndBord->Initialize();
+	m_pEndBord->SetTexture(&m_endBordTexture);
+	m_pEndBord->property._transform._scale = Vector3(kWindowWidth, kWindowHeight, 0);
 
 	m_textPathList.clear();
 	m_iconPathList.clear();
@@ -97,10 +104,13 @@ bool SceneEnd::Initialize(){
 	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eEnd);
 	m_isMessageEnd = false;
 	m_isTransitionEnd = false;
+	m_isFade = false;
+	m_isFade2 = false;
+	m_isRender = false;
 	mChangeMessage(m_messageWindow,m_message, 0);
 	m_message._count += 1;
 
-	m_returnSE.Load("Sound\\End\\decision.wav");
+	m_returnSE.Load("Sound\\End\\message.wav");
 	const float volume = GameManager::mGetInstance().mGetVolume();
 	m_returnSE.SetValume(volume);
 	return true;
@@ -108,11 +118,52 @@ bool SceneEnd::Initialize(){
 
 void SceneEnd::Finalize(){
 	
+	if (m_pEndBord){
+		m_pEndBord->Finalize();
+		m_pEndBord.reset();
+	}
+	if (m_pSkybox){
+		m_pSkybox->Finalize();
+		m_pSkybox.reset();
+	}
+	m_actors.clear();
 }
 
 //
 bool SceneEnd::Updater(){
+	
+	if (m_isMessageEnd&&!m_isFade){
+		if (!GameManager::mGetInstance().mfadeManager().In(1)){
+			return true;
+		}
+		m_isFade = true;
+		m_isFade2 = false;
+		return true;
+	}
 
+
+
+	if (m_isFade&&!m_isFade2){
+		m_isRender = true;
+		if (!GameManager::mGetInstance().mfadeManager().Out(1)){
+			return true;
+		}
+		m_isFade = true;
+		m_isFade2 = true;
+		return true;
+	}
+
+
+	if (m_isMessageEnd&&m_isFade&&m_isRender){
+		m_backToTitleTime += GameClock::GetDeltaTime();
+
+		if (GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetKey().KeyDownTrigger(VK_RETURN) ||
+			GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart) ||
+			m_backToTitleTime>kMaxReurnTime){
+			ChangeScene(SceneTitle::Name, LoadState::eUse);
+		}
+		return true;
+	}
 	if (!m_isTransitionEnd)return true;
 	bool isPushButton = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 
@@ -148,6 +199,10 @@ void SceneEnd::UIRender(){
 	auto shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
 	if (!m_isMessageEnd&&m_isTransitionEnd){
 		m_messageWindow.mRender(shaderHash["texture"].get());
+	}
+
+	if (m_isMessageEnd&&m_isFade&&m_isRender){
+		m_pEndBord->Render(shaderHash["texture"].get());
 	}
 	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 }

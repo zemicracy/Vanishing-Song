@@ -11,6 +11,7 @@
 #include "ResourceManager.h"
 #include "SceneGame.h"
 #include"SceneCregit.h"
+#include "SceneOpening.h"
 #include "PlayDataManager.h"
 #include "ResourceManager.h"
 #ifndef _SHLWAPI_
@@ -61,6 +62,8 @@ bool SceneTitle::Initialize(){
 	//次のシーン
 	RegisterScene(new SceneGame());
 	RegisterScene(new SceneCregit());
+	RegisterScene(new SceneOpening());
+
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player\\red.fbx", "Model\\Player\\red");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\green.fbx", "Model\\Player\\green");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\yellow.fbx", "Model\\Player\\yellow");
@@ -307,11 +310,6 @@ bool SceneTitle::Updater(){
 	mCursorState(isStart);
 	bool isUpdate = mMenuSelectState(isReturn,UpOrDown);
 
-	if (kCharaDebug){
-		if (GameController::GetKey().KeyDownTrigger('T')){
-			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
-		}
-	}
 	// まだ続けるか？
 	if (!isUpdate)
 	{
@@ -455,14 +453,13 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	switch (index){
 	case eNextMode::eStart:
 		GameManager::mGetInstance().mRestStart();
-		info._nextSceneName = SceneGame::Name;
+		info._nextSceneName = SceneOpening::Name;
 		break;
 	case eNextMode::eLoad:
 		load.mLoad();
 		info._nextSceneName = SceneGame::Name;
 		break;
 	case eNextMode::eCredit:
-		// ここはならすべて終了
 		info._nextSceneName = SceneCregit::Name;
 		break;
 	case eNextMode::eNull:
