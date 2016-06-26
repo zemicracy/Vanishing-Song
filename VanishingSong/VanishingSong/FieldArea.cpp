@@ -4,6 +4,7 @@
 #include<WorldReader.h>
 #include <Physics.h>
 #include "ResourceManager.h"
+#include "GameManager.h"
 #include <Singleton.h>
 using namespace aetherFunction;
 using namespace aetherClass;
@@ -48,13 +49,10 @@ void FieldArea::mFinalize(){
 		itr->Finalize();
 		itr.reset();
 	}
-	for (auto& itr : m_partitionWall){
-		for (auto& itr2 : itr){
-			itr2->Finalize();
-			itr2.reset();
-		}
+	if (m_rhythmManager){
+		m_rhythmManager->mFinalize();
+	
 	}
-
 }
 
 template<typename T>
@@ -71,9 +69,10 @@ void gSphereInitializer(std::shared_ptr<Sphere> &command, Transform transform, C
 	command->property._transform = transform;
 	command->property._color = color;
 }
+
 void FieldArea::mInitialize(std::string texdirectory){
 	WorldReader reader;
-	reader.Load("data\\Field\\stage.aether");
+	reader.Load("data\\Field\\stage", true);
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
@@ -113,7 +112,7 @@ void FieldArea::mInitialize(std::string texdirectory){
 			gInitalizer<Cube>(m_partitionCube[4], itr->_transform, itr->_color);
 		}
 	}
-	
+
 	reader.UnLoad();
 
 	mInitializeObject();
@@ -128,20 +127,14 @@ void FieldArea::mInitialize(std::string texdirectory){
 	m_skybox->Initialize();
 	m_skybox->SetTexture(ResourceManager::mGetInstance().GetTexture("skybox").get());
 
-	// 先にコライダーの検出をする
-	int nextNumber = NULL;
-	for (int i = 0; i < 4; ++i){
-		for (auto& wall : m_partitionWall[i]){
-			for (int j = nextNumber; j < 4; ++j){
-				if (CollideBoxOBB(*m_wall[j], *m_partitionCube[i])){
-					wall = m_wall[j];
-					nextNumber = j + 1;
-					break;
-				}
-			}
-		}
-		nextNumber = NULL;
+	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
+		m_usePlayer.push_back(index.first);
 	}
+	m_isChangeInit = false;
+	m_isBlack = false;
+	m_changeColorCount = NULL;
+
+	m_originColor = Color(0, 0, 0, 1);
 }
 
 void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
@@ -162,11 +155,34 @@ void FieldArea::mSetCamera(aetherClass::ViewCamera* camera){
 void FieldArea::mRender(ShaderBase* texture, ShaderBase*shader){
 	m_pGround->Render(texture);
 	m_skybox->Render(texture);
-	m_pNote->Render(texture);
+	m_pNote->Render(shader);
 }
 
 void FieldArea::mUpdate(float time){
-	m_pNote->property._transform._rotation._y -= time * 1;
+
+	if (m_rhythmManager){
+		m_rhythmManager->mAcquire();
+		if (GameManager::mGetInstance().mBossState() == GameManager::eBossState::eWin){
+			
+			float note = 360 * m_rhythmManager->mQuarterBeatTime();
+			float nowFrameWave = cos(note * kAetherRadian);
+			float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
+
+			float rote = 90 * m_rhythmManager->mQuarterBeatTime();
+
+			m_pNote->property._transform._scale = 25 + (scale * 5);
+			m_pNote->property._transform._rotation._y = rote;
+		}
+		else{
+			if (m_pNote->property._transform._rotation._y > 360){
+				m_pNote->property._transform._rotation._y -= 360;
+			}
+			m_pNote->property._transform._rotation._y += time * 1;
+		}
+	}
+	
+	mChangeColor();
+	
 }
 
 std::shared_ptr<aetherClass::ModelBase>& FieldArea::mGetPartitionCube(const int number){
@@ -174,8 +190,8 @@ std::shared_ptr<aetherClass::ModelBase>& FieldArea::mGetPartitionCube(const int 
 }
 
 
-std::array<std::shared_ptr<aetherClass::ModelBase>, 2>& FieldArea::mGetPartitionWall(const int number){
-	return m_partitionWall[number];
+std::array<std::shared_ptr<aetherClass::ModelBase>, 4>& FieldArea::mGetWallList(){
+	return m_wall;
 }
 
 std::array<std::shared_ptr<Sphere>, 4>& FieldArea::mGetObjectList(){
@@ -194,4 +210,84 @@ void FieldArea::mInitializeObject(){
 	gSphereInitializer(m_pObject[2], trans, Color(1, 0, 0, 0.3));
 	trans._translation = Vector3(-200, 0, -285);
 	gSphereInitializer(m_pObject[3], trans, Color(1, 0, 0, 0.3));
+}
+
+//
+void FieldArea::mChangeColor(){
+	if (!m_isChangeInit){
+		mResizeUsePlayer();
+		if (m_changeColorCount > m_usePlayer.size()-1){
+			m_changeColorCount = 0;
+		}
+		if (!m_usePlayer.empty()){
+			m_changeColor = mMusicalToColor(m_usePlayer.at(m_changeColorCount));
+		}
+		else{
+			m_changeColor = Color(0, 0, 0, 1);
+		}
+		m_isChangeInit = true;
+	}
+	const float time = GameClock::GetDeltaTime();
+
+	if (m_isBlack){
+		m_originColor._red -= time*m_changeColor._red;
+		m_originColor._green -= time*m_changeColor._green;
+		m_originColor._blue -= time*m_changeColor._blue;
+		if (m_originColor._red <= 0.0f&&m_originColor._blue <= 0.0f
+			&&m_originColor._green <= 0.0f){
+			m_isChangeInit = false;
+			m_isBlack = false;
+			m_changeColorCount += 1;
+			m_originColor = Color(0, 0, 0, 1);
+		}
+	}
+	else{
+		m_originColor._red += time*m_changeColor._red;
+		m_originColor._green += time*m_changeColor._green;
+		m_originColor._blue += time*m_changeColor._blue;
+		if (m_originColor._red >= m_changeColor._red&&m_originColor._blue >= m_changeColor._blue
+			&&m_originColor._green >= m_changeColor._green){
+			m_isBlack = true;
+		}
+	}
+	m_pNote->SetModelColor(m_originColor);
+	return;
+}
+
+Color FieldArea::mMusicalToColor(eMusical type){
+	switch (type)
+	{
+	case eMusical::eBlue:
+		return Color(0, 0, 1, 1);
+		break;
+	case eMusical::eGreen:
+		return Color(0, 1, 0, 1);
+	case eMusical::eRed:
+		return Color(1, 0, 0, 1);
+		
+	case eMusical::eYellow:
+		return Color(1, 1, 0, 1);
+	default:
+		break;
+	}
+
+	return Color(0, 0, 0, 1);
+}
+
+//
+void FieldArea::mSetRhythm(RhythmManager* rhythm){
+	m_rhythmManager = rhythm;
+}
+
+void FieldArea::mResizeUsePlayer(){
+	if (m_usePlayer.size() == GameManager::mGetInstance().mGetUsePlayer().size())return;
+	for (auto& index : GameManager::mGetInstance().mGetUsePlayer()){
+		for (auto& pushIndex : m_usePlayer){
+			if (pushIndex == index.first){
+				continue;
+			}
+		}
+		m_usePlayer.push_back(index.first);
+	}
+
 }

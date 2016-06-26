@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "GameController.h"
 #include "Const.h"
+#include "PlayDataManager.h"
 using namespace aetherClass;
 VanishingSongFrame::VanishingSongFrame()
 {
@@ -24,22 +25,18 @@ bool VanishingSongFrame::InitializeBuffer(){
 	result = ResourceManager::mGetInstance().Initialize();
 	// 操作キャラクターのリソースを初期化
 
-	GameManager::mGetInstance().mPushUsePlayer(eMusical::eBlue);
-
 	GameManager::mGetInstance().mBossState(GameManager::eBossState::eUnVisible);
 	GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eTutorial);
 
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player","Model\\Player\\blue");
-
-
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eBlue, "Model\\Player\\blue.fbx", "Model\\Player\\blue");
+	
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eBlue, "Model\\Enemy\\Air\\air.fbx", "Model\\Enemy\\Air\\tex");
 	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eYellow, "Model\\Enemy\\Annon\\annon.fbx", "Model\\Enemy\\annon\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eGreen, "Model\\Enemy\\Ground\\gro.fbx", "Model\\Enemy\\Ground\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eRed, "Model\\Enemy\\Danbal\\danbal.fbx", "Model\\Enemy\\Danbal\\tex");
-	ResourceManager::mGetInstance().mEnemyInitialize(eMusical::eAdlib, "Model\\Enemy\\Boss\\boss.fbx", "Model\\Enemy\\Boss\\tex");
-
-	GameManager::mGetInstance().mGetCanStage(5);
-
+	
+	// 初めに設定ファイルだけはロードしておく
+	PlayDataManager playData;
+	playData.mConfigLoad();
+	playData.mLoad();
 	return true;
 }
 
@@ -52,7 +49,8 @@ bool VanishingSongFrame::FrameRunningBuffer(){
 
 // プログラムの終了時に実行される
 void VanishingSongFrame::FinalizeBuffer(){
-
+	PlayDataManager playData;
+	playData.mConfigSave();
 	ResourceManager::mGetInstance().Finalize();
 	return;
 }

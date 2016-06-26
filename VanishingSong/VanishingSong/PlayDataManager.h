@@ -8,9 +8,12 @@ public:
 	
 	void mSave();
 	void mLoad();
+	void mConfigSave();
+	void mConfigLoad();
 
 public:
-	static const std::string mFilePath;
+	static const std::string mSaveFile;
+	static const std::string mConfigFile;
 private:
 	GameManager::eFieldState mLoadFieldState(const int);
 	int mSaveFieldState(GameManager::eFieldState)const;

@@ -4,7 +4,7 @@
 #include "FieldEnemy.h"
 #include "GameClock.h"
 #include "MessageWindow.h"
-
+#include "GameManager.h"
 
 class FieldEnemyManager
 {
@@ -24,8 +24,9 @@ public:
 	void mResetEnemysTransform();
 private:
 
-	std::vector<std::shared_ptr<FieldEnemy>> m_pEnemy;
-	std::array<std::shared_ptr<FieldEnemy>,5> m_enemyArray;
+	int mFieldStateToInt(GameManager::eFieldState);
+
+	std::vector<std::shared_ptr<FieldEnemy>> m_pEnemyList;
 	std::array<aetherClass::Vector3, 5>	m_pEnemySpawner;	//oŒ»êŠ
 	
 	bool m_bossFlag;

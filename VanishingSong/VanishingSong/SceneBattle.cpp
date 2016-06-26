@@ -6,6 +6,8 @@
 #include <GameController.h>
 #include "ResourceManager.h"
 #include"SceneGame.h"
+#include"SceneEnd.h"
+
 #include"Cipher.h"
 #include"ModelUtility.h"
 //debug
@@ -76,8 +78,10 @@ bool SceneBattle::Initialize(){
 	m_isEndTransition = false;
 	m_prevWholeBeatNo = 0;
 
-	m_bgmVolume = 60;
+	m_bgmVolume = -(GameManager::mGetInstance().mGetVolume() / 100 - 30);
 	m_inCount = 0;
+
+	m_pField->mSetStageID(m_stageID);
 
 
 	m_particleDesc._spawnRate = 10;
@@ -91,6 +95,10 @@ bool SceneBattle::Initialize(){
 
 	m_players.mUpdate(0, eMusical::eNull);
 	m_pOrderList->mUpdate();
+
+	if (m_stageID == 5){
+		RegisterScene(new SceneEnd());
+	}
 
 	//ÅŒã‚És‚¤
 	m_sound->SetValume(-m_bgmVolume*100);
@@ -168,11 +176,11 @@ void SceneBattle::mLoadTextData(){
 	m_rhythm = std::make_shared<RhythmManager>();
 	if (m_stageID != 5){
 		m_sound->Load("Sound\\Battle\\normal.wav");
-		m_rhythm->mInitializeRhythm(m_sound, 120);
+		m_rhythm->mInitializeRhythm(m_sound.get(), 120);
 	}
 	else{
 		m_sound->Load("Sound\\Battle\\boss.wav");
-		m_rhythm->mInitializeRhythm(m_sound, 117);
+		m_rhythm->mInitializeRhythm(m_sound.get(), 117);
 	}
 
 	m_rhythm->mAcquire();
@@ -186,7 +194,7 @@ bool SceneBattle::Updater(){
 	if (m_isEndTransition && m_sound){
 			m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose){
-			if (m_bgmVolume > 30){
+			if (m_bgmVolume > -(GameManager::mGetInstance().mGetVolume() / 100)){
 				m_sound->SetValume(-m_bgmVolume * 100);
 				m_bgmVolume--;
 			}
@@ -359,7 +367,7 @@ void SceneBattle::mOnResult(){
 		
 		m_sound = std::make_shared<GameSound>();
 		m_sound->Load("Sound\\Result\\result.wav");
-		m_rhythm->mInitializeRhythm(m_sound, 110);
+		m_rhythm->mInitializeRhythm(m_sound.get(), 110);
 
 		m_pResult = std::make_unique<ResultBoard>();
 		m_pResult->mInitialize();
@@ -371,14 +379,21 @@ void SceneBattle::mOnResult(){
 		m_resultUpdateTime = 1.0f;
 
 
-		m_bgmVolume = 60;
+		m_bgmVolume = -(GameManager::mGetInstance().mGetVolume() / 100 - 30);
 	}
 
 	m_pResult->mUpdate(m_resultUpdateTime);
 	if (m_pResult->mIsEnd()){
 		const bool isPress = GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetKey().KeyDownTrigger(VK_SPACE);
 		if (isPress){
+			if (m_stageID == 5 && m_winner == GameManager::eBattleState::eWin){
+				if (GameManager::mGetInstance().mBossState() != GameManager::eBossState::eEnd){
+					ChangeScene(SceneEnd::Name, LoadState::eUse);
+					return;
+				}
+			}
 			ChangeScene(SceneGame::Name, LoadState::eUse);
+			return;
 		}
 	}
 	else{
@@ -402,6 +417,8 @@ void SceneBattle::mOnListen(){
 	//Œõ‚é“z
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
 
+
+	m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
@@ -422,6 +439,8 @@ void SceneBattle::mOnPerform(){
 	}
 
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+
+	m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
@@ -445,9 +464,11 @@ void SceneBattle::mOnBattle(){
 	auto i = m_pOrderList->mGetDamage();
 	if (i > 0){
 		m_enemyHp->_hp -= i;
+		m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 	}
 	else if (i < 0){
 		m_charaHp._hp += i;
+		m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eDamage, eMusical::eMiss);
 	}
 
 	if (m_pOrderList->mIsEnd()){
@@ -468,6 +489,7 @@ void SceneBattle::mCheckBattle(){
 			m_waveID++;
 
 			m_pBattleEnemyManager->misDie();
+			m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc,&m_view);
 
 
@@ -480,6 +502,7 @@ void SceneBattle::mCheckBattle(){
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_pField->mDeleteWaveNote();
 
+			m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eWin, eMusical::eMiss);
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;
 		}

@@ -32,6 +32,7 @@ public:
 		eVisible,
 		eUnVisible,
 		eWin,
+		eEnd,
 		eNull
 	};
 
@@ -45,6 +46,7 @@ public:
 		eForthStage,
 		
 		eBoss,
+		eEnd,
 		eNull
 	};
 public:
@@ -78,6 +80,10 @@ public:
 
 	FadeManager& mfadeManager();
 
+	void mRestStart();
+
+	float mGetVolume()const;
+	void mSetVolume(const float);
 private:
 	GameManager();
 	~GameManager();
@@ -94,6 +100,7 @@ private:
 	std::pair<int, aetherClass::Transform> m_prevEnemy;
 
 	FadeManager m_fadeManager;
+	int m_volume;
 };
 
 #endif

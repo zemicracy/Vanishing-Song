@@ -6,6 +6,7 @@
 #include <array>
 #include "MessageWindow.h"
 #include "GameSound.h"
+#include <Sphere.h>
 class Cage
 {
 public:
@@ -16,12 +17,13 @@ public:
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mUIRender(aetherClass::ShaderBase*);
 	void mSetIsTought(bool);
-	std::shared_ptr < aetherClass::Cube>& mGetCollider();
+	std::shared_ptr <aetherClass::Sphere>& mGetCollider();
 	void mSetIsComment(bool);
 
 	void mSetMessagePath(int,std::string);
 	aetherClass::Vector3 mGetPosition();
 	bool mGetMessageRun();
+	void mRegisterIcon(std::string);
 private:
 
 	void mInitialize(std::shared_ptr<aetherClass::FbxModel>, aetherClass::Vector3 position, aetherClass::ViewCamera*,bool);
@@ -37,7 +39,7 @@ private:
 	aetherClass::ViewCamera* m_camera;
 	aetherClass::Vector3 m_initialPosition;
 	CharaEntity m_charaEntity;
-	std::shared_ptr < aetherClass::Cube> m_pCollider;
+	std::shared_ptr < aetherClass::Sphere> m_pCollider;
 	std::array<std::string, 2> m_messagePath; 
 	aetherClass::Texture m_buttonTexture;
 	bool m_isTought;
@@ -45,7 +47,9 @@ private:
 	bool m_isMessage;
 	float m_changeCommentCount;
 	bool m_changeComment;
+	int m_animationCount;
 	aetherClass::GameSound m_buttonSE;
+	aetherClass::Texture m_icon;
 
 };
 

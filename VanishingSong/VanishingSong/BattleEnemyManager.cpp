@@ -26,12 +26,17 @@ void BattleEnemyManager::mInitialize(ViewCamera* camera,BattleField* lane){
 	flag = true;
 	m_fieldState = GameManager::mGetInstance().mFieldState();
 	m_optionCount = 0;
+
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eWait, "wait"));
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eAttack, "attack"));
+	m_animationName.insert(std::make_pair(BattleEnemy::eBattleActionType::eDamage, "damage"));
+
 }
 
 
 void BattleEnemyManager::mRender(std::shared_ptr<ShaderBase> tex){
-	for (auto itr : m_pEnemy){
-		itr->mRender(tex);
+	for (auto &itr : m_pEnemy){
+		itr.second->mRender(tex);
 	}
 }
 
@@ -79,9 +84,10 @@ int BattleEnemyManager::mGetRandom(){
 }
 
 void BattleEnemyManager::mUpdate(const float timeScale ){
-	for (auto itr : m_pEnemy){
-		itr->mUpdate(1);
+	for (auto &itr : m_pEnemy){
+		itr.second->mUpdate(1);
 	}
+	
 }
 
 void BattleEnemyManager::mLoadInfo(std::string path,BattleField* lane ,ViewCamera* camera){
@@ -148,20 +154,20 @@ void BattleEnemyManager::ResetEnemyList(int waveCount,ViewCamera* camera){
 
 	if (!m_pEnemy.empty()){
 		for (auto& enemy : m_pEnemy){
-			enemy.reset();
+			enemy.second.reset();
 		}
 		m_pEnemy.clear();
 	}
 
 	for (auto& enemyType : m_waveEnemyList[waveCount]){
-		m_pEnemy.push_back(enemyType);
+		m_pEnemy.insert(std::make_pair(enemyType->mGetType(),enemyType));
 	}
 
 }
 
 void BattleEnemyManager::misDie(){
 	for (auto& enemy : m_pEnemy){
-		enemy->misDie();
+		enemy.second->misDie();
 	}
 }
 
@@ -334,7 +340,7 @@ eMusical BattleEnemyManager::mGetEnemyAttack(const char attack){
 void BattleEnemyManager:: mFinalize(){
 	
 	for (auto enemy : m_pEnemy){
-		enemy.reset();
+		enemy.second.reset();
 	}
 
 	m_waveEnemyList.clear();
@@ -343,3 +349,22 @@ void BattleEnemyManager:: mFinalize(){
 	m_hp.clear();
 
 }
+
+void BattleEnemyManager::mChangeAnimation(BattleEnemy::eBattleActionType action, eMusical color){
+	if (m_pEnemy.find(color) == m_pEnemy.end() && color != eMusical::eMiss)return;
+
+	if (color == eMusical::eMiss){
+		for (auto &itr : m_pEnemy){
+			itr.second->mChangeAnimation(m_animationName.at(action));
+		}
+	}
+	else if (action == BattleEnemy::eBattleActionType::eAttack){
+		if (m_pEnemy.begin()->second->mGetType() == eMusical::eAdlib){
+			m_pEnemy.at(eMusical::eAdlib)->mChangeAnimation(m_animationName.at(action));
+		}
+		else{
+			m_pEnemy.at(color)->mChangeAnimation(m_animationName.at(action));
+		}
+	}
+}
+

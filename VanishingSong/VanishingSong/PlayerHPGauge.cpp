@@ -32,6 +32,14 @@ void PlayerHPGauge::mFinalize(){
 	if (m_maskTexture){
 		m_maskTexture.reset();
 	}
+	if (m_coverTexture){
+		m_coverTexture.reset();
+	}
+	if (m_pCoverSprite){
+		m_pCoverSprite->Finalize();
+		m_pCoverSprite.reset();
+	}
+
 	m_CharaStatus = nullptr;
 }
 void PlayerHPGauge::mSetProperty(SpriteBase::Property pro){
@@ -46,7 +54,15 @@ bool PlayerHPGauge::mInitialize(){
 
 	
 	m_maskTexture = std::make_shared<Texture>();
-	m_maskTexture->Load("Texture\\Game\\mpGauge.png");
+	m_maskTexture->Load("Texture\\Game\\hpGaugeMask.png");
+
+	m_coverTexture = std::make_shared<Texture>();
+	m_coverTexture->Load("Texture\\Game\\hpGauge.png");
+
+	m_pCoverSprite = std::make_shared<Rectangle2D>();
+	m_pCoverSprite->Initialize();
+	m_pCoverSprite->property._transform = m_property._transform;
+	m_pCoverSprite->SetTexture(m_coverTexture.get());
 
 	m_pMainSprite->property = m_property;
 
@@ -126,6 +142,8 @@ void PlayerHPGauge::mRender(std::shared_ptr<HalfFillShader> shader){
 	shader->_property._interpolation = m_fillType._interpolation;
 	m_pMainSprite->Render(shader.get());
 
+	shader->_property._interpolation = 1;
+	m_pCoverSprite->Render(shader.get());
 
 }
 
@@ -137,6 +155,7 @@ void PlayerHPGauge::mRhythmicMotion(){
 		m_pMainSprite->property._transform._scale = m_property._transform._scale + (scale * 15);
 		m_pDamageSprite->property._transform._scale = m_pMainSprite->property._transform._scale;
 		m_pMaskSprite->property._transform._scale = m_pMainSprite->property._transform._scale;
+		m_pCoverSprite->property._transform._scale = m_pMainSprite->property._transform._scale;
 
 		auto size = (m_pMainSprite->property._transform._scale);
 
@@ -146,6 +165,8 @@ void PlayerHPGauge::mRhythmicMotion(){
 
 		m_pDamageSprite->property._transform._translation = m_pMainSprite->property._transform._translation;
 		m_pMaskSprite->property._transform._translation = m_pMainSprite->property._transform._translation;
+		m_pCoverSprite->property._transform._translation = m_pMainSprite->property._transform._translation;
+
 	}
 }
 

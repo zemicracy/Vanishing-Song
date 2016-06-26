@@ -11,14 +11,15 @@
 #include "CharaStatus.h"
 #include "CharaEntity.h"
 #include "Const.h"
-
+#include "Sphere.h"
 class FieldPlayer
 {
 private:
 
 	/*	FieldPlayerの状態		*/
 	enum class eState{
-		eMove,
+		eWalk,
+		eRun,
 		eWait,
 		eNull
 	};
@@ -50,7 +51,7 @@ public:
 	/*
 		カメラオブジェクトのアドレス取得用
 	*/
-	aetherClass::ViewCamera* mGetView();
+	std::shared_ptr<aetherClass::ViewCamera>& mGetView();
 
 	/*
 		コライダーの取得用
@@ -88,7 +89,7 @@ private:
 	/*
 		カメラオブジェクトの更新
 	*/
-	void mUpdateView(aetherClass::ViewCamera&,aetherClass::Vector3& rotation,aetherClass::Vector3 lookAtPosition);
+	void mUpdateView(aetherClass::ViewCamera*,aetherClass::Vector3& rotation,aetherClass::Vector3 lookAtPosition);
 
 	/*
 	キーやマウスの処理の読み取り
@@ -103,7 +104,7 @@ private:
 	aetherClass::Sphere* m_hitObject;
 	bool m_isHitWall;
 	bool m_isHitObject;
-	aetherClass::ViewCamera m_playerView;		//　カメラオブジェクト
+	std::shared_ptr<aetherClass::ViewCamera> m_playerView;		//　カメラオブジェクト
 	aetherClass::Vector3 m_prevPosition;     // 前回のトランスフォーム情報
 	aetherClass::Vector3 m_cameraRotation;		//　カメラの回転を管理
 	CharaEntity m_charaEntity;					// 便利関数のあるクラスオブジェクト
@@ -115,6 +116,9 @@ private:
 	aetherClass::Transform m_transform;
 	float m_prevRotationY;
 	int m_fieldNumber;
+	std::string m_preveAnimtionName;
+	int m_animtationCount;
+	bool m_isRun;
 };
 
 #endif

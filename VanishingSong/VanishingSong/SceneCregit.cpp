@@ -29,12 +29,12 @@ bool SceneCregit::Initialize(){
 	_heapmin();
 
 	mLoadTextData();
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player", "Model\\Player\\green");
-	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player", "Model\\Player\\yellow");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\green.fbx", "Model\\Player\\green");
+	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\yellow.fbx", "Model\\Player\\yellow");
 
 
 	RegisterScene(new SceneTitle());
-
+	
 	m_pMessage = std::make_unique<BattleMessage>();
 	m_pCregitMessage = std::make_unique<CregitMessage>();
 
@@ -64,6 +64,7 @@ bool SceneCregit::Initialize(){
 		m_players.mSetPlayer(key[i], m_pField->mGetPlayerLane(key[i]), gearframe);
 	}
 
+	m_pField->mSetStageID(m_stageID);
 
 	m_battleState = GameManager::eBattleState::eNewWave;
 	m_processState = eGameState::ePreCountIn;
@@ -71,7 +72,7 @@ bool SceneCregit::Initialize(){
 	m_preInitProcess = false;
 	m_prevWholeBeatNo = 0;
 
-	m_bgmVolume = 60;
+	m_bgmVolume = -(GameManager::mGetInstance().mGetVolume() / 100 - 30);
 	m_inCount = 0;
 	m_endTime = 0;
 
@@ -156,14 +157,14 @@ void SceneCregit::mLoadTextData(){
 	m_sound->Load("Sound\\BGM\\field1.wav");
 
 	m_rhythm = std::make_shared<RhythmManager>();
-	m_rhythm->mInitializeRhythm(m_sound, 128);
+	m_rhythm->mInitializeRhythm(m_sound.get(), 128);
 	m_rhythm->mAcquire();
 
 
 	m_pBackCover = std::make_shared<Rectangle2D>();
 	m_pBackCover->Initialize();
 	WorldReader reader;
-	reader.Load("data\\Result.aether");
+	reader.Load("data\\Battle\\Result",true);
 
 	for (auto itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "backboard"){
@@ -185,10 +186,16 @@ void SceneCregit::mLoadTextData(){
 
 
 bool SceneCregit::Updater(){
+	{
+		bool isPress = GameController::GetJoypad().ButtonRelease(eJoyButton::eStart) | GameController::GetKey().KeyDownTrigger(VK_ESCAPE);
+		if (isPress){
+			ChangeScene(SceneTitle::Name, LoadState::eUse);
+		}
+	}
 	if (m_isEndTransition){
 		m_sound->PlayToLoop();
 		if (m_battleState != GameManager::eBattleState::eWin && m_battleState != GameManager::eBattleState::eLose && m_battleState != GameManager::eBattleState::eResult){
-			if (m_bgmVolume > 30){
+			if (m_bgmVolume > -(GameManager::mGetInstance().mGetVolume() / 100)){
 				m_sound->SetValume(-m_bgmVolume * 100);
 				m_bgmVolume--;
 			}
@@ -345,6 +352,7 @@ void SceneCregit::mOnListen(){
 
 	m_pCregitMessage->mUpdate(0.5f);
 
+	m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
 		m_processState = eGameState::ePreCountIn;
@@ -367,6 +375,7 @@ void SceneCregit::mOnPerform(){
 	}
 
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+	m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eAttack, m_pOrderList->mGetActionCommand()->mGetType());
 
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
@@ -387,6 +396,14 @@ void SceneCregit::mOnBattle(){
 	}
 
 	m_pField->mUpdate(m_pOrderList->mGetActionCommand());
+	auto i = m_pOrderList->mGetDamage();
+	if (i > 0){
+		m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
+	}
+	else if (i < 0){
+		m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eDamage, eMusical::eMiss);
+	}
+
 
 	if (m_pOrderList->mIsEnd()){
 		m_initUpdateProcess = false;
@@ -406,6 +423,7 @@ void SceneCregit::mCheckBattle(){
 		m_waveID++;
 		m_pField->mDeleteWaveNote();
 		m_pBattleEnemyManager->misDie();
+		m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 		m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 
 		m_pField->mDeleteWaveNote();
@@ -418,6 +436,7 @@ void SceneCregit::mCheckBattle(){
 		m_pField->mDeleteWaveNote();
 		m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 
+		m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eWin, eMusical::eMiss);
 		m_battleState = GameManager::eBattleState::eWin;
 		m_processState = eGameState::ePreCountIn;
 	}

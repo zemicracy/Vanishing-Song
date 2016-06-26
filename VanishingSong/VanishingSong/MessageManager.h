@@ -27,6 +27,7 @@ public:
 	bool mGetIsChangeScene()const;
 	void m2DRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void m3DRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
+	void mSetIcon(aetherClass::Texture*);
 	bool mIsView();
 private:
 	void mSetState(const int);

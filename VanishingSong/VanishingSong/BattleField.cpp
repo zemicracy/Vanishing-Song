@@ -45,6 +45,8 @@ void BattleField::mFinalize(){
 		itr.second.reset();
 	}
 	m_pTextureList.clear();
+
+	m_pObject->Finalize();
 }
 template<class T>
 std::shared_ptr<T> gInitializer(aetherClass::Transform transform, aetherClass::Color color){
@@ -65,7 +67,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	using namespace aetherClass;
 
 	WorldReader reader;
-	reader.Load("data\\BattleStage.aether");
+	reader.Load("data\\Battle\\BattleStage",true);
 
 	m_MaxWave = maxWave;
 	m_rhythm = rhythm;
@@ -81,7 +83,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
 			m_pPlane = std::make_shared<FbxModel>();
-			m_pPlane->LoadFBX("Model\\Battle\\stage\\BattleStage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pPlane->LoadFBX("Model\\Battle\\stage\\Battle_Stage.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
 			m_pPlane->SetTextureDirectoryName("Model\\Battle\\stage");
 			m_pPlane->SetCamera(camera);
 			m_pPlane->property._transform._scale._x = -1;
@@ -93,7 +95,7 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 		}
 		else if (itr->_name == "EnemyHP"){
 			m_pTank	= std::make_shared<FbxModel>();
-			m_pTank->LoadFBX("Model\\Battle\\capsule.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+			m_pTank->LoadFBX("Model\\Battle\\kapuseru.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
 			m_pTank->SetTextureDirectoryName("Model\\Battle");
 			m_pTank->SetCamera(m_view);
 			m_pTank->property._transform = itr->_transform;
@@ -185,6 +187,21 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 		m_pTankNote.back()->SetCamera(m_view);
 	}
 
+	m_pObject = std::make_shared<FbxModel>();
+	m_pObject->LoadFBX("Model\\Object\\Symbol\\object.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+	m_pObject->SetTextureDirectoryName("Model\\Object\\Symbol\\title_tex");
+	m_pObject->SetCamera(m_view);
+	m_pObject->property._transform._translation = Vector3(-50.0f, 2.3f, 48.2f);
+	m_pObject->property._transform._rotation = Vector3(16.0f, 0, 0);
+
+	m_pNoteObject = std::make_shared<FbxModel>();
+	m_pNoteObject->LoadFBX("Model\\Object\\Note\\note1.fbx", aetherClass::eAxisSystem::eAxisOpenGL);
+	m_pNoteObject->SetTextureDirectoryName("Model\\Object\\Note\\tex");
+	m_pNoteObject->SetCamera(m_view);
+	m_pNoteObject->property._transform = m_pObject->property._transform;
+	m_pNoteObject->property._transform._translation._y = 46.1f;
+
+
 
 	for (auto itr : m_pLane){
 		itr.second->SetCamera(m_view);
@@ -200,6 +217,8 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 
 void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 	//ƒ¿‚¯‚·—p
+	using namespace aetherClass;
+
 	for (auto& itr : m_pLane){
 		if (itr.second->property._color._alpha > 0){
 			itr.second->property._color._alpha -= 0.1;
@@ -215,6 +234,8 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 	m_pSkyBox->Render(texture);
 	m_pPlane->Render(texture);
 
+	m_pObject->Render(texture);
+	m_pNoteObject->Render(texture);
 	for (auto itr : m_pLane){
 		itr.second->Render(debug);
 	}
@@ -249,10 +270,42 @@ void BattleField::mRhythmicMotion(){
 	float nowFrameWave = cos(note * kAetherRadian);
 	float scale = nowFrameWave >= 0.8 ? nowFrameWave : 0;
 
-	m_pTank->property._transform._scale = m_tankScaleOrigin + (scale / 10);
+	float rote = 90 * m_rhythm->mQuarterBeatTime();
 
-	for (auto itr : m_pCommand)
+	m_pTank->property._transform._scale = m_tankScaleOrigin + (scale / 10);
+	m_pObject->property._transform._scale = 0.2 + (scale / 50);
+	m_pNoteObject->property._transform._scale = 5 + (scale);
+	m_pNoteObject->property._transform._rotation._y = rote;
 	{
+		float note2 = 360 * m_rhythm->mWholeBeatTime();
+		float nowFrameWave2 = cos(note2 * kAetherRadian);
+		float scale2 = nowFrameWave2 >= 0.5 ? nowFrameWave2 : 0;
+
+		switch (m_stageID)
+		{
+		case 0:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0.5*scale2, 0.5*scale2, 0.5*scale2, 1));
+			break;
+		case 1:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0, 0, 0.5*scale2, 1));
+			break;
+		case 2:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0, 0.5*scale2, 0, 1));
+			break;
+		case 3:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0.5*scale2, 0, 0, 1));
+			break;
+		case 4:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0.5*scale2, 0.5*scale2, 0, 1));
+			break;
+		case 5:
+			m_pNoteObject->SetModelColor(aetherClass::Color(0, 0.5*scale2, 0.5*scale2, 1));
+			break;
+		default:
+			break;
+		}
+	}
+	for (auto itr : m_pCommand){
 		itr->property._transform._scale = m_commandScale + (2 * scale);
 	}
 
@@ -263,4 +316,8 @@ void BattleField::mDeleteWaveNote(){
 
 	m_pTankNote.begin()->get()->Finalize();
 	m_pTankNote.erase(m_pTankNote.begin());
+}
+
+void BattleField::mSetStageID(int stage){
+	m_stageID = stage;
 }

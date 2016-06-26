@@ -14,6 +14,7 @@ public:
 	void mUpdate(std::shared_ptr<ActionCommand>command);
 	void mRhythmicMotion();
 
+	void mSetStageID(int);
 	void mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug);
 	aetherClass::Vector3 mGetEnemyLane(eMusical type);
 	aetherClass::Vector3 mGetPlayerLane(eMusical type);
@@ -28,6 +29,7 @@ private:
 private:
 	bool m_isBossStage;
 	int m_MaxWave;
+	int m_stageID;
 
 	float m_commandScale;
 	aetherClass::Vector3 m_tankScaleOrigin;
@@ -46,5 +48,8 @@ private:
 	RhythmManager *m_rhythm;
 
 	std::vector<std::shared_ptr<aetherClass::FbxModel>>m_pTankNote;
+	std::shared_ptr<aetherClass::FbxModel>m_pObject;
+	std::shared_ptr<aetherClass::FbxModel>m_pNoteObject;
+
 };
 

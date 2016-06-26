@@ -41,17 +41,16 @@ void CollideManager::mUpdate(){
 // 障害物と当たったら止まる処理
 void CollideManager::mCheckHitObject(const int number){
 
+	// プレイヤーと家
 	for (auto& objects : m_filed->mGetObjectList()){
 		if (ColliderBoxSphere(*m_player->mGetSphereColldier(), *objects)){
 			m_player->mOnHitObject(objects.get());
 			break;
 		}
 	}
-	
 
 	// プレイヤーと壁
-	if (number > 3)return;
-	for (auto wall : m_filed->mGetPartitionWall(number)){
+	for (auto& wall : m_filed->mGetWallList()){
 		if (CollideBoxOBB(*m_player->mGetBodyColldier(), *wall)){
 			m_player->mOnHitWall(wall.get());
 			break;
@@ -61,39 +60,23 @@ void CollideManager::mCheckHitObject(const int number){
 	return;
 }
 
+//
 void CollideManager::mCheckHitEnemy(const int number){
 
 
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
-	if ((x*x) + (z*z) > kRange*kRange){
+	if ((x*x) + (z*z) < kRange*kRange){
 		m_messageInfo.first = number;
-		m_messageInfo.second = true;
-	}else{
-		m_messageInfo.second = false;
-	}
-
-	if (m_messageInfo.second)return;
-	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
-		m_player->mOnHitWall(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
-	}
-
-	if (!m_enemy->mGetBossFlg()&&number != 0)return;
-
-	if ((x*x) + (z*z) > kRange*kRange){
-		m_messageInfo.first = kBossNumber;
 		m_messageInfo.second = true;
 	}
 	else{
 		m_messageInfo.second = false;
 	}
 
-	if (m_messageInfo.second)return;
-
-	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_enemy->mEnemyGet(kBossNumber)->mGetProperty()._pCollider.get())){
-		m_player->mOnHitWall(m_enemy->mEnemyGet(kBossNumber)->mGetProperty()._pCollider.get());
+	if (ColliderBoxSphere(*m_player->mGetSphereColldier(), *m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get())){
+		m_player->mOnHitObject(m_enemy->mEnemyGet(number)->mGetProperty()._pCollider.get());
 	}
-	
 }
 
 //
@@ -102,20 +85,20 @@ void CollideManager::mCheckHitCage(const int number){
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_cage->mGetPosition(number)._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_cage->mGetPosition(number)._z;
 
-	if ((x*x) + (z*z) < kRange*kRange&&m_messageInfo.second){
+	if ((x*x) + (z*z) < kRange*kRange&&!m_messageInfo.second){
 		m_cage->mSetIsComment(number, true);
 	}
 	else{
 		m_cage->mSetIsComment(number, false);
 	}
 
-	if (CollideBoxOBB(*m_player->mGetBodyColldier(), *m_cage->mGetColldier(number).get())){
-		m_player->mOnHitWall(m_cage->mGetColldier(number).get());
+	if (ColliderBoxSphere(*m_player->mGetSphereColldier(), *m_cage->mGetColldier(number).get())){
+		m_player->mOnHitObject(m_cage->mGetColldier(number).get());
 	}
 }
 
+//
 std::pair<int, bool>& CollideManager::GetMassageInfo(){
-
 	return m_messageInfo;
 }
 

@@ -12,6 +12,7 @@
 #include "GameManager.h"
 #include"GameSound.h"
 #include "FieldArea.h"
+#include "Config.h"
 class SceneTitle :
 	public aetherClass::GameScene
 {
@@ -42,6 +43,12 @@ class SceneTitle :
 	struct SceneInfo{
 		std::string _nextSceneName;
 	};
+
+	struct  TitlePlayer
+	{
+		std::shared_ptr<aetherClass::FbxModel> _model;
+		std::string _animationName;
+	};
 public:
 	SceneTitle();
 
@@ -71,22 +78,24 @@ private:
 	void mChangeSelect(const bool isUp, const bool isDown);
 	void mCursorState(const bool isStart);
 	bool mMenuSelectState(const bool isReturn, const  std::pair<bool, bool>);
+	void mSetPlayer(eMusical);
 private:
-	std::unique_ptr<aetherClass::SpriteBase> m_pLogo;
-	std::unique_ptr<aetherClass::SpriteBase> m_pMenu;
-	std::unique_ptr<aetherClass::SpriteBase> m_pCursor;
+	std::shared_ptr<aetherClass::SpriteBase> m_pLogo;
+	std::shared_ptr<aetherClass::SpriteBase> m_pMenu;
+	std::shared_ptr<aetherClass::SpriteBase> m_pCursor;
 	std::shared_ptr<aetherClass::Texture> m_pLogoTexture;
 	std::shared_ptr<aetherClass::Texture> m_pMenuTexture;
 	std::shared_ptr<aetherClass::Texture> m_pPushTexture;
-
-	std::shared_ptr<aetherClass::FbxModel> m_bluePlayer;
-
-	aetherClass::GameSound m_bgm;
-	aetherClass::GameSound m_returnSE;
-	aetherClass::GameSound m_selectSE;
+	
+	std::unordered_map<eMusical, TitlePlayer> m_players;
+	std::shared_ptr<RhythmManager> m_pRhythmManager;
+	std::shared_ptr<aetherClass::GameSound> m_pBGM;
+	std::shared_ptr<aetherClass::GameSound> m_returnSE;
+	std::shared_ptr<aetherClass::GameSound> m_selectSE;
 	std::array<ModeSelect, 4> m_cursorArray;
-	std::unique_ptr<aetherClass::Skybox> m_pSkybox;
-	FieldArea m_field;
+	std::shared_ptr<FieldArea>  m_pField;
+	FieldNote m_fieldNote;
+
 	bool m_pushState;
 	int m_nowSelectMode;
 	bool m_alphaState;
@@ -94,6 +103,8 @@ private:
 	bool m_isVisibleSaveData;
 
 	aetherClass::ViewCamera m_view;
+
+	Config m_config;
 };
 
 #endif

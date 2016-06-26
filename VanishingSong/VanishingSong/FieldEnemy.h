@@ -5,14 +5,14 @@
 #include "Cube.h"
 #include "CharaEntity.h"
 #include <array>
-
+#include <Sphere.h>
 class FieldEnemy
 {
 public:
 
 	struct Property{
 		std::shared_ptr<aetherClass::FbxModel> _pEnemy;			//Enemy本体
-		std::shared_ptr<aetherClass::ModelBase> _pCollider;	//コライダー
+		std::shared_ptr<aetherClass::Sphere> _pCollider;	//コライダー
 		bool _talkflag;
 		int _enemyAreaNo;		//エリアナンバー
 	};
@@ -21,7 +21,7 @@ public:
 	~FieldEnemy();
 
 	bool mInitialize(eMusical,aetherClass::ViewCamera*,std::string dataPath);
-	void mUpdate();
+	void mUpdate(std::string name);
 	void mRender(aetherClass::ShaderBase*, aetherClass::ShaderBase*);
 	void mFinalize();	//開放処理
 	void mResetTransform();
@@ -34,6 +34,12 @@ public:
 	std::string mGetMessage(const int id);
 	std::string mGetCannotMessga();
 	std::string mGetBattleDataPath();
+
+	std::shared_ptr<aetherClass::Texture>& mGetIcon();
+	void mRegisterIcon(std::string);
+	eMusical mGetType();
+
+	void mIsTalking(const bool);
 private:
 	bool mInitializeEnemy(eMusical,aetherClass::ViewCamera*);	//敵の初期化
 	void mInitializeEnemyColider(aetherClass::ViewCamera*);	//コライダーの初期化
@@ -44,5 +50,10 @@ private:
 	aetherClass::Transform m_initTransform;
 	std::string m_cannotMessagePath;
 	std::string m_dataPath;
+	eMusical m_type;
+	std::shared_ptr<aetherClass::Texture> m_pIcon;
+	bool m_isTalking;
+	int m_animationCount;
+	std::string m_prevAnimationName;
 };
 #endif

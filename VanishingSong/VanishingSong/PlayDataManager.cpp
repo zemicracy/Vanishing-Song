@@ -2,7 +2,8 @@
 #include "ResourceManager.h"
 #include <fstream>
 #include "Cipher.h"
-const std::string PlayDataManager::mFilePath = "data\\PlayData\\save_data";
+const std::string PlayDataManager::mSaveFile = "data\\PlayData\\save_data";
+const std::string PlayDataManager::mConfigFile = "data\\PlayData\\config";
 PlayDataManager::PlayDataManager()
 {
 }
@@ -15,7 +16,7 @@ PlayDataManager::~PlayDataManager()
 void PlayDataManager::mSave(){
 	auto fieldState = GameManager::mGetInstance().mFieldState();
 	std::ofstream saveObject;
-	saveObject.open(mFilePath, std::ios::out);
+	saveObject.open(mSaveFile, std::ios::out);
 	saveObject << "[Field]" << std::endl;
 	saveObject << mSaveFieldState(fieldState) << std::endl;
 
@@ -42,13 +43,13 @@ void PlayDataManager::mSave(){
 
 	// ˆÃ†‰»
 	Cipher lock;
-	lock.mLock(mFilePath);
+	lock.mLock(mSaveFile);
 	return;
 }
 
 void PlayDataManager::mLoad(){
 	Cipher load;
-	load.mLoadFile(mFilePath);
+	load.mLoadFile(mSaveFile);
 	auto fieldState = mLoadFieldState(std::atoi(load.mGetData("[Field]", 0).c_str()));
 	GameManager::mGetInstance().mFieldState(fieldState);
 
@@ -88,13 +89,17 @@ GameManager::eFieldState PlayDataManager::mLoadFieldState(const int id){
 
 	case 2:
 		return GameManager::eFieldState::eSecoundStage;
+
 	case 3:
 		return GameManager::eFieldState::eThirdStage;
+
 	case 4:
 		return GameManager::eFieldState::eForthStage;
 	case 5:
 		return GameManager::eFieldState::eBoss;
 
+	case 6:
+		return GameManager::eFieldState::eEnd;
 	default:
 		return GameManager::eFieldState::eNull;
 	}
@@ -116,6 +121,10 @@ int PlayDataManager::mSaveFieldState(GameManager::eFieldState state)const{
 		return 4;
 	case GameManager::eFieldState::eBoss:
 		return 5;
+
+	case GameManager::eFieldState::eEnd:
+		return 6;
+		
 	case GameManager::eFieldState::eNull:
 	default:
 		return -1;
@@ -132,6 +141,8 @@ GameManager::eBossState PlayDataManager::mLoadBossState(const int id){
 		return GameManager::eBossState::eVisible;
 	case 2:
 		return GameManager::eBossState::eWin;
+	case 3:
+		return GameManager::eBossState::eEnd;
 	default:
 		return GameManager::eBossState::eNull;
 	}
@@ -147,6 +158,8 @@ int PlayDataManager::mSaveBossState(GameManager::eBossState state)const{
 		return 1;
 	case GameManager::eBossState::eWin:
 		return 2;
+	case GameManager::eBossState::eEnd:
+		return 3;
 	case GameManager::eBossState::eNull:
 	default:
 		return -1;
@@ -165,6 +178,8 @@ char PlayDataManager::mGetTypeToChar(eMusical type){
 		return 'y';
 	case eMusical::eGreen:
 		return 'g';
+	case eMusical::eAdlib:
+		return 'a';
 	default:
 		break;
 	}
@@ -188,6 +203,32 @@ eMusical PlayDataManager::mGetCharToType(const char type){
 	if (type == 'g'){
 		return eMusical::eGreen;
 	}
+	if (type == 'a'){
+		return eMusical::eAdlib;
+	}
 
 	return eMusical::eNull;
+}
+
+//
+void PlayDataManager::mConfigSave(){
+	auto fieldState = GameManager::mGetInstance().mFieldState();
+	std::ofstream saveObject;
+	saveObject.open(mConfigFile, std::ios::out);
+	saveObject << "[Volume]" << std::endl;
+	saveObject << GameManager::mGetInstance().mGetVolume() << std::endl;
+
+	// ˆÃ†‰»
+	Cipher lock;
+	lock.mLock(mConfigFile);
+}
+
+//
+void PlayDataManager::mConfigLoad(){
+	Cipher load;
+	load.mLoadFile(mConfigFile);
+	auto volume = std::atoi(load.mGetData("[Volume]", 0).c_str());
+	GameManager::mGetInstance().mSetVolume(volume);
+
+	return;
 }

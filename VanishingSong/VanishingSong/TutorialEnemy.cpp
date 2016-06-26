@@ -1,6 +1,8 @@
 #include "TutorialEnemy.h"
 #include "Debug.h"
+#include "GameManager.h"
 #include <WorldReader.h>
+#include "ResourceManager.h"
 using namespace aetherClass;
 TutorialEnemy::TutorialEnemy()
 {
@@ -18,7 +20,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_isEnd = !flg;
 	m_model = model;
 	WorldReader reader;
-	reader.Load("data\\Field\\player_init.aether");
+	reader.Load("data\\Field\\player_init",true);
 	for (auto& index : reader.GetInputWorldInfo()._object){
 		if (index->_name == "tutorial_enemy"){
 			m_model->property._transform._translation = Vector3(index->_transform._translation._x, 0, index->_transform._translation._z);
@@ -33,14 +35,14 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	int count = NULL;
 	for (auto& message : m_tutorialMessage){
 		
-		message = "Texture\\Message\\tmplate.png";
+		message = "Texture\\Message\\Tutorial\\"+ std::to_string(count)+".png";
 		count += 1;
 	}
 
 	//
 	count = 0;
 	for (auto& message : m_tutorialClearMessage){
-		message="Texture\\Message\\tmplate.png";
+		message="Texture\\Message\\TutorialAfter\\"+std::to_string(count)+".png";
 		count += 1;
 	}
 
@@ -48,10 +50,10 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_pCursor->Initialize();
 	m_pCursor->property._transform._translation._y = 630;
 	m_pCursor->property._transform._scale = Vector3(120, 50, 0);
-	m_pCursor->property._color = Color(1.f, 1.f, 1.f, 0.3f);
-
-	m_cursorPosition[true] = 400.f;
-	m_cursorPosition[false] = 730.f;
+	m_pCursor->property._color = Color(0.f, 0.f, 0.f, 1.f);
+	m_pCursor->SetTexture(ResourceManager::mGetInstance().GetTexture("cursor").get());
+	m_cursorPosition[true] = 485.f;
+	m_cursorPosition[false] = 780.f;
 
 
 	m_pCursor->property._transform._translation._x = m_cursorPosition[m_isYes];
@@ -61,6 +63,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	m_select = eSelect::eNull;
 	m_state = eState::eNext;
 	m_isYes = true;
+	m_hogeFuga = false;
 	m_texture[eState::eSelect] = std::make_shared<Texture>();
 	m_texture[eState::eSelect]->Load("Texture\\Message\\yesno.png");
 	m_texture[eState::eNext] = std::make_shared<Texture>();
@@ -68,9 +71,11 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 
 	m_buttonSE.first.Load("Sound\\Field\\message.wav");
 	m_buttonSE.second.Load("Sound\\Field\\select.wav");
-	m_buttonSE.first.SetValume(-3000);
-	m_buttonSE.second.SetValume(-3000);
-	
+
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.first.SetValume(volume);
+	m_buttonSE.second.SetValume(volume);
+	m_icon.Load("Texture\\Icon\\Enemy\\template.png");
 	if (m_isEnd){
 		Finalize();
 	}
@@ -79,6 +84,9 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 
 //
 void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, const bool pushButton){
+	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_buttonSE.first.SetValume(volume);
+	m_buttonSE.second.SetValume(volume);
 	if (m_isEnd){
 		if (m_pCursor){
 			m_pCursor->Finalize();
@@ -86,9 +94,11 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 		}
 		return;
 	}
+
+	m_messageWindow.mSetIcon(&m_icon);
 	m_model->KeyframeUpdate("wait", true);
 	m_model->property._transform = m_initTrans;
-	if (selectButton){
+	if (selectButton&&m_state == eState::eSelect){
 		m_buttonSE.second.Stop();
 		m_buttonSE.second.PlayToOneTime();
 
@@ -109,12 +119,15 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 			else{
 				m_select = eSelect::eNo;
 				m_messageCount += 1;
+				m_hogeFuga = true;
 			}
 			m_state = eState::eNext;
 			break;
 
 		case eState::eNext:
 			m_messageCount += 1;
+
+			
 			break;
 		default:
 			break;
@@ -124,8 +137,9 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 
 	if (isTutorialEnd){
 		if (m_tutorialClearMessage.size() <= m_messageCount){
-			m_messageCount = m_tutorialClearMessage.size() - 1;
+			m_messageCount = m_tutorialClearMessage.size();
 			m_messageEnd = true;
+			return;
 		}
 		m_message = std::make_shared<Texture>();
 		m_message->Load(m_tutorialClearMessage.at(m_messageCount));
@@ -133,11 +147,13 @@ void TutorialEnemy::mUpdate(const bool isTutorialEnd, const bool selectButton, c
 	}
 	else{
 		if (m_tutorialMessage.size() <= m_messageCount){
-			m_messageCount = m_tutorialClearMessage.size() - 1;
+			m_messageCount = m_tutorialMessage.size();
 			m_messageEnd = true;
+			return;
 		}
 
-		if (m_messageCount == m_tutorialMessage.size() - 2){
+		const int end = m_tutorialMessage.size() - 2;
+		if (m_messageCount == end){
 			m_state = eState::eSelect;
 		}
 
@@ -160,7 +176,7 @@ void TutorialEnemy::mUIRender(ShaderBase* shader, ShaderBase* color){
 	
 	if (m_state == eState::eSelect){
 		m_messageWindow.mUpdate(true);
-		m_pCursor->Render(color);
+		m_pCursor->Render(shader);
 	}
 	else{
 		m_messageWindow.mUpdate(false);

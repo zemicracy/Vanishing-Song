@@ -1,11 +1,16 @@
 #pragma once
 #include"MessageWindow.h"
-enum class eTutorialState{
-	eInit, eFirstDemo, eFirstPlay, eAdlibDemo, eAdlibPlay, ePlayerOnly, eFin
-};
-
+namespace Tutorial{
+	static std::string k_TutorialKey[12] = { "Init", "FirstPreListen", "FirstPerform", "FirstPrePerform", "FirstBattle", "FirstPreBattle",
+		"AdlibListen", "AdlibStop", "AdlibPerform", "AdlibBattle", "PlayerOnly", "Fin" };
+	enum class eTutorialState{
+		eInit, eFirst, eAdlib, ePlayerOnly, eFin
+	};
+}
 class TutorialMessage
 {
+public:
+
 public:
 	TutorialMessage();
 	~TutorialMessage();

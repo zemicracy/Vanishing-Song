@@ -25,6 +25,8 @@ private:
 
 	RhythmManager *m_rhythm;
 	std::shared_ptr<aetherClass::SpriteBase>m_pDamageSprite;
+	std::shared_ptr<aetherClass::Texture>m_coverTexture;
+	std::shared_ptr<aetherClass::SpriteBase>m_pCoverSprite;
 	HalfFillShader::FillType m_fillType;
 	CharaStatus *m_CharaStatus;
 	aetherClass::SpriteBase::Property m_property;

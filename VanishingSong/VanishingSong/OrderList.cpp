@@ -91,7 +91,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 4 : 8;
 
-	reader.Load("data/orderList.aether");
+	reader.Load("data\\Battle\\orderList",true);
 
 	
 	m_pSpriteList.resize(8);
@@ -229,9 +229,9 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	m_pEffect->mLoadEffect(9, "Break", "Effect\\BreakCommand\\");
 	m_pEffect->mLoadEffect(6, "In", "Effect\\InCommand\\");
-	m_pEffect->mLoadEffect(7, "Miss", "Effect\\Miss\\");
-	m_pEffect->mLoadEffect(7, "Good", "Effect\\Good\\");
-	m_pEffect->mLoadEffect(7, "Great", "Effect\\Great\\");
+	m_pEffect->mLoadEffect(17, "Miss", "Effect\\Miss\\");
+	m_pEffect->mLoadEffect(17, "Good", "Effect\\Good\\");
+	m_pEffect->mLoadEffect(23, "Great", "Effect\\Great\\");
 
 
 	m_effectTrans = Transform(Vector3(), Vector3(), Vector3( 16*10, 9*10,0));
@@ -330,7 +330,7 @@ void OrderList::mPerformUpdate(){
 
 	//一番最初だけ判定時間のばす
 	if (m_processId == 0){
-		reducation = 1.7f;
+		reducation = 2.3f;
 	}
 
 	//タイミング判定
@@ -526,7 +526,7 @@ void OrderList::mBattleUpdate(){
 }
 
 void OrderList::mUpdate(){
-
+	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 	mLineUpdate();
 	m_pEffect->mUpdate(1);
 
@@ -700,7 +700,7 @@ void OrderList::mEndReset(){
 
 void OrderList::mPlaySound(std::shared_ptr<ActionSound> sound){
 	sound->mStop();
-	sound->mPlaySoundAction(-3000);
+	sound->mPlaySoundAction(GameManager::mGetInstance().mGetVolume());
 }
 
 void OrderList::mRhythmicMotion(){
