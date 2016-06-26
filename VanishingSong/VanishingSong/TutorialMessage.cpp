@@ -65,10 +65,9 @@ bool TutorialMessage::mInitialize(){
 	m_pTextTextureList[gAppend(7, 4)] = path + "Adlib4.png";
 	m_pTextTextureList[gAppend(8, 1)] = path + "Adlib5.png";
 	m_pTextTextureList[gAppend(9, 1)] = path + "Adlib6.png";
-	m_pTextTextureList[gAppend(9, 2)] = path + "Adlib7.png";
 
 	m_pTextTextureList[gAppend(10, 1)] = path + "Wave1.png";
-	m_pTextTextureList[gAppend(11, 1)] = path + "Result.png";
+	m_pTextTextureList[gAppend(11, 1)] = path + "Result1.png";
 
 	m_pTexture = gCreateTexture(m_pTextTextureList["Init1"]);
 	m_message->mSetText(m_pTexture.get());

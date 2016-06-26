@@ -89,10 +89,29 @@ bool SceneEnd::Initialize(){
 
 	m_textPathList.clear();
 	m_iconPathList.clear();
-	m_textPathList.push_back("Texture\\Message\\tmplate.png");
-	m_textPathList.push_back("Texture\\Message\\tmplate.png");
-	m_textPathList.push_back("Texture\\Message\\tmplate.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_0.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_1.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_2.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_3.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_4.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_5.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_6.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_7.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_8.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_9.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_10.png");
+	m_textPathList.push_back("Texture\\Message\\ED\\ED_11.png");
 
+
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	m_iconPathList.push_back("Texture\\Icon\\template.png");
 	m_iconPathList.push_back("Texture\\Icon\\template.png");
 	m_iconPathList.push_back("Texture\\Icon\\template.png");
 	m_iconPathList.push_back("Texture\\Icon\\template.png");
