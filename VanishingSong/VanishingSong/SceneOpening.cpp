@@ -42,7 +42,7 @@ bool SceneOpening::Initialize(){
 		m_pTexture[i]->Load("Texture\\Opening\\Opening" + std::to_string(i + 1) + ".png");
 	}
 
-	m_skipTexture.Load("Texture\\Sk8ip\\skip.png");
+	m_skipTexture.Load("Texture\\Skip\\skip.png");
 	m_pSkip = std::make_shared<Rectangle2D>();
 	m_pSkip->Initialize();
 	m_pSkip->SetTexture(&m_skipTexture);

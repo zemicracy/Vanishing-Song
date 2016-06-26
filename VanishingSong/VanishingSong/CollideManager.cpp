@@ -63,6 +63,7 @@ void CollideManager::mCheckHitObject(const int number){
 //
 void CollideManager::mCheckHitEnemy(const int number){
 
+	if (GameManager::mGetInstance().mBossState() == GameManager::eBossState::eUnVisible&&number == 4)return;
 
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;
