@@ -70,6 +70,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Green.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Green1.png");
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\E_Green1.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\Field\\E_Blue.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\Field\\E_Blue1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\gro.png");
@@ -84,6 +86,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Red.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Red1.png");
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\E_Red1.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\Field\\E_Blue.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\Field\\E_Blue1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\danbaru.png");
@@ -98,6 +102,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Yellow.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Yellow1.png");
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\E_Yellow1.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\Field\\E_Blue.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\Field\\E_Blue1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 0;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\annon.png");
@@ -112,6 +118,8 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\Boss.png");
 		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\Boss1.png");
 		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\Boss1.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\Field\\E_Blue.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\Field\\E_Blue1.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale = Vector3( -1,1,1);
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\boss.png");
 		m_pEnemyList.back()->mBattled((4 <= mFieldStateToInt(GameManager::mGetInstance().mFieldState())));
