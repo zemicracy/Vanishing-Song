@@ -75,11 +75,12 @@ void Config::mIntialize(std::string name){
 	m_base->SetTexture(&m_menuTexture);
 
 	m_messageWindow.mInitialize();
-	m_saveMessage.Load("Texture\\Message\\save.png");
+	m_saveMessage.Load("Texture\\Message\\Save\\save.png");
 	m_pushButton.Load("Texture\\Message\\nextButton.png");
 
 	m_messageWindow.mSetText(&m_saveMessage);
 	m_messageWindow.mSetButton(&m_pushButton);
+	
 
 	m_isView = false;
 	m_isSelectVolume = false;

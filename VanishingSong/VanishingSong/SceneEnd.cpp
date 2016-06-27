@@ -92,19 +92,19 @@ bool SceneEnd::Initialize(){
 	m_iconPathList.clear();
 
 
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_0.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_1.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_2.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_3.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_4.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_5.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_6.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_7.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_8.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_9.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_10.png");
-	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_11.png");
-	
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\green.png", "Texture\\Message\\ED\\ED_0.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\red.png", "Texture\\Message\\ED\\ED_1.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\yellow.png", "Texture\\Message\\ED\\ED_2.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\red.png", "Texture\\Message\\ED\\ED_3.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Enemy\\boss.png", "Texture\\Message\\ED\\ED_4.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\yellow.png", "Texture\\Message\\ED\\ED_5.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\red.png", "Texture\\Message\\ED\\ED_6.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\green.png", "Texture\\Message\\ED\\ED_7.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Enemy\\boss.png", "Texture\\Message\\ED\\ED_8.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Enemy\\boss.png", "Texture\\Message\\ED\\ED_9.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\red.png", "Texture\\Message\\ED\\ED_10.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\yellow.png", "Texture\\Message\\ED\\ED_11.png");
+
 	m_button.Load("Texture\\Message\\nextButton.png");
 	m_messageWindow.mInitialize();
 	m_messageWindow.mSetButton(&m_button);
