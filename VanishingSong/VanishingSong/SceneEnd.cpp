@@ -104,6 +104,10 @@ bool SceneEnd::Initialize(){
 	mRegisterIconAndMessage("Texture\\Icon\\Enemy\\boss.png", "Texture\\Message\\ED\\ED_9.png");
 	mRegisterIconAndMessage("Texture\\Icon\\Player\\red.png", "Texture\\Message\\ED\\ED_10.png");
 	mRegisterIconAndMessage("Texture\\Icon\\Player\\yellow.png", "Texture\\Message\\ED\\ED_11.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\green.png", "Texture\\Message\\ED\\ED_12.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Enemy\\boss.png", "Texture\\Message\\ED\\ED_13.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Player\\green.png", "Texture\\Message\\ED\\ED_14.png");
+	mRegisterIconAndMessage("Texture\\Icon\\Enemy\\boss.png", "Texture\\Message\\ED\\ED_15.png");
 
 	m_button.Load("Texture\\Message\\nextButton.png");
 	m_messageWindow.mInitialize();
