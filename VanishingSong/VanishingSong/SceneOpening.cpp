@@ -187,6 +187,7 @@ void SceneOpening::UIRender(){
 
 	m_pSpriteBase->Render(shaderHash["texture"].get());
 	m_pSkip->Render(shaderHash["texture"].get());
+	GameManager::mGetInstance().mfadeManager().mRender(shaderHash["color"].get());
 	return;
 }
 
