@@ -25,6 +25,7 @@ bool SceneOpening::Initialize(){
 
 	m_pSpriteBase = std::make_unique<Rectangle2D>();
 	m_pSpriteBase->Initialize();
+	m_pSpriteBase->property._transform._translation = Vector3(0, 0, 0.001);
 	m_pSpriteBase->property._transform._translation = Vector3(0, 0, 0);
 	m_pSpriteBase->property._transform._scale._x = 1280;
 	m_pSpriteBase->property._transform._scale._y = 720;

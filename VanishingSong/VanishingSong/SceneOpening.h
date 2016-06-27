@@ -32,6 +32,8 @@ private:
 
 	//テクスチャ表示繰り返し用変数
 	int m_imageCount;
+	std::shared_ptr<aetherClass::SpriteBase> m_pSkip;
+	aetherClass::Texture m_skipTexture;
 
 	//テクスチャ繰り返し表示と続けて表示するパターン、切り替え用の変数
 	int m_openingflg;
