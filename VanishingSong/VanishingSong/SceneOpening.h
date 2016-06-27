@@ -13,8 +13,9 @@
 class SceneOpening :
 	public aetherClass::GameScene
 {
+public:
+	static const std::string Name;
 private:
-	std::unique_ptr<aetherClass::ShaderBase> m_pShaderBase;
 	std::unique_ptr<aetherClass::SpriteBase>m_pSpriteBase;
 
 	//BGM用
@@ -35,6 +36,7 @@ private:
 	//テクスチャ繰り返し表示と続けて表示するパターン、切り替え用の変数
 	int m_openingflg;
 
+	bool m_isInit;
 public:
 	SceneOpening();
 	~SceneOpening();

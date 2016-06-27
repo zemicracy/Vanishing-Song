@@ -1,13 +1,16 @@
 #include "SceneOpening.h"
 #include<iostream>
-#include<PixelShader.h>
 #include<Rectangle2D.h>
 #include<GameController.h>
+#include"GameManager.h"
+#include"ResourceManager.h"
+#include"SceneGame.h"
 
 using namespace aetherClass;
 
+const std::string SceneOpening::Name = "Opening";
 SceneOpening::SceneOpening():
-GameScene("SceneOpening",GetManager())
+GameScene(Name,GetManager())
 {
 }
 
@@ -18,14 +21,7 @@ SceneOpening::~SceneOpening()
 
 bool SceneOpening::Initialize(){
 
-	ShaderDesc desc;
-	desc._vertex._entryName = "vs_main";
-	desc._vertex._srcFile = L"Shader\\VertexShaderBase.hlsl";
-	desc._pixel._entryName = "ps_main";
-	desc._pixel._srcFile = L"Shader\\ColorTexture.hlsl";
-
-	m_pShaderBase = std::make_unique<PixelShader>();
-	m_pShaderBase->Initialize(desc, ShaderType::eVertex | ShaderType::ePixel);
+	RegisterScene(new SceneGame());
 
 	m_pSpriteBase = std::make_unique<Rectangle2D>();
 	m_pSpriteBase->Initialize();
@@ -37,7 +33,7 @@ bool SceneOpening::Initialize(){
 	//BGM
 	m_openingSound = std::make_shared<GameSound>();
 	m_openingSound->Load("Sound\\Opening\\Opening.wav");
-	m_openingSound->SetValume(-3000);
+	m_openingSound->SetValume(GameManager::mGetInstance().mGetVolume());
 
 	//テクスチャ切り替え用に使っている変数の初期化
 	m_clockCount = 0;
@@ -53,7 +49,7 @@ bool SceneOpening::Initialize(){
 
 	//1枚目はすぐ表示
 	m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
-
+	m_isInit = false;
 	return true;
 }
 
@@ -64,10 +60,14 @@ void SceneOpening::Finalize(){
 }
 
 bool SceneOpening::Updater(){
+	//一回だけ呼ばれる処理
+	if (!m_isInit){
+		m_openingSound->PlayToOneTime();
+		m_isInit = true;
+	}
 	//m_clockCountにデルタタイムを足していく
 	m_clockCount = m_clockCount + GameClock::GetDeltaTime();
 
-	m_openingSound->PlayToOneTime();
 
 	//1秒ごとに1、2繰り返し表示
 	if (m_imageCount < 3){
@@ -149,6 +149,9 @@ bool SceneOpening::Updater(){
 				m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
 				m_array++;
 			}
+			else{
+				ChangeScene(SceneGame::Name, LoadState::eUse);
+			}
 		}
 	}
 
@@ -156,18 +159,28 @@ bool SceneOpening::Updater(){
 }
 
 void SceneOpening::Render(){
-	m_pSpriteBase->Render(m_pShaderBase.get());
 	return;
 }
 
 void SceneOpening::UIRender(){
+	auto &shaderHash = ResourceManager::mGetInstance().mGetShaderHash();
+
+	m_pSpriteBase->Render(shaderHash["texture"].get());
 	return;
 }
 
 bool SceneOpening::TransitionIn(){
+	if (!GameManager::mGetInstance().mfadeManager().In(1)){
+		return kTransitionning;
+	}
 	return kTransitionEnd;
 }
 
 bool SceneOpening::TransitionOut(){
+	if (!GameManager::mGetInstance().mfadeManager().Out(2)){
+		return kTransitionning;
+		m_isInit = true;
+	}
+	m_isInit = false;
 	return kTransitionEnd;
 }
