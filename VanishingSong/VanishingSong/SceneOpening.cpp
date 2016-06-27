@@ -31,15 +31,13 @@ bool SceneOpening::Initialize(){
 	m_pSpriteBase->property._transform._scale._y = 720;
 	m_pSpriteBase->property._color = Color(0, 0, 0, 1);
 
-	//BGM
-	m_openingSound = std::make_shared<GameSound>();
-	m_openingSound->Load("Sound\\Opening\\Opening.wav");
-	m_openingSound->SetValume(GameManager::mGetInstance().mGetVolume());
-
-	//テクスチャ切り替え用に使っている変数の初期化
+	//時間カウント用変数
 	m_clockCount = 0;
+
+	//配列番号の切り換え用変数
 	m_array = 0;
-	m_openingflg = 0;
+
+	//テクスチャ表示繰り返し用変数
 	m_imageCount = 0;
 
 	//テクスチャを読み込み
@@ -48,6 +46,14 @@ bool SceneOpening::Initialize(){
 		m_pTexture[i]->Load("Texture/Opening/Opening" + std::to_string(i + 1) + ".png");
 	}
 
+	m_skipTexture.Load("Texture\\Skip\\skip.png");
+	m_pSkip = std::make_shared<Rectangle2D>();
+	m_pSkip->Initialize();
+	m_pSkip->SetTexture(&m_skipTexture);
+	m_pSkip->property._transform._scale = Vector3(150, 100, 0);
+	const float x = m_pSkip->property._transform._scale._x;
+	const float y = m_pSkip->property._transform._scale._y;
+	m_pSkip->property._transform._translation = Vector3(kWindowWidth - x, kWindowHeight - y, 0);
 	//1枚目はすぐ表示
 	m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
 	m_isInit = false;
@@ -66,89 +72,36 @@ void SceneOpening::Finalize(){
 }
 
 bool SceneOpening::Updater(){
-	//一回だけ呼ばれる処理
-	if (!m_isInit){
-		m_openingSound->PlayToOneTime();
-		m_isInit = true;
+	if (GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart)){
+		ChangeScene(SceneGame::Name, LoadState::eUse);
+		return true;
 	}
+
+	m_bgm.PlayToLoop();
 	//m_clockCountにデルタタイムを足していく
 	m_clockCount = m_clockCount + GameClock::GetDeltaTime();
 
-
-	//1秒ごとに1、2繰り返し表示
-	if (m_imageCount < 3){
-		if (m_clockCount > 0.7){
+	//1、2繰り返し表示
+	if (m_imageCount < 2){
+		if (m_clockCount > 1){
 			m_clockCount = 0;
 			if (m_array < 2){
 				m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
 				m_array++;
 			}
 		}
+		//m_arrayが2以上なら
 		if (m_array>1){
 			m_array = 0;
 			m_imageCount++;
 		}
 	}
-	//1、2繰り返し表示を止めるように入れてる処理です
-	if (m_imageCount == 3){
+	if (m_imageCount == 2){
 		m_array = 2;
 	}
-	
-	//2秒ごとに3～9表示
-	if (m_openingflg == 0 && m_imageCount > 2){
-		if (m_clockCount > 2){
-			m_clockCount = 0;
-			if (m_array < 9){
-				m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
-				m_array++;
-				m_imageCount++;
-			}
-		}
-	}
 
-	if (m_imageCount == 10){
-		m_openingflg = 1;
-	}
-
-	//10を1秒表示
-	if (m_openingflg == 1 && m_imageCount > 9){
-		if (m_clockCount > 1){
-			m_clockCount = 0;
-			if (m_array < 10){
-				m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
-				m_array++;
-				m_imageCount++;
-			}
-		}
-	}
-	
-	//11、12繰り返し表示するほうに処理がいくように入れてます
-	if (m_imageCount == 11){
-		m_openingflg = 2;
-	}
-
-	//11、12繰り返し表示
-	if (m_openingflg == 2 && m_imageCount > 10){
-		if (m_clockCount > 0.5){
-			m_clockCount = 0;
-			if (m_array < 12){
-				m_pSpriteBase->SetTexture(m_pTexture[m_array].get());
-				m_array++;
-			}
-		}
-		if (m_array>11){
-			m_array = 10;
-			m_imageCount++;
-		}
-	}
-
-	//11、12繰り返し表示する処理を止めるために入れてます
-	if (m_imageCount == 12){
-		m_openingflg = 3;
-	}
-
-	//13～17表示
-	if (m_openingflg == 3){
+	//3～17表示
+	if (m_imageCount > 1){
 		if (m_clockCount > 2){
 			m_clockCount = 0;
 			if (m_array < 17){
