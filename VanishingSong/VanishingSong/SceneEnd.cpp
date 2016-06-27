@@ -3,6 +3,7 @@
 #include "GameController.h"
 #include "Const.h"
 #include "SceneTitle.h"
+#include "PlayDataManager.h"
 using namespace aetherClass;
 
 namespace{
@@ -89,32 +90,20 @@ bool SceneEnd::Initialize(){
 
 	m_textPathList.clear();
 	m_iconPathList.clear();
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_0.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_1.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_2.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_3.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_4.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_5.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_6.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_7.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_8.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_9.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_10.png");
-	m_textPathList.push_back("Texture\\Message\\ED\\ED_11.png");
 
 
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
-	m_iconPathList.push_back("Texture\\Icon\\template.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_0.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_1.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_2.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_3.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_4.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_5.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_6.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_7.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_8.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_9.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_10.png");
+	mRegisterIconAndMessage("Texture\\Icon\\template.png", "Texture\\Message\\ED\\ED_11.png");
 	
 	m_button.Load("Texture\\Message\\nextButton.png");
 	m_messageWindow.mInitialize();
@@ -127,7 +116,6 @@ bool SceneEnd::Initialize(){
 	m_isFade2 = false;
 	m_isRender = false;
 	mChangeMessage(m_messageWindow,m_message, 0);
-	m_message._count += 1;
 
 	m_returnSE.Load("Sound\\End\\message.wav");
 	const float volume = GameManager::mGetInstance().mGetVolume();
@@ -136,6 +124,7 @@ bool SceneEnd::Initialize(){
 	m_bgm.Load("Sound\\BGM\\Field1.wav");
 	m_bgm.SetValume(volume);
 	m_bgm.PlayToLoop();
+	m_backToTitleTime = NULL;
 	return true;
 }
 
@@ -183,6 +172,8 @@ bool SceneEnd::Updater(){
 		if (GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetKey().KeyDownTrigger(VK_RETURN) ||
 			GameController::GetJoypad().ButtonPress(eJoyButton::eB) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart) ||
 			m_backToTitleTime>kMaxReurnTime){
+			PlayDataManager save;
+			save.mSave();
 			ChangeScene(SceneTitle::Name, LoadState::eUse);
 		}
 		return true;
@@ -190,17 +181,19 @@ bool SceneEnd::Updater(){
 	if (!m_isTransitionEnd)return true;
 	bool isPushButton = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 
-	if (m_message._count >= m_textPathList.size()){
-		m_isMessageEnd = true;
-		return true;
-	}
-
+	if (m_isMessageEnd)return true;
 	if (!m_isMessageEnd&&isPushButton){
+		m_message._count += 1;
 		m_returnSE.Stop();
 		m_returnSE.PlayToOneTime();
+		if (m_message._count >= m_textPathList.size()){
+			m_isMessageEnd = true;
+			return true;
+		}
+	
 		const int messageCount = m_message._count;
 		mChangeMessage(m_messageWindow,m_message, messageCount);
-		m_message._count += 1;
+		
 	}
 	m_messageWindow.mUpdate(false);
 	mActorAnimation(m_actors, m_boss);
@@ -276,6 +269,7 @@ void SceneEnd::mActorAnimation(std::unordered_map<eMusical, EndActor>& actor, En
 }
 
 void SceneEnd::mChangeMessage(MessageWindow& messageWindow, Message& message, const int count){
+
 	message._icon = std::make_shared<Texture>();
 	message._icon->Load(m_iconPathList.at(count));
 
@@ -283,4 +277,11 @@ void SceneEnd::mChangeMessage(MessageWindow& messageWindow, Message& message, co
 	message._text->Load(m_textPathList.at(count));
 	messageWindow.mSetIcon(m_message._icon.get());
 	messageWindow.mSetText(m_message._text.get());
+}
+
+void SceneEnd::mRegisterIconAndMessage(std::string icon, std::string message){
+	m_iconPathList.push_back(icon);
+	m_textPathList.push_back(message);
+	m_iconPathList.shrink_to_fit();
+	m_textPathList.shrink_to_fit();
 }

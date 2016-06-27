@@ -77,6 +77,7 @@ public:
 private:
 	void mActorAnimation(std::unordered_map<eMusical, EndActor>&,EndActor& boss);
 	void mChangeMessage(MessageWindow&,Message&, const int);
+	void mRegisterIconAndMessage(std::string icon, std::string message);
 private:
 	aetherClass::GameSound m_bgm;
 	std::shared_ptr<aetherClass::SpriteBase> m_pEndBord;
