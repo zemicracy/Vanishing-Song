@@ -55,8 +55,13 @@ bool SceneOpening::Initialize(){
 }
 
 void SceneOpening::Finalize(){
-	m_pSpriteBase->Finalize();
-
+	if (m_pSpriteBase){
+		m_pSpriteBase->Finalize();
+	}
+	if (m_pSkip){
+		m_pSkip->Finalize();
+		m_pSkip.reset();
+	}
 	return;
 }
 
