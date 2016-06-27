@@ -502,6 +502,7 @@ void SceneBattle::mCheckBattle(){
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_pField->mDeleteWaveNote();
 
+			m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 			m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eWin, eMusical::eMiss);
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;

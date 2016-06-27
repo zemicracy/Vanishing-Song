@@ -46,61 +46,81 @@ bool FieldEnemyManager::mInitilize(aetherClass::ViewCamera* camera){
 	EnemySize = 1;
 	m_pEnemyList.reserve(5);
 
-	//Blue
+	//EnemyGround‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemyList.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemyList.back()->mInitialize(eMusical::eBlue,camera,"data\\Battle\\Stage1");
-		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Blue.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\E_Red.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\E_Blue_Def.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\E_Blue_Def2.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\E_Blue_After.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\E_Blue_After2.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\air2.png");
+		m_pEnemyList.back()->mBattled((0 <= mFieldStateToInt(GameManager::mGetInstance().mFieldState())));
 
 	}
 
-	//Green
+	//EnemyAir‚Ì¶¬
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemyList.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemyList.back()->mInitialize(eMusical::eGreen, camera, "data\\Battle\\Stage2");
-		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Green.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\E_Blue.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\E_Green_Def.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\E_Green_Def2.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\FieldEnemyNotBattle\\E_Green_NotBattle.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\E_Green_After.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\E_Green_After2.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\gro.png");
+		m_pEnemyList.back()->mBattled((1 <= mFieldStateToInt(GameManager::mGetInstance().mFieldState())));
+
 	}
 
-	//Red
+	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemyList.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemyList.back()->mInitialize(eMusical::eRed, camera, "data\\Battle\\Stage3");
-		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Red.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\E_Blue.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\E_Red_Def.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\E_Red_Def2.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\FieldEnemyNotBattle\\E_Red_NotBattle.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\E_Red_After.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\E_Red_After2.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 90;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
-		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\template.png");
+		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\danbaru.png");
+		m_pEnemyList.back()->mBattled((2 <= mFieldStateToInt(GameManager::mGetInstance().mFieldState())));
 
 	}
 
-	//Yellow
+	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemyList.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemyList.back()->mInitialize(eMusical::eYellow, camera, "data\\Battle\\Stage4");
-		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\E_Yellow.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\E_Blue.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\E_Yellow_Def.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\E_Yellow_Def2.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\FieldEnemyNotBattle\\E_Yellow_NotBattle.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\E_Yellow_After.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\E_Yellow_After2.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._rotation._y = 0;
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale._x = -1;
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\annon.png");
+		m_pEnemyList.back()->mBattled((3 <= mFieldStateToInt(GameManager::mGetInstance().mFieldState())));
 
 	}
 
-	//Boss
+	//Enemy(‰¼)
 	for (int i = 0; i < EnemySize; i++){
 		m_pEnemyList.push_back(std::make_shared<FieldEnemy>());
 		m_pEnemyList.back()->mInitialize(eMusical::eAdlib, camera, "data\\Battle\\Stage5");
-		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\Field\\Boss.png");
-		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\Field\\E_Blue.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\Boss_Def.png");
+		m_pEnemyList.back()->mRegisterMessage("Texture\\Message\\FieldEnemyDefault\\Boss_Def2.png");
+		m_pEnemyList.back()->mRegisterCannnotMessage("Texture\\Message\\FieldEnemyNotBattle\\Boss_NotBattle.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\Boss_After.png");
+		m_pEnemyList.back()->mRegisterAfterMessage("Texture\\Message\\FieldEnemyAfter\\Boss_After2.png");
 		m_pEnemyList.back()->mGetProperty()._pEnemy->property._transform._scale = Vector3( -1,1,1);
 		m_pEnemyList.back()->mRegisterIcon("Texture\\Icon\\Enemy\\boss.png");
+		m_pEnemyList.back()->mBattled((4 <= mFieldStateToInt(GameManager::mGetInstance().mFieldState())));
 
 	}
 
@@ -129,7 +149,6 @@ void FieldEnemyManager::mRender(aetherClass::ShaderBase* model_shader, aetherCla
 	
 		for (int i = 0; i < 4; i++){
 			m_pEnemyList[i]->mRender(model_shader, colider_shader);
-			m_pEnemyList[i]->mGetProperty()._pCollider->Render(colider_shader);
 		}
 
 		if (m_bossFlag){
@@ -147,7 +166,6 @@ bool FieldEnemyManager::mGetIsJudge(){
 //XVˆ—
 void FieldEnemyManager::mUpdater(){
 	for (int i = 0; i < 4; i++){
-		if (m_pEnemyList[i]->mGetType() == eMusical::eGreen)continue;
 		if (m_pEnemyList[i]->mGetType() != eMusical::eYellow){
 			if (i > mFieldStateToInt(GameManager::mGetInstance().mFieldState())){
 				m_pEnemyList[i]->mUpdate("attack");
@@ -216,6 +234,8 @@ int FieldEnemyManager::mFieldStateToInt(GameManager::eFieldState state){
 	case GameManager::eFieldState::eForthStage:
 		return 2;
 
+	case GameManager::eFieldState::eEnd:
+		return 10;
 	default:
 		break;
 	}

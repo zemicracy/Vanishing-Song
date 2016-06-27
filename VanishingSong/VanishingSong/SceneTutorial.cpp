@@ -419,7 +419,7 @@ void SceneTutorial::Render(){
 	}
 	m_players.mRender(shaderHash["texture"].get());
 	if (m_pBattleEnemyManager){
-		m_pBattleEnemyManager->mRender(shaderHash["texture"]);
+		m_pBattleEnemyManager->mRender(shaderHash["transparent"]);
 	}
 	if (m_particle){
 		m_particle->mRender(shaderHash["texture"].get());
@@ -639,6 +639,7 @@ void SceneTutorial::mCheckBattle(){
 
 			m_pField->mDeleteWaveNote();
 			m_pBattleEnemyManager->misDie();
+			m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eNewWave;
 			m_processState = eGameState::ePreCountIn;
@@ -646,6 +647,8 @@ void SceneTutorial::mCheckBattle(){
 		else{
 			m_pField->mDeleteWaveNote();
 			m_pBattleEnemyManager->misDie();
+			m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
+			m_players.mChangeAnimation(BattlePlayer::eBattleActionType::eWin, eMusical::eMiss);
 			m_particle = std::make_shared<AttackParticle>(m_particleDesc, &m_view);
 			m_battleState = GameManager::eBattleState::eWin;
 			m_processState = eGameState::ePreCountIn;

@@ -11,6 +11,7 @@
 #include "ResourceManager.h"
 #include "SceneGame.h"
 #include"SceneCregit.h"
+#include "SceneOpening.h"
 #include "PlayDataManager.h"
 #include "ResourceManager.h"
 #ifndef _SHLWAPI_
@@ -23,8 +24,9 @@
 using namespace aetherClass;
 using namespace aetherFunction;
 namespace{
-	const bool kPleaseClick = false;
-	const bool kMenuSelect = true;
+	const int kPleaseClick = 0;
+	const int kMenuSelect = 1;
+	const int kSelected = 3;
 	const std::string kExit = "Exit";
 	const bool kShutdown = false;
 	const int kLoadNumber = 1;
@@ -60,6 +62,8 @@ bool SceneTitle::Initialize(){
 	//次のシーン
 	RegisterScene(new SceneGame());
 	RegisterScene(new SceneCregit());
+	RegisterScene(new SceneOpening());
+
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eRed, "Model\\Player\\red.fbx", "Model\\Player\\red");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eGreen, "Model\\Player\\green.fbx", "Model\\Player\\green");
 	ResourceManager::mGetInstance().mPlayerInitialize(eMusical::eYellow, "Model\\Player\\yellow.fbx", "Model\\Player\\yellow");
@@ -82,6 +86,8 @@ bool SceneTitle::Initialize(){
 		m_isVisibleSaveData = true;
 		m_pMenuTexture = std::make_shared<Texture>();
 		m_pMenuTexture->Load("Texture\\Title\\AllSelect.png");
+		PlayDataManager playData;
+		playData.mLoad();
 	}
 	else{
 		m_isVisibleSaveData = false;
@@ -174,6 +180,7 @@ bool SceneTitle::Initialize(){
 	m_alphaState = false;
 	m_nowSelectMode = NULL;
 	m_nowCursor = NULL;
+
 	_heapmin();
 	return true;
 }
@@ -291,18 +298,18 @@ bool SceneTitle::Updater(){
 	m_pField->mUpdate(1.0);
 
 	for (auto& player : m_players){
-		player.second._model->KeyframeUpdate(player.second._animationName, true);
+		if (player.second._model->GetKeyframeCount(player.second._animationName) - 1 < player.second._animationCount){
+			player.second._animationCount = NULL;
+		}
+
+		player.second._model->KeyframeUpdate(player.second._animationName, player.second._animationCount);
+		player.second._animationCount += 1;
 	}
 
 	m_fieldNote.mUpdate();
 	mCursorState(isStart);
 	bool isUpdate = mMenuSelectState(isReturn,UpOrDown);
 
-	if (kCharaDebug){
-		if (GameController::GetKey().KeyDownTrigger('T')){
-			GameManager::mGetInstance().mFieldState(GameManager::eFieldState::eFirstStage);
-		}
-	}
 	// まだ続けるか？
 	if (!isUpdate)
 	{
@@ -422,7 +429,7 @@ bool SceneTitle::mMenuSelectState(const bool isReturn, const  std::pair<bool, bo
 	mChangeSelect(UpOrDown.first, UpOrDown.second);
 
 	if (isReturn){
-	
+		m_pushState = kSelected;
 		SceneInfo nextState = mGetGameMode(m_nowSelectMode);
 		// Exit以外が来たらシーンの遷移を開始
 		if (nextState._nextSceneName != kExit){
@@ -446,14 +453,13 @@ SceneTitle::SceneInfo SceneTitle::mGetGameMode(const int index){
 	switch (index){
 	case eNextMode::eStart:
 		GameManager::mGetInstance().mRestStart();
-		info._nextSceneName = SceneGame::Name;
+		info._nextSceneName = SceneOpening::Name;
 		break;
 	case eNextMode::eLoad:
 		load.mLoad();
 		info._nextSceneName = SceneGame::Name;
 		break;
 	case eNextMode::eCredit:
-		// ここはならすべて終了
 		info._nextSceneName = SceneCregit::Name;
 		break;
 	case eNextMode::eNull:
@@ -471,6 +477,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
 		m_players[type]._model->property._transform._translation = Vector3(100, 0, -500);
 		m_players[type]._model->property._transform._rotation._y = 180;
+		m_players[type]._model->property._transform._scale._x = -1;
 		m_players[type]._model->SetCamera(&m_view);
 		m_players[type]._animationName = "attackwait";
 		break;
@@ -479,6 +486,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
 		m_players[type]._model->property._transform._translation = Vector3(300, 55, -570);
 		m_players[type]._model->property._transform._rotation._y = 270;
+		m_players[type]._model->property._transform._scale._x = -1;
 		m_players[type]._model->SetCamera(&m_view);
 		m_players[type]._animationName = "sit";
 		break;
@@ -487,6 +495,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
 		m_players[type]._model->property._transform._translation = Vector3(0, 0, -300);
 		m_players[type]._model->property._transform._rotation._y = 90;
+		m_players[type]._model->property._transform._scale._x = -1;
 		m_players[type]._model->SetCamera(&m_view);
 		m_players[type]._animationName = "attack";
 
@@ -496,6 +505,7 @@ void SceneTitle::mSetPlayer(eMusical type){
 		m_players[type]._model = ResourceManager::mGetInstance().mGetPlayerHash(type);
 		m_players[type]._model->property._transform._translation = Vector3(50, 0, -300);
 		m_players[type]._model->property._transform._rotation._y = 270;
+		m_players[type]._model->property._transform._scale._x = -1;
 		m_players[type]._model->SetCamera(&m_view);
 		m_players[type]._animationName = "wait";
 

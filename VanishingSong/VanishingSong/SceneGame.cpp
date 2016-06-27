@@ -249,7 +249,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 		m_isFade2 = false;
 		return;
 	}
-
+	
 	m_pFieldArea->mUpdate(kScaleTime);
 	m_pFieldPlayer->mUpdate(kScaleTime, true);
 	m_pCageManager->mUpdate(kScaleTime, m_pFieldPlayer->mGetTransform()._translation,false);
@@ -277,6 +277,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 			}
 		}
 
+		m_pFieldEnemy->mUpdater();
 		m_pTutorialEnemy->mUpdate(false, isSelect, isReturn);
 	}
 	else if (GameManager::mGetInstance().mFieldState() == GameManager::eFieldState::eTutorialEnd){
@@ -288,14 +289,19 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 			m_pTutorialEnemy->mIsEnd(true);
 			return;
 		}
+		m_pFieldEnemy->mUpdater();
 		m_pTutorialEnemy->mUpdate(true, false, isReturn);
+		
 	}
 }
 
 //
 void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLeft){
 	if (m_gameState != eState::eRun)return;
-
+	if (GameController::GetKey().KeyDownTrigger('E')){
+		ChangeScene(SceneEnd::Name, LoadState::eUse);
+		return;
+	}
 	m_pCollideManager->mUpdate();
 
 	// メッセージの更新処理
@@ -308,10 +314,6 @@ void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLef
 		return;
 	}
 	
-	if (GameController::GetKey().KeyDownTrigger('E')){
-		ChangeScene(SceneEnd::Name, LoadState::eUse);
-		return;
-	}
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
 	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();

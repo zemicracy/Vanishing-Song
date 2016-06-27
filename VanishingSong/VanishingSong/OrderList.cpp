@@ -200,7 +200,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 
 	m_flameScaleOrigin *= 1.05;
 	m_pFlame->property._transform._translation = m_flameScaleOrigin / 2 * -1 + m_flameScaleOrigin;
-
+	m_pFlame->property._transform._translation._z = 0.0000001;
 	//位置補正
 	{
 		m_pFlame->property._transform._scale._x = m_flameScaleOrigin._x;
@@ -208,7 +208,7 @@ void OrderList::mInitialize(GameManager::eGameMode mode,GameManager::eBattleStat
 		auto size = (m_pFlame->property._transform._scale);
 		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
 		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
-		m_pFlame->property._transform._translation._z = 0;
+		m_pFlame->property._transform._translation._z = 0.0001;
 	}
 
 
@@ -746,7 +746,7 @@ void OrderList::mRhythmicMotion(){
 		auto size = (m_pFlame->property._transform._scale);
 		m_pFlame->property._transform._translation._x = m_flamePosOrigin._x - (size._x / 2);
 		m_pFlame->property._transform._translation._y = m_flamePosOrigin._y - (size._y / 2);
-		m_pFlame->property._transform._translation._z = 0;
+		m_pFlame->property._transform._translation._z = 0.00001;
 	}
 
 	//その他コマンド

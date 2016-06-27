@@ -279,7 +279,7 @@ void ResourceManager::FinalizePlayer(){
 
 // ŽG‹›“G—p
 void ResourceManager::mEnemyInitialize(eMusical type, std::string directry, std::string tex){
-	if (type == eMusical::eNull)return;
+	if (m_pEnemyHashes.find(type) != m_pEnemyHashes.end() || type == eMusical::eNull)return;
 	
 	m_pEnemyHashes[type] = std::make_shared<FbxModel>();
 	m_pEnemyHashes[type]->LoadFBX(directry, eAxisSystem::eAxisOpenGL);

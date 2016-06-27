@@ -46,8 +46,12 @@ class SceneTitle :
 
 	struct  TitlePlayer
 	{
+		TitlePlayer(){
+			_animationCount = NULL;
+		}
 		std::shared_ptr<aetherClass::FbxModel> _model;
 		std::string _animationName;
+		int _animationCount;
 	};
 public:
 	SceneTitle();
@@ -96,7 +100,7 @@ private:
 	std::shared_ptr<FieldArea>  m_pField;
 	FieldNote m_fieldNote;
 
-	bool m_pushState;
+	int m_pushState;
 	int m_nowSelectMode;
 	bool m_alphaState;
 	int m_nowCursor;

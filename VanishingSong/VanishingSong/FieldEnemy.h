@@ -29,12 +29,15 @@ public:
 	Property &mGetProperty();
 	void mFaceToPlayer(aetherClass::Vector3);
 	void mRegisterMessage(std::string);
+	void mRegisterAfterMessage(std::string);
 	void mRegisterCannnotMessage(std::string);
 	int mGetMessageNum()const;
 	std::string mGetMessage(const int id);
+	std::string mGetAfterMesage(const int id);
 	std::string mGetCannotMessga();
 	std::string mGetBattleDataPath();
-
+	bool mBattled();
+	void mBattled(bool);
 	std::shared_ptr<aetherClass::Texture>& mGetIcon();
 	void mRegisterIcon(std::string);
 	eMusical mGetType();
@@ -47,6 +50,8 @@ private:
 	CharaEntity m_charaEntity;
 	Property m_property;
 	std::vector<std::string> m_messagePath;
+	std::vector<std::string> m_afterMessagePath;
+
 	aetherClass::Transform m_initTransform;
 	std::string m_cannotMessagePath;
 	std::string m_dataPath;
@@ -55,5 +60,6 @@ private:
 	bool m_isTalking;
 	int m_animationCount;
 	std::string m_prevAnimationName;
+	bool m_isBattled;
 };
 #endif

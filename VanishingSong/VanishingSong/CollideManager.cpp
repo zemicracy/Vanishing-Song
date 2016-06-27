@@ -31,7 +31,6 @@ CollideManager::~CollideManager()
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	const int playerNumber = mCheckPlayerFieldArea();
-	Debug::mPrint(std::to_string(playerNumber));
 	mCheckHitObject(playerNumber);
 	mCheckHitEnemy(playerNumber);
 	mCheckHitCage(playerNumber);
@@ -63,6 +62,7 @@ void CollideManager::mCheckHitObject(const int number){
 //
 void CollideManager::mCheckHitEnemy(const int number){
 
+	if (GameManager::mGetInstance().mBossState() == GameManager::eBossState::eUnVisible&&number == 4)return;
 
 	const float x = m_player->mGetBodyColldier()->property._transform._translation._x - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._x;
 	const float z = m_player->mGetBodyColldier()->property._transform._translation._z - m_enemy->mEnemyGet(number)->mGetProperty()._pCollider->property._transform._translation._z;

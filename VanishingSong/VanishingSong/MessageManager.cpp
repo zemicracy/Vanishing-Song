@@ -8,6 +8,7 @@ namespace{
 	const int kFirst = 0;
 	const int kCounterNull = 0;
 	const float kMessageFlameTime = 1.0f;
+	const int kBossNumber = 4;
 	const Vector3 kMessageFlameOffset = Vector3(0,40,0);
 }
 
@@ -77,6 +78,7 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 	m_buttonSE.first.SetValume(volume);
 	m_buttonSE.second.SetValume(volume);
 	if (!pair.second)return;
+	if (pair.first == kBossNumber&&!m_enemy->mGetBossFlg())return;
 	const int kEnd = m_enemy->mEnemyGet(pair.first)->mGetMessageNum();
 	m_viewMessageFlame = true;
 	m_messageFlame->property._transform._translation = enemyPosition + kMessageFlameOffset;
@@ -127,7 +129,12 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 			}
 			else{
 				m_messageBuffer = std::make_shared<Texture>();
-				m_messageBuffer->Load(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter));
+				if (m_enemy->mEnemyGet(pair.first)->mBattled()){
+					m_messageBuffer->Load(m_enemy->mEnemyGet(pair.first)->mGetAfterMesage(m_counter));
+				}
+				else{
+					m_messageBuffer->Load(m_enemy->mEnemyGet(pair.first)->mGetMessage(m_counter));
+				}
 				mChangeMessage(m_messageBuffer.get());
 			}
 		}
@@ -177,7 +184,8 @@ void MessageManager::mUpdate(const std::pair<int, bool> pair, const bool isPress
 		m_state = eState::eNext;
 		m_selectType = eSelectType::eNull;
 		m_enemy->mEnemyGet(pair.first)->mIsTalking(false);
-		if (GameManager::mGetInstance().mGetCanStage()<pair.first){
+
+		if (GameManager::mGetInstance().mGetCanStage()-1<pair.first){
 			m_enemy->mEnemyGet(pair.first)->mResetTransform();
 		}
 	}

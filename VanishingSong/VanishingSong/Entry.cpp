@@ -11,6 +11,7 @@
 #include "VanishingSongFrame.h"
 #include "Load.h"
 #include"SceneLogoView.h"
+#include "SceneTitle.h"
 using namespace aetherClass;
 
 namespace{

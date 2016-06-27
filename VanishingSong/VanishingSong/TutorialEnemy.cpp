@@ -75,7 +75,7 @@ void TutorialEnemy::mInitalize(const bool flg,std::shared_ptr<FbxModel>& model){
 	const float volume = GameManager::mGetInstance().mGetVolume();
 	m_buttonSE.first.SetValume(volume);
 	m_buttonSE.second.SetValume(volume);
-	m_icon.Load("Texture\\Icon\\Enemy\\template.png");
+	m_icon.Load("Texture\\Icon\\Enemy\\air2.png");
 	if (m_isEnd){
 		Finalize();
 	}

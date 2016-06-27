@@ -105,6 +105,8 @@ private:
 	std::shared_ptr<aetherClass::SpriteBase>m_pBackCover;
 	std::shared_ptr<aetherClass::Texture>m_pBackTexture;
 
+	std::shared_ptr<aetherClass::SpriteBase> m_pSkip;
+	aetherClass::Texture m_skipTexture;
 	
 	//ptr
 	std::shared_ptr<RhythmManager>m_rhythm;
