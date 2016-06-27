@@ -132,6 +132,10 @@ bool SceneEnd::Initialize(){
 	m_returnSE.Load("Sound\\End\\message.wav");
 	const float volume = GameManager::mGetInstance().mGetVolume();
 	m_returnSE.SetValume(volume);
+
+	m_bgm.Load("Sound\\BGM\\Field1.wav");
+	m_bgm.SetValume(volume);
+	m_bgm.PlayToLoop();
 	return true;
 }
 
@@ -186,8 +190,9 @@ bool SceneEnd::Updater(){
 	if (!m_isTransitionEnd)return true;
 	bool isPushButton = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eB);
 
-	if (m_message._count > m_textPathList.size()-1){
+	if (m_message._count >= m_textPathList.size()){
 		m_isMessageEnd = true;
+		return true;
 	}
 
 	if (!m_isMessageEnd&&isPushButton){

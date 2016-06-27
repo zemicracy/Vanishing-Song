@@ -78,9 +78,10 @@ private:
 	void mActorAnimation(std::unordered_map<eMusical, EndActor>&,EndActor& boss);
 	void mChangeMessage(MessageWindow&,Message&, const int);
 private:
-	std::shared_ptr<aetherClass::GameSound> m_bgm;
+	aetherClass::GameSound m_bgm;
 	std::shared_ptr<aetherClass::SpriteBase> m_pEndBord;
 	aetherClass::Texture m_endBordTexture;
+	
 	std::unordered_map<eMusical, EndActor> m_actors;
 	EndActor m_boss;
 	std::unique_ptr<aetherClass::Skybox> m_pSkybox;
