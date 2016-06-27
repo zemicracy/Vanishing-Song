@@ -298,10 +298,7 @@ void SceneGame::mTutorial(bool isReturn, bool isSelect){
 //
 void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLeft){
 	if (m_gameState != eState::eRun)return;
-	if (GameController::GetKey().KeyDownTrigger('E')){
-		ChangeScene(SceneEnd::Name, LoadState::eUse);
-		return;
-	}
+	
 	m_pCollideManager->mUpdate();
 
 	// メッセージの更新処理
