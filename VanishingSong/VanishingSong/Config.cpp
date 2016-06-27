@@ -75,7 +75,7 @@ void Config::mIntialize(std::string name){
 	m_base->SetTexture(&m_menuTexture);
 
 	m_messageWindow.mInitialize();
-	m_saveMessage.Load("Texture\\Message\\tmplate.png");
+	m_saveMessage.Load("Texture\\Message\\save.png");
 	m_pushButton.Load("Texture\\Message\\nextButton.png");
 
 	m_messageWindow.mSetText(&m_saveMessage);

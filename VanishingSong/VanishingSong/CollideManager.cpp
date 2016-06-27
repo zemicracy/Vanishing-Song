@@ -31,7 +31,6 @@ CollideManager::~CollideManager()
 void CollideManager::mUpdate(){
 	// プレイヤーのいる空間の割り出し
 	const int playerNumber = mCheckPlayerFieldArea();
-	Debug::mPrint(std::to_string(playerNumber));
 	mCheckHitObject(playerNumber);
 	mCheckHitEnemy(playerNumber);
 	mCheckHitCage(playerNumber);
