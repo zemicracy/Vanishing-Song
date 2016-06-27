@@ -68,6 +68,12 @@ bool TutorialMessage::mInitialize(){
 
 	m_pTextTextureList[gAppend(10, 1)] = path + "Wave1.png";
 	m_pTextTextureList[gAppend(11, 1)] = path + "Result1.png";
+	m_pTextTextureList[gAppend(11, 2)] = path + "Result2.png";
+	m_pTextTextureList[gAppend(11, 3)] = path + "Result3.png";
+	m_pTextTextureList[gAppend(11, 4)] = path + "Result4.png";
+	m_pTextTextureList[gAppend(11, 5)] = path + "Result5.png";
+	m_pTextTextureList[gAppend(11, 6)] = path + "Result6.png";
+	m_pTextTextureList[gAppend(11, 7)] = path + "Result7.png";
 
 	m_pTexture = gCreateTexture(m_pTextTextureList["Init1"]);
 	m_message->mSetText(m_pTexture.get());
