@@ -89,6 +89,10 @@ void SceneLogoView::Finalize(){
 //1フレームごとの更新処理
 bool SceneLogoView::Updater(){
 	bool result = true;
+	if (m_State >= eState::eFin){
+		ChangeScene(SceneTitle::Name, LoadState::eUse);
+		return true;
+	}
 	const bool isPress = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 
 	if (isPress || m_triggerOnFade){
@@ -101,6 +105,7 @@ bool SceneLogoView::Updater(){
 		
 		m_PrevState = m_State;
 		m_State++;
+
 		if (m_State == eState::eZemicracy){
 			mLoadingTexture("zemi\\", KZemiImage);
 		}
@@ -146,9 +151,6 @@ bool SceneLogoView::Updater(){
 			m_State++;
 		}else
 			m_FrameTime += GameClock::GetDeltaTime() * 18;
-	}
-	else if(m_State == eState::eFin){
-		ChangeScene(SceneTitle::Name, LoadState::eUse);
 	}
 	return true;
 }
