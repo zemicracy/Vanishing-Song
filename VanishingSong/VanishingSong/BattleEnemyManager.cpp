@@ -218,13 +218,13 @@ int BattleEnemyManager::mGetAppendOption(){
 			std::uniform_int_distribution<> rand100(0, 100);
 			int rand = rand100(rnd);
 			if (m_waveID == 1){
-				if (rand > 50){
+				if (rand > 70){
 					return OrderList::eAppendOption::eBlack;
 				}
 			}
 		else if (m_waveID == 2){
 			int returnOption = OrderList::eAppendOption::eReverce;
-			if (rand > 70){
+			if (rand > 65){
 				returnOption |= OrderList::eAppendOption::eBlack;
 			}
 			return returnOption;
@@ -257,7 +257,7 @@ int BattleEnemyManager::mGetAppendOption(){
 				return OrderList::eAppendOption::eBlack;
 			}
 			else {
-				if (rand > 70){
+				if (rand > 75){
 					return OrderList::eAppendOption::eBlack;
 				}
 				else if (rand > 40){
