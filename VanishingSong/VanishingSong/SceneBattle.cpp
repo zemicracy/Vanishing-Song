@@ -464,6 +464,11 @@ void SceneBattle::mOnBattle(){
 	auto i = m_pOrderList->mGetDamage();
 	if (i > 0){
 		m_enemyHp->_hp -= i;
+
+		m_charaHp._hp += 0.1;
+		if (m_charaHp._hp > m_charaHp._maxHp){
+			m_charaHp._hp = m_charaHp._maxHp;
+		}
 		m_pBattleEnemyManager->mChangeAnimation(BattleEnemy::eBattleActionType::eDamage, eMusical::eMiss);
 	}
 	else if (i < 0){

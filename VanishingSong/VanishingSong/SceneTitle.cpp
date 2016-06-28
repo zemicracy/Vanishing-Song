@@ -188,6 +188,7 @@ bool SceneTitle::Initialize(){
 //
 void SceneTitle::Finalize(){
 	_heapmin();
+
 	if (m_returnSE){
 		m_returnSE->Stop();
 		m_returnSE.reset();
@@ -282,6 +283,10 @@ bool SceneTitle::Updater(){
 	RightOrLeft.first = GameController::GetKey().KeyDownTrigger('D') || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
 	RightOrLeft.second = GameController::GetKey().KeyDownTrigger('A') || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft);
 
+	if (isConfigButton){
+		m_returnSE->Stop();
+		m_returnSE->PlayToOneTime();
+	}
 	if (m_config.mUpdate(isConfigButton, isReturn, UpOrDown, RightOrLeft)){
 
 		const float volume = GameManager::mGetInstance().mGetVolume();

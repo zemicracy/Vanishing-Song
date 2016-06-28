@@ -118,6 +118,9 @@ bool SceneGame::Initialize(){
 
 void SceneGame::mInitializeBGM(){
 	const float volume = GameManager::mGetInstance().mGetVolume();
+	m_configSE = std::make_shared<GameSound>();
+	m_configSE->Load("Sound\\Title\\decision.wav");
+	m_configSE->SetValume(volume);
 		for (auto &itr : ResourceManager::mGetInstance().mGetBGMPath()){
 			m_pBGMArray.push_back(std::make_shared<GameSound>());
 			m_pBGMArray.back()->Load(itr.second.c_str());
@@ -199,7 +202,11 @@ bool SceneGame::Updater(){
 	std::pair<bool, bool> RightOrLeft;
 	RightOrLeft.first = GameController::GetKey().KeyDownTrigger('D') || GameController::GetJoypad().ButtonPress(eJoyButton::eRight);
 	RightOrLeft.second = GameController::GetKey().KeyDownTrigger('A') || GameController::GetJoypad().ButtonPress(eJoyButton::eLeft);
-
+	if (isConfigButton){
+		m_configSE->Stop();
+		m_configSE->PlayToOneTime();
+	}
+	
 	if (m_config.mUpdate(isConfigButton, isReturn, UpOrDown, RightOrLeft)){
 		const float volume = GameManager::mGetInstance().mGetVolume();
 
