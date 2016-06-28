@@ -63,8 +63,9 @@ bool TutorialMessage::mInitialize(){
 	m_pTextTextureList[gAppend(7, 2)] = path + "Adlib2.png";
 	m_pTextTextureList[gAppend(7, 3)] = path + "Adlib3.png";
 	m_pTextTextureList[gAppend(7, 4)] = path + "Adlib4.png";
-	m_pTextTextureList[gAppend(8, 1)] = path + "Adlib5.png";
-	m_pTextTextureList[gAppend(9, 1)] = path + "Adlib6.png";
+	m_pTextTextureList[gAppend(7, 5)] = path + "Adlib5.png";
+	m_pTextTextureList[gAppend(8, 1)] = path + "Adlib6.png";
+	m_pTextTextureList[gAppend(9, 1)] = path + "Adlib7.png";
 
 	m_pTextTextureList[gAppend(10, 1)] = path + "Wave1.png";
 	m_pTextTextureList[gAppend(11, 1)] = path + "Result1.png";
