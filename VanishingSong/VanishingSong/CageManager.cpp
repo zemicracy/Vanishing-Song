@@ -101,3 +101,7 @@ std::string CageManager::mGetIconPath(eMusical type){
 		break;
 	}
 }
+
+Vector3 CageManager::mGetCagePosition(const int num){
+	return m_pCage.at(num)->mGetPosition();
+}

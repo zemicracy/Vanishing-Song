@@ -16,7 +16,7 @@ public:
 	void mSetIsComment(const int,const bool);
 	bool mGetIsMessageRun(const int);
 	std::shared_ptr<aetherClass::Sphere>& mGetColldier(const int);
-	
+	aetherClass::Vector3 mGetCagePosition(const int);
 private:
 	std::string mGetIconPath(eMusical);
 private:

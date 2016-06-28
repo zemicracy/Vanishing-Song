@@ -82,12 +82,13 @@ void FieldPlayer::mFinalize(){
 /*
 プレイヤーの更新処理
 */
-void FieldPlayer::mUpdate(const float timeScale,const bool isWait){
+void FieldPlayer::mUpdate(const float timeScale, const bool isWait){
 
 	// キーの処理を取得
 	std::pair<Transform, Vector3> getKeyValues;
 
 	if (!isWait){
+		
 		getKeyValues = mReadKey(timeScale);
 	}
 
@@ -375,4 +376,9 @@ std::shared_ptr<Cube>& FieldPlayer::mGetBodyColldier(){
 //
 std::shared_ptr<Sphere>& FieldPlayer::mGetSphereColldier(){
 	return m_pSphereCollider;
+}
+
+void FieldPlayer::mFaceToTalk(Vector3 pos){
+	m_charaEntity.mFaceToObject(m_model, pos);
+	m_transform._rotation = m_model->property._transform._rotation;
 }

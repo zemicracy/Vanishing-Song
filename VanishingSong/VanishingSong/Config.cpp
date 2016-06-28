@@ -10,6 +10,7 @@ namespace{
 	const float kDepth = 0.000001f;
 	const int kMenuNum = 5;
 	const int kSkipNumber = 1;
+	const int kSaveNumber = 2;
 	const int kTitleSkipNumber = 3;
 	const float kLowVolume = -3000.0f;
 	const float kNormalVolume = -1500.0f;
@@ -183,7 +184,7 @@ void Config::mCountCursorY(int& count, const std::pair<bool, bool> UpOrDown){
 		count -= 1;
 	}
 
-	if (count == kSkipNumber || (m_sceneName == SceneTitle::Name&&count == kTitleSkipNumber)){
+	if (count == kSkipNumber || (m_sceneName == SceneTitle::Name&&(count == kTitleSkipNumber))){
 		if (UpOrDown.second){
 			count += 1;
 		}

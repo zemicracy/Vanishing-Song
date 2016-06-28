@@ -30,7 +30,7 @@ public:
 	std::string mGetDataPath();
 	void mIsEnd(const bool);
 	bool mGetMessageEnd();
-
+	aetherClass::Vector3 mGetPosition();
 	eSelect mGetSelectType();
 private:
 	std::string m_dataPath;
