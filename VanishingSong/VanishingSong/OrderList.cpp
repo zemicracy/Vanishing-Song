@@ -380,7 +380,7 @@ void OrderList::mPerformUpdate(){
 
 	
 	//デモモードの時は入力はオート
-	if (m_isTutorialDemo){
+/*	if (m_isTutorialDemo){
 		if (m_isKeyDown) return;
 		if (m_processId >= m_MaxOrderSize)return;
 
@@ -400,7 +400,8 @@ void OrderList::mPerformUpdate(){
 			m_PlayerOrderList.push_back(command);
 		}
 	}
-	else if (onCommand){
+	else */
+	if (onCommand){
 		m_playedAction = command;
 		if (m_isKeyDown) return;
 		//間違ってたらミスを入れる
@@ -555,7 +556,7 @@ void OrderList::mRender(aetherClass::ShaderBase* shader, aetherClass::ShaderBase
 
 	int requestVal = m_mode == GameManager::eGameMode::eQuarter ? 2 : 1;
 
-
+	
 	if (*m_faze == GameManager::eBattleState::eListen){
 		if (!m_EnemyOrderList.empty()){
 
@@ -673,7 +674,9 @@ void OrderList::mListStop(){
 	m_isStart = false;
 	m_isKeyDown = false;
 	m_isEnd = true;
-	m_processId = 0;
+	if (*m_faze != GameManager::eBattleState::eBattle){
+		m_processId = 0;
+	}
 	m_playedAction = m_ActionBoard->mGetCommand(eMusical::eNull);
 	m_isLineStart = false;
 	m_pReadLine->property._transform._translation = m_ReadLineOrigin;
@@ -760,23 +763,25 @@ void OrderList::mRhythmicMotion(){
 	}
 
 
-	//コントローラー
-	static int framecnt;
-	static int maxFrame;
-	static int power = 0;
+		if (!m_isTutorialDemo){
+			//コントローラー
+			static int framecnt;
+			static int maxFrame;
+			static int power = 0;
 
-	if (m_rhythm->mIsQuarterBeat()){
-		framecnt = 0;
-		maxFrame = 2;
-		power = 2;
-	}
-	if (framecnt < maxFrame){
-		GameController::GetJoypad().SetVibration(std::make_pair(20000 * power, 65535 * power));
-	}
-	else{
-		GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
-	}
-	framecnt++;
+			if (m_rhythm->mIsQuarterBeat()){
+				framecnt = 0;
+				maxFrame = 2;
+				power = 2;
+			}
+			if (framecnt < maxFrame){
+				GameController::GetJoypad().SetVibration(std::make_pair(20000 * power, 65535 * power));
+			}
+			else{
+				GameController::GetJoypad().SetVibration(std::make_pair(0, 0));
+			}
+			framecnt++;
+		}
 }
 
 bool OrderList::mIsEnd(){

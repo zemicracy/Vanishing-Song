@@ -74,6 +74,9 @@ bool SceneTutorial::Initialize(){
 	m_pTutorial->mInitialize();
 	m_pTutorial->mSetVisible(false);
 
+	m_pOrderList->mSetTutorial(true);
+
+
 	m_battleState = GameManager::eBattleState::eNewWave;
 	m_processState = eGameState::ePreCountIn;
 	m_initUpdateProcess = false;
@@ -619,7 +622,6 @@ void SceneTutorial::mOnBattle(){
 			m_tutorialState = eTutorialState::ePlayerOnly;
 			m_enemyHp->_hp = 0;
 			m_charaHp._hp = m_charaHp._maxHp;
-			m_pOrderList->mSetTutorial(false);
 			m_pOrderList->mGetResult()._missCount = 0;
 			m_pOrderList->mGetResult()._maxCount = 20;
 		}
