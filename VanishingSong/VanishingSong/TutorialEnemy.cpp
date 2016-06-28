@@ -215,3 +215,7 @@ void TutorialEnemy::Finalize(){
 		index.second = nullptr;
 	}
 }
+
+Vector3 TutorialEnemy::mGetPosition(){
+	return m_model->property._transform._translation;
+}

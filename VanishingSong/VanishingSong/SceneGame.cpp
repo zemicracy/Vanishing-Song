@@ -36,7 +36,6 @@ bool SceneGame::Initialize(){
 	_heapmin();
 	Finalize();
 
-
 	// ƒV[ƒ“‚Ì“o˜^
 	RegisterScene(new SceneTitle());
 	RegisterScene(new SceneBattle());
@@ -321,7 +320,18 @@ void SceneGame::mRun(const bool isReturn, const std::pair<bool, bool> RightOrLef
 	m_pFieldEnemy->mUpdater();
 	m_pFieldArea->mUpdate(kScaleTime);
 	const int fieldNumber = m_pFieldPlayer->mGetFieldNumber();
-	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView()||m_pCageManager->mGetIsMessageRun(fieldNumber));
+
+
+	if (m_pMessageManager->mIsView()){
+		const Vector3 enemyPositon = m_pFieldEnemy->mEnemyGet(fieldNumber)->mGetProperty()._pCollider->property._transform._translation;
+		m_pFieldPlayer->mFaceToTalk(enemyPositon);
+	}
+	else if (m_pCageManager->mGetIsMessageRun(fieldNumber)){
+		const Vector3 cagePositon = m_pCageManager->mGetCagePosition(fieldNumber);
+		m_pFieldPlayer->mFaceToTalk(cagePositon);
+	}
+	m_pFieldPlayer->mUpdate(kScaleTime, m_pMessageManager->mIsView() || m_pCageManager->mGetIsMessageRun(fieldNumber));
+	
 	m_fieldNote.mUpdate();
 }
 
@@ -333,10 +343,11 @@ void SceneGame::Render(){
 	}
 	m_pFieldPlayer->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldArea->mRender(shaderHash["texture"].get(), shaderHash["transparent"].get());
-	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_fieldNote.mRender(shaderHash["transparent"].get());
 	m_pCageManager->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
 	m_pFieldEnemy->mRender(shaderHash["texture"].get(), shaderHash["color"].get());
+	m_pMessageManager->m3DRender(shaderHash["texture"].get(), shaderHash["color"].get());
+
 	return;
 }
 

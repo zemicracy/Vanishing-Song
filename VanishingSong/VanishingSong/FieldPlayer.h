@@ -65,6 +65,8 @@ public:
 	void mSetFieldNumber(const int);
 	int mGetFieldNumber()const; 
 	aetherClass::Transform mGetTransform();
+
+	void mFaceToTalk(aetherClass::Vector3);
 private:
 	/*
 	‰ğ•úˆ—

@@ -14,6 +14,7 @@ FieldNote::FieldNote()
 
 FieldNote::~FieldNote()
 {
+	m_object.clear();
 }
 
 //
