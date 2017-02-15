@@ -93,7 +93,7 @@ bool SceneLogoView::Updater(){
 		ChangeScene(SceneTitle::Name, LoadState::eUse);
 		return true;
 	}
-	const bool isPress = GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
+	const bool isPress = GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart);
 
 	if (isPress || m_triggerOnFade){
 		if (m_State != eState::eZemicracy){

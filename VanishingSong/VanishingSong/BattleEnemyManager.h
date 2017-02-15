@@ -1,7 +1,6 @@
 #ifndef _BATTLEENEMYMANAGER_H
 #define _BATTLEENEMYMANAGER_H
 #include "BattleEnemy.h"
-#include "BattleBoss.h"
 #include"BattleField.h"
 #include"Const.h"
 #include <GameController.h>
@@ -66,7 +65,6 @@ private:
 	aetherClass::ViewCamera* m_camera;
 	bool flag;
 
-	std::shared_ptr<BattleBoss> m_pBattle;
 	std::unordered_map<eMusical,std::shared_ptr<BattleEnemy>>m_pEnemy;
 	
 	std::vector<eMusical> m_enemyList;

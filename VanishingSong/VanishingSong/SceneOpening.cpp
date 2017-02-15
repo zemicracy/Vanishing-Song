@@ -80,7 +80,7 @@ bool SceneOpening::Updater(){
 		m_isInit = true;
 	}
 
-	if (GameController::GetKey().KeyDownTrigger(VK_RETURN) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart)){
+	if (GameController::GetKey().KeyDownTrigger(VK_SPACE) || GameController::GetJoypad().ButtonPress(eJoyButton::eStart)){
 		ChangeScene(SceneGame::Name, LoadState::eUse);
 		return true;
 	}
