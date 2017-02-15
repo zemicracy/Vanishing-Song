@@ -29,9 +29,9 @@ void BattleField::mFinalize(){
 	m_pTank->Finalize();
 
 	for (auto& itr : m_pCommand){
-		itr->Finalize();
-		itr.reset();
+		itr.second->Finalize();
 	}
+	m_pCommand.clear();
 
 	for (auto& itr : m_pTankNote){
 		itr->Finalize();
@@ -76,9 +76,10 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 	camera->property._rotation = reader.GetInputWorldInfo()._camera._rotation;
 	m_view = camera;
 
-	Color COMMAND(0, 0, 0, 0.8);
+	Color COMMAND(0, 0, 0, 1);
 	Color WHITE(1, 1, 1, 0);
 	float normalScale = 9.9;
+	float circleScale = 10;
 
 	for (auto &itr : reader.GetInputWorldInfo()._object){
 		if (itr->_name == "stage"){
@@ -103,65 +104,107 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 			m_pTank->property._transform._scale = 1;
 			m_EnemyLane[eMusical::eAdlib] = itr->_transform._translation;
 		}
-		else if (itr->_name == "lane_blue"){
-			m_pLane.insert(std::make_pair(eMusical::eBlue, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
-		}
 		else if (itr->_name == "command_blue"){
-			m_pCommand[0] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
-			m_pCommand[0]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[0]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionBlue").get());
-		}
-		else if (itr->_name == "lane_green"){
-			m_pLane.insert(std::make_pair(eMusical::eGreen, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
+			
+			m_pCommand[eMusical::eBlue] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
+			m_pCommand[eMusical::eBlue]->property._transform._rotation = m_view->property._rotation;
+			m_pCommand[eMusical::eBlue]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionBlue").get());
+
 		}
 		else if (itr->_name == "command_green"){
 			m_commandScale = itr->_transform._scale._x;
 
-			m_pCommand[1] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
-			m_pCommand[1]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[1]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionGreen").get());
-		}
-		else if (itr->_name == "lane_red"){
-			m_pLane.insert(std::make_pair(eMusical::eRed, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
+			m_pCommand[eMusical::eGreen] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
+			m_pCommand[eMusical::eGreen]->property._transform._rotation = m_view->property._rotation;
+			m_pCommand[eMusical::eGreen]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionGreen").get());
+
 		}
 		else if (itr->_name == "command_red"){
-			m_pCommand[2] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
-			m_pCommand[2]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[2]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionRed").get());
-		}
-		else if (itr->_name == "lane_yellow"){
-			m_pLane.insert(std::make_pair(eMusical::eYellow, gInitializer<Rectangle3D>(itr->_transform, WHITE)));
+			m_pCommand[eMusical::eRed] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
+			m_pCommand[eMusical::eRed]->property._transform._rotation = m_view->property._rotation;
+			m_pCommand[eMusical::eRed]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionRed").get());
+
 		}
 		else if (itr->_name == "command_yellow"){
-			m_pCommand[3] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
-			m_pCommand[3]->property._transform._rotation = m_view->property._rotation;
-			m_pCommand[3]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionYellow").get());
+			m_pCommand[eMusical::eYellow] = gInitializer<Rectangle3D>(itr->_transform, COMMAND);
+			m_pCommand[eMusical::eYellow]->property._transform._rotation = m_view->property._rotation;
+			m_pCommand[eMusical::eYellow]->SetTexture(ResourceManager::mGetInstance().GetTexture("ActionYellow").get());
 
 		}
 		else if (itr->_name == "enemy_blue"){
 			m_EnemyLane[eMusical::eBlue] = itr->_transform._translation;
+
+			Vector3 trans = itr->_transform._translation;
+			m_pEnemyLane.insert(std::make_pair(eMusical::eBlue, gInitializer<Rectangle3D>(
+				Transform(Vector3(trans._x, trans._y - 7.0f, trans._z), Vector3(90, 0, 0), Vector3(circleScale, circleScale, 1))
+				, Color(0, 0, 1, 1))));
 		}
 		else if (itr->_name == "enemy_green"){
 			m_EnemyLane[eMusical::eGreen] = itr->_transform._translation;
+
+			Vector3 trans = itr->_transform._translation;
+			m_pEnemyLane.insert(std::make_pair(eMusical::eGreen, gInitializer<Rectangle3D>(
+				Transform(Vector3(trans._x, trans._y - 7.0f, trans._z), Vector3(90, 0, 0), Vector3(circleScale, circleScale, 1))
+				, Color(0, 1, 0, 1))));
 		}
 		else if (itr->_name == "enemy_red"){
 			m_EnemyLane[eMusical::eRed] = itr->_transform._translation;
+
+			Vector3 trans = itr->_transform._translation;
+			m_pEnemyLane.insert(std::make_pair(eMusical::eRed, gInitializer<Rectangle3D>(
+				Transform(Vector3(trans._x, trans._y - 7.0f, trans._z), Vector3(90, 0, 0), Vector3(circleScale, circleScale, 1))
+				, Color(1, 0, 0, 1))));
 		}
 		else if (itr->_name == "enemy_yellow"){
 			m_EnemyLane[eMusical::eYellow] = itr->_transform._translation;
+
+			Vector3 trans = itr->_transform._translation;
+			m_pEnemyLane.insert(std::make_pair(eMusical::eYellow, gInitializer<Rectangle3D>(
+				Transform(Vector3(trans._x, trans._y - 7.0f, trans._z), Vector3(90, 0, 0), Vector3(circleScale, circleScale, 1))
+				, Color(1, 1, 0, 1))));
 		}
 		else if (itr->_name == "player_blue"){
 			m_PlayerLane[eMusical::eBlue] = itr->_transform._translation;
+
+			Vector3 trans = itr->_transform._translation;
+			m_pLane.insert(std::make_pair(eMusical::eBlue, gInitializer<Rectangle3D>(
+				Transform(Vector3(trans._x,trans._y - 7.0f,trans._z),Vector3(90,0,0),Vector3(circleScale,circleScale,1))
+				, Color(0, 0, 1, 1))));
 		}
 		else if (itr->_name == "player_green"){
 			m_PlayerLane[eMusical::eGreen] = itr->_transform._translation;
+
+			Vector3 trans = itr->_transform._translation;
+			m_pLane.insert(std::make_pair(eMusical::eGreen, gInitializer<Rectangle3D>(
+				Transform(Vector3(trans._x, trans._y - 7.0f, trans._z), Vector3(90, 0, 0), Vector3(circleScale, circleScale, 1))
+				, Color(0, 1, 0, 1))));
 		}
 		else if (itr->_name == "player_red"){
 			m_PlayerLane[eMusical::eRed] = itr->_transform._translation;
+
+			Vector3 trans = itr->_transform._translation;
+			m_pLane.insert(std::make_pair(eMusical::eRed, gInitializer<Rectangle3D>(
+				Transform(Vector3(trans._x, trans._y - 7.0f, trans._z), Vector3(90, 0, 0), Vector3(circleScale, circleScale, 1))
+				, Color(1, 0, 0, 1))));
 		}
 		else if (itr->_name == "player_yellow"){
 			m_PlayerLane[eMusical::eYellow] = itr->_transform._translation;
+
+			Vector3 trans = itr->_transform._translation;
+			m_pLane.insert(std::make_pair(eMusical::eYellow, gInitializer<Rectangle3D>(
+				Transform(Vector3(trans._x, trans._y - 7.0f, trans._z), Vector3(90, 0, 0), Vector3(circleScale, circleScale, 1))
+				, Color(1, 1, 0, 1))));
 		}
+	}
+
+	m_pTextureList["Cover"] = gCreateTexture("Texture\\Battle\\Cover.png");
+	for (auto itr : m_pLane){
+		itr.second->SetTexture(m_pTextureList["Cover"].get());
+		itr.second->SetCamera(m_view);
+	}
+	for (auto itr : m_pEnemyLane){
+		itr.second->SetTexture(m_pTextureList["Cover"].get());
+		itr.second->SetCamera(m_view);
 	}
 
 	m_pSkyBox = std::make_shared<Skybox>();
@@ -203,11 +246,8 @@ void BattleField::mInitialize(aetherClass::ViewCamera* camera,RhythmManager *rhy
 
 
 
-	for (auto itr : m_pLane){
-		itr.second->SetCamera(m_view);
-	}
 	for (auto itr : m_pCommand){
-		itr->SetCamera(m_view);
+		itr.second->SetCamera(m_view);
 	}
 	m_pSkyBox->SetCamera(m_view);
 	m_pSkyBox->property._transform._rotation._x = 22.7f;
@@ -220,24 +260,43 @@ void BattleField::mUpdate(std::shared_ptr<ActionCommand>command){
 	using namespace aetherClass;
 
 	for (auto& itr : m_pLane){
-		if (itr.second->property._color._alpha > 0){
+		if (itr.second->property._color._alpha > 1){
+			itr.second->property._color -= 0.1;
+		}
+	}
+	for (auto& itr : m_pEnemyLane){
+		if (itr.second->property._color._alpha > 1){
+			itr.second->property._color -= 0.1;
+		}
+	}
+
+	for (auto& itr : m_pCommand){
+		if (itr.second->property._color._alpha > 0.6f){
 			itr.second->property._color._alpha -= 0.1;
 		}
-		itr.second->property._transform._translation._y = 3;
 	}
 	//‘Î‰ž‚µ‚½ƒŒ[ƒ“‚ð@ƒ¿‚P
 	if (m_pLane.find(command->mGetType()) == m_pLane.end())return;
-	m_pLane.at(command->mGetType())->property._color._alpha = 0.9;
+	m_pLane.at(command->mGetType())->property._color += 1.0f;
+	m_pEnemyLane.at(command->mGetType())->property._color += 1.0f;
+
+	m_pCommand.at(command->mGetType())->property._color._alpha = 1.0f;
+
+
 }
 
 void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderBase *debug){
 	m_pSkyBox->Render(texture);
 	m_pPlane->Render(texture);
 
+	
 	m_pObject->Render(texture);
 	m_pNoteObject->Render(texture);
 	for (auto itr : m_pLane){
-		itr.second->Render(debug);
+		itr.second->Render(texture);
+	}
+	for (auto itr : m_pEnemyLane){
+		itr.second->Render(texture);
 	}
 	if (!m_isBossStage){
 		for (auto itr : m_pTankNote){
@@ -245,9 +304,11 @@ void BattleField::mRender(aetherClass::ShaderBase *texture, aetherClass::ShaderB
 		}
 		m_pTank->Render(texture);
 	}
-	for (int i = m_pCommand.size()-1; i >= 0; --i){
-		m_pCommand.at(i)->Render(texture);
+
+	for (auto itr : m_pCommand){
+		itr.second->Render(texture);
 	}
+
 }
 
 
@@ -306,7 +367,7 @@ void BattleField::mRhythmicMotion(){
 		}
 	}
 	for (auto itr : m_pCommand){
-		itr->property._transform._scale = m_commandScale + (2 * scale);
+		itr.second->property._transform._scale = m_commandScale + (1.5f * scale);
 	}
 
 

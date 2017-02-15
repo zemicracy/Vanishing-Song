@@ -37,10 +37,13 @@ private:
 	aetherClass::ViewCamera *m_view;
 	std::unordered_map<std::string, std::shared_ptr<aetherClass::Texture>>m_pTextureList;
 	std::unordered_map < eMusical, std::shared_ptr<aetherClass::ModelBase>>m_pLane;
+	std::unordered_map < eMusical, std::shared_ptr<aetherClass::ModelBase>>m_pEnemyLane;
+
 	std::unordered_map < eMusical, aetherClass::Vector3>m_EnemyLane;
 	std::unordered_map < eMusical, aetherClass::Vector3>m_PlayerLane;
 
-	std::array <std::shared_ptr<aetherClass::ModelBase>, 4>m_pCommand;
+	std::unordered_map <eMusical,std::shared_ptr<aetherClass::ModelBase>>m_pCommand;
+
 	std::shared_ptr<aetherClass::ModelBase>m_pSkyBox;
 	std::shared_ptr<aetherClass::FbxModel>m_pPlane;
 

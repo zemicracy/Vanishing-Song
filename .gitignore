@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.obj
+*.fbm
 
 # Precompiled Headers
 *.gch
@@ -26,14 +27,14 @@
 *.exe
 *.out
 *.app
-VanishingSong/VanishingSong/Release/VanishingSong.tlog/link.command.1.tlog
-VanishingSong/VanishingSong/Release/VanishingSong.tlog/link.read.1.tlog
-VanishingSong/VanishingSong/Release/VanishingSong.tlog/link.write.1.tlog
-VanishingSong/VanishingSong/Texture/修正点.jpg
-VanishingSong/Release/VanishingSong.pdb
-VanishingSong/VanishingSong/Debug/VanishingSong.Build.CppClean.log
+
+
+#Others visualStudio
+*.ilk
+*.pdb
+*.suo
+*.opensdf
+*.sdf
+*.tlog
+VanishingSong/VanishingSong/Debug/VanishingSong.log
 VanishingSong/VanishingSong/Release/VanishingSong.log
-VanishingSong/VanishingSong/Release/VanishingSong.tlog/CL.read.1.tlog
-VanishingSong/VanishingSong/Release/VanishingSong.tlog/CL.write.1.tlog
-VanishingSong/VanishingSong/Release/VanishingSong.tlog/VanishingSong.lastbuildstate
-VanishingSong/VanishingSong/Release/VanishingSong.tlog/cl.command.1.tlog
